@@ -1,7 +1,44 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Editar → campo "Resumen" -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-10-17 -->
 <!-- IMAGEN: assets/LOGO_ZHAKYZ_ANIMADO.gif, subida como zhakyz_logo.gif al área de archivos del resumen -->
 <!-- URL PÚBLICA: https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif -->
 <!-- ÚLTIMA PUBLICACIÓN: 2026-10-17 -->
+<!-- SIN FILTROS DE MOODLE: <nolink> evita que "Sistema" y "Estudiantes" se conviertan en links a actividades de otros equipos -->
+<nolink>
 <p style="text-align: center;"><img class="img-fluid" style="display: block; margin-left: auto; margin-right: auto;" src="https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif" alt="Logo de Zhakyz &amp; Asociados" width="800" height="450"></p>
 <h3 style="text-align: center;"><strong>ZHAKYZ &amp; ASOCIADOS</strong></h3>
 <h4 style="text-align: center;"><em>Proyecto Travesía · Sistema de BI para la Retención de Estudiantes</em></h4>
+<!-- SCRIPT: TÍTULOS DE SUBSECCIÓN SIN LINK -->
+<!-- Moodle convierte el título de cada subsección en un link a una página aparte (course/section.php?id=…). -->
+<!-- Dentro de Zhakyz se reemplaza por texto común, así los bloques se pliegan y despliegan sin sacar al usuario de la sección. -->
+<script>
+  (function() {
+    var SECCION_ZHAKYZ = '15647';
+
+    // <nolink> COMO BLOQUE (SI NO, EL NAVEGADOR LO TRATA COMO ELEMENTO EN LÍNEA Y PUEDE TAPAR CLICS)
+    if (!document.getElementById('zhakyz-resumen-style')) {
+      var styleEl = document.createElement('style');
+      styleEl.id = 'zhakyz-resumen-style';
+      styleEl.innerHTML = 'li.section[data-id="' + SECCION_ZHAKYZ + '"] nolink { display: block; }';
+      document.head.appendChild(styleEl);
+    }
+
+    // REEMPLAZAR EL LINK DEL TÍTULO DE CADA SUBSECCIÓN DE ZHAKYZ POR TEXTO
+    function quitarLinksDeTitulos() {
+      var titulos = document.querySelectorAll('li.section[data-id="' + SECCION_ZHAKYZ + '"] li.section.delegated-section h3[data-for="section_title"] > a');
+      for (var i = 0; i < titulos.length; i++) {
+        var a = titulos[i];
+        var texto = document.createElement('span');
+        texto.textContent = a.textContent;
+        a.parentNode.replaceChild(texto, a);
+      }
+    }
+
+    quitarLinksDeTitulos();
+    // Moodle vuelve a dibujar las secciones (por ejemplo al editar): se repite cada vez que cambia el contenido
+    var zhakyz = document.querySelector('li.section[data-id="' + SECCION_ZHAKYZ + '"]');
+    if (zhakyz && window.MutationObserver) {
+      new MutationObserver(quitarLinksDeTitulos).observe(zhakyz, { childList: true, subtree: true });
+    }
+  })();
+</script>
+</nolink>
