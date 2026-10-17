@@ -1,6 +1,6 @@
 # ADR-003: Paleta de Colores
 
-- **Estado:** Pendiente
+- **Estado:** Reemplazada por [ADR-004](004-sistema-de-diseno-mui.md)
 - **Fecha:** 2026-10-16
 - **Refs:** `paletas.html` (vista previa eliminada del repo el 2026-10-17; las opciones quedan documentadas en este ADR)
 
