@@ -2,7 +2,7 @@
 
 - **Estado:** Aceptada
 - **Fecha:** 2026-10-16
-- **Refs:** [RULE.md](../../RULE.md), [content.html](../../section/main_menu/content.html)
+- **Refs:** [RULES.md](../../RULES.md), [content.html](../../section/main_menu/content.html)
 
 ## Contexto
 

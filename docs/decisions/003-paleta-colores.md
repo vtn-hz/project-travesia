@@ -28,4 +28,4 @@ Se presentó `paletas.html` con vista previa interactiva de las 6 opciones. Tamb
 ## Consecuencias
 
 - Hasta que se seleccione, las nuevas secciones deben usar una paleta placeholder o la actual (A).
-- Una vez elegida, se actualizará `RULE.md` con los colores definitivos.
+- Una vez elegida, se actualizará `RULES.md` con los colores definitivos.
