@@ -1,0 +1,21 @@
+{
+  "nombre": "Armado de encuestas",
+  "descripcion": "Composición de cada encuesta (una entrada por encuesta): qué preguntas del banco lleva y en qué orden.",
+  "subseccion": "Database",
+  "origen": "PROPUESTA (2026-10-17), todavía no creada en Moodle. Si se aprueba renombrar la base de preguntas a 'Preguntas', esta base pasaría a llamarse 'Encuestas'.",
+  "campos": [
+    { "nombre": "encuesta", "tipo": "menu", "descripcion": "Qué encuesta es", "opciones": ["inicial", "cuatrimestral"] },
+    { "nombre": "titulo", "tipo": "text", "descripcion": "Título que ve el estudiante" },
+    { "nombre": "descripcion", "tipo": "textarea", "descripcion": "Texto introductorio de la encuesta" },
+    { "nombre": "preguntas", "tipo": "text", "descripcion": "ids de las preguntas del banco, en orden y separados por coma (por ejemplo: 6,1,7,8)" }
+  ],
+  "moodle": {
+    "curso": 1732,
+    "seccion_id": 15647,
+    "subseccion_cmid": null,
+    "subseccion_id": null,
+    "cmid": null,
+    "dataid": null,
+    "creada": null
+  }
+}
