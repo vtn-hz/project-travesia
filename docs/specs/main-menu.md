@@ -2,7 +2,7 @@
 
 > Documento vivo — se actualiza a medida que se refinan los requerimientos.
 
-- **Archivo:** `section/main_menu/content.html`
+- **Archivo:** `section/section_sample/content.html`
 - **Decisiones relacionadas:** [ADR-002](../decisions/002-main-menu-contenido.md), [ADR-003](../decisions/003-paleta-colores.md)
 - **Última actualización:** 2026-10-16
 
