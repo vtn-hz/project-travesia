@@ -14,7 +14,8 @@ Este archivo es para cualquier agente de IA que trabaje en el repo (Codex, Curso
    - Relación 1 a 1 entre lo que está en Moodle y el repo.
    - Los datos de prueba son siempre los 6 integrantes del equipo, con datos ficticios.
    - Estilo de las secciones: HTML autocontenido, estilos inline con `!important` y vanilla JS en un IIFE.
-2. **[`docs/README.md`](docs/README.md)**: índice de la documentación (requerimientos, investigación, plataforma, modelos, ADRs y specs).
+2. **[`DEPLOY.md`](DEPLOY.md)**: qué está publicado en Moodle, qué está en local y qué está en revisión. Actualizarlo en cada publicación.
+3. **[`docs/README.md`](docs/README.md)**: índice de la documentación (requerimientos, investigación, plataforma, modelos, ADRs y specs).
 
 ## Skills del proyecto
 

@@ -49,6 +49,7 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
    - actualiza el comentario de ubicación en el archivo local.
 5. **Cerrar el ciclo**
    - Agregar o actualizar la fila en la tabla 1 a 1 de `RULES.md` (el script la imprime).
+   - Actualizar el estado en [`DEPLOY.md`](../../DEPLOY.md).
    - Proponer el commit, por ejemplo: `chore(moodle): publish <seccion> to Zhakyz section`.
    - Darle al usuario el link "Ver en Moodle" que imprime el script.
 
