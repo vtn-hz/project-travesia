@@ -19,12 +19,15 @@ docs/
 │       └── MOODLE_SECCIONES_Y_HERRAMIENTAS.md
 ├── models/                ← Modelos de cálculo propios (fórmulas, reglas, casos de prueba)
 │   ├── MODELO_UBICACION_Y_ATRASO.md
-│   └── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
+│   ├── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
+│   ├── MODELO_DE_DATOS_V2.md      ← DER del SBIRE (23 entidades)
+│   └── MODELO_SIMPLIFICADO_MOODLE.md ← El DER llevado a 12 bases de Moodle
 ├── decisions/             ← Registros de Decisiones (ADR)
 │   ├── 001-arquitectura-general.md
 │   ├── 002-main-menu-contenido.md
 │   ├── 003-paleta-colores.md
-│   └── 004-sistema-de-diseno-mui.md
+│   ├── 004-sistema-de-diseno-mui.md
+│   └── 005-modelo-de-bases-moodle.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md

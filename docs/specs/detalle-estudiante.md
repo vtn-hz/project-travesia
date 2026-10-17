@@ -8,6 +8,8 @@
 - **Requerimientos:** Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados).
 - **Estado:** desarrollado en local con datos de prueba. **No publicado.**
 
+> **En revisión.** Cargar en el frontend los datos de todos los estudiantes para esta visualización puede ser muy pesado. El modelo de bases y la pregunta abierta están en el [ADR-005](../decisions/005-modelo-de-bases-moodle.md).
+
 ## Diseño
 
 | Izquierda | Derecha |
