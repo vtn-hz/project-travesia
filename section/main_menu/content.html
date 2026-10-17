@@ -1,0 +1,913 @@
+<!-- CONTENEDOR PRINCIPAL -->
+<div
+  style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 32px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: center !important; min-height: 320px !important;">
+  <!-- PANTALLA DE CARGA (OVERLAY CON RUEDITA) -->
+  <div id="loader-travesia"
+    style="position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: #ffffff !important; z-index: 9999 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; border-radius: 16px !important; box-sizing: border-box !important;">
+    <div
+      style="width: 44px !important; height: 44px !important; border: 4px solid #e2e8f0 !important; border-top: 4px solid #0284c7 !important; border-radius: 50% !important; animation: travesia-spin 0.8s linear infinite !important; margin-bottom: 14px !important;">
+       </div>
+    <span
+      style="font-size: 14px !important; font-weight: 600 !important; color: #64748b !important;">
+      Cargando declaraciones... </span>
+  </div>
+  <!-- ENCABEZADO -->
+  <div
+    style="text-align: center !important; margin-bottom: 28px !important; display: block !important;">
+    <span
+      style="display: inline-block !important; background-color: #e0f2fe !important; color: #0284c7 !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 5px 12px !important; border-radius: 20px !important; margin-bottom: 10px !important; border: none !important;">
+      Proyecto Travesía </span>
+    <h3
+      style="margin: 0 0 8px 0 !important; color: #0f172a !important; font-size: 22px !important; font-weight: 700 !important; line-height: 1.3 !important;">
+      Declaración de Situación Académica</h3>
+    <p
+      style="margin: 0 !important; color: #64748b !important; font-size: 14px !important; line-height: 1.5 !important;">
+      Seleccioná la encuesta correspondiente para completar o actualizar tu
+      información.</p>
+  </div>
+  <!-- GRILLA DE TARJETAS -->
+  <div
+    style="display: flex !important; flex-wrap: wrap !important; gap: 24px !important; justify-content: center !important; width: 100% !important; box-sizing: border-box !important;">
+    <!-- TARJETA 1: ENCUESTA INICIAL -->
+    <div id="card-encuesta-inicial"
+      style="flex: 1 1 320px !important; max-width: 370px !important; background-color: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 14px !important; padding: 24px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; cursor: pointer !important; transition: all 0.2s ease !important; box-sizing: border-box !important; text-align: left !important; margin: 0 !important;">
+      <div style="display: block !important; margin: 0 0 20px 0 !important;">
+        <div
+          style="display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 16px !important;">
+          <div
+            style="width: 44px !important; height: 44px !important; background-color: #e0f2fe !important; border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 22px !important;">
+            📝</div>
+          <span id="badge-encuesta-inicial"
+            style="background-color: #dcfce7 !important; color: #15803d !important; font-size: 11px !important; font-weight: 700 !important; padding: 4px 10px !important; border-radius: 6px !important;">
+            Única vez </span>
+        </div>
+        <h4
+          style="margin: 0 0 8px 0 !important; color: #0f172a !important; font-size: 17px !important; font-weight: 700 !important;">
+          Encuesta Inicial</h4>
+        <p
+          style="margin: 0 !important; color: #64748b !important; font-size: 13.5px !important; line-height: 1.45 !important;">
+          Completá tus antecedentes académicos y fecha de ingreso a la carrera.
+        </p>
+      </div>
+      <div id="btn-encuesta-inicial"
+        style="width: 100% !important; background-color: #0284c7 !important; color: #ffffff !important; border-radius: 8px !important; padding: 11px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; text-align: center !important; display: block !important; box-sizing: border-box !important;">
+        Comenzar Encuesta</div>
+    </div>
+    <!-- TARJETA 2: ENCUESTA CUATRIMESTRAL -->
+    <div id="card-encuesta-cuatri"
+      style="flex: 1 1 320px !important; max-width: 370px !important; background-color: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 14px !important; padding: 24px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; cursor: pointer !important; transition: all 0.2s ease !important; box-sizing: border-box !important; text-align: left !important; margin: 0 !important;">
+      <div style="display: block !important; margin: 0 0 20px 0 !important;">
+        <div
+          style="display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 16px !important;">
+          <div
+            style="width: 44px !important; height: 44px !important; background-color: #ccfbf1 !important; border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 22px !important;">
+            📅</div>
+          <span id="badge-encuesta-cuatri"
+            style="background-color: #fef3c7 !important; color: #b45309 !important; font-size: 11px !important; font-weight: 700 !important; padding: 4px 10px !important; border-radius: 6px !important;">
+            Periódica </span>
+        </div>
+        <h4
+          style="margin: 0 0 8px 0 !important; color: #0f172a !important; font-size: 17px !important; font-weight: 700 !important;">
+          Encuesta Cuatrimestral</h4>
+        <p
+          style="margin: 0 !important; color: #64748b !important; font-size: 13.5px !important; line-height: 1.45 !important;">
+          Declaración periódica de condición de cursada, promociones, finales y
+          notas del cuatrimestre.</p>
+      </div>
+      <div id="btn-encuesta-cuatri"
+        style="width: 100% !important; background-color: #0d9488 !important; color: #ffffff !important; border-radius: 8px !important; padding: 11px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; text-align: center !important; display: block !important; box-sizing: border-box !important;">
+        Cargar Cuatrimestre</div>
+    </div>
+    <!-- TARJETA 3: CARGA DE NOTAS -->
+    <div id="card-cargar-notas"
+      style="flex: 1 1 320px !important; max-width: 370px !important; background-color: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 14px !important; padding: 24px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; cursor: pointer !important; transition: all 0.2s ease !important; box-sizing: border-box !important; text-align: left !important; margin: 0 !important;">
+      <div style="display: block !important; margin: 0 0 20px 0 !important;">
+        <div
+          style="display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 16px !important;">
+          <div
+            style="width: 44px !important; height: 44px !important; background-color: #f3e8ff !important; border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 22px !important;">
+            📊</div>
+          <span id="badge-cargar-notas"
+            style="background-color: #f3e8ff !important; color: #7e22ce !important; font-size: 11px !important; font-weight: 700 !important; padding: 4px 10px !important; border-radius: 6px !important;">
+            Seguimiento </span>
+        </div>
+        <h4
+          style="margin: 0 0 8px 0 !important; color: #0f172a !important; font-size: 17px !important; font-weight: 700 !important;">
+          Carga de Notas</h4>
+        <p
+          style="margin: 0 !important; color: #64748b !important; font-size: 13.5px !important; line-height: 1.45 !important;">
+          Registrá tus calificaciones parciales y finales para el seguimiento de
+          tu rendimiento académico.</p>
+      </div>
+      <div id="btn-cargar-notas"
+        style="width: 100% !important; background-color: #7e22ce !important; color: #ffffff !important; border-radius: 8px !important; padding: 11px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; text-align: center !important; display: block !important; box-sizing: border-box !important;">
+        Cargar Notas</div>
+    </div>
+  </div>
+  <!-- MODAL: FORMULARIO PROPIO DE ENCUESTA INICIAL -->
+  <div id="modal-form-inicial"
+    style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: rgba(15, 23, 42, 0.75) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div
+      style="background-color: #ffffff !important; border-radius: 16px !important; max-width: 480px !important; width: 100% !important; padding: 28px !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25) !important; max-height: 90vh !important; overflow-y: auto !important; text-align: left !important; box-sizing: border-box !important; position: relative !important;">
+      <div
+        style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 18px !important; border-bottom: 2px solid #f1f5f9 !important; padding-bottom: 12px !important;">
+        <div>
+          <h3
+            style="margin: 0 !important; color: #0f172a !important; font-size: 19px !important; font-weight: 700 !important;">
+            📝 Encuesta Inicial</h3>
+          <p
+            style="margin: 4px 0 0 0 !important; color: #64748b !important; font-size: 12.5px !important;">
+            Encuestas Iniciales — Proyecto Travesía</p>
+        </div>
+        <div id="btn-close-inicial"
+          style="cursor: pointer !important; font-size: 22px !important; color: #94a3b8 !important; font-weight: bold !important; padding: 4px 8px !important;">
+          ✕</div>
+      </div>
+      <form id="form-travesia-inicial">
+        <div style="margin-bottom: 18px !important;"><label
+            style="display: block !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important; margin-bottom: 6px !important;">
+            Correo Electrónico (mail_encuestado) * </label> <input
+            id="campo-mail-encuestado"
+            style="width: 100% !important; padding: 10px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13.5px !important; color: #1e293b !important; background-color: #fff !important; box-sizing: border-box !important;"
+            required="" type="email" placeholder="ejemplo@alumnos.mdp.edu.ar">
+          <span
+            style="font-size: 11.5px !important; color: #64748b !important; margin-top: 4px !important; display: block !important;">
+            Este correo se asociará a tu declaración. </span></div>
+        <div style="margin-bottom: 20px !important;"><label
+            style="display: block !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important; margin-bottom: 6px !important;">
+            Fecha / Año de Ingreso (ano_ingreso) </label> <input
+            id="campo-ano-ingreso"
+            style="width: 100% !important; padding: 10px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13.5px !important; color: #1e293b !important; background-color: #fff !important; box-sizing: border-box !important;"
+            type="date"></div>
+        <div
+          style="display: flex !important; justify-content: flex-end !important; gap: 10px !important; margin-top: 24px !important; border-top: 1px solid #f1f5f9 !important; padding-top: 16px !important;">
+          <div id="btn-cancel-inicial"
+            style="background-color: #f1f5f9 !important; color: #475569 !important; padding: 10px 18px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important; cursor: pointer !important;">
+            Cancelar</div>
+          <button id="btn-submit-inicial"
+            style="background-color: #0284c7 !important; color: #ffffff !important; border: none !important; padding: 10px 22px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;"
+            type="submit"> Enviar Declaración </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- MODAL: FORMULARIO PROPIO DE ENCUESTA CUATRIMESTRAL -->
+  <div id="modal-form-cuatri"
+    style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: rgba(15, 23, 42, 0.75) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div
+      style="background-color: #ffffff !important; border-radius: 16px !important; max-width: 480px !important; width: 100% !important; padding: 28px !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25) !important; max-height: 90vh !important; overflow-y: auto !important; text-align: left !important; box-sizing: border-box !important; position: relative !important;">
+      <div
+        style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 18px !important; border-bottom: 2px solid #f1f5f9 !important; padding-bottom: 12px !important;">
+        <div>
+          <h3
+            style="margin: 0 !important; color: #0f172a !important; font-size: 19px !important; font-weight: 700 !important;">
+            📅 Encuesta Cuatrimestral</h3>
+          <p
+            style="margin: 4px 0 0 0 !important; color: #64748b !important; font-size: 12.5px !important;">
+            Declaración de Cursada y Rendimiento Académico</p>
+        </div>
+        <div id="btn-close-cuatri"
+          style="cursor: pointer !important; font-size: 22px !important; color: #94a3b8 !important; font-weight: bold !important; padding: 4px 8px !important;">
+          ✕</div>
+      </div>
+      <form id="form-travesia-cuatri">
+        <div style="margin-bottom: 18px !important;"><label
+            style="display: block !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important; margin-bottom: 6px !important;">
+            Correo Electrónico * </label> <input id="campo-mail-cuatri"
+            style="width: 100% !important; padding: 10px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13.5px !important; color: #1e293b !important; background-color: #fff !important; box-sizing: border-box !important;"
+            required="" type="email" placeholder="ejemplo@alumnos.mdp.edu.ar">
+        </div>
+        <div
+          style="display: flex !important; justify-content: flex-end !important; gap: 10px !important; margin-top: 24px !important; border-top: 1px solid #f1f5f9 !important; padding-top: 16px !important;">
+          <div id="btn-cancel-cuatri"
+            style="background-color: #f1f5f9 !important; color: #475569 !important; padding: 10px 18px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important; cursor: pointer !important;">
+            Cancelar</div>
+          <button id="btn-submit-cuatri"
+            style="background-color: #0d9488 !important; color: #ffffff !important; border: none !important; padding: 10px 22px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;"
+            type="submit"> Enviar Declaración </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- MODAL: FORMULARIO DE CARGA DE NOTAS -->
+  <div id="modal-form-notas"
+    style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: rgba(15, 23, 42, 0.75) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div
+      style="background-color: #ffffff !important; border-radius: 16px !important; max-width: 520px !important; width: 100% !important; padding: 28px !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25) !important; max-height: 90vh !important; overflow-y: auto !important; text-align: left !important; box-sizing: border-box !important; position: relative !important;">
+      <div
+        style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 18px !important; border-bottom: 2px solid #f1f5f9 !important; padding-bottom: 12px !important;">
+        <div>
+          <h3
+            style="margin: 0 !important; color: #0f172a !important; font-size: 19px !important; font-weight: 700 !important;">
+            📊 Carga de Notas</h3>
+          <p
+            style="margin: 4px 0 0 0 !important; color: #64748b !important; font-size: 12.5px !important;">
+            Seguimiento de Rendimiento Académico — Proyecto Travesía</p>
+        </div>
+        <div id="btn-close-notas"
+          style="cursor: pointer !important; font-size: 22px !important; color: #94a3b8 !important; font-weight: bold !important; padding: 4px 8px !important;">
+          ✕</div>
+      </div>
+      <form id="form-travesia-notas">
+        <div style="margin-bottom: 18px !important;"><label
+            style="display: block !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important; margin-bottom: 6px !important;">
+            Correo Electrónico * </label> <input id="campo-mail-notas"
+            style="width: 100% !important; padding: 10px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13.5px !important; color: #1e293b !important; background-color: #fff !important; box-sizing: border-box !important;"
+            required="" type="email" placeholder="ejemplo@alumnos.mdp.edu.ar">
+        </div>
+        <div style="margin-bottom: 12px !important;"><label
+            style="display: block !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important; margin-bottom: 8px !important;">
+            Materias y Calificaciones </label>
+          <div id="contenedor-materias"
+            style="display: flex !important; flex-direction: column !important; gap: 10px !important;">
+            <div class="fila-materia"
+              style="display: flex !important; gap: 8px !important; align-items: center !important;">
+              <input
+                style="flex: 2 !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;"
+                required="" type="text"
+                placeholder="Nombre de la materia (ej. Análisis Matemático I)">
+              <input
+                style="flex: 1 !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;"
+                required="" type="text" placeholder="Nota"></div>
+          </div>
+        </div>
+        <div id="btn-agregar-materia"
+          style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px dashed #d8b4fe !important; text-align: center !important; padding: 9px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important; cursor: pointer !important; margin-bottom: 20px !important;">
+          + Agregar otra materia</div>
+        <div
+          style="display: flex !important; justify-content: flex-end !important; gap: 10px !important; border-top: 1px solid #f1f5f9 !important; padding-top: 16px !important;">
+          <div id="btn-cancel-notas"
+            style="background-color: #f1f5f9 !important; color: #475569 !important; padding: 10px 18px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important; cursor: pointer !important;">
+            Cancelar</div>
+          <button id="btn-submit-notas"
+            style="background-color: #7e22ce !important; color: #ffffff !important; border: none !important; padding: 10px 22px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;"
+            type="submit"> Guardar Notas </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <p>
+    <script>
+      (function() {
+        // ---------------------------------------------------------
+        // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+        // ---------------------------------------------------------
+        if (!document.getElementById('travesia-spin-style')) {
+          var styleEl = document.createElement('style');
+          styleEl.id = 'travesia-spin-style';
+          styleEl.innerHTML =
+            '@keyframes travesia-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+          document.head.appendChild(styleEl);
+        }
+
+        // ---------------------------------------------------------
+        // CONFIGURACIÓN DE ACTIVIDADES MOODLE
+        // ---------------------------------------------------------
+        var ID_ACTIVIDAD_INICIAL_CMID = 59387; // CMID BD Encuesta Inicial
+        var ID_INICIAL_CAMPO_MAIL = 519; // ID campo mail_encuestado
+        var ID_INICIAL_CAMPO_FECHA = 520; // ID campo ano_ingreso
+        var ID_INICIAL_CAMPO_USERID = 552; // ID campo userid en BD Inicial
+
+        var ID_ACTIVIDAD_CUATRI_CMID = 59386; // CMID BD Cuatrimestral
+        var ID_CUATRI_CAMPO_MAIL = 522; // ID campo mail en BD Cuatrimestral
+        var ID_CUATRI_CAMPO_FECHA = 521; // ID campo fecha en BD Cuatrimestral
+        var ID_CUATRI_CAMPO_USERID =
+        551; // ID campo userid en BD Cuatrimestral
+
+        var ID_ACTIVIDAD_FECHA_ACTUAL_CMID = 59405; // CMID BD Fecha actual
+
+        var estadoEncuestaInicialCompletada = false;
+        var estadoEncuestaCuatriCompletada = false;
+        var fechaReferenciaSimulada = new Date();
+
+        // OCULTAR PANTALLA DE CARGA
+        function ocultarCargando() {
+          var loader = document.getElementById('loader-travesia');
+          if (loader) {
+            loader.style.setProperty('display', 'none', 'important');
+          }
+        }
+
+        // OBTENER USERID DE MOODLE DE FORMA DIRECTA
+        function obtenerUserId() {
+          if (window.M && window.M.cfg && window.M.cfg.userId) {
+            return String(window.M.cfg.userId);
+          }
+          var pLink = document.querySelector(
+            'a[href*="user/profile.php"], a[href*="user/view.php"]');
+          if (pLink) {
+            var match = pLink.href.match(/id=(\d+)/);
+            if (match) return match[1];
+          }
+          return '';
+        }
+
+        // OBTENER Y PARSEAR FECHA DE LA BD DE PRUEBAS "FECHA ACTUAL"
+        async function obtenerFechaSimulada() {
+          if (!window.M || !window.M.cfg || !
+            ID_ACTIVIDAD_FECHA_ACTUAL_CMID) {
+            return new Date();
+          }
+
+          var wwwroot = window.M.cfg.wwwroot;
+          var viewUrl = wwwroot + '/mod/data/view.php?id=' +
+            ID_ACTIVIDAD_FECHA_ACTUAL_CMID;
+
+          try {
+            var res = await fetch(viewUrl);
+            if (!res.ok) return new Date();
+
+            var htmlText = await res.text();
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(htmlText, 'text/html');
+            var mainArea = doc.querySelector(
+              '#region-main, .main-content, #content') || doc.body;
+            var textoContenido = mainArea.innerText || mainArea.textContent;
+
+            var matchTexto = textoContenido.match(
+              /(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de(?:l)?\s+(\d{4})/i);
+            if (matchTexto) {
+              var dia = parseInt(matchTexto[1], 10);
+              var mesNombre = matchTexto[2].toLowerCase().trim();
+              var anio = parseInt(matchTexto[3], 10);
+
+              var meses = {
+                'enero': 0,
+                'febrero': 1,
+                'marzo': 2,
+                'abril': 3,
+                'mayo': 4,
+                'junio': 5,
+                'julio': 6,
+                'agosto': 7,
+                'septiembre': 8,
+                'setiembre': 8,
+                'octubre': 9,
+                'noviembre': 10,
+                'diciembre': 11
+              };
+
+              if (meses.hasOwnProperty(mesNombre)) {
+                return new Date(anio, meses[mesNombre], dia);
+              }
+            }
+
+            var matchISO = textoContenido.match(
+              /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (matchISO) {
+              return new Date(parseInt(matchISO[1], 10), parseInt(matchISO[
+                2], 10) - 1, parseInt(matchISO[3], 10));
+            }
+
+            var matchLatino = textoContenido.match(
+              /(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
+            if (matchLatino) {
+              return new Date(parseInt(matchLatino[3], 10), parseInt(
+                matchLatino[2], 10) - 1, parseInt(matchLatino[1], 10));
+            }
+          } catch (err) {
+            console.warn(
+              'Error al consultar BD "Fecha actual", se usará la fecha real:',
+              err);
+          }
+
+          return new Date();
+        }
+
+        // PARSEADOR Y COMPARADOR DE PERÍODOS DE RESPUESTA
+        function extraerFechasDeTexto(texto) {
+          var fechasEncontradas = [];
+          var meses = {
+            'enero': 0,
+            'febrero': 1,
+            'marzo': 2,
+            'abril': 3,
+            'mayo': 4,
+            'junio': 5,
+            'julio': 6,
+            'agosto': 7,
+            'septiembre': 8,
+            'setiembre': 8,
+            'octubre': 9,
+            'noviembre': 10,
+            'diciembre': 11
+          };
+
+          var match;
+
+          var regTexto =
+            /(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de(?:l)?\s+(\d{4})/gi;
+          while ((match = regTexto.exec(texto)) !== null) {
+            var dia = parseInt(match[1], 10);
+            var mesNom = match[2].toLowerCase().trim();
+            var anio = parseInt(match[3], 10);
+            if (meses.hasOwnProperty(mesNom)) {
+              fechasEncontradas.push(new Date(anio, meses[mesNom], dia));
+            }
+          }
+
+          var regISO = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/g;
+          while ((match = regISO.exec(texto)) !== null) {
+            fechasEncontradas.push(new Date(parseInt(match[1], 10), parseInt(
+              match[2], 10) - 1, parseInt(match[3], 10)));
+          }
+
+          var regLatino = /(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/g;
+          while ((match = regLatino.exec(texto)) !== null) {
+            fechasEncontradas.push(new Date(parseInt(match[3], 10), parseInt(
+              match[2], 10) - 1, parseInt(match[1], 10)));
+          }
+
+          return fechasEncontradas;
+        }
+
+        function esMismoPeriodo(fechaEntrada, fechaSimulada) {
+          var mesSim = fechaSimulada.getMonth() + 1;
+          var anioSim = fechaSimulada.getFullYear();
+
+          var mesEnt = fechaEntrada.getMonth() + 1;
+          var anioEnt = fechaEntrada.getFullYear();
+
+          if (mesSim >= 6 && mesSim <= 8) {
+            return (mesEnt >= 6 && mesEnt <= 8) && (anioEnt === anioSim);
+          }
+
+          if (mesSim === 12 || mesSim === 1 || mesSim === 2 || mesSim === 3) {
+            var anioInicioCiclo = (mesSim === 12) ? anioSim : (anioSim - 1);
+            var esDic = (mesEnt === 12 && anioEnt === anioInicioCiclo);
+            var esEneFebMar = ((mesEnt === 1 || mesEnt === 2 || mesEnt ===
+              3) && anioEnt === (anioInicioCiclo + 1));
+            return esDic || esEneFebMar;
+          }
+
+          return false;
+        }
+
+        function obtenerEstadoCuatrimestre(fechaRef) {
+          var hoy = fechaRef || fechaReferenciaSimulada;
+          var mes = hoy.getMonth() + 1;
+
+          if (mes >= 6 && mes <= 8) {
+            return {
+              abierto: true,
+              periodoNombre: '1.er Cuatrimestre'
+            };
+          }
+          if (mes === 12 || mes === 1 || mes === 2 || mes === 3) {
+            return {
+              abierto: true,
+              periodoNombre: '2.º Cuatrimestre'
+            };
+          }
+          return {
+            abierto: false,
+            periodoNombre: 'Fuera de Período'
+          };
+        }
+
+        // CONTROL DE MODALES
+        function abrirFormularioInicial() {
+          if (estadoEncuestaInicialCompletada) {
+            alert('Ya has completado la Encuesta Inicial. ¡Muchas gracias!');
+            return;
+          }
+          var m = document.getElementById('modal-form-inicial');
+          if (m) m.style.setProperty('display', 'flex', 'important');
+        }
+
+        function cerrarFormularioInicial() {
+          var m = document.getElementById('modal-form-inicial');
+          if (m) m.style.setProperty('display', 'none', 'important');
+        }
+
+        function abrirFormularioCuatri() {
+          var est = obtenerEstadoCuatrimestre(fechaReferenciaSimulada);
+          if (!est.abierto) {
+            alert(
+              'La Encuesta Cuatrimestral se encuentra actualmente CERRADA.\n\nPeríodos de habilitación:\n• 1.er Cuatrimestre: Junio a Agosto\n• 2.º Cuatrimestre: Diciembre a Marzo'
+              );
+            return;
+          }
+          if (estadoEncuestaCuatriCompletada) {
+            alert(
+              'Ya has completado la Encuesta Cuatrimestral correspondiente a este período. ¡Muchas gracias!'
+              );
+            return;
+          }
+          var m = document.getElementById('modal-form-cuatri');
+          if (m) m.style.setProperty('display', 'flex', 'important');
+        }
+
+        function cerrarFormularioCuatri() {
+          var m = document.getElementById('modal-form-cuatri');
+          if (m) m.style.setProperty('display', 'none', 'important');
+        }
+
+        function abrirFormularioNotas() {
+          var m = document.getElementById('modal-form-notas');
+          if (m) m.style.setProperty('display', 'flex', 'important');
+        }
+
+        function cerrarFormularioNotas() {
+          var m = document.getElementById('modal-form-notas');
+          if (m) m.style.setProperty('display', 'none', 'important');
+        }
+
+        function agregarFilaMateria() {
+          var contenedor = document.getElementById('contenedor-materias');
+          if (!contenedor) return;
+
+          var nuevaFila = document.createElement('div');
+          nuevaFila.className = 'fila-materia';
+          nuevaFila.style.cssText =
+            'display: flex !important; gap: 8px !important; align-items: center !important;';
+
+          nuevaFila.innerHTML = `
+            <input type="text" placeholder="Nombre de la materia" required=""
+              style="flex: 2 !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;">
+            <input type="text" placeholder="Nota" required=""
+              style="flex: 1 !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;">
+            <div class="btn-eliminar-fila" style="cursor: pointer !important; color: #ef4444 !important; font-size: 16px !important; padding: 4px 8px !important;" title="Eliminar">🗑️</div>
+          `;
+
+          contenedor.appendChild(nuevaFila);
+        }
+
+        function marcarInicialCompletada() {
+          estadoEncuestaInicialCompletada = true;
+          var btn = document.getElementById('btn-encuesta-inicial');
+          var badge = document.getElementById('badge-encuesta-inicial');
+          if (btn) {
+            btn.innerText = '✅ Encuesta Completada';
+            btn.style.setProperty('background-color', '#16a34a', 'important');
+          }
+          if (badge) {
+            badge.innerText = 'Completado';
+            badge.style.setProperty('background-color', '#dcfce7',
+              'important');
+            badge.style.setProperty('color', '#15803d', 'important');
+          }
+        }
+
+        function marcarCuatriCompletada() {
+          estadoEncuestaCuatriCompletada = true;
+          var btn = document.getElementById('btn-encuesta-cuatri');
+          var badge = document.getElementById('badge-encuesta-cuatri');
+          if (btn) {
+            btn.innerText = '✅ Encuesta Completada';
+            btn.style.setProperty('background-color', '#16a34a', 'important');
+          }
+          if (badge) {
+            badge.innerText = 'Completado';
+            badge.style.setProperty('background-color', '#dcfce7',
+              'important');
+            badge.style.setProperty('color', '#15803d', 'important');
+          }
+        }
+
+        function aplicarEstadoBloqueadoCuatriPorPeriodo() {
+          var btn = document.getElementById('btn-encuesta-cuatri');
+          var badge = document.getElementById('badge-encuesta-cuatri');
+          if (btn) {
+            btn.innerText = '🔒 Fuera de Período';
+            btn.style.setProperty('background-color', '#94a3b8', 'important');
+          }
+          if (badge) {
+            badge.innerText = '🔒 Cerrada';
+            badge.style.setProperty('background-color', '#f1f5f9',
+              'important');
+            badge.style.setProperty('color', '#64748b', 'important');
+          }
+        }
+
+        // DELEGACIÓN DE EVENTOS DE CLIC
+        document.addEventListener('click', function(e) {
+          if (e.target.closest(
+              '#card-encuesta-inicial, #btn-encuesta-inicial')) {
+            abrirFormularioInicial();
+            return;
+          }
+          if (e.target.closest(
+            '#btn-close-inicial, #btn-cancel-inicial')) {
+            cerrarFormularioInicial();
+            return;
+          }
+
+          if (e.target.closest(
+              '#card-encuesta-cuatri, #btn-encuesta-cuatri')) {
+            abrirFormularioCuatri();
+            return;
+          }
+          if (e.target.closest('#btn-close-cuatri, #btn-cancel-cuatri')) {
+            cerrarFormularioCuatri();
+            return;
+          }
+
+          if (e.target.closest('#card-cargar-notas, #btn-cargar-notas')) {
+            abrirFormularioNotas();
+            return;
+          }
+          if (e.target.closest('#btn-close-notas, #btn-cancel-notas')) {
+            cerrarFormularioNotas();
+            return;
+          }
+          if (e.target.closest('#btn-agregar-materia')) {
+            agregarFilaMateria();
+            return;
+          }
+          var btnEliminar = e.target.closest('.btn-eliminar-fila');
+          if (btnEliminar) {
+            var fila = btnEliminar.closest('.fila-materia');
+            if (fila) fila.remove();
+            return;
+          }
+        });
+
+        document.addEventListener('submit', function(e) {
+          if (e.target && e.target.id === 'form-travesia-inicial') {
+            e.preventDefault();
+            guardarEncuestaInicial();
+          } else if (e.target && e.target.id === 'form-travesia-cuatri') {
+            e.preventDefault();
+            guardarEncuestaCuatri();
+          } else if (e.target && e.target.id === 'form-travesia-notas') {
+            e.preventDefault();
+            alert('¡Notas registradas con éxito!');
+            cerrarFormularioNotas();
+          }
+        });
+
+        // GUARDAR ENCUESTA INICIAL
+        async function guardarEncuestaInicial() {
+          var btnSubmit = document.getElementById('btn-submit-inicial');
+          if (btnSubmit) {
+            btnSubmit.innerText = 'Guardando...';
+            btnSubmit.disabled = true;
+          }
+
+          var mailValue = document.getElementById('campo-mail-encuestado') ?
+            document.getElementById('campo-mail-encuestado').value.trim() :
+            '';
+          var fechaRaw = document.getElementById('campo-ano-ingreso') ?
+            document.getElementById('campo-ano-ingreso').value : '';
+          var userIdVal = obtenerUserId();
+
+          var sesskey = window.M && window.M.cfg ? window.M.cfg.sesskey :
+          '';
+          var wwwroot = window.M && window.M.cfg ? window.M.cfg.wwwroot :
+          '';
+          var editUrl = wwwroot + '/mod/data/edit.php';
+
+          var formData = new FormData();
+          formData.append('id', ID_ACTIVIDAD_INICIAL_CMID);
+          formData.append('rid', 0);
+          formData.append('sesskey', sesskey);
+          formData.append('saveanddisplay', 'Guardar');
+
+          formData.append('field_' + ID_INICIAL_CAMPO_MAIL, mailValue);
+
+          if (ID_INICIAL_CAMPO_USERID > 0 && userIdVal) {
+            formData.append('field_' + ID_INICIAL_CAMPO_USERID, userIdVal);
+          }
+
+          if (fechaRaw) {
+            var partes = fechaRaw.split('-');
+            if (partes.length === 3) {
+              formData.append('field_' + ID_INICIAL_CAMPO_FECHA + '_day',
+                parseInt(partes[2], 10));
+              formData.append('field_' + ID_INICIAL_CAMPO_FECHA + '_month',
+                parseInt(partes[1], 10));
+              formData.append('field_' + ID_INICIAL_CAMPO_FECHA + '_year',
+                parseInt(partes[0], 10));
+              formData.append('field_' + ID_INICIAL_CAMPO_FECHA +
+                '_enabled', '1');
+            }
+          }
+
+          try {
+            var response = await fetch(editUrl, {
+              method: 'POST',
+              body: formData
+            });
+            if (response.ok) {
+              alert('¡Declaración Inicial registrada con éxito!');
+              marcarInicialCompletada();
+              cerrarFormularioInicial();
+            } else {
+              alert('⚠️ Ocurrió un error al guardar los datos (Código ' +
+                response.status + ').');
+            }
+          } catch (err) {
+            console.error('Error al enviar la declaración inicial:', err);
+            alert('⚠️ Error de red o conexión: ' + err.message);
+          } finally {
+            if (btnSubmit) {
+              btnSubmit.innerText = 'Enviar Declaración';
+              btnSubmit.disabled = false;
+            }
+          }
+        }
+
+        // GUARDAR ENCUESTA CUATRIMESTRAL
+        async function guardarEncuestaCuatri() {
+          var btnSubmit = document.getElementById('btn-submit-cuatri');
+          if (btnSubmit) {
+            btnSubmit.innerText = 'Guardando...';
+            btnSubmit.disabled = true;
+          }
+
+          var mailValue = document.getElementById('campo-mail-cuatri') ?
+            document.getElementById('campo-mail-cuatri').value.trim() : '';
+          var userIdVal = obtenerUserId();
+
+          var sesskey = window.M && window.M.cfg ? window.M.cfg.sesskey :
+          '';
+          var wwwroot = window.M && window.M.cfg ? window.M.cfg.wwwroot :
+          '';
+          var editUrl = wwwroot + '/mod/data/edit.php';
+
+          var formData = new FormData();
+          formData.append('id', ID_ACTIVIDAD_CUATRI_CMID);
+          formData.append('rid', 0);
+          formData.append('sesskey', sesskey);
+          formData.append('saveanddisplay', 'Guardar');
+
+          formData.append('field_' + ID_CUATRI_CAMPO_MAIL, mailValue);
+
+          if (ID_CUATRI_CAMPO_USERID > 0 && userIdVal) {
+            formData.append('field_' + ID_CUATRI_CAMPO_USERID, userIdVal);
+          }
+
+          var hoy = fechaReferenciaSimulada;
+          formData.append('field_' + ID_CUATRI_CAMPO_FECHA + '_day', hoy
+            .getDate());
+          formData.append('field_' + ID_CUATRI_CAMPO_FECHA + '_month', hoy
+            .getMonth() + 1);
+          formData.append('field_' + ID_CUATRI_CAMPO_FECHA + '_year', hoy
+            .getFullYear());
+          formData.append('field_' + ID_CUATRI_CAMPO_FECHA + '_enabled',
+            '1');
+
+          try {
+            var response = await fetch(editUrl, {
+              method: 'POST',
+              body: formData
+            });
+            if (response.ok) {
+              alert('¡Declaración Cuatrimestral registrada con éxito!');
+              marcarCuatriCompletada();
+              cerrarFormularioCuatri();
+            } else {
+              alert('⚠️ Ocurrió un error al guardar los datos.');
+            }
+          } catch (err) {
+            console.error('Error al enviar la declaración cuatrimestral:',
+              err);
+            alert('⚠️ Error de conexión: ' + err.message);
+          } finally {
+            if (btnSubmit) {
+              btnSubmit.innerText = 'Enviar Declaración';
+              btnSubmit.disabled = false;
+            }
+          }
+        }
+
+        // COMPROBACIÓN RÁPIDA Y OCULTAMIENTO FINAL DEL LOADER
+        async function chequearRegistroPrevio() {
+          if (!window.M || !window.M.cfg) {
+            ocultarCargando();
+            return;
+          }
+
+          try {
+            fechaReferenciaSimulada = await obtenerFechaSimulada();
+
+            var wwwroot = window.M.cfg.wwwroot;
+            var userId = obtenerUserId();
+            var paramSearch = userId ? '&search=' + encodeURIComponent(
+              userId) : '';
+            var parser = new DOMParser();
+
+            // 1. CHEQUEO ENCUESTA INICIAL POR USERID
+            try {
+              var viewUrlInicial = wwwroot + '/mod/data/view.php?id=' +
+                ID_ACTIVIDAD_INICIAL_CMID + paramSearch;
+              var resI = await fetch(viewUrlInicial);
+              if (resI.ok) {
+                var htmlI = await resI.text();
+                var docI = parser.parseFromString(htmlI, 'text/html');
+                var mainAreaI = docI.querySelector(
+                  '#region-main, .main-content, #content') || docI.body;
+
+                var tieneEdicionI = !!mainAreaI.querySelector(
+                  'a[href*="edit.php?rid="], a[href*="delete.php?delete="]'
+                  );
+                var tienePerfilI = (userId) ? !!mainAreaI.querySelector(
+                    'a[href*="user/view.php?id=' + userId +
+                    '"], a[href*="user/profile.php?id=' + userId + '"]') :
+                  false;
+
+                if (tieneEdicionI || tienePerfilI) {
+                  marcarInicialCompletada();
+                }
+              }
+            } catch (err) {
+              console.warn('Error al verificar encuesta inicial:', err);
+            }
+
+            // 2. CHEQUEO ENCUESTA CUATRIMESTRAL POR USERID
+            var estCuatri = obtenerEstadoCuatrimestre(
+              fechaReferenciaSimulada);
+            if (!estCuatri.abierto) {
+              aplicarEstadoBloqueadoCuatriPorPeriodo();
+            } else {
+              try {
+                var viewUrlCuatri = wwwroot + '/mod/data/view.php?id=' +
+                  ID_ACTIVIDAD_CUATRI_CMID + paramSearch;
+                var resC = await fetch(viewUrlCuatri);
+                if (resC.ok) {
+                  var htmlC = await resC.text();
+                  var docC = parser.parseFromString(htmlC, 'text/html');
+                  var mainAreaC = docC.querySelector(
+                    '#region-main, .main-content, #content') || docC.body;
+
+                  var elementosRegistro = mainAreaC.querySelectorAll(
+                    'tr, .mod-data-default-template, .card, .defaulttemplate'
+                    );
+                  var registroEncontradoEnPeriodo = false;
+
+                  if (elementosRegistro.length > 0) {
+                    elementosRegistro.forEach(function(el) {
+                      var tieneEdicion = !!el.querySelector(
+                        'a[href*="edit.php?rid="], a[href*="delete.php?delete="]'
+                        );
+                      var tienePerfil = (userId) ? !!el.querySelector(
+                        'a[href*="user/view.php?id=' + userId +
+                        '"], a[href*="user/profile.php?id=' + userId +
+                        '"]') : false;
+
+                      if (tieneEdicion || tienePerfil) {
+                        var fechasEnRegistro = extraerFechasDeTexto(el
+                          .innerText || el.textContent);
+                        for (var i = 0; i < fechasEnRegistro
+                          .length; i++) {
+                          if (esMismoPeriodo(fechasEnRegistro[i],
+                              fechaReferenciaSimulada)) {
+                            registroEncontradoEnPeriodo = true;
+                            break;
+                          }
+                        }
+                      }
+                    });
+                  }
+
+                  if (!registroEncontradoEnPeriodo) {
+                    var tieneEdicionGlobal = !!mainAreaC.querySelector(
+                      'a[href*="edit.php?rid="], a[href*="delete.php?delete="]'
+                      );
+                    var tienePerfilGlobal = (userId) ? !!mainAreaC
+                      .querySelector('a[href*="user/view.php?id=' + userId +
+                        '"], a[href*="user/profile.php?id=' + userId + '"]'
+                        ) : false;
+
+                    if (tieneEdicionGlobal || tienePerfilGlobal) {
+                      var todasFechas = extraerFechasDeTexto(mainAreaC
+                        .innerText || mainAreaC.textContent);
+                      for (var j = 0; j < todasFechas.length; j++) {
+                        if (esMismoPeriodo(todasFechas[j],
+                            fechaReferenciaSimulada)) {
+                          registroEncontradoEnPeriodo = true;
+                          break;
+                        }
+                      }
+                    }
+                  }
+
+                  if (registroEncontradoEnPeriodo) {
+                    marcarCuatriCompletada();
+                  }
+                }
+              } catch (err) {
+                console.warn('Error al verificar encuesta cuatrimestral:',
+                  err);
+              }
+            }
+          } catch (errGlobal) {
+            console.warn('Error en la verificación previa:', errGlobal);
+          } finally {
+            // OCULTAMOS EL OVERLAY UNA VEZ ACTUALIZADOS TODOS LOS BOTONES Y BADGES
+            ocultarCargando();
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded',
+            chequearRegistroPrevio);
+        } else {
+          chequearRegistroPrevio();
+        }
+      })();
+    </script>
+  </p>
+</div>
