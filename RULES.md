@@ -93,3 +93,4 @@ Estas reglas están por encima de todas las demás.
 - **Modal:** overlay fixed con backdrop semi-opaco, contenedor centrado con header (título + botón ✕), body con form, footer con Cancelar + Submit.
 - **Loader:** overlay absoluto dentro del contenedor principal, spinner CSS con `border-top` coloreado, texto descriptivo.
 - **Fila dinámica:** patrón de inputs flex con botón eliminar (`🗑️`), creación vía `document.createElement`.
+- **Pie Zhakyz (obligatorio):** toda sección termina con el bloque `<!-- PIE DE PÁGINA ZHAKYZ -->` (`id="footer-zhakyz"`) dentro del contenedor principal, después del contenido y antes de los modales o el script. A la izquierda va "⚔ Zhakyz & Asociados" y a la derecha "Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP". La única excepción es `resumen_zhakyz`, que ya es la presentación del equipo.
