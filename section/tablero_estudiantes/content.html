@@ -1,0 +1,571 @@
+<!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="tablero-estudiantes"
+  style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 28px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: left !important;">
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <span
+        style="display: inline-block !important; background-color: #fee2e2 !important; color: #b91c1c !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 5px 12px !important; border-radius: 20px !important; margin-bottom: 10px !important;">
+        🚦 Seguimiento de estudiantes</span>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0f172a !important; font-size: 22px !important; font-weight: 700 !important; line-height: 1.3 !important;">
+        Tablero de Criticidad</h3>
+      <p
+        style="margin: 0 !important; color: #64748b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Cierre evaluado <b id="txt-cierre-evaluado" style="color: #0f172a !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
+    </div>
+    <div id="badge-rol-tablero"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 20px !important; padding: 6px 12px 6px 6px !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO: DATOS DE EJEMPLO -->
+  <div id="aviso-datos-ejemplo"
+    style="display: none; background-color: #fffbeb !important; border: 1px solid #fde68a !important; color: #78350f !important; border-radius: 10px !important; padding: 10px 14px !important; font-size: 12.5px !important; line-height: 1.5 !important; margin-bottom: 18px !important;">
+    ⚠️ <b>Datos de prueba:</b> integrantes de Zhakyz con datos académicos ficticios. Las bases de la sección Zhakyz todavía no están creadas; cuando existan, se configuran sus CMID al principio del script.
+  </div>
+
+  <!-- RESUMEN (CLIC PARA FILTRAR) -->
+  <div id="grilla-kpi-tablero"
+    style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important; margin-bottom: 18px !important;">
+  </div>
+
+  <!-- FILTROS -->
+  <div
+    style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important; align-items: center !important; margin-bottom: 14px !important;">
+    <input id="filtro-busqueda" type="search" placeholder="Buscar por nombre"
+      style="flex: 1 1 220px !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; box-sizing: border-box !important;">
+    <select id="filtro-semaforo"
+      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+      <option value="">Todos los estados vigentes</option>
+      <option value="rojo">🔴 Riesgo alto</option>
+      <option value="amarillo">🟡 Riesgo medio</option>
+      <option value="verde">🟢 Sin riesgo</option>
+      <option value="sin_datos">⚪ Sin calcular</option>
+    </select>
+    <select id="filtro-etapa"
+      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+      <option value="">Todas las etapas</option>
+      <option value="1">1.er año</option>
+      <option value="2">2.º año en adelante</option>
+    </select>
+    <select id="filtro-cohorte"
+      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+      <option value="">Todas las cohortes</option>
+    </select>
+    <div id="btn-exportar-csv"
+      style="padding: 9px 14px !important; background-color: #f1f5f9 !important; color: #334155 !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;">
+      📥 Exportar CSV</div>
+  </div>
+
+  <!-- TABLA DE ESTUDIANTES -->
+  <div style="overflow-x: auto !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important;">
+    <table id="tabla-estudiantes"
+      style="width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; min-width: 560px !important; margin: 0 !important;">
+      <thead>
+        <tr style="background-color: #f8fafc !important; color: #64748b !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">
+          <th style="text-align: left !important; padding: 10px 12px !important; font-weight: 700 !important;">Estudiante</th>
+          <th style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">Cohorte</th>
+          <th title="Lo genera el sistema según los criterios configurados" style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">🤖 Estado calculado</th>
+          <th title="Lo asigna un tutor o administrador y reemplaza al calculado" style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">✋ Estado asignado</th>
+          <th style="text-align: right !important; padding: 10px 12px !important; font-weight: 700 !important;"></th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla-estudiantes"></tbody>
+    </table>
+  </div>
+  <p id="txt-total-filtrados"
+    style="margin: 10px 0 0 0 !important; color: #94a3b8 !important; font-size: 12px !important;"></p>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 28px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid #e2e8f0 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 12px !important; color: #94a3b8 !important; text-align: left !important;">
+    <span
+      style="color: #0f172a !important; font-weight: 800 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      ⚔ Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- MODAL: DETALLE DEL ESTUDIANTE -->
+  <div id="modal-detalle-estudiante"
+    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(15, 23, 42, 0.55) !important; z-index: 10000 !important; align-items: flex-start !important; justify-content: center !important; padding: 32px 16px !important; box-sizing: border-box !important; overflow-y: auto !important;">
+    <div
+      style="background-color: #ffffff !important; border-radius: 16px !important; width: 100% !important; max-width: 640px !important; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important; overflow: hidden !important; text-align: left !important;">
+      <div
+        style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; padding: 16px 20px !important; border-bottom: 1px solid #e2e8f0 !important;">
+        <div id="titulo-detalle-estudiante" style="font-size: 17px !important; font-weight: 700 !important; color: #0f172a !important;"></div>
+        <div id="btn-cerrar-detalle"
+          style="cursor: pointer !important; font-size: 18px !important; color: #64748b !important; padding: 2px 8px !important; border-radius: 6px !important;">✕</div>
+      </div>
+      <div id="cuerpo-detalle-estudiante" style="padding: 18px 20px !important; font-size: 13.5px !important; color: #334155 !important; line-height: 1.5 !important;"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-tablero-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-tablero-style';
+        styleEl.innerHTML =
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var CIERRE_EVALUADO = '2026-2';
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      var ROL_INICIAL = 'ADM';
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+
+      // Bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
+      var CMID_ESTUDIANTES = null; // lectura: una entrada por estudiante
+      var CMID_ASIGNACIONES = null; // lectura y escritura: estados asignados (Req 10)
+      var CAMPOS_ASIGNACIONES = { usuario: null, nivel: null, motivo: null }; // IDs field_<id>
+
+      // Estado calculado: solo criterios de los requerimientos (los modelos todavía no se aplican)
+      var UMBRALES = {
+        primerAnioRojo: 20, // Req 4: menos de 20 % de las materias esperadas
+        primerAnioVerde: 60 // Req 4: más de 60 %
+      };
+      // Materias esperadas de 1.er año al terminar cada cuatrimestre
+      var ESPERADAS_PRIMER_ANIO = { 1: 3, 2: 7 };
+
+      var ROLES = {
+        ADM: { nombre: 'Administrador', fondo: '#e2e8f0', texto: '#1e293b', puedeAsignar: true },
+        GES: { nombre: 'Gestor Dpto. Industrial', fondo: '#f3e8ff', texto: '#7e22ce', puedeAsignar: false },
+        TUT: { nombre: 'Tutor / Entrevistador', fondo: '#e0f2fe', texto: '#0284c7', puedeAsignar: true }
+      };
+
+      var NIVELES = {
+        rojo: { orden: 3, icono: '🔴', texto: 'Riesgo alto', color: '#b91c1c', fondo: '#fee2e2' },
+        amarillo: { orden: 2, icono: '🟡', texto: 'Riesgo medio', color: '#b45309', fondo: '#fef3c7' },
+        sin_datos: { orden: 1, icono: '⚪', texto: 'Sin calcular', color: '#475569', fondo: '#f1f5f9' },
+        verde: { orden: 0, icono: '🟢', texto: 'Sin riesgo', color: '#15803d', fondo: '#dcfce7' }
+      };
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS ACADÉMICOS FICTICIOS)
+      // ---------------------------------------------------------
+      var ESTUDIANTES_PRUEBA = [
+        { usuario: '3770', nombre: 'Luca Zuanetti', cohorte: '2026-1', etapa: 1, cuatrimestreCursado: 2, aprobadasPrimerAnio: 6, notasCargadas: true, encuesta: null },
+        { usuario: '2806', nombre: 'Gian Luca Distefano', cohorte: '2026-2', etapa: 1, cuatrimestreCursado: 1, aprobadasPrimerAnio: 1, notasCargadas: true, encuesta: null },
+        { usuario: '3751', nombre: 'Santiago Nicolás Yanosky', cohorte: '2026-1', etapa: 1, cuatrimestreCursado: 2, aprobadasPrimerAnio: 1, notasCargadas: true, encuesta: null },
+        { usuario: '2048', nombre: 'Valentino Hernández Pascual', cohorte: '2026-2', etapa: 1, cuatrimestreCursado: 1, aprobadasPrimerAnio: 0, notasCargadas: false, encuesta: null },
+        { usuario: '3773', nombre: 'Nicolás Gabriel Zuviria', cohorte: '2024-1', etapa: 2, encuesta: '2026-1' },
+        { usuario: '3623', nombre: 'Nahuel Spikerman', cohorte: '2024-2', etapa: 2, encuesta: '2026-2' }
+      ];
+
+      var ASIGNACIONES_PRUEBA = [
+        { usuario: '3773', nivel: 'rojo', motivo: 'Entrevista: está por dejar dos materias por el trabajo.', autor: 'Valentino Hernández Pascual', fecha: '08/10/2026' },
+        { usuario: '3623', nivel: 'verde', motivo: 'Entrevista: cursa al día y no reporta dificultades.', autor: 'Luca Zuanetti', fecha: '12/10/2026' }
+      ];
+
+      // ---------------------------------------------------------
+      // ESTADO CALCULADO (AUTOGENERADO)
+      // ---------------------------------------------------------
+      function calcularEstado(est) {
+        if (est.etapa === 1) {
+          if (!est.notasCargadas) {
+            return { nivel: 'sin_datos', motivo: 'Todavía no hay notas de parciales cargadas.' };
+          }
+          var esperadas = ESPERADAS_PRIMER_ANIO[est.cuatrimestreCursado] || ESPERADAS_PRIMER_ANIO[2];
+          var pct = Math.round(est.aprobadasPrimerAnio / esperadas * 100);
+          var nivel = pct < UMBRALES.primerAnioRojo ? 'rojo' : pct > UMBRALES.primerAnioVerde ? 'verde' : 'amarillo';
+          return { nivel: nivel, motivo: 'Aprobó ' + est.aprobadasPrimerAnio + ' de ' + esperadas + ' materias esperadas (' + pct + ' %). Criterio de 1.er año del Req 4.' };
+        }
+        if (est.encuesta !== CIERRE_EVALUADO) {
+          return { nivel: 'amarillo', motivo: 'No respondió la encuesta del período ' + CIERRE_EVALUADO + ' (alerta por omisión, Req 2).' };
+        }
+        return { nivel: 'sin_datos', motivo: 'El criterio para 2.º año en adelante todavía no está definido.' };
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS
+      // ---------------------------------------------------------
+      // LEER UNA BASE DE ZHAKYZ: LA PLANTILLA DE LISTA EXPONE CADA CAMPO COMO data-* EN .zk-registro
+      function leerBaseMoodle(cmid) {
+        var url = M.cfg.wwwroot + '/mod/data/view.php?id=' + cmid + '&perpage=1000';
+        return fetch(url, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            return Array.prototype.map.call(doc.querySelectorAll('.zk-registro'), function(el) {
+              return Object.assign({}, el.dataset);
+            });
+          });
+      }
+
+      // CONVERTIR UNA ENTRADA DE LA BASE AL FORMATO INTERNO
+      function normalizarEstudiante(r) {
+        return {
+          usuario: r.usuario, nombre: r.nombre, cohorte: r.cohorte,
+          etapa: parseInt(r.etapa, 10) || 1,
+          cuatrimestreCursado: parseInt(r.cuatrimestreCursado, 10) || 1,
+          aprobadasPrimerAnio: parseInt(r.aprobadasPrimerAnio, 10) || 0,
+          notasCargadas: r.notasCargadas === '1',
+          encuesta: r.encuesta || null
+        };
+      }
+
+      // CARGAR ESTUDIANTES Y ASIGNACIONES (BASES PROPIAS O DATOS DE PRUEBA)
+      function cargarDatos() {
+        if (ES_VISTA_LOCAL || !CMID_ESTUDIANTES || !CMID_ASIGNACIONES || !window.M) {
+          document.getElementById('aviso-datos-ejemplo').style.setProperty('display', 'block', 'important');
+          return Promise.resolve({ estudiantes: ESTUDIANTES_PRUEBA, asignaciones: ASIGNACIONES_PRUEBA });
+        }
+        return Promise.all([leerBaseMoodle(CMID_ESTUDIANTES), leerBaseMoodle(CMID_ASIGNACIONES)])
+          .then(function(res) {
+            return { estudiantes: res[0].map(normalizarEstudiante), asignaciones: res[1] };
+          });
+      }
+
+      // GUARDAR UN ESTADO ASIGNADO EN LA BASE DE ZHAKYZ
+      function guardarAsignacionMoodle(usuario, nivel, motivo) {
+        if (ES_VISTA_LOCAL || !CMID_ASIGNACIONES || !CAMPOS_ASIGNACIONES.usuario) {
+          return Promise.resolve({ local: true });
+        }
+        var fd = new FormData();
+        fd.append('id', CMID_ASIGNACIONES);
+        fd.append('rid', 0);
+        fd.append('sesskey', M.cfg.sesskey);
+        fd.append('saveanddisplay', 'Guardar');
+        fd.append('field_' + CAMPOS_ASIGNACIONES.usuario, usuario);
+        fd.append('field_' + CAMPOS_ASIGNACIONES.nivel, nivel);
+        fd.append('field_' + CAMPOS_ASIGNACIONES.motivo, motivo);
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
+            return { local: false };
+          });
+      }
+
+      // ---------------------------------------------------------
+      // ESTADO EN MEMORIA
+      // ---------------------------------------------------------
+      var rolActual = ROL_INICIAL;
+      var filas = [];
+      var historiales = {}; // usuario -> asignaciones (la última manda; 'auto' la quita)
+
+      // ARMAR CADA FILA CON SUS DOS ESTADOS
+      function procesar(estudiantes, asignaciones) {
+        historiales = {};
+        asignaciones.forEach(function(a) {
+          (historiales[a.usuario] = historiales[a.usuario] || []).push(a);
+        });
+        filas = estudiantes.map(function(est) {
+          var historial = historiales[est.usuario] || [];
+          var ultima = historial[historial.length - 1];
+          var asignado = ultima && ultima.nivel !== 'auto' ? ultima : null;
+          var calculado = calcularEstado(est);
+          return { est: est, calculado: calculado, asignado: asignado, vigente: asignado ? asignado.nivel : calculado.nivel };
+        });
+      }
+
+      // ---------------------------------------------------------
+      // UTILIDADES DE PRESENTACIÓN
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      // CHIP DE UN NIVEL
+      function chipNivel(nivel) {
+        var n = NIVELES[nivel];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; background-color: ' + n.fondo +
+          ' !important; color: ' + n.color + ' !important; font-size: 11.5px !important; font-weight: 700 !important; padding: 3px 9px !important; border-radius: 20px !important; white-space: nowrap !important;">' +
+          n.icono + ' ' + n.texto + '</span>';
+      }
+
+      function chipRol(rol) {
+        var r = ROLES[rol];
+        return '<span style="background-color: ' + r.fondo + ' !important; color: ' + r.texto +
+          ' !important; font-size: 10px !important; font-weight: 800 !important; padding: 3px 7px !important; border-radius: 6px !important;">' + rol + '</span>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      var filtroKpi = '';
+
+      // FILAS QUE CUMPLEN LOS FILTROS, ORDENADAS POR ESTADO VIGENTE
+      function filasFiltradas() {
+        var q = document.getElementById('filtro-busqueda').value.trim().toLowerCase();
+        var sem = document.getElementById('filtro-semaforo').value;
+        var etapa = document.getElementById('filtro-etapa').value;
+        var cohorte = document.getElementById('filtro-cohorte').value;
+        return filas.filter(function(f) {
+          if (q && f.est.nombre.toLowerCase().indexOf(q) === -1) return false;
+          if (sem && f.vigente !== sem) return false;
+          if (filtroKpi === 'asignados' && !f.asignado) return false;
+          else if (filtroKpi && filtroKpi !== 'asignados' && f.vigente !== filtroKpi) return false;
+          if (etapa && String(f.est.etapa) !== etapa) return false;
+          if (cohorte && f.est.cohorte !== cohorte) return false;
+          return true;
+        }).sort(function(a, b) {
+          return NIVELES[b.vigente].orden - NIVELES[a.vigente].orden || a.est.nombre.localeCompare(b.est.nombre);
+        });
+      }
+
+      // TARJETAS DE RESUMEN (POR ESTADO VIGENTE)
+      function renderizarKpi() {
+        var cuenta = function(nivel) { return filas.filter(function(f) { return f.vigente === nivel; }).length; };
+        var kpis = [
+          { id: '', icono: '👥', valor: filas.length, texto: 'estudiantes', color: '#0f172a', fondo: '#f8fafc' },
+          { id: 'rojo', icono: '🔴', valor: cuenta('rojo'), texto: 'riesgo alto', color: '#b91c1c', fondo: '#fef2f2' },
+          { id: 'amarillo', icono: '🟡', valor: cuenta('amarillo'), texto: 'riesgo medio', color: '#b45309', fondo: '#fffbeb' },
+          { id: 'verde', icono: '🟢', valor: cuenta('verde'), texto: 'sin riesgo', color: '#15803d', fondo: '#f0fdf4' },
+          { id: 'sin_datos', icono: '⚪', valor: cuenta('sin_datos'), texto: 'sin calcular', color: '#475569', fondo: '#f8fafc' },
+          { id: 'asignados', icono: '✋', valor: filas.filter(function(f) { return f.asignado; }).length, texto: 'con estado asignado', color: '#0284c7', fondo: '#f0f9ff' }
+        ];
+        document.getElementById('grilla-kpi-tablero').innerHTML = kpis.map(function(k) {
+          var activo = filtroKpi === k.id && k.id !== '';
+          return '<div data-kpi="' + k.id + '" style="flex: 1 1 110px !important; background-color: ' + k.fondo +
+            ' !important; border: 2px solid ' + (activo ? k.color : 'transparent') + ' !important; border-radius: 12px !important; padding: 10px 12px !important; cursor: pointer !important; box-sizing: border-box !important;">' +
+            '<div style="font-size: 20px !important; font-weight: 800 !important; color: ' + k.color + ' !important; line-height: 1.2 !important;">' + k.icono + ' ' + k.valor + '</div>' +
+            '<div style="font-size: 11.5px !important; color: #475569 !important;">' + k.texto + '</div></div>';
+        }).join('');
+      }
+
+      // TABLA
+      function renderizarTabla() {
+        var lista = filasFiltradas();
+        var td = 'padding: 11px 8px !important; border-top: 1px solid #f1f5f9 !important; vertical-align: middle !important;';
+        document.getElementById('cuerpo-tabla-estudiantes').innerHTML = lista.length ? lista.map(function(f) {
+          var asignado = f.asignado
+            ? chipNivel(f.asignado.nivel) + '<div style="font-size: 11px !important; color: #94a3b8 !important; margin-top: 2px !important;">' + escapar(f.asignado.autor) + '</div>'
+            : '<span style="color: #cbd5e1 !important;">—</span>';
+          var calculadoEstilo = f.asignado ? 'opacity: 0.55 !important;' : '';
+          return '<tr data-usuario="' + escapar(f.est.usuario) + '" style="cursor: pointer !important; animation: zk-aparecer 0.25s ease both !important;">' +
+            '<td style="' + td + ' padding-left: 12px !important;"><div style="font-weight: 700 !important; color: #0f172a !important;">' + escapar(f.est.nombre) + '</div>' +
+            '<div style="font-size: 11.5px !important; color: #94a3b8 !important;">' + (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') + '</div></td>' +
+            '<td style="' + td + ' color: #475569 !important;">' + escapar(f.est.cohorte) + '</td>' +
+            '<td style="' + td + calculadoEstilo + '">' + chipNivel(f.calculado.nivel) + '</td>' +
+            '<td style="' + td + '">' + asignado + '</td>' +
+            '<td style="' + td + ' text-align: right !important; padding-right: 12px !important;"><span style="color: #0284c7 !important; font-weight: 700 !important; white-space: nowrap !important;">Ver →</span></td></tr>';
+        }).join('') : '<tr><td colspan="5" style="padding: 28px !important; text-align: center !important; color: #94a3b8 !important;">No hay estudiantes con esos filtros.</td></tr>';
+        document.getElementById('txt-total-filtrados').textContent =
+          'Mostrando ' + lista.length + ' de ' + filas.length + ' estudiantes. Si hay estado asignado, es el que manda; el calculado queda atenuado.';
+      }
+
+      // OPCIONES DEL FILTRO DE COHORTE
+      function renderizarCohortes() {
+        var cohortes = filas.map(function(f) { return f.est.cohorte; })
+          .filter(function(c, i, a) { return a.indexOf(c) === i; }).sort().reverse();
+        document.getElementById('filtro-cohorte').innerHTML = '<option value="">Todas las cohortes</option>' +
+          cohortes.map(function(c) { return '<option value="' + c + '">Cohorte ' + c + '</option>'; }).join('');
+      }
+
+      function renderizarTodo() {
+        renderizarKpi();
+        renderizarTabla();
+      }
+
+      // ---------------------------------------------------------
+      // MODAL: DETALLE DEL ESTUDIANTE
+      // ---------------------------------------------------------
+      var usuarioAbierto = null;
+
+      // BLOQUE CON TÍTULO
+      function bloque(titulo, contenido) {
+        return '<div style="margin: 0 0 18px 0 !important;"><div style="font-size: 11px !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; margin-bottom: 8px !important;">' +
+          titulo + '</div>' + contenido + '</div>';
+      }
+
+      // TARJETA DE UN ESTADO (CALCULADO O ASIGNADO)
+      function tarjetaEstado(titulo, nivel, texto, pie, vigente) {
+        return '<div style="flex: 1 1 240px !important; border: 2px solid ' + (vigente ? NIVELES[nivel].color : '#e2e8f0') + ' !important; border-radius: 12px !important; padding: 12px 14px !important; box-sizing: border-box !important;">' +
+          '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-bottom: 8px !important;">' +
+          '<b style="font-size: 13px !important; color: #0f172a !important;">' + titulo + '</b>' +
+          (vigente ? '<span style="font-size: 10px !important; font-weight: 800 !important; color: #ffffff !important; background-color: ' + NIVELES[nivel].color + ' !important; padding: 2px 7px !important; border-radius: 6px !important;">VIGENTE</span>' : '') + '</div>' +
+          chipNivel(nivel) + '<div style="margin-top: 8px !important; font-size: 12.5px !important; color: #475569 !important;">' + escapar(texto) + '</div>' +
+          (pie ? '<div style="margin-top: 6px !important; font-size: 11.5px !important; color: #94a3b8 !important;">' + escapar(pie) + '</div>' : '') + '</div>';
+      }
+
+      function abrirDetalle(usuario) {
+        var f = filas.filter(function(x) { return x.est.usuario === usuario; })[0];
+        if (!f) return;
+        usuarioAbierto = usuario;
+        document.getElementById('titulo-detalle-estudiante').innerHTML = escapar(f.est.nombre);
+
+        var html = bloque('Datos', '<div style="font-size: 13px !important;">Cohorte <b>' + escapar(f.est.cohorte) + '</b> · ' +
+          (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') +
+          (f.est.encuesta ? ' · última encuesta respondida: <b>' + escapar(f.est.encuesta) + '</b>' : '') + '</div>');
+
+        html += bloque('Estados', '<div style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important;">' +
+          tarjetaEstado('🤖 Estado calculado', f.calculado.nivel, f.calculado.motivo, 'Lo genera el sistema al cierre ' + CIERRE_EVALUADO + '.', !f.asignado) +
+          (f.asignado
+            ? tarjetaEstado('✋ Estado asignado', f.asignado.nivel, f.asignado.motivo, f.asignado.autor + ' · ' + f.asignado.fecha, true)
+            : '<div style="flex: 1 1 240px !important; border: 2px dashed #e2e8f0 !important; border-radius: 12px !important; padding: 12px 14px !important; color: #94a3b8 !important; font-size: 12.5px !important; box-sizing: border-box !important;"><b style="color: #64748b !important;">✋ Estado asignado</b><div style="margin-top: 6px !important;">Ningún tutor asignó un estado. Manda el calculado.</div></div>') +
+          '</div>');
+
+        var historial = historiales[usuario] || [];
+        html += bloque('Historial de asignaciones', historial.length ?
+          historial.slice().reverse().map(function(h) {
+            return '<div style="border-left: 3px solid #e2e8f0 !important; padding: 2px 0 2px 10px !important; margin-bottom: 8px !important; font-size: 12.5px !important;">' +
+              (h.nivel === 'auto' ? '↺ Quitó el estado asignado' : chipNivel(h.nivel)) + ' <span style="color: #94a3b8 !important;">' + escapar(h.fecha) + ' · ' + escapar(h.autor) + '</span>' +
+              '<div>' + escapar(h.motivo) + '</div></div>';
+          }).join('') : '<span style="color: #94a3b8 !important; font-size: 12.5px !important;">Sin asignaciones.</span>');
+
+        if (ROLES[rolActual].puedeAsignar) {
+          var campo = 'padding: 8px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;';
+          html += bloque('Asignar estado (Req 10)',
+            '<div style="display: flex !important; flex-direction: column !important; gap: 8px !important;">' +
+            '<select id="campo-nivel-asignado" style="' + campo + '">' +
+            '<option value="">Elegí el estado…</option><option value="rojo">🔴 Riesgo alto</option><option value="amarillo">🟡 Riesgo medio</option><option value="verde">🟢 Sin riesgo</option>' +
+            (f.asignado ? '<option value="auto">↺ Quitar el estado asignado (vuelve a mandar el calculado)</option>' : '') + '</select>' +
+            '<textarea id="campo-motivo-asignado" rows="2" placeholder="Motivo (obligatorio): por ejemplo, resultado de la entrevista" style="' + campo + ' resize: vertical !important; font-family: inherit !important;"></textarea>' +
+            '<div id="txt-error-asignacion" style="display: none; color: #b91c1c !important; font-size: 12px !important;"></div>' +
+            '<div id="btn-guardar-asignacion" style="align-self: flex-end !important; background-color: #0284c7 !important; color: #ffffff !important; border-radius: 8px !important; padding: 9px 16px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;">Guardar</div></div>');
+        } else {
+          html += '<div style="font-size: 12px !important; color: #94a3b8 !important;">Solo tutores y administradores pueden asignar estados.</div>';
+        }
+
+        document.getElementById('cuerpo-detalle-estudiante').innerHTML = html;
+        document.getElementById('modal-detalle-estudiante').style.setProperty('display', 'flex', 'important');
+      }
+
+      function cerrarDetalle() {
+        usuarioAbierto = null;
+        document.getElementById('modal-detalle-estudiante').style.setProperty('display', 'none', 'important');
+      }
+
+      // GUARDAR UN ESTADO ASIGNADO
+      function guardarAsignacion() {
+        var nivel = document.getElementById('campo-nivel-asignado').value;
+        var motivo = document.getElementById('campo-motivo-asignado').value.trim();
+        var error = document.getElementById('txt-error-asignacion');
+        if (!nivel || !motivo) {
+          error.textContent = 'Elegí un estado y escribí el motivo.';
+          error.style.setProperty('display', 'block', 'important');
+          return;
+        }
+        var usuario = usuarioAbierto;
+        var btn = document.getElementById('btn-guardar-asignacion');
+        btn.textContent = 'Guardando…';
+        guardarAsignacionMoodle(usuario, nivel, motivo).then(function(res) {
+          var autor = window.M && M.cfg && M.cfg.fullname ? M.cfg.fullname : (res.local ? 'Vista previa local' : 'Usuario actual');
+          (historiales[usuario] = historiales[usuario] || []).push({
+            usuario: usuario, nivel: nivel, motivo: motivo, autor: autor, fecha: new Date().toLocaleDateString('es-AR')
+          });
+          var todas = [];
+          Object.keys(historiales).forEach(function(k) { todas = todas.concat(historiales[k]); });
+          procesar(filas.map(function(f) { return f.est; }), todas);
+          renderizarTodo();
+          abrirDetalle(usuario);
+        }).catch(function(e) {
+          btn.textContent = 'Guardar';
+          error.textContent = 'No se pudo guardar: ' + e.message;
+          error.style.setProperty('display', 'block', 'important');
+        });
+      }
+
+      // ---------------------------------------------------------
+      // EXPORTAR CSV
+      // ---------------------------------------------------------
+      function exportarCsv() {
+        var columnas = ['Estudiante', 'Cohorte', 'Etapa', 'Estado calculado', 'Motivo calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
+        var lineas = filasFiltradas().map(function(f) {
+          return [f.est.nombre, f.est.cohorte, f.est.etapa === 1 ? '1.er año' : '2.º año en adelante',
+            NIVELES[f.calculado.nivel].texto, f.calculado.motivo,
+            f.asignado ? NIVELES[f.asignado.nivel].texto : '', f.asignado ? f.asignado.autor : '', f.asignado ? f.asignado.motivo : '',
+            NIVELES[f.vigente].texto
+          ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';');
+        });
+        var blob = new Blob(['﻿' + columnas.join(';') + '\n' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'tablero_estudiantes_' + CIERRE_EVALUADO + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      // ---------------------------------------------------------
+      // ROL Y VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function aplicarRol(rol) {
+        rolActual = rol;
+        document.getElementById('badge-rol-tablero').innerHTML = chipRol(rol) + '<span>' + ROLES[rol].nombre + '</span>';
+        var botones = document.querySelectorAll('[data-preview-rol]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = botones[i].getAttribute('data-preview-rol') === rol;
+          botones[i].style.backgroundColor = activo ? '#38bdf8' : '#334155';
+          botones[i].style.color = activo ? '#0f172a' : '#e2e8f0';
+        }
+        if (usuarioAbierto) abrirDetalle(usuarioAbierto);
+      }
+
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 10px !important; padding: 10px 14px !important; margin: -8px 0 20px 0 !important; background-color: #0f172a !important; color: #e2e8f0 !important; border-radius: 10px !important; font-size: 13px !important;');
+        barra.innerHTML = '<b>👁 Vista previa local — ver como:</b>' + Object.keys(ROLES).map(function(rol) {
+          return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 800; font-size: 12px;">' + rol + '</button>';
+        }).join('');
+        var cont = document.getElementById('tablero-estudiantes');
+        cont.insertBefore(barra, cont.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#tablero-estudiantes')) return;
+        var btnRol = t.closest('[data-preview-rol]');
+        if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        var kpi = t.closest('[data-kpi]');
+        if (kpi) {
+          var id = kpi.getAttribute('data-kpi');
+          filtroKpi = filtroKpi === id ? '' : id;
+          document.getElementById('filtro-semaforo').value = '';
+          return renderizarTodo();
+        }
+        if (t.closest('#btn-exportar-csv')) return exportarCsv();
+        if (t.closest('#btn-cerrar-detalle') || t.id === 'modal-detalle-estudiante') return cerrarDetalle();
+        if (t.closest('#btn-guardar-asignacion')) return guardarAsignacion();
+        var fila = t.closest('#cuerpo-tabla-estudiantes tr[data-usuario]');
+        if (fila) return abrirDetalle(fila.getAttribute('data-usuario'));
+      });
+
+      document.addEventListener('input', function(e) {
+        if (e.target.id === 'filtro-busqueda') renderizarTabla();
+      });
+
+      document.addEventListener('change', function(e) {
+        if (e.target.id === 'filtro-semaforo') { filtroKpi = ''; renderizarTodo(); }
+        if (e.target.id === 'filtro-etapa' || e.target.id === 'filtro-cohorte') renderizarTabla();
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && usuarioAbierto) cerrarDetalle();
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      document.getElementById('txt-cierre-evaluado').textContent = CIERRE_EVALUADO;
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      aplicarRol(ROL_INICIAL);
+      cargarDatos().then(function(d) {
+        procesar(d.estudiantes, d.asignaciones);
+        renderizarCohortes();
+        renderizarTodo();
+      }).catch(function(e) {
+        document.getElementById('cuerpo-tabla-estudiantes').innerHTML =
+          '<tr><td colspan="5" style="padding: 24px !important; color: #b91c1c !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
+      });
+    })();
+  </script>
+</div>
