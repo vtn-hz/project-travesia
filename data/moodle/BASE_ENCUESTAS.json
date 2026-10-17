@@ -1,5 +1,5 @@
 {
-  "nombre": "Encuestas",
+  "nombre": "Preguntas",
   "descripcion": "Preguntas de las encuestas del sistema (una entrada por pregunta) con su tipo, opciones de respuesta y criticidad.",
   "subseccion": "Database",
   "origen": "Basada en los campos de 'Preguntas Encuesta Inicial' de LuminaTech (mod/data/view.php?id=59150), leídos en modo lectura el 2026-10-17. Nombres en minúscula, idPregunta pasa a ser id y va primero. Sin entradas.",
