@@ -23,12 +23,14 @@ Procedimientos paso a paso para tareas que se repiten. Si una tarea coincide con
 | Skill | Cuándo usarla |
 |---|---|
 | [`.skills/crear-seccion`](.skills/crear-seccion/SKILL.md) | Crear o desarrollar una sección, tablero, panel o pantalla (`section/<nombre>/content.html`). Incluye una plantilla base |
+| [`.skills/publicar-seccion`](.skills/publicar-seccion/SKILL.md) | Subir a Moodle una sección local (Página, Área de texto o resumen), **solo en la sección Zhakyz**, simulando primero y escribiendo únicamente con confirmación explícita. Incluye el script `publicar.js` |
 | [`.skills/diseno-ui`](.skills/diseno-ui/SKILL.md) | Definir o revisar cómo se ve una sección: tokens (color, tipografía, espaciado), componentes, semáforo de riesgo e íconos SVG sin emojis. Basada en la plantilla Dashboard de Material UI. Incluye un muestrario visual |
 
 ## Estructura
 
 ```
 section/<nombre>/content.html   ← cada pantalla que se pega en Moodle
+section/<grupo>/<item>/content.html + seccion.json ← grupo = subsección de Moodle con varios ítems
 docs/                           ← contexto, modelos, ADRs y specs
 data/                           ← datos para importar (plan de estudios)
 assets/                         ← logos
