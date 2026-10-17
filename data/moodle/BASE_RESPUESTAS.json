@@ -1,0 +1,32 @@
+{
+  "nombre": "Respuestas",
+  "descripcion": "Respuestas de los estudiantes a las encuestas. Solo se agregan entradas: editar una respuesta crea una entrada nueva y la anterior se conserva.",
+  "subseccion": "Database",
+  "origen": "PROPUESTA (2026-10-17), todavía no creada en Moodle. Configuración requerida en Moodle: 'Requiere aprobación' = Sí y no aprobar entradas (así cada estudiante ve solo las suyas y los docentes ven todas); visible solo por URL.",
+  "campos": [
+    { "nombre": "id_usuario", "tipo": "number", "descripcion": "id de Moodle del estudiante" },
+    { "nombre": "dni", "tipo": "text", "descripcion": "DNI del estudiante" },
+    { "nombre": "encuesta", "tipo": "menu", "descripcion": "Qué encuesta respondió", "opciones": ["inicial", "cuatrimestral"] },
+    { "nombre": "periodo", "tipo": "text", "descripcion": "Período de la respuesta (AAAA-n) en la cuatrimestral; vacío en la inicial" },
+    { "nombre": "json_pregunta_respuesta", "tipo": "text", "descripcion": "Lista JSON de objetos { id, pregunta, respuesta, criticidad }" },
+    { "nombre": "created_at", "tipo": "text", "descripcion": "Fecha y hora de esta respuesta (ISO 8601)" }
+  ],
+  "formato_json": {
+    "descripcion": "La criticidad tiene la misma forma que la respuesta: número para una opción, lista alineada para selección múltiple, null para texto libre.",
+    "ejemplo": [
+      { "id": 1, "pregunta": "¿Trabajás actualmente?", "respuesta": "Sí, hasta 20 horas semanales", "criticidad": 4 },
+      { "id": 2, "pregunta": "¿Cuántas materias estás cursando este cuatrimestre?", "respuesta": 2, "criticidad": 5 },
+      { "id": 3, "pregunta": "¿Qué dificultades tuviste este cuatrimestre?", "respuesta": ["Horarios", "Económicas"], "criticidad": [3, 6] },
+      { "id": 4, "pregunta": "¿Querés contarnos algo más?", "respuesta": "Me cuesta organizar los horarios.", "criticidad": null }
+    ]
+  },
+  "moodle": {
+    "curso": 1732,
+    "seccion_id": 15647,
+    "subseccion_cmid": null,
+    "subseccion_id": null,
+    "cmid": null,
+    "dataid": null,
+    "creada": null
+  }
+}
