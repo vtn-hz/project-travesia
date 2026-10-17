@@ -27,7 +27,10 @@ docs/
 │   └── 004-sistema-de-diseno-mui.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
-│   └── tablero-estudiantes.md
+│   ├── tablero-estudiantes.md
+│   ├── preguntas.md
+│   ├── encuestas.md
+│   └── responder-encuesta.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 

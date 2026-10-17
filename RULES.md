@@ -19,7 +19,10 @@ Estas reglas están por encima de todas las demás.
 
 | Elemento en Moodle | Archivo en el repo |
 |---|---|
-| Resumen de la sección Zhakyz (logo, nombre y lema) | [`section/resumen_zhakyz/content.html`](section/resumen_zhakyz/content.html) + [`assets/LOGO_ZHAKYZ_ANIMADO.gif`](assets/LOGO_ZHAKYZ_ANIMADO.gif) |
+| Resumen de la sección Zhakyz (logo, nombre, lema y script que quita el link de los títulos de subsección) | [`section/resumen_zhakyz/content.html`](section/resumen_zhakyz/content.html) + [`assets/LOGO_ZHAKYZ_ANIMADO.gif`](assets/LOGO_ZHAKYZ_ANIMADO.gif) |
+| Subsección "Database" (cmid 59497, sección 15700) → Base de datos "Encuestas" (cmid 59498, d=114) | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) |
+| Subsección "Encuestas y Preguntas" (sección 15705) → Página "Preguntas" (cmid 59506) | [`section/encuestas_preguntas/preguntas/content.html`](section/encuestas_preguntas/preguntas/content.html) (grupo: [`seccion.json`](section/encuestas_preguntas/seccion.json)) |
+| Subsección "Pruebas" (sección 15701): BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing | — (pruebas creadas por el equipo directamente en Moodle) |
 
 ## Arquitectura
 
@@ -28,6 +31,18 @@ Estas reglas están por encima de todas las demás.
 - Solo se inyecta dinámicamente en `<head>` lo estrictamente necesario (ej. `@keyframes`).
 
 ## Estructura de Secciones
+
+- `section/` tiene dos tipos de carpeta:
+  - **Sección simple:** `section/<nombre>/content.html` (por ejemplo `menu_inicial`).
+  - **Sección con ítems (grupo):** `section/<grupo>/<item>/content.html`, más un `section/<grupo>/seccion.json`. El grupo representa una **subsección de Moodle** dentro de Zhakyz, y cada ítem es una actividad (Página o Área de texto) de esa subsección.
+    ```
+    section/encuestas_preguntas/
+    ├── seccion.json            ← nombre e ids de Moodle del grupo y de sus ítems
+    ├── preguntas/content.html
+    └── encuestas/content.html
+    ```
+- Nombres de carpeta en `snake_case`, sin tildes. Cada `content.html` (simple o ítem) sigue todas las reglas de esta guía.
+- Los links locales entre secciones son relativos al archivo: desde un ítem, `../../<otra>/content.html`.
 
 - El HTML se organiza en bloques delimitados por **comentarios de sección en mayúsculas**:
   ```html
