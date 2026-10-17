@@ -2,7 +2,7 @@
 
 - **Estado:** Aceptada
 - **Fecha:** 2026-10-16
-- **Refs:** [ESPECIFICACION_REQUERIMIENTOS_V1_1.md](../context/ESPECIFICACION_REQUERIMIENTOS_V1_1.md) (Reqs 1, 2, 5, 6, 9, 10, 11)
+- **Refs:** [ESPECIFICACION_REQUERIMIENTOS_V1_1.md](../context/requirements/ESPECIFICACION_REQUERIMIENTOS_V1_1.md) (Reqs 1, 2, 5, 6, 9, 10, 11)
 
 ## Contexto
 
