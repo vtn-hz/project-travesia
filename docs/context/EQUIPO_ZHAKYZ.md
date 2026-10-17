@@ -10,7 +10,23 @@
 | Proyecto | Proyecto Travesía · Sistema de BI para la Retención de Estudiantes (SBIRE) |
 | Cliente | Departamento de Ingeniería Industrial (DII) — FI-UNMdP |
 | Versión de requerimientos a cargo | [v1.1 (06/10/2026)](requirements/ESPECIFICACION_REQUERIMIENTOS_V1_1.md) |
-| Integrantes | *(completar)* |
+
+## Integrantes
+
+Datos tomados del grupo **`2C2026-Zhakyz & Asociados`** de Moodle (curso 1732), consultado en modo lectura el 2026-10-17.
+
+| Apellido, nombre | Nombre en Moodle | Usuario Moodle (id) | Rol en el curso |
+|---|---|---:|---|
+| Distefano, Gian Luca | GIAN LUCA DISTEFANO | 2806 | Profesor |
+| Hernández Pascual, Valentino | VALENTINO HERNANDEZ PASCUAL | 2048 | Profesor |
+| Spikerman, Nahuel | NAHUEL SPIKERMAN | 3623 | Profesor |
+| Yanosky, Santiago Nicolás | SANTIAGO NICOLAS YANOSKY | 3751 | Profesor |
+| Zuanetti, Luca | Luca Zuanetti | 3770 | Profesor |
+| Zuviria, Nicolás Gabriel | NICOLAS GABRIEL ZUVIRIA | 3773 | Profesor y Estudiante |
+
+- **Contacto:** los correos están en Moodle (*Participantes*, filtrando por el grupo). No se copian acá porque **este repositorio es público**.
+- **Usuario para probar la vista del alumno:** Nicolás Zuviria es el único que además tiene rol **Estudiante** en el curso.
+- **Datos de prueba:** toda la información de prueba del sistema usa a estos integrantes, con **datos académicos ficticios**.
 
 ## Logo
 
