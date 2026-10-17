@@ -8,9 +8,18 @@
 ```
 docs/
 ├── README.md              ← este archivo (índice general)
-├── context/               ← Contexto del proyecto (requerimientos, marco teórico)
-│   ├── ESPECIFICACION_REQUERIMIENTOS_V1_1.md
-│   └── INDICADORES_TRAYECTORIA_TERMINALIDAD.md
+├── context/               ← Contexto del proyecto (insumos externos, no se diseñan acá)
+│   ├── EQUIPO_ZHAKYZ.md   ← Quiénes somos, logo y nuestra sección en Moodle
+│   ├── requirements/      ← Lo que pide el cliente
+│   │   └── ESPECIFICACION_REQUERIMIENTOS_V1_1.md
+│   ├── research/          ← Investigación: bibliografía y benchmark
+│   │   ├── INDICADORES_TRAYECTORIA_TERMINALIDAD.md
+│   │   └── RELEVAMIENTO_OTROS_EQUIPOS.md
+│   └── platform/          ← Restricciones y capacidades de Moodle
+│       └── MOODLE_SECCIONES_Y_HERRAMIENTAS.md
+├── models/                ← Modelos de cálculo propios (fórmulas, reglas, casos de prueba)
+│   ├── MODELO_UBICACION_Y_ATRASO.md
+│   └── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
 ├── decisions/             ← Registros de Decisiones (ADR)
 │   ├── 001-arquitectura-general.md
 │   ├── 002-main-menu-contenido.md
@@ -23,8 +32,15 @@ docs/
 ## Convenciones
 
 ### Contexto (`context/`)
-Todo lo relacionado al contexto del proyecto: especificación de requerimientos,
-marco de indicadores y material de referencia. Nombres en `MAYUSCULA_SNAKE_CASE`.
+Todo lo relacionado al contexto del proyecto: material que viene de afuera y
+condiciona el diseño. Nombres en `MAYUSCULA_SNAKE_CASE`.
+- `requirements/`: especificación del cliente (versionada en el nombre: `_V1_1`).
+- `research/`: bibliografía, indicadores y relevamiento de otros equipos.
+- `platform/`: cómo funciona Moodle y qué herramientas hay.
+
+### Modelos (`models/`)
+Modelos de cálculo diseñados por el equipo: definición, fórmulas, ejemplos y
+supuestos. Nombres `MODELO_<QUE_CALCULA>.md`. Se citan desde specs y ADRs.
 
 ### Decisiones (`decisions/`)
 Registros de Decisión de Arquitectura (ADR) numerados secuencialmente.
@@ -47,6 +63,12 @@ Sirve como vista rápida de la historia del proyecto.
 
 ## Referencia
 
-- [Requerimientos](context/ESPECIFICACION_REQUERIMIENTOS_V1_1.md) — Especificación de requerimientos v1.1
-- [Indicadores](context/INDICADORES_TRAYECTORIA_TERMINALIDAD.md) — Indicadores de trayectoria y terminalidad
+- [Equipo Zhakyz](context/EQUIPO_ZHAKYZ.md) — Quiénes somos, logo y nuestra sección en Moodle
+- [Requerimientos](context/requirements/ESPECIFICACION_REQUERIMIENTOS_V1_1.md) — Especificación de requerimientos v1.1
+- [Indicadores](context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md) — Indicadores de trayectoria y terminalidad
+- [Relevamiento de otros equipos](context/research/RELEVAMIENTO_OTROS_EQUIPOS.md) — Qué hicieron las demás consultoras
+- [Moodle](context/platform/MOODLE_SECCIONES_Y_HERRAMIENTAS.md) — Secciones, herramientas y patrones de integración
+- [Modelo de ubicación y atraso](models/MODELO_UBICACION_Y_ATRASO.md) — Cuatrimestre equivalente, deuda e inactividad
+- [Modelo de criticidad por correlativas](models/MODELO_CRITICIDAD_POR_CORRELATIVAS.md) — Qué materias pendientes traban más
+- [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
 - [Reglas de desarrollo](../RULES.md) — Convenciones de código
