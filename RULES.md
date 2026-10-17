@@ -1,5 +1,23 @@
 # Reglas de Desarrollo — Proyecto Travesía
 
+## ⛔ Moodle: qué se puede modificar
+
+Estas reglas están por encima de todas las demás.
+
+1. **La única sección que se puede modificar es `Zhakyz`** (`course/section.php?id=15647`, curso `1732`).
+2. **NUNCA se modifican otras secciones.** Las secciones, actividades, bases de datos, archivos y configuraciones de los demás equipos y del curso no se editan, borran, mueven ni se escriben: solo se leen. Si un cambio requiere tocar algo fuera de Zhakyz, no se hace.
+3. **Todo cambio en Moodle requiere confirmación explícita** antes de ejecutarse, aunque sea dentro de Zhakyz. La confirmación vale solo para ese cambio puntual.
+4. **Relación 1 a 1 con el repositorio.** Cada elemento que publicamos en Moodle tiene su archivo fuente en este repo, y viceversa:
+   - Lo que está en Moodle es una copia de lo que está en el repo, nunca al revés. Primero se cambia el repo y después se publica.
+   - Cada archivo publicado indica en un comentario inicial **dónde vive en Moodle** (sección, actividad o campo, y su `id`).
+   - Si algo se cambia directamente en Moodle, se trae al repo en el mismo momento.
+5. **No se reutilizan bases de datos de otros equipos.** Nuestras actividades leen y escriben solo bases creadas en la sección Zhakyz.
+6. Toda automatización (por ejemplo, Playwright) bloquea por defecto cualquier petición que no sea `GET` y cualquier URL con `sesskey`. Solo se habilita la escritura puntual que se confirmó, limitada a la sección 15647.
+
+| Elemento en Moodle | Archivo en el repo |
+|---|---|
+| Resumen de la sección Zhakyz (logo, nombre y lema) | [`section/resumen_zhakyz/content.html`](section/resumen_zhakyz/content.html) + [`assets/LOGO_ZHAKYZ_ANIMADO.gif`](assets/LOGO_ZHAKYZ_ANIMADO.gif) |
+
 ## Arquitectura
 
 - Todo el código de cada sección se entrega en un **único archivo `.html` autocontenido** (HTML + estilos inline + JS en un solo `<div>` raíz).
