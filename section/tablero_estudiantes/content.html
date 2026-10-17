@@ -1,4 +1,4 @@
-<!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) -->
+<!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) · "VER DETALLE" ABRE detalle_estudiante -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
@@ -96,22 +96,6 @@
     <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
   </div>
 
-  <!-- MODAL: DETALLE DEL ESTUDIANTE -->
-  <div id="modal-detalle-estudiante"
-    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(5, 7, 10, 0.5) !important; z-index: 10000 !important; align-items: flex-start !important; justify-content: center !important; padding: 32px 16px !important; box-sizing: border-box !important; overflow-y: auto !important;">
-    <div role="dialog" aria-modal="true" aria-labelledby="titulo-detalle-estudiante"
-      style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; width: 100% !important; max-width: 640px !important; box-shadow: rgba(5, 7, 10, 0.07) 0px 4px 16px 0px, rgba(5, 7, 10, 0.07) 0px 8px 16px -5px !important; overflow: hidden !important; text-align: left !important; animation: zk-aparecer 0.2s ease both;">
-      <div
-        style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; padding: 16px 20px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important;">
-        <div id="titulo-detalle-estudiante" style="font-size: 20px !important; font-weight: 600 !important; color: #0b0e14 !important;"></div>
-        <div id="btn-cerrar-detalle" role="button" tabindex="0" aria-label="Cerrar" title="Cerrar"
-          style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important;">
-          <span data-icono="cerrar"></span></div>
-      </div>
-      <div id="cuerpo-detalle-estudiante" style="padding: 20px !important; font-size: 14px !important; color: #0b0e14 !important; line-height: 1.5 !important;"></div>
-    </div>
-  </div>
-
   <!-- SCRIPT DE MANEJO DE EVENTOS -->
   <script>
     (function() {
@@ -127,7 +111,7 @@
           '#tablero-estudiantes [role="button"]:focus-visible, #tablero-estudiantes input:focus-visible, #tablero-estudiantes select:focus-visible, #tablero-estudiantes textarea:focus-visible, #tablero-estudiantes tr[tabindex]:focus-visible, #tablero-estudiantes [data-kpi]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
           '#cuerpo-tabla-estudiantes tr[data-usuario]:hover { background-color: rgba(218, 222, 231, 0.2); }' +
           '#tablero-estudiantes [data-kpi]:hover { border-color: #c2c9d6 !important; }' +
-          '#btn-cerrar-detalle:hover { background-color: #f5f6fa !important; }';
+          '';
         document.head.appendChild(styleEl);
       }
 
@@ -142,8 +126,10 @@
 
       // Bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
       var CMID_ESTUDIANTES = null; // lectura: una entrada por estudiante
-      var CMID_ASIGNACIONES = null; // lectura y escritura: estados asignados (Req 10)
-      var CAMPOS_ASIGNACIONES = { usuario: null, nivel: null, motivo: null }; // IDs field_<id>
+      var CMID_ASIGNACIONES = null; // lectura: estados asignados (se asignan desde el detalle, Req 10)
+      // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
+      var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
+      var CMID_DETALLE = null;
 
       // Estado calculado: solo criterios de los requerimientos (los modelos todavía no se aplican)
       var UMBRALES = {
@@ -265,26 +251,6 @@
         return Promise.all([leerBaseMoodle(CMID_ESTUDIANTES), leerBaseMoodle(CMID_ASIGNACIONES)])
           .then(function(res) {
             return { estudiantes: res[0].map(normalizarEstudiante), asignaciones: res[1] };
-          });
-      }
-
-      // GUARDAR UN ESTADO ASIGNADO EN LA BASE DE ZHAKYZ
-      function guardarAsignacionMoodle(usuario, nivel, motivo) {
-        if (ES_VISTA_LOCAL || !CMID_ASIGNACIONES || !CAMPOS_ASIGNACIONES.usuario) {
-          return Promise.resolve({ local: true });
-        }
-        var fd = new FormData();
-        fd.append('id', CMID_ASIGNACIONES);
-        fd.append('rid', 0);
-        fd.append('sesskey', M.cfg.sesskey);
-        fd.append('saveanddisplay', 'Guardar');
-        fd.append('field_' + CAMPOS_ASIGNACIONES.usuario, usuario);
-        fd.append('field_' + CAMPOS_ASIGNACIONES.nivel, nivel);
-        fd.append('field_' + CAMPOS_ASIGNACIONES.motivo, motivo);
-        return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
-          .then(function(r) {
-            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
-            return { local: false };
           });
       }
 
@@ -417,107 +383,13 @@
       }
 
       // ---------------------------------------------------------
-      // MODAL: DETALLE DEL ESTUDIANTE
+      // DETALLE DEL ESTUDIANTE (SECCIÓN APARTE)
       // ---------------------------------------------------------
-      var usuarioAbierto = null;
-
-      // BLOQUE CON TÍTULO
-      function bloque(titulo, contenido) {
-        return '<div style="margin: 0 0 20px 0 !important;"><div style="font-size: 12px !important; font-weight: 600 !important; color: #47536b !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; margin-bottom: 8px !important;">' +
-          titulo + '</div>' + contenido + '</div>';
-      }
-
-      // TARJETA DE UN ESTADO (CALCULADO O ASIGNADO)
-      function tarjetaEstado(nombreIcono, titulo, nivel, texto, pie, vigente) {
-        return '<div style="flex: 1 1 240px !important; background-color: #ffffff !important; border: 1px solid ' + (vigente ? NIVELES[nivel].borde : 'rgba(194, 201, 214, 0.4)') + ' !important; border-radius: 8px !important; padding: 12px 14px !important; box-sizing: border-box !important;">' +
-          '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-bottom: 8px !important;">' +
-          '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; font-weight: 500 !important; color: #0b0e14 !important;"><span style="color: #47536b !important;">' + icono(nombreIcono, 18) + '</span>' + titulo + '</span>' +
-          (vigente ? '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important;">Vigente</span>' : '') + '</div>' +
-          chipNivel(nivel) + '<div style="margin-top: 8px !important; color: #0b0e14 !important;">' + escapar(texto) + '</div>' +
-          (pie ? '<div style="margin-top: 6px !important; font-size: 12px !important; color: #47536b !important;">' + escapar(pie) + '</div>' : '') + '</div>';
-      }
-
       function abrirDetalle(usuario) {
-        var f = filas.filter(function(x) { return x.est.usuario === usuario; })[0];
-        if (!f) return;
-        usuarioAbierto = usuario;
-        document.getElementById('titulo-detalle-estudiante').innerHTML = escapar(f.est.nombre);
-
-        var html = bloque('Datos', '<div>Cohorte <b style="font-weight: 600 !important;">' + escapar(f.est.cohorte) + '</b> · ' +
-          (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') +
-          (f.est.encuesta ? ' · última encuesta respondida: <b style="font-weight: 600 !important;">' + escapar(f.est.encuesta) + '</b>' : '') + '</div>');
-
-        html += bloque('Estados', '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
-          tarjetaEstado('tablero', 'Estado calculado', f.calculado.nivel, f.calculado.motivo, 'Lo genera el sistema al cierre ' + CIERRE_EVALUADO + '.', !f.asignado) +
-          (f.asignado
-            ? tarjetaEstado('asignado', 'Estado asignado', f.asignado.nivel, f.asignado.motivo, f.asignado.autor + ' · ' + f.asignado.fecha, true)
-            : '<div style="flex: 1 1 240px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; padding: 12px 14px !important; color: #47536b !important; box-sizing: border-box !important;">' +
-              '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; font-weight: 500 !important; color: #0b0e14 !important;"><span style="color: #47536b !important;">' + icono('asignado', 18) + '</span>Estado asignado</span>' +
-              '<div style="margin-top: 6px !important;">Ningún tutor asignó un estado. Manda el calculado.</div></div>') +
-          '</div>');
-
-        var historial = historiales[usuario] || [];
-        html += bloque('Historial de asignaciones', historial.length ?
-          historial.slice().reverse().map(function(h) {
-            return '<div style="border-left: 2px solid #dadee7 !important; padding: 2px 0 2px 12px !important; margin-bottom: 10px !important;">' +
-              '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important;">' +
-              (h.nivel === 'auto' ? '<span style="font-weight: 500 !important;">Quitó el estado asignado</span>' : chipNivel(h.nivel)) +
-              '<span style="font-size: 12px !important; color: #47536b !important;">' + escapar(h.fecha) + ' · ' + escapar(h.autor) + '</span></div>' +
-              '<div style="margin-top: 4px !important;">' + escapar(h.motivo) + '</div></div>';
-          }).join('') : '<span style="color: #47536b !important;">Sin asignaciones.</span>');
-
-        if (ROLES[rolActual].puedeAsignar) {
-          var campo = 'padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
-          html += bloque('Asignar estado (Req 10)',
-            '<div style="display: flex !important; flex-direction: column !important; gap: 8px !important;">' +
-            '<select id="campo-nivel-asignado" aria-label="Estado a asignar" style="height: 40px !important; ' + campo + '">' +
-            '<option value="">Elegí el estado…</option><option value="rojo">Riesgo alto</option><option value="amarillo">Riesgo medio</option><option value="verde">Sin riesgo</option>' +
-            (f.asignado ? '<option value="auto">Quitar el estado asignado (vuelve a mandar el calculado)</option>' : '') + '</select>' +
-            '<textarea id="campo-motivo-asignado" rows="2" aria-label="Motivo" placeholder="Motivo (obligatorio): por ejemplo, resultado de la entrevista" style="resize: vertical !important; ' + campo + '"></textarea>' +
-            '<div id="txt-error-asignacion" style="display: none; color: #910808 !important; font-size: 13px !important;"></div>' +
-            '<div id="btn-guardar-asignacion" role="button" tabindex="0" style="align-self: flex-end !important; height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important;">' +
-            icono('guardar', 18) + '<span>Guardar</span></div></div>');
-        } else {
-          html += '<div style="display: flex !important; gap: 8px !important; align-items: center !important; padding: 8px 12px !important; border-radius: 8px !important; background-color: #e5f2ff !important; border: 1px solid rgba(77, 166, 255, 0.4) !important;"><span style="color: #026bd4 !important;">' + icono('info', 18) + '</span>Solo tutores y administradores pueden asignar estados.</div>';
-        }
-
-        document.getElementById('cuerpo-detalle-estudiante').innerHTML = html;
-        document.getElementById('modal-detalle-estudiante').style.setProperty('display', 'flex', 'important');
-      }
-
-      function cerrarDetalle() {
-        usuarioAbierto = null;
-        document.getElementById('modal-detalle-estudiante').style.setProperty('display', 'none', 'important');
-      }
-
-      // GUARDAR UN ESTADO ASIGNADO
-      function guardarAsignacion() {
-        var nivel = document.getElementById('campo-nivel-asignado').value;
-        var motivo = document.getElementById('campo-motivo-asignado').value.trim();
-        var error = document.getElementById('txt-error-asignacion');
-        if (!nivel || !motivo) {
-          error.textContent = 'Elegí un estado y escribí el motivo.';
-          error.style.setProperty('display', 'block', 'important');
-          return;
-        }
-        var usuario = usuarioAbierto;
-        var btn = document.getElementById('btn-guardar-asignacion');
-        btn.lastChild.textContent = 'Guardando…';
-        guardarAsignacionMoodle(usuario, nivel, motivo).then(function(res) {
-          var autor = window.M && M.cfg && M.cfg.fullname ? M.cfg.fullname : (res.local ? 'Vista previa local' : 'Usuario actual');
-          (historiales[usuario] = historiales[usuario] || []).push({
-            usuario: usuario, nivel: nivel, motivo: motivo, autor: autor, fecha: new Date().toLocaleDateString('es-AR')
-          });
-          var todas = [];
-          Object.keys(historiales).forEach(function(k) { todas = todas.concat(historiales[k]); });
-          procesar(filas.map(function(f) { return f.est; }), todas);
-          renderizarTodo();
-          abrirDetalle(usuario);
-        }).catch(function(e) {
-          btn.lastChild.textContent = 'Guardar';
-          error.textContent = 'No se pudo guardar: ' + e.message;
-          error.style.setProperty('display', 'block', 'important');
-        });
+        var hash = '#usuario=' + encodeURIComponent(usuario);
+        if (ES_VISTA_LOCAL) window.location.href = URL_DETALLE_LOCAL + hash;
+        else if (CMID_DETALLE) window.location.href = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_DETALLE + hash;
+        else alert('El detalle del estudiante todavía no está publicado.');
       }
 
       // ---------------------------------------------------------
@@ -555,7 +427,6 @@
           botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
           botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
         }
-        if (usuarioAbierto) abrirDetalle(usuarioAbierto);
       }
 
       function crearBarraPreview() {
@@ -590,8 +461,6 @@
         var kpi = t.closest('[data-kpi]');
         if (kpi) return activarKpi(kpi);
         if (t.closest('#btn-exportar-csv')) return exportarCsv();
-        if (t.closest('#btn-cerrar-detalle') || t.id === 'modal-detalle-estudiante') return cerrarDetalle();
-        if (t.closest('#btn-guardar-asignacion')) return guardarAsignacion();
         var fila = t.closest('#cuerpo-tabla-estudiantes tr[data-usuario]');
         if (fila) return abrirDetalle(fila.getAttribute('data-usuario'));
       });
@@ -606,7 +475,6 @@
       });
 
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && usuarioAbierto) return cerrarDetalle();
         var t = e.target;
         if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('#tablero-estudiantes') &&
           (t.getAttribute('role') === 'button' || t.matches('tr[data-usuario]'))) {

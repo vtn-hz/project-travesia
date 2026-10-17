@@ -28,6 +28,7 @@ docs/
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
+│   ├── detalle-estudiante.md
 │   ├── preguntas.md
 │   ├── encuestas.md
 │   └── responder-encuesta.md

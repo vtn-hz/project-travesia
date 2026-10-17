@@ -3,17 +3,17 @@
 > Documento vivo: se actualiza a medida que se refinan los requerimientos.
 
 - **Archivo:** `section/tablero_estudiantes/content.html`
-- **Acceso:** tarjeta "🚦 Tablero de Criticidad" del [menú inicial](../../section/menu_inicial/content.html)
+- **Acceso:** tarjeta "Tablero de Criticidad" del [menú inicial](../../section/menu_inicial/content.html)
 - **Roles:** ADM, GES y TUT. Solo **TUT y ADM** pueden asignar estados.
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados)
-- **Estado:** desarrollado en local con datos de prueba. **No publicado en Moodle.**
+- **Estado:** desarrollado en local con datos de prueba y migrado al sistema de diseño ([skill `diseno-ui`](../../.skills/diseno-ui/SKILL.md), ADR-004). **No publicado en Moodle.**
 
 ## Dos estados por estudiante
 
 | Estado | Quién lo define | Cómo |
 |---|---|---|
-| 🤖 **Estado calculado** | El sistema | Se genera solo, al cierre evaluado, con los criterios configurados |
-| ✋ **Estado asignado** | Un tutor o un administrador (Req 10) | Se elige a mano, con un motivo obligatorio (por ejemplo, el resultado de una entrevista) |
+| **Estado calculado** | El sistema | Se genera solo, al cierre evaluado, con los criterios configurados |
+| **Estado asignado** | Un tutor o un administrador (Req 10) | Se elige a mano, con un motivo obligatorio (por ejemplo, el resultado de una entrevista) |
 
 - **Estado vigente:** si hay estado asignado, manda el asignado; si no, manda el calculado. La tabla se ordena por el estado vigente y el calculado se muestra atenuado cuando hay uno asignado.
 - El estado asignado se puede **quitar** ("Quitar el estado asignado"), y entonces vuelve a mandar el calculado.
@@ -27,21 +27,25 @@ Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sal
 
 | Etapa | Criterio | Estado |
 |---|---|---|
-| 1.er año | Sin notas de parciales cargadas | ⚪ Sin calcular |
-| 1.er año | Aprobó menos del 20 % de las materias esperadas (Req 4) | 🔴 |
-| 1.er año | Entre el 20 % y el 60 % | 🟡 |
-| 1.er año | Más del 60 % | 🟢 |
-| 2.º año en adelante | No respondió la encuesta del período (Req 2) | 🟡 |
-| 2.º año en adelante | Respondió la encuesta | ⚪ Sin calcular: criterio pendiente de definir |
+| 1.er año | Sin notas de parciales cargadas | Sin calcular |
+| 1.er año | Aprobó menos del 20 % de las materias esperadas (Req 4) | Riesgo alto |
+| 1.er año | Entre el 20 % y el 60 % | Riesgo medio |
+| 1.er año | Más del 60 % | Sin riesgo |
+| 2.º año en adelante | No respondió la encuesta del período (Req 2) | Riesgo medio |
+| 2.º año en adelante | Respondió la encuesta | Sin calcular: criterio pendiente de definir |
 
 Las materias esperadas de 1.er año son 3 al terminar el 1.er cuatrimestre y 7 al terminar el 2.º (`ESPERADAS_PRIMER_ANIO`). Los umbrales están en `UMBRALES`, al principio del script.
 
+## Diseño
+
+Sigue la plantilla Dashboard de MUI: tarjetas planas, chips de semáforo con **punto + texto**, íconos SVG (`tablero` para el calculado, `asignado` para el asignado) y ningún emoji.
+
 ## Qué muestra
 
-1. **Resumen por estado vigente:** total, 🔴, 🟡, 🟢, ⚪ y ✋ (con estado asignado). Cada tarjeta filtra la tabla.
+1. **Resumen por estado vigente:** total, riesgo alto, riesgo medio, sin riesgo, sin calcular y con estado asignado. Cada tarjeta filtra la tabla (y se puede activar con el teclado).
 2. **Filtros:** nombre, estado vigente, etapa y cohorte, y **exportar a CSV** (con los dos estados y sus motivos).
 3. **Tabla:** estudiante, cohorte, estado calculado y estado asignado (con su autor).
-4. **Detalle:** las dos tarjetas de estado (la vigente marcada), el historial y el formulario **Asignar estado** (solo TUT y ADM).
+4. **Detalle:** "Ver detalle" (o clic en la fila) abre la sección [Detalle del estudiante](detalle-estudiante.md) con `#usuario=<id>`. Allí están la foto y los datos del campus, la evolución de la criticidad, los historiales y el formulario **Asignar estado** (solo TUT y ADM).
 
 ## Datos de prueba
 
@@ -49,12 +53,12 @@ Son los **6 integrantes de Zhakyz** (ver [EQUIPO_ZHAKYZ](../context/EQUIPO_ZHAKY
 
 | Integrante | Etapa | Calculado | Asignado |
 |---|---|---|---|
-| Luca Zuanetti | 1.er año (6 de 7) | 🟢 | — |
-| Gian Luca Distefano | 1.er año (1 de 3) | 🟡 | — |
-| Santiago Nicolás Yanosky | 1.er año (1 de 7) | 🔴 | — |
-| Valentino Hernández Pascual | 1.er año (sin notas) | ⚪ | — |
-| Nicolás Gabriel Zuviria | 2.º año+ (sin encuesta 2026-2) | 🟡 | 🔴 por Valentino Hernández Pascual |
-| Nahuel Spikerman | 2.º año+ (respondió la encuesta) | ⚪ | 🟢 por Luca Zuanetti |
+| Luca Zuanetti | 1.er año (6 de 7) | Sin riesgo | — |
+| Gian Luca Distefano | 1.er año (1 de 3) | Riesgo medio | — |
+| Santiago Nicolás Yanosky | 1.er año (1 de 7) | Riesgo alto | — |
+| Valentino Hernández Pascual | 1.er año (sin notas) | Sin calcular | — |
+| Nicolás Gabriel Zuviria | 2.º año+ (sin encuesta 2026-2) | Riesgo medio | Riesgo alto por Valentino Hernández Pascual |
+| Nahuel Spikerman | 2.º año+ (respondió la encuesta) | Sin calcular | Sin riesgo por Luca Zuanetti |
 
 ## Bases a crear en Zhakyz (con confirmación, según RULES)
 
