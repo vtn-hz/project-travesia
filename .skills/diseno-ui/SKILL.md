@@ -16,7 +16,7 @@ Esta skill define **cómo se ve**. La skill [`crear-seccion`](../crear-seccion/S
 | Archivo | Contenido |
 |---|---|
 | [`referencia/tokens.md`](referencia/tokens.md) | **Todos los valores**: escalas de color, colores semánticos, semáforo, tipografía, espaciado, radios, sombras y tamaños |
-| [`iconos.js`](iconos.js) | `ICONOS` (30 íconos Material Outlined como SVG inline) y la función `icono(nombre, tamaño)` |
+| [`iconos.js`](iconos.js) | `ICONOS` (39 íconos Material Outlined como SVG inline) y la función `icono(nombre, tamaño)` |
 | [`muestrario.html`](muestrario.html) | Todos los componentes renderizados. Abrirlo para ver cómo tiene que quedar |
 
 ## Principios
@@ -116,6 +116,8 @@ Overlay `rgba(5, 7, 10, 0.5)`. Caja blanca con radio 10, borde 1px `divider` y s
 | `buscar`, `descargar`, `cerrar`, `ver`, `flecha`, `chevron` | — | Acciones |
 | `asignado` | assignment_ind | Estado asignado por un tutor |
 | `calendario`, `horario` | calendar_month, schedule | Turnos |
+| `editar`, `borrar`, `agregar`, `quitar` | edit, delete, add, remove_circle_outline | Acciones de edición (CRUD) |
+| `arrastrar`, `subir`, `bajar`, `guardar`, `lista` | drag_indicator, arrow_upward, arrow_downward, save, checklist | Listas ordenables (drag and drop) |
 
 ## Verificación
 
