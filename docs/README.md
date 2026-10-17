@@ -23,9 +23,11 @@ docs/
 ├── decisions/             ← Registros de Decisiones (ADR)
 │   ├── 001-arquitectura-general.md
 │   ├── 002-main-menu-contenido.md
-│   └── 003-paleta-colores.md
+│   ├── 003-paleta-colores.md
+│   └── 004-sistema-de-diseno-mui.md
 ├── specs/                 ← Especificaciones vivas por sección
-│   └── main-menu.md
+│   ├── main-menu.md
+│   └── tablero-estudiantes.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 
