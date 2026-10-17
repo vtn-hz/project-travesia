@@ -1,108 +1,114 @@
 <!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
-  style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 28px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: left !important;">
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
   <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
   <nolink>
 
-  <!-- ENCABEZADO -->
-  <div
-    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
-    <div>
-      <span
-        style="display: inline-block !important; background-color: #fee2e2 !important; color: #b91c1c !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 5px 12px !important; border-radius: 20px !important; margin-bottom: 10px !important;">
-        🚦 Seguimiento de estudiantes</span>
-      <h3
-        style="margin: 0 0 4px 0 !important; color: #0f172a !important; font-size: 22px !important; font-weight: 700 !important; line-height: 1.3 !important;">
-        Tablero de Criticidad</h3>
-      <p
-        style="margin: 0 !important; color: #64748b !important; font-size: 14px !important; line-height: 1.5 !important;">
-        Cierre evaluado <b id="txt-cierre-evaluado" style="color: #0f172a !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
-    </div>
-    <div id="badge-rol-tablero"
-      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 20px !important; padding: 6px 12px 6px 6px !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important;">
-    </div>
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-ejemplo"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; border-radius: 10px !important; color: #0b0e14 !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios. Las bases de la sección Zhakyz todavía no están creadas; cuando existan, se configuran sus CMID al principio del script.</span>
   </div>
 
-  <!-- AVISO: DATOS DE EJEMPLO -->
-  <div id="aviso-datos-ejemplo"
-    style="display: none; background-color: #fffbeb !important; border: 1px solid #fde68a !important; color: #78350f !important; border-radius: 10px !important; padding: 10px 14px !important; font-size: 12.5px !important; line-height: 1.5 !important; margin-bottom: 18px !important;">
-    ⚠️ <b>Datos de prueba:</b> integrantes de Zhakyz con datos académicos ficticios. Las bases de la sección Zhakyz todavía no están creadas; cuando existan, se configuran sus CMID al principio del script.
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 24px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Seguimiento de estudiantes</div>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Tablero de Criticidad</h3>
+      <p
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Cierre evaluado <b id="txt-cierre-evaluado" style="color: #0b0e14 !important; font-weight: 600 !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
+    </div>
+    <div id="badge-rol-tablero"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
   </div>
 
   <!-- RESUMEN (CLIC PARA FILTRAR) -->
   <div id="grilla-kpi-tablero"
-    style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important; margin-bottom: 18px !important;">
+    style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 24px !important;">
   </div>
 
   <!-- FILTROS -->
   <div
-    style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important; align-items: center !important; margin-bottom: 14px !important;">
-    <input id="filtro-busqueda" type="search" placeholder="Buscar por nombre"
-      style="flex: 1 1 220px !important; padding: 9px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; box-sizing: border-box !important;">
-    <select id="filtro-semaforo"
-      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+    style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; align-items: center !important; margin-bottom: 16px !important;">
+    <div style="position: relative !important; flex: 1 1 220px !important;">
+      <span data-icono="buscar" style="position: absolute !important; left: 10px !important; top: 10px !important; color: #47536b !important; pointer-events: none !important;"></span>
+      <input id="filtro-busqueda" type="search" placeholder="Buscar por nombre" aria-label="Buscar por nombre"
+        style="width: 100% !important; height: 40px !important; padding: 8px 12px 8px 36px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
+    </div>
+    <select id="filtro-semaforo" aria-label="Estado vigente"
+      style="height: 40px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
       <option value="">Todos los estados vigentes</option>
-      <option value="rojo">🔴 Riesgo alto</option>
-      <option value="amarillo">🟡 Riesgo medio</option>
-      <option value="verde">🟢 Sin riesgo</option>
-      <option value="sin_datos">⚪ Sin calcular</option>
+      <option value="rojo">Riesgo alto</option>
+      <option value="amarillo">Riesgo medio</option>
+      <option value="verde">Sin riesgo</option>
+      <option value="sin_datos">Sin calcular</option>
     </select>
-    <select id="filtro-etapa"
-      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+    <select id="filtro-etapa" aria-label="Etapa"
+      style="height: 40px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
       <option value="">Todas las etapas</option>
       <option value="1">1.er año</option>
       <option value="2">2.º año en adelante</option>
     </select>
-    <select id="filtro-cohorte"
-      style="padding: 9px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; color: #1e293b !important; background-color: #ffffff !important;">
+    <select id="filtro-cohorte" aria-label="Cohorte"
+      style="height: 40px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
       <option value="">Todas las cohortes</option>
     </select>
-    <div id="btn-exportar-csv"
-      style="padding: 9px 14px !important; background-color: #f1f5f9 !important; color: #334155 !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;">
-      📥 Exportar CSV</div>
+    <div id="btn-exportar-csv" role="button" tabindex="0"
+      style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important;">
+      <span data-icono="descargar"></span>Exportar CSV</div>
   </div>
 
   <!-- TABLA DE ESTUDIANTES -->
-  <div style="overflow-x: auto !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important;">
+  <div style="overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
     <table id="tabla-estudiantes"
-      style="width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; min-width: 560px !important; margin: 0 !important;">
+      style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 600px !important; margin: 0 !important;">
       <thead>
-        <tr style="background-color: #f8fafc !important; color: #64748b !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;">
-          <th style="text-align: left !important; padding: 10px 12px !important; font-weight: 700 !important;">Estudiante</th>
-          <th style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">Cohorte</th>
-          <th title="Lo genera el sistema según los criterios configurados" style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">🤖 Estado calculado</th>
-          <th title="Lo asigna un tutor o administrador y reemplaza al calculado" style="text-align: left !important; padding: 10px 8px !important; font-weight: 700 !important;">✋ Estado asignado</th>
-          <th style="text-align: right !important; padding: 10px 12px !important; font-weight: 700 !important;"></th>
+        <tr style="background-color: #f5f6fa !important;">
+          <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 16px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estudiante</th>
+          <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Cohorte</th>
+          <th title="Lo genera el sistema según los criterios configurados" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado calculado</th>
+          <th title="Lo asigna un tutor o administrador y reemplaza al calculado" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado asignado</th>
+          <th style="border: 0 !important; height: 52px !important; padding: 0 16px !important;"><span style="position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important;">Acciones</span></th>
         </tr>
       </thead>
       <tbody id="cuerpo-tabla-estudiantes"></tbody>
     </table>
   </div>
   <p id="txt-total-filtrados"
-    style="margin: 10px 0 0 0 !important; color: #94a3b8 !important; font-size: 12px !important;"></p>
+    style="margin: 8px 0 0 0 !important; color: #47536b !important; font-size: 12px !important;"></p>
 
   <!-- PIE DE PÁGINA ZHAKYZ -->
   <div id="footer-zhakyz"
-    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 28px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid #e2e8f0 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 12px !important; color: #94a3b8 !important; text-align: left !important;">
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
     <span
-      style="color: #0f172a !important; font-weight: 800 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
-      ⚔ Zhakyz &amp; Asociados</span>
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
     <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
   </div>
 
   <!-- MODAL: DETALLE DEL ESTUDIANTE -->
   <div id="modal-detalle-estudiante"
-    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(15, 23, 42, 0.55) !important; z-index: 10000 !important; align-items: flex-start !important; justify-content: center !important; padding: 32px 16px !important; box-sizing: border-box !important; overflow-y: auto !important;">
-    <div
-      style="background-color: #ffffff !important; border-radius: 16px !important; width: 100% !important; max-width: 640px !important; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important; overflow: hidden !important; text-align: left !important;">
+    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(5, 7, 10, 0.5) !important; z-index: 10000 !important; align-items: flex-start !important; justify-content: center !important; padding: 32px 16px !important; box-sizing: border-box !important; overflow-y: auto !important;">
+    <div role="dialog" aria-modal="true" aria-labelledby="titulo-detalle-estudiante"
+      style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; width: 100% !important; max-width: 640px !important; box-shadow: rgba(5, 7, 10, 0.07) 0px 4px 16px 0px, rgba(5, 7, 10, 0.07) 0px 8px 16px -5px !important; overflow: hidden !important; text-align: left !important; animation: zk-aparecer 0.2s ease both;">
       <div
-        style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; padding: 16px 20px !important; border-bottom: 1px solid #e2e8f0 !important;">
-        <div id="titulo-detalle-estudiante" style="font-size: 17px !important; font-weight: 700 !important; color: #0f172a !important;"></div>
-        <div id="btn-cerrar-detalle"
-          style="cursor: pointer !important; font-size: 18px !important; color: #64748b !important; padding: 2px 8px !important; border-radius: 6px !important;">✕</div>
+        style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; padding: 16px 20px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important;">
+        <div id="titulo-detalle-estudiante" style="font-size: 20px !important; font-weight: 600 !important; color: #0b0e14 !important;"></div>
+        <div id="btn-cerrar-detalle" role="button" tabindex="0" aria-label="Cerrar" title="Cerrar"
+          style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important;">
+          <span data-icono="cerrar"></span></div>
       </div>
-      <div id="cuerpo-detalle-estudiante" style="padding: 18px 20px !important; font-size: 13.5px !important; color: #334155 !important; line-height: 1.5 !important;"></div>
+      <div id="cuerpo-detalle-estudiante" style="padding: 20px !important; font-size: 14px !important; color: #0b0e14 !important; line-height: 1.5 !important;"></div>
     </div>
   </div>
 
@@ -117,7 +123,11 @@
         styleEl.id = 'zhakyz-tablero-style';
         styleEl.innerHTML =
           '#tablero-estudiantes > nolink { display: block; }' +
-          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
+          '#tablero-estudiantes [role="button"]:focus-visible, #tablero-estudiantes input:focus-visible, #tablero-estudiantes select:focus-visible, #tablero-estudiantes textarea:focus-visible, #tablero-estudiantes tr[tabindex]:focus-visible, #tablero-estudiantes [data-kpi]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '#cuerpo-tabla-estudiantes tr[data-usuario]:hover { background-color: rgba(218, 222, 231, 0.2); }' +
+          '#tablero-estudiantes [data-kpi]:hover { border-color: #c2c9d6 !important; }' +
+          '#btn-cerrar-detalle:hover { background-color: #f5f6fa !important; }';
         document.head.appendChild(styleEl);
       }
 
@@ -144,17 +154,43 @@
       var ESPERADAS_PRIMER_ANIO = { 1: 3, 2: 7 };
 
       var ROLES = {
-        ADM: { nombre: 'Administrador', fondo: '#e2e8f0', texto: '#1e293b', puedeAsignar: true },
-        GES: { nombre: 'Gestor Dpto. Industrial', fondo: '#f3e8ff', texto: '#7e22ce', puedeAsignar: false },
-        TUT: { nombre: 'Tutor / Entrevistador', fondo: '#e0f2fe', texto: '#0284c7', puedeAsignar: true }
+        ADM: { nombre: 'Administrador', puedeAsignar: true },
+        GES: { nombre: 'Gestor Dpto. Industrial', puedeAsignar: false },
+        TUT: { nombre: 'Tutor / Entrevistador', puedeAsignar: true }
       };
 
+      // Semáforo (skill diseno-ui → referencia/tokens.md)
       var NIVELES = {
-        rojo: { orden: 3, icono: '🔴', texto: 'Riesgo alto', color: '#b91c1c', fondo: '#fee2e2' },
-        amarillo: { orden: 2, icono: '🟡', texto: 'Riesgo medio', color: '#b45309', fondo: '#fef3c7' },
-        sin_datos: { orden: 1, icono: '⚪', texto: 'Sin calcular', color: '#475569', fondo: '#f1f5f9' },
-        verde: { orden: 0, icono: '🟢', texto: 'Sin riesgo', color: '#15803d', fondo: '#dcfce7' }
+        rojo: { orden: 3, texto: 'Riesgo alto', punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', color: '#910808' },
+        amarillo: { orden: 2, texto: 'Riesgo medio', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
+        sin_datos: { orden: 1, texto: 'Sin calcular', punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', color: '#566481' },
+        verde: { orden: 0, texto: 'Sin riesgo', punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' }
       };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        buscar: '<path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>',
+        descargar: '<path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/>',
+        cerrar: '<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>',
+        estudiantes: '<path d="M4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 0 0 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0 0 20 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zm-7.76-2.78c-1.17-.52-2.61-.9-4.24-.9-1.63 0-3.07.39-4.24.9A2.988 2.988 0 0 0 6 16.39V18h12v-1.61c0-1.18-.68-2.26-1.76-2.74zM8.07 16c.09-.23.13-.39.91-.69.97-.38 1.99-.56 3.02-.56s2.05.18 3.02.56c.77.3.81.46.91.69H8.07zM12 8c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1m0-2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+        asignado: '<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.22 0 .41.1.55.25.12.13.2.31.2.5 0 .41-.34.75-.75.75s-.75-.34-.75-.75c0-.19.08-.37.2-.5.14-.15.33-.25.55-.25zM19 19H5V5h14v14zM12 6c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-6 6.47V18h12v-1.53c0-2.5-3.97-3.58-6-3.58s-6 1.07-6 3.58zM8.31 16c.69-.56 2.38-1.12 3.69-1.12s3.01.56 3.69 1.12H8.31z"/>',
+        tablero: '<path d="m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/><path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>',
+        chevron: '<path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/>',
+        guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
 
       // ---------------------------------------------------------
       // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS ACADÉMICOS FICTICIOS)
@@ -223,7 +259,7 @@
       // CARGAR ESTUDIANTES Y ASIGNACIONES (BASES PROPIAS O DATOS DE PRUEBA)
       function cargarDatos() {
         if (ES_VISTA_LOCAL || !CMID_ESTUDIANTES || !CMID_ASIGNACIONES || !window.M) {
-          document.getElementById('aviso-datos-ejemplo').style.setProperty('display', 'block', 'important');
+          document.getElementById('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
           return Promise.resolve({ estudiantes: ESTUDIANTES_PRUEBA, asignaciones: ASIGNACIONES_PRUEBA });
         }
         return Promise.all([leerBaseMoodle(CMID_ESTUDIANTES), leerBaseMoodle(CMID_ASIGNACIONES)])
@@ -283,18 +319,18 @@
         });
       }
 
-      // CHIP DE UN NIVEL
+      // CHIP DE UN NIVEL: PUNTO DE COLOR + TEXTO
       function chipNivel(nivel) {
         var n = NIVELES[nivel];
-        return '<span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; background-color: ' + n.fondo +
-          ' !important; color: ' + n.color + ' !important; font-size: 11.5px !important; font-weight: 700 !important; padding: 3px 9px !important; border-radius: 20px !important; white-space: nowrap !important;">' +
-          n.icono + ' ' + n.texto + '</span>';
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + n.borde +
+          ' !important; background-color: ' + n.fondo + ' !important; color: ' + n.color + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important; box-sizing: border-box !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + n.punto + ' !important;"></span>' + n.texto + '</span>';
       }
 
+      // CHIP DE ROL (NEUTRO)
       function chipRol(rol) {
-        var r = ROLES[rol];
-        return '<span style="background-color: ' + r.fondo + ' !important; color: ' + r.texto +
-          ' !important; font-size: 10px !important; font-weight: 800 !important; padding: 3px 7px !important; border-radius: 6px !important;">' + rol + '</span>';
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' +
+          rol + '</span>';
       }
 
       // ---------------------------------------------------------
@@ -325,39 +361,44 @@
       function renderizarKpi() {
         var cuenta = function(nivel) { return filas.filter(function(f) { return f.vigente === nivel; }).length; };
         var kpis = [
-          { id: '', icono: '👥', valor: filas.length, texto: 'estudiantes', color: '#0f172a', fondo: '#f8fafc' },
-          { id: 'rojo', icono: '🔴', valor: cuenta('rojo'), texto: 'riesgo alto', color: '#b91c1c', fondo: '#fef2f2' },
-          { id: 'amarillo', icono: '🟡', valor: cuenta('amarillo'), texto: 'riesgo medio', color: '#b45309', fondo: '#fffbeb' },
-          { id: 'verde', icono: '🟢', valor: cuenta('verde'), texto: 'sin riesgo', color: '#15803d', fondo: '#f0fdf4' },
-          { id: 'sin_datos', icono: '⚪', valor: cuenta('sin_datos'), texto: 'sin calcular', color: '#475569', fondo: '#f8fafc' },
-          { id: 'asignados', icono: '✋', valor: filas.filter(function(f) { return f.asignado; }).length, texto: 'con estado asignado', color: '#0284c7', fondo: '#f0f9ff' }
+          { id: '', titulo: 'Estudiantes', valor: filas.length, pie: 'en seguimiento', icono: 'estudiantes' },
+          { id: 'rojo', titulo: 'Riesgo alto', valor: cuenta('rojo'), pie: 'estado vigente', nivel: 'rojo' },
+          { id: 'amarillo', titulo: 'Riesgo medio', valor: cuenta('amarillo'), pie: 'estado vigente', nivel: 'amarillo' },
+          { id: 'verde', titulo: 'Sin riesgo', valor: cuenta('verde'), pie: 'estado vigente', nivel: 'verde' },
+          { id: 'sin_datos', titulo: 'Sin calcular', valor: cuenta('sin_datos'), pie: 'faltan datos o criterio', nivel: 'sin_datos' },
+          { id: 'asignados', titulo: 'Con estado asignado', valor: filas.filter(function(f) { return f.asignado; }).length, pie: 'por un tutor', icono: 'asignado' }
         ];
         document.getElementById('grilla-kpi-tablero').innerHTML = kpis.map(function(k) {
           var activo = filtroKpi === k.id && k.id !== '';
-          return '<div data-kpi="' + k.id + '" style="flex: 1 1 110px !important; background-color: ' + k.fondo +
-            ' !important; border: 2px solid ' + (activo ? k.color : 'transparent') + ' !important; border-radius: 12px !important; padding: 10px 12px !important; cursor: pointer !important; box-sizing: border-box !important;">' +
-            '<div style="font-size: 20px !important; font-weight: 800 !important; color: ' + k.color + ' !important; line-height: 1.2 !important;">' + k.icono + ' ' + k.valor + '</div>' +
-            '<div style="font-size: 11.5px !important; color: #475569 !important;">' + k.texto + '</div></div>';
+          var marca = k.nivel
+            ? '<span style="width: 10px !important; height: 10px !important; border-radius: 50% !important; background-color: ' + NIVELES[k.nivel].punto + ' !important;"></span>'
+            : '<span style="color: #47536b !important;">' + icono(k.icono, 20) + '</span>';
+          return '<div data-kpi="' + k.id + '" role="button" tabindex="0" aria-pressed="' + activo + '" title="' + (k.id ? 'Filtrar la tabla' : 'Ver todos') + '" style="flex: 1 1 120px !important; background-color: ' + (activo ? '#e5f2ff' : '#ffffff') +
+            ' !important; border: 1px solid ' + (activo ? '#026bd4' : 'rgba(194, 201, 214, 0.4)') + ' !important; border-radius: 8px !important; padding: 12px 14px !important; cursor: pointer !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; gap: 4px !important;">' +
+            '<div style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">' + k.titulo + '</div>' +
+            '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important;">' +
+            '<span style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; color: #0b0e14 !important;">' + k.valor + '</span>' + marca + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important;">' + k.pie + '</div></div>';
         }).join('');
       }
 
       // TABLA
       function renderizarTabla() {
         var lista = filasFiltradas();
-        var td = 'padding: 11px 8px !important; border-top: 1px solid #f1f5f9 !important; vertical-align: middle !important;';
+        var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; height: 52px !important; padding: 8px !important; vertical-align: middle !important;';
         document.getElementById('cuerpo-tabla-estudiantes').innerHTML = lista.length ? lista.map(function(f) {
           var asignado = f.asignado
-            ? chipNivel(f.asignado.nivel) + '<div style="font-size: 11px !important; color: #94a3b8 !important; margin-top: 2px !important;">' + escapar(f.asignado.autor) + '</div>'
-            : '<span style="color: #cbd5e1 !important;">—</span>';
-          var calculadoEstilo = f.asignado ? 'opacity: 0.55 !important;' : '';
-          return '<tr data-usuario="' + escapar(f.est.usuario) + '" style="cursor: pointer !important; animation: zk-aparecer 0.25s ease both !important;">' +
-            '<td style="' + td + ' padding-left: 12px !important;"><div style="font-weight: 700 !important; color: #0f172a !important;">' + escapar(f.est.nombre) + '</div>' +
-            '<div style="font-size: 11.5px !important; color: #94a3b8 !important;">' + (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') + '</div></td>' +
-            '<td style="' + td + ' color: #475569 !important;">' + escapar(f.est.cohorte) + '</td>' +
+            ? chipNivel(f.asignado.nivel) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + escapar(f.asignado.autor) + '</div>'
+            : '<span style="color: #94a0b8 !important;">—</span>';
+          var calculadoEstilo = f.asignado ? 'opacity: 0.5 !important;' : '';
+          return '<tr data-usuario="' + escapar(f.est.usuario) + '" tabindex="0" style="cursor: pointer !important; animation: zk-aparecer 0.2s ease both;">' +
+            '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(f.est.nombre) + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important;">' + (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') + '</div></td>' +
+            '<td style="' + td + ' color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + escapar(f.est.cohorte) + '</td>' +
             '<td style="' + td + calculadoEstilo + '">' + chipNivel(f.calculado.nivel) + '</td>' +
             '<td style="' + td + '">' + asignado + '</td>' +
-            '<td style="' + td + ' text-align: right !important; padding-right: 12px !important;"><span style="color: #0284c7 !important; font-weight: 700 !important; white-space: nowrap !important;">Ver →</span></td></tr>';
-        }).join('') : '<tr><td colspan="5" style="padding: 28px !important; text-align: center !important; color: #94a3b8 !important;">No hay estudiantes con esos filtros.</td></tr>';
+            '<td style="' + td + ' text-align: right !important; padding-right: 16px !important;"><span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #026bd4 !important; font-weight: 500 !important; white-space: nowrap !important;">Ver detalle' + icono('chevron', 18) + '</span></td></tr>';
+        }).join('') : '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes con esos filtros.</td></tr>';
         document.getElementById('txt-total-filtrados').textContent =
           'Mostrando ' + lista.length + ' de ' + filas.length + ' estudiantes. Si hay estado asignado, es el que manda; el calculado queda atenuado.';
       }
@@ -382,18 +423,18 @@
 
       // BLOQUE CON TÍTULO
       function bloque(titulo, contenido) {
-        return '<div style="margin: 0 0 18px 0 !important;"><div style="font-size: 11px !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; margin-bottom: 8px !important;">' +
+        return '<div style="margin: 0 0 20px 0 !important;"><div style="font-size: 12px !important; font-weight: 600 !important; color: #47536b !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; margin-bottom: 8px !important;">' +
           titulo + '</div>' + contenido + '</div>';
       }
 
       // TARJETA DE UN ESTADO (CALCULADO O ASIGNADO)
-      function tarjetaEstado(titulo, nivel, texto, pie, vigente) {
-        return '<div style="flex: 1 1 240px !important; border: 2px solid ' + (vigente ? NIVELES[nivel].color : '#e2e8f0') + ' !important; border-radius: 12px !important; padding: 12px 14px !important; box-sizing: border-box !important;">' +
+      function tarjetaEstado(nombreIcono, titulo, nivel, texto, pie, vigente) {
+        return '<div style="flex: 1 1 240px !important; background-color: #ffffff !important; border: 1px solid ' + (vigente ? NIVELES[nivel].borde : 'rgba(194, 201, 214, 0.4)') + ' !important; border-radius: 8px !important; padding: 12px 14px !important; box-sizing: border-box !important;">' +
           '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-bottom: 8px !important;">' +
-          '<b style="font-size: 13px !important; color: #0f172a !important;">' + titulo + '</b>' +
-          (vigente ? '<span style="font-size: 10px !important; font-weight: 800 !important; color: #ffffff !important; background-color: ' + NIVELES[nivel].color + ' !important; padding: 2px 7px !important; border-radius: 6px !important;">VIGENTE</span>' : '') + '</div>' +
-          chipNivel(nivel) + '<div style="margin-top: 8px !important; font-size: 12.5px !important; color: #475569 !important;">' + escapar(texto) + '</div>' +
-          (pie ? '<div style="margin-top: 6px !important; font-size: 11.5px !important; color: #94a3b8 !important;">' + escapar(pie) + '</div>' : '') + '</div>';
+          '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; font-weight: 500 !important; color: #0b0e14 !important;"><span style="color: #47536b !important;">' + icono(nombreIcono, 18) + '</span>' + titulo + '</span>' +
+          (vigente ? '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important;">Vigente</span>' : '') + '</div>' +
+          chipNivel(nivel) + '<div style="margin-top: 8px !important; color: #0b0e14 !important;">' + escapar(texto) + '</div>' +
+          (pie ? '<div style="margin-top: 6px !important; font-size: 12px !important; color: #47536b !important;">' + escapar(pie) + '</div>' : '') + '</div>';
       }
 
       function abrirDetalle(usuario) {
@@ -402,37 +443,42 @@
         usuarioAbierto = usuario;
         document.getElementById('titulo-detalle-estudiante').innerHTML = escapar(f.est.nombre);
 
-        var html = bloque('Datos', '<div style="font-size: 13px !important;">Cohorte <b>' + escapar(f.est.cohorte) + '</b> · ' +
+        var html = bloque('Datos', '<div>Cohorte <b style="font-weight: 600 !important;">' + escapar(f.est.cohorte) + '</b> · ' +
           (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') +
-          (f.est.encuesta ? ' · última encuesta respondida: <b>' + escapar(f.est.encuesta) + '</b>' : '') + '</div>');
+          (f.est.encuesta ? ' · última encuesta respondida: <b style="font-weight: 600 !important;">' + escapar(f.est.encuesta) + '</b>' : '') + '</div>');
 
-        html += bloque('Estados', '<div style="display: flex !important; flex-wrap: wrap !important; gap: 10px !important;">' +
-          tarjetaEstado('🤖 Estado calculado', f.calculado.nivel, f.calculado.motivo, 'Lo genera el sistema al cierre ' + CIERRE_EVALUADO + '.', !f.asignado) +
+        html += bloque('Estados', '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          tarjetaEstado('tablero', 'Estado calculado', f.calculado.nivel, f.calculado.motivo, 'Lo genera el sistema al cierre ' + CIERRE_EVALUADO + '.', !f.asignado) +
           (f.asignado
-            ? tarjetaEstado('✋ Estado asignado', f.asignado.nivel, f.asignado.motivo, f.asignado.autor + ' · ' + f.asignado.fecha, true)
-            : '<div style="flex: 1 1 240px !important; border: 2px dashed #e2e8f0 !important; border-radius: 12px !important; padding: 12px 14px !important; color: #94a3b8 !important; font-size: 12.5px !important; box-sizing: border-box !important;"><b style="color: #64748b !important;">✋ Estado asignado</b><div style="margin-top: 6px !important;">Ningún tutor asignó un estado. Manda el calculado.</div></div>') +
+            ? tarjetaEstado('asignado', 'Estado asignado', f.asignado.nivel, f.asignado.motivo, f.asignado.autor + ' · ' + f.asignado.fecha, true)
+            : '<div style="flex: 1 1 240px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; padding: 12px 14px !important; color: #47536b !important; box-sizing: border-box !important;">' +
+              '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; font-weight: 500 !important; color: #0b0e14 !important;"><span style="color: #47536b !important;">' + icono('asignado', 18) + '</span>Estado asignado</span>' +
+              '<div style="margin-top: 6px !important;">Ningún tutor asignó un estado. Manda el calculado.</div></div>') +
           '</div>');
 
         var historial = historiales[usuario] || [];
         html += bloque('Historial de asignaciones', historial.length ?
           historial.slice().reverse().map(function(h) {
-            return '<div style="border-left: 3px solid #e2e8f0 !important; padding: 2px 0 2px 10px !important; margin-bottom: 8px !important; font-size: 12.5px !important;">' +
-              (h.nivel === 'auto' ? '↺ Quitó el estado asignado' : chipNivel(h.nivel)) + ' <span style="color: #94a3b8 !important;">' + escapar(h.fecha) + ' · ' + escapar(h.autor) + '</span>' +
-              '<div>' + escapar(h.motivo) + '</div></div>';
-          }).join('') : '<span style="color: #94a3b8 !important; font-size: 12.5px !important;">Sin asignaciones.</span>');
+            return '<div style="border-left: 2px solid #dadee7 !important; padding: 2px 0 2px 12px !important; margin-bottom: 10px !important;">' +
+              '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important;">' +
+              (h.nivel === 'auto' ? '<span style="font-weight: 500 !important;">Quitó el estado asignado</span>' : chipNivel(h.nivel)) +
+              '<span style="font-size: 12px !important; color: #47536b !important;">' + escapar(h.fecha) + ' · ' + escapar(h.autor) + '</span></div>' +
+              '<div style="margin-top: 4px !important;">' + escapar(h.motivo) + '</div></div>';
+          }).join('') : '<span style="color: #47536b !important;">Sin asignaciones.</span>');
 
         if (ROLES[rolActual].puedeAsignar) {
-          var campo = 'padding: 8px 10px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 13px !important; box-sizing: border-box !important;';
+          var campo = 'padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
           html += bloque('Asignar estado (Req 10)',
             '<div style="display: flex !important; flex-direction: column !important; gap: 8px !important;">' +
-            '<select id="campo-nivel-asignado" style="' + campo + '">' +
-            '<option value="">Elegí el estado…</option><option value="rojo">🔴 Riesgo alto</option><option value="amarillo">🟡 Riesgo medio</option><option value="verde">🟢 Sin riesgo</option>' +
-            (f.asignado ? '<option value="auto">↺ Quitar el estado asignado (vuelve a mandar el calculado)</option>' : '') + '</select>' +
-            '<textarea id="campo-motivo-asignado" rows="2" placeholder="Motivo (obligatorio): por ejemplo, resultado de la entrevista" style="' + campo + ' resize: vertical !important; font-family: inherit !important;"></textarea>' +
-            '<div id="txt-error-asignacion" style="display: none; color: #b91c1c !important; font-size: 12px !important;"></div>' +
-            '<div id="btn-guardar-asignacion" style="align-self: flex-end !important; background-color: #0284c7 !important; color: #ffffff !important; border-radius: 8px !important; padding: 9px 16px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important;">Guardar</div></div>');
+            '<select id="campo-nivel-asignado" aria-label="Estado a asignar" style="height: 40px !important; ' + campo + '">' +
+            '<option value="">Elegí el estado…</option><option value="rojo">Riesgo alto</option><option value="amarillo">Riesgo medio</option><option value="verde">Sin riesgo</option>' +
+            (f.asignado ? '<option value="auto">Quitar el estado asignado (vuelve a mandar el calculado)</option>' : '') + '</select>' +
+            '<textarea id="campo-motivo-asignado" rows="2" aria-label="Motivo" placeholder="Motivo (obligatorio): por ejemplo, resultado de la entrevista" style="resize: vertical !important; ' + campo + '"></textarea>' +
+            '<div id="txt-error-asignacion" style="display: none; color: #910808 !important; font-size: 13px !important;"></div>' +
+            '<div id="btn-guardar-asignacion" role="button" tabindex="0" style="align-self: flex-end !important; height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important;">' +
+            icono('guardar', 18) + '<span>Guardar</span></div></div>');
         } else {
-          html += '<div style="font-size: 12px !important; color: #94a3b8 !important;">Solo tutores y administradores pueden asignar estados.</div>';
+          html += '<div style="display: flex !important; gap: 8px !important; align-items: center !important; padding: 8px 12px !important; border-radius: 8px !important; background-color: #e5f2ff !important; border: 1px solid rgba(77, 166, 255, 0.4) !important;"><span style="color: #026bd4 !important;">' + icono('info', 18) + '</span>Solo tutores y administradores pueden asignar estados.</div>';
         }
 
         document.getElementById('cuerpo-detalle-estudiante').innerHTML = html;
@@ -456,7 +502,7 @@
         }
         var usuario = usuarioAbierto;
         var btn = document.getElementById('btn-guardar-asignacion');
-        btn.textContent = 'Guardando…';
+        btn.lastChild.textContent = 'Guardando…';
         guardarAsignacionMoodle(usuario, nivel, motivo).then(function(res) {
           var autor = window.M && M.cfg && M.cfg.fullname ? M.cfg.fullname : (res.local ? 'Vista previa local' : 'Usuario actual');
           (historiales[usuario] = historiales[usuario] || []).push({
@@ -468,7 +514,7 @@
           renderizarTodo();
           abrirDetalle(usuario);
         }).catch(function(e) {
-          btn.textContent = 'Guardar';
+          btn.lastChild.textContent = 'Guardar';
           error.textContent = 'No se pudo guardar: ' + e.message;
           error.style.setProperty('display', 'block', 'important');
         });
@@ -500,41 +546,49 @@
       // ---------------------------------------------------------
       function aplicarRol(rol) {
         rolActual = rol;
-        document.getElementById('badge-rol-tablero').innerHTML = chipRol(rol) + '<span>' + ROLES[rol].nombre + '</span>';
+        document.getElementById('badge-rol-tablero').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
         var botones = document.querySelectorAll('[data-preview-rol]');
         for (var i = 0; i < botones.length; i++) {
           var activo = botones[i].getAttribute('data-preview-rol') === rol;
-          botones[i].style.backgroundColor = activo ? '#38bdf8' : '#334155';
-          botones[i].style.color = activo ? '#0f172a' : '#e2e8f0';
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
         }
         if (usuarioAbierto) abrirDetalle(usuarioAbierto);
       }
 
       function crearBarraPreview() {
         var barra = document.createElement('div');
-        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 10px !important; padding: 10px 14px !important; margin: -8px 0 20px 0 !important; background-color: #0f172a !important; color: #e2e8f0 !important; border-radius: 10px !important; font-size: 13px !important;');
-        barra.innerHTML = '<b>👁 Vista previa local — ver como:</b>' + Object.keys(ROLES).map(function(rol) {
-          return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 800; font-size: 12px;">' + rol + '</button>';
-        }).join('');
-        var cont = document.getElementById('tablero-estudiantes');
-        cont.insertBefore(barra, cont.firstChild);
+        barra.id = 'barra-preview-tablero';
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' +
+          Object.keys(ROLES).map(function(rol) {
+            return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+          }).join('');
+        // La barra va debajo del aviso de datos de prueba
+        var aviso = document.getElementById('aviso-datos-ejemplo');
+        aviso.parentNode.insertBefore(barra, aviso.nextSibling);
       }
 
       // ---------------------------------------------------------
       // DELEGACIÓN DE EVENTOS
       // ---------------------------------------------------------
+      function activarKpi(kpi) {
+        var id = kpi.getAttribute('data-kpi');
+        filtroKpi = filtroKpi === id ? '' : id;
+        document.getElementById('filtro-semaforo').value = '';
+        renderizarTodo();
+      }
+
       document.addEventListener('click', function(e) {
         var t = e.target;
         if (!t.closest || !t.closest('#tablero-estudiantes')) return;
         var btnRol = t.closest('[data-preview-rol]');
         if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
         var kpi = t.closest('[data-kpi]');
-        if (kpi) {
-          var id = kpi.getAttribute('data-kpi');
-          filtroKpi = filtroKpi === id ? '' : id;
-          document.getElementById('filtro-semaforo').value = '';
-          return renderizarTodo();
-        }
+        if (kpi) return activarKpi(kpi);
         if (t.closest('#btn-exportar-csv')) return exportarCsv();
         if (t.closest('#btn-cerrar-detalle') || t.id === 'modal-detalle-estudiante') return cerrarDetalle();
         if (t.closest('#btn-guardar-asignacion')) return guardarAsignacion();
@@ -552,12 +606,20 @@
       });
 
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && usuarioAbierto) cerrarDetalle();
+        if (e.key === 'Escape' && usuarioAbierto) return cerrarDetalle();
+        var t = e.target;
+        if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('#tablero-estudiantes') &&
+          (t.getAttribute('role') === 'button' || t.matches('tr[data-usuario]'))) {
+          e.preventDefault();
+          t.click();
+        }
       });
 
       // ---------------------------------------------------------
       // INICIO
       // ---------------------------------------------------------
+      var huecos = document.querySelectorAll('#tablero-estudiantes [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
       document.getElementById('txt-cierre-evaluado').textContent = CIERRE_EVALUADO;
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
@@ -567,9 +629,9 @@
         renderizarTodo();
       }).catch(function(e) {
         document.getElementById('cuerpo-tabla-estudiantes').innerHTML =
-          '<tr><td colspan="5" style="padding: 24px !important; color: #b91c1c !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
+          '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
       });
     })();
   </script>
-</nolink>
+  </nolink>
 </div>
