@@ -33,11 +33,23 @@ Las reglas de estilo están en **`RULES.md`** (raíz del repo), que es la fuente
 - **Los modelos de `docs/models/` no se aplican** hasta que el usuario lo indique.
 - Todo texto que se inserta con `innerHTML` pasa por `escapar()`.
 - **Dentro del JS, las etiquetas de cierre van escapadas: `'<\/svg>'`, no `'</svg>'`.** Como `content.html` no tiene `<body>`, Live Server inyecta su script antes del primer `</svg>` que encuentra y rompe el JS. Además, es buena práctica en todo `<script>` inline.
+- **Todo el contenido va dentro de `<nolink>…</nolink>`**, justo adentro del contenedor raíz. El filtro de Moodle "Autoenlace de nombres de actividades" convierte palabras como "Encuestas" o "Preguntas" en links a **actividades de otros equipos**. Solo respeta `<nolink>` o `<span class="nolink">`; `class="nolink"` en un `div` no alcanza.
+  - **`<nolink>` necesita `display: block`** desde el `<style>` inyectado (`'#<id> > nolink { display: block; }'`). Si no, el navegador lo trata como elemento en línea y en pantallas angostas tapa los clics. No se le puede poner `style` a la etiqueta, porque Moodle solo reconoce `<nolink>` exacto.
+- **Tablas:** `border: 0 !important` en `th` y `td` (más el `border-top` de la fila): el tema Adaptable agrega bordes verticales.
+- **Sin entidades HTML literales dentro del JS** (`'&#39;'`, `'&amp;'`…): escribirlas como `'\x26#39;'`, `'\x26amp;'`. El editor de Moodle decodifica las entidades al abrir la actividad para editarla, y si alguien guarda desde ahí, el script queda roto.
 - **Vista previa local:** la barra de roles aparece con `file://` y con `localhost` o `127.0.0.1` (Live Server). En Moodle no se dibuja.
+
+## ¿Sección simple o ítem de un grupo?
+
+- **Sección simple:** una pantalla sola → `section/<nombre>/content.html`.
+- **Ítem de un grupo:** varias pantallas que van juntas en una **subsección de Moodle** (por ejemplo "Encuestas y Preguntas" → `preguntas` y `encuestas`) → `section/<grupo>/<item>/content.html`.
+  - El grupo tiene un `section/<grupo>/seccion.json` con el nombre de la subsección en Moodle y la lista de ítems (carpeta, nombre, tipo y `cmid` cuando se publique). Si el grupo es nuevo, crearlo. Si ya existe, agregar el ítem a `items`. Ejemplo: `section/encuestas_preguntas/seccion.json`.
+  - Los links relativos desde un ítem suben dos niveles: `../../<otra>/content.html`. Desde una sección simple hacia un ítem: `../<grupo>/<item>/content.html`.
+  - El contenedor raíz de cada ítem tiene un id propio y único (por ejemplo `banco-preguntas`, `armado-encuestas`), porque en Moodle varios ítems pueden convivir en la misma página del curso.
 
 ## Pasos
 
-1. **Copiar la plantilla** [`plantilla.html`](plantilla.html) a `section/<nombre_snake>/content.html` y reemplazar:
+1. **Copiar la plantilla** [`plantilla.html`](plantilla.html) a `section/<nombre_snake>/content.html` (o a `section/<grupo>/<item>/content.html`) y reemplazar:
    - `__ID_SECCION__`: id del contenedor (por ejemplo, `tablero-estudiantes`).
    - `__SECCION__`: sufijo de los IDs internos (por ejemplo, `tablero`).
    - `__TITULO__`, `__SUBTITULO__` y `__ROLES__` (por ejemplo, `ADM, GES, TUT`).

@@ -2,6 +2,8 @@
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
   style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 28px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
 
   <!-- ENCABEZADO -->
   <div
@@ -114,6 +116,7 @@
         var styleEl = document.createElement('style');
         styleEl.id = 'zhakyz-tablero-style';
         styleEl.innerHTML =
+          '#tablero-estudiantes > nolink { display: block; }' +
           '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
         document.head.appendChild(styleEl);
       }
@@ -276,7 +279,7 @@
       // ---------------------------------------------------------
       function escapar(s) {
         return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
-          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
         });
       }
 
@@ -568,4 +571,5 @@
       });
     })();
   </script>
+</nolink>
 </div>
