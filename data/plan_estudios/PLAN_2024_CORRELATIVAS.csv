@@ -1,0 +1,77 @@
+plan,codigo_materia,codigo_requerida,nombre_requerida
+2024,INGM101,INGRA01,Introducción a la Ciencia y la Ingeniería
+2024,INGM105,INGRA01,Introducción a la Ciencia y la Ingeniería
+2024,ING1103,INGRA01,Introducción a la Ciencia y la Ingeniería
+2024,INGM102,INGM101,Análisis Matemático I
+2024,INGM106,INGM105,Álgebra I- B
+2024,INGF101,INGM101,Análisis Matemático I
+2024,INGF101,INGM105,Álgebra I- B
+2024,ING6101,INGM101,Análisis Matemático I
+2024,ING6101,INGM105,Álgebra I- B
+2024,INGF103,INGF101,Física A
+2024,INGM103,INGM102,Análisis Matemático II
+2024,INGM103,INGM106,Álgebra II
+2024,INGM108,INGM102,Análisis Matemático II
+2024,ING2218,INGF101,Física A
+2024,ING8408,INGRA01,Introducción a la Ciencia y la Ingeniería
+2024,ING8501,INGM102,Análisis Matemático II
+2024,ING8302,INGM108,Probabilidad y Estadística
+2024,ING8414,INGM102,Análisis Matemático II
+2024,ING3209,INGF103,Física B- II
+2024,ING3209,INGM103,Análisis Matemático III
+2024,ING2221,ING1103,Fundamentos de Química
+2024,ING2221,INGM102,Análisis Matemático II
+2024,ING2221,INGF101,Física A
+2024,ING8409,ING8408,Inglés I
+2024,ING8301,ING8302,Administración Estratégica
+2024,ING8201,INGM108,Probabilidad y Estadística
+2024,ING8308,ING8302,Administración Estratégica
+2024,ING2219,ING1103,Fundamentos de Química
+2024,ING2219,ING2218,Mecánica del Sólido
+2024,ING8405,INGM103,Análisis Matemático III
+2024,ING8405,ING8302,Administración Estratégica
+2024,ING2217,INGM102,Análisis Matemático II
+2024,ING2217,ING2218,Mecánica del Sólido
+2024,ING8502,ING8501,Proyecto de Ingeniería Industrial I
+2024,ING8502,ING8302,Administración Estratégica
+2024,ING8310,ING8301,Administración de Operaciones
+2024,ING8310,ING8201,Investigación Operativa A
+2024,ING8202,ING8201,Investigación Operativa A
+2024,ING2104,INGM106,Álgebra II
+2024,INGF106,INGF103,Física B- II
+2024,ING8307,ING8301,Administración de Operaciones
+2024,ING8307,ING8201,Investigación Operativa A
+2024,ING8303,ING3209,Máquinas y Equipos Industriales I
+2024,ING8303,ING2221,Termodinámica Industrial
+2024,ING8303,ING2217,Mecánica de Fluidos
+2024,ING8311,ING8310,Planificación y Control de la Producción
+2024,ING8402,ING8405,"Ética, Legislación y Propiedad Intelectual en el Ejercicio Profesional"
+2024,ING8402,ING8310,Planificación y Control de la Producción
+2024,ING8306,ING8414,Conceptos de Economía Industrial
+2024,ING8306,ING8310,Planificación y Control de la Producción
+2024,ING8415,ING8409,Inglés II
+2024,ING8503,ING8502,Proyecto de Ingeniería Industrial II
+2024,ING8503,ING8310,Planificación y Control de la Producción
+2024,ING8503,ING8202,Investigación Operativa B
+2024,ING8305,ING8301,Administración de Operaciones
+2024,ING8305,ING8202,Investigación Operativa B
+2024,ING2220,ING2218,Mecánica del Sólido
+2024,ING2220,ING2219,Tecnología de los Materiales
+2024,ING2220,INGF106,Física Experimental A
+2024,ING2222,ING2104,Sistemas de Representación para Ingeniería
+2024,ING2222,ING8303,Diseño de Instalaciones y Procesos
+2024,ING8416,ING8415,Inglés Profesional A
+2024,ING8312,ING8303,Diseño de Instalaciones y Procesos
+2024,ING8312,ING8311,Sistemas de Gestión y Mejora Continua
+2024,ING8312,ING2222,Tecnología de Control
+2024,ING8418,ING8414,Conceptos de Economía Industrial
+2024,ING8418,ING8307,Gestión de la Logística Integral y Cadena de Suministros
+2024,ING8417,ING6101,Fundamentos de la Programación
+2024,ING8417,ING8502,Proyecto de Ingeniería Industrial II
+2024,ING8504,ING8311,Sistemas de Gestión y Mejora Continua
+2024,ING8504,ING8503,Proyecto de Ingeniería Industrial III
+2024,ING8504,ING8305,Formulación y Evaluación de Proyectos
+2024,ING8309,ING8310,Planificación y Control de la Producción
+2024,ING8309,ING2220,Introducción a los Procesos de Fabricación
+2024,ING8304,ING8308,Gestión de la Tecnología y la Innovación
+2024,ING8304,ING8402,Comportamiento Organizacional y Relaciones del Trabajo
