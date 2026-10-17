@@ -1,0 +1,768 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Preguntas" (cmid 59506) · 2026-10-17 -->
+<!-- ÍTEM: PREGUNTAS (BANCO DE PREGUNTAS) · GRUPO encuestas_preguntas (ROLES ADM, GES) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- DATOS: BASE "Encuestas" DE ZHAKYZ (cmid 59498, d=114) — data/moodle/BASE_ENCUESTAS.json -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="banco-preguntas"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- AVISO: ORIGEN DE LOS DATOS -->
+  <div id="aviso-datos-encuestas"
+    style="display: flex !important; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; border-radius: 10px !important; color: #0b0e14 !important;">
+  </div>
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 24px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · SBIRE</div>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Preguntas</h3>
+      <p
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Banco de preguntas de las encuestas: tipo, opciones de respuesta y criticidad de cada opción (Req 3).</p>
+    </div>
+    <div id="badge-rol-encuestas"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div id="grilla-resumen-encuestas"
+    style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important; margin-bottom: 24px !important;">
+  </div>
+
+  <!-- BARRA DE HERRAMIENTAS -->
+  <div
+    style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; align-items: center !important; margin-bottom: 16px !important;">
+    <span style="position: relative !important; display: inline-flex !important; align-items: center !important; flex: 1 1 220px !important; color: #94a0b8 !important;">
+      <span data-icono="buscar" style="position: absolute !important; left: 10px !important;"></span>
+      <input id="filtro-busqueda-preguntas" type="search" placeholder="Buscar pregunta" aria-label="Buscar pregunta"
+        style="width: 100% !important; height: 40px !important; padding: 8px 12px 8px 36px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important;">
+    </span>
+    <select id="filtro-tipo-preguntas" aria-label="Filtrar por tipo"
+      style="height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important;">
+      <option value="">Todos los tipos</option>
+    </select>
+    <div id="btn-nueva-pregunta" data-accion="nueva" role="button" tabindex="0" data-roles="ADM"
+      style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important;">
+      <span data-icono="agregar"></span>Nueva pregunta</div>
+  </div>
+
+  <!-- TABLA DE PREGUNTAS -->
+  <div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #ffffff !important;">
+    <table style="width: 100% !important; border-collapse: collapse !important; min-width: 600px !important; margin: 0 !important;">
+      <thead>
+        <tr>
+          <th style="text-align: right !important; width: 48px !important; padding: 0 12px !important; height: 52px !important; background-color: #f5f6fa !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important; border: 0 !important;">id</th>
+          <th style="text-align: left !important; padding: 0 12px !important; height: 52px !important; background-color: #f5f6fa !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important; border: 0 !important;">Pregunta</th>
+          <th style="text-align: left !important; padding: 0 12px !important; height: 52px !important; background-color: #f5f6fa !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important; border: 0 !important;">Tipo</th>
+          <th style="text-align: left !important; padding: 0 12px !important; height: 52px !important; background-color: #f5f6fa !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important; border: 0 !important;">Criticidad</th>
+          <th style="text-align: right !important; padding: 0 12px !important; height: 52px !important; background-color: #f5f6fa !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important; border: 0 !important;"></th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla-preguntas"></tbody>
+    </table>
+  </div>
+  <p id="txt-total-preguntas" style="margin: 10px 0 0 0 !important; color: #47536b !important; font-size: 12px !important;"></p>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- MODAL: EDITOR DE PREGUNTA -->
+  <div id="modal-editor-pregunta" role="dialog" aria-modal="true" aria-labelledby="titulo-editor-pregunta"
+    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(5, 7, 10, 0.5) !important; z-index: 10000 !important; align-items: flex-start !important; justify-content: center !important; padding: 32px 16px !important; box-sizing: border-box !important; overflow-y: auto !important;">
+    <div
+      style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; width: 100% !important; max-width: 680px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; text-align: left !important;">
+      <div
+        style="display: flex !important; align-items: center !important; justify-content: space-between !important; padding: 16px 20px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important;">
+        <span id="titulo-editor-pregunta" style="font-size: 20px !important; font-weight: 600 !important;"></span>
+        <span id="btn-cerrar-editor" data-icono="cerrar" role="button" tabindex="0" aria-label="Cerrar"
+          style="width: 32px !important; height: 32px !important; border-radius: 8px !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important;"></span>
+      </div>
+      <div id="cuerpo-editor-pregunta" style="padding: 16px 20px !important;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRMAR BORRADO -->
+  <div id="modal-borrar-pregunta" role="dialog" aria-modal="true"
+    style="display: none; position: fixed !important; inset: 0 !important; background-color: rgba(5, 7, 10, 0.5) !important; z-index: 10001 !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div
+      style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; width: 100% !important; max-width: 440px !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
+      <div style="font-size: 20px !important; font-weight: 600 !important; margin-bottom: 8px !important;">Eliminar pregunta</div>
+      <p id="txt-borrar-pregunta" style="margin: 0 0 20px 0 !important; color: #47536b !important;"></p>
+      <div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important;">
+        <div id="btn-cancelar-borrado" role="button" tabindex="0"
+          style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important;">Cancelar</div>
+        <div id="btn-confirmar-borrado" role="button" tabindex="0"
+          style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #910808 !important; background-color: #c20a0a !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important;">
+          <span data-icono="borrar"></span>Eliminar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-encuestas-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-encuestas-style';
+        styleEl.innerHTML =
+          '#banco-preguntas > nolink { display: block; }' +
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
+          '#banco-preguntas [role="button"]:focus-visible, #banco-preguntas input:focus-visible, #banco-preguntas select:focus-visible, #banco-preguntas textarea:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      var ROL_INICIAL = 'ADM';
+      // Vista previa local: archivo abierto directo o con Live Server
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Base "Encuestas" de la sección Zhakyz (data/moodle/BASE_ENCUESTAS.json)
+      var CMID_ENCUESTAS = 59498;
+      var DATAID_ENCUESTAS = 114;
+      // Escala de criticidad de cada opción de respuesta
+      var CRITICIDAD_MIN = 0;
+      var CRITICIDAD_MAX = 10;
+
+      var ROLES = {
+        ADM: { nombre: 'Administrador', puedeEditar: true },
+        GES: { nombre: 'Gestor Dpto. Industrial', puedeEditar: false }
+      };
+
+      // Tipos de pregunta: el valor es la opción de la lista desplegable "tipo" de la base
+      var TIPOS = {
+        'texto': { etiqueta: 'Texto libre', conOpciones: false, ayuda: 'Respuesta abierta. No tiene opciones ni criticidad.' },
+        'numero': { etiqueta: 'Número', conOpciones: true, ayuda: 'El estudiante escribe un número. La criticidad sale del rango en el que cae; los rangos no se le muestran.' },
+        'seleccion unica': { etiqueta: 'Selección única', conOpciones: true, ayuda: 'El estudiante elige una sola opción. Sirve también para Verdadero / Falso.' },
+        'seleccion multiple': { etiqueta: 'Selección múltiple', conOpciones: true, ayuda: 'El estudiante puede marcar varias opciones.' }
+      };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        buscar: '<path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>',
+        agregar: '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>',
+        editar: '<path d="m14.06 9.02.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>',
+        borrar: '<path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/>',
+        quitar: '<path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        cerrar: '<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA (PREGUNTAS DE EJEMPLO, SOLO EN VISTA LOCAL)
+      // ---------------------------------------------------------
+      var PREGUNTAS_PRUEBA = [
+        { rid: 'p1', id: 1, pregunta: '¿Trabajás actualmente?', tipo: 'seleccion unica',
+          opciones: [{ texto: 'No', criticidad: 0 }, { texto: 'Sí, hasta 20 horas semanales', criticidad: 4 }, { texto: 'Sí, más de 20 horas semanales', criticidad: 8 }] },
+        { rid: 'p2', id: 2, pregunta: '¿Cuántas materias estás cursando este cuatrimestre?', tipo: 'numero',
+          opciones: [{ texto: '0-0', criticidad: 10 }, { texto: '1-2', criticidad: 5 }, { texto: '3-', criticidad: 0 }] },
+        { rid: 'p3', id: 3, pregunta: '¿Qué dificultades tuviste este cuatrimestre?', tipo: 'seleccion multiple',
+          opciones: [{ texto: 'Horarios', criticidad: 3 }, { texto: 'Contenidos de las materias', criticidad: 5 }, { texto: 'Económicas', criticidad: 6 }, { texto: 'Personales o familiares', criticidad: 6 }, { texto: 'Ninguna', criticidad: 0 }] },
+        { rid: 'p4', id: 4, pregunta: '¿Cómo te sentís con la carrera?', tipo: 'seleccion unica',
+          opciones: [{ texto: 'Muy conforme', criticidad: 0 }, { texto: 'Conforme', criticidad: 2 }, { texto: 'Poco conforme', criticidad: 6 }, { texto: 'Estoy pensando en dejarla', criticidad: 10 }] },
+        { rid: 'p5', id: 5, pregunta: '¿Querés contarnos algo más?', tipo: 'texto', opciones: [] }
+      ];
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS: BASE "Encuestas" (SIN CAMBIAR PLANTILLAS)
+      // ---------------------------------------------------------
+      // Convierte las líneas de "respuestas" y "criticidad" en opciones alineadas
+      function opcionesDesdeTexto(respuestas, criticidad) {
+        var r = (respuestas || '').split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+        var c = (criticidad || '').split('\n').map(function(s) { return s.trim(); });
+        return r.map(function(texto, i) {
+          var n = parseFloat((c[i] || '').replace(',', '.'));
+          return { texto: texto, criticidad: isNaN(n) ? null : n };
+        });
+      }
+
+      // TEXTO DE UN VALOR RENDERIZADO, CON UN SALTO DE LÍNEA POR CADA <br> O PÁRRAFO
+      function textoConLineas(el) {
+        var copia = el.cloneNode(true);
+        copia.querySelectorAll('br').forEach(function(br) { br.replaceWith('\n'); });
+        copia.querySelectorAll('p, div').forEach(function(p) { p.append('\n'); });
+        return copia.textContent.replace(/\n{2,}/g, '\n').trim();
+      }
+
+      // LEER LAS ENTRADAS: PRIMERO UNA PLANTILLA PROPIA (.zk-registro), SI NO LA PLANTILLA POR DEFECTO DE MOODLE
+      function parsearListado(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var propias = doc.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return Array.prototype.map.call(propias, function(el) {
+            var d = el.dataset;
+            return { rid: d.rid, id: parseInt(d.id, 10), pregunta: d.pregunta, tipo: d.tipo, opciones: opcionesDesdeTexto(d.respuestas, d.criticidad) };
+          });
+        }
+        return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
+          var valores = {};
+          entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            var celdas = fila.children;
+            if (celdas.length >= 2) valores[celdas[0].textContent.trim().toLowerCase()] = textoConLineas(celdas[1]);
+          });
+          var editar = entrada.querySelector('a[href*="edit.php"][href*="rid="]');
+          var rid = editar ? (editar.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+          return { rid: rid, id: parseInt(valores.id, 10), pregunta: valores.pregunta || '', tipo: valores.tipo || 'texto', opciones: opcionesDesdeTexto(valores.respuestas, valores.criticidad) };
+        });
+      }
+
+      function leerPreguntasMoodle() {
+        return fetch(M.cfg.wwwroot + '/mod/data/view.php?id=' + CMID_ENCUESTAS + '&perpage=1000', { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(parsearListado);
+      }
+
+      // GUARDAR (ALTA O EDICIÓN) USANDO EL FORMULARIO NATIVO DE MOODLE: NO HACE FALTA CONOCER LOS field_<id>
+      function guardarPreguntaMoodle(p) {
+        var url = M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_ENCUESTAS + (p.rid ? '&rid=' + p.rid : '');
+        return fetch(url, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de la base.');
+            // Ubicar cada control por la etiqueta de su campo
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
+            });
+            var requeridos = ['id', 'pregunta', 'tipo', 'respuestas', 'criticidad'];
+            var faltan = requeridos.filter(function(k) { return !Object.keys(porCampo).some(function(e) { return e.indexOf(k) === 0; }); });
+            if (faltan.length) throw new Error('Faltan campos en la base: ' + faltan.join(', '));
+            var nombre = function(k) { return porCampo[Object.keys(porCampo).filter(function(e) { return e.indexOf(k) === 0; })[0]]; };
+            var fd = new FormData(form);
+            // El rid define si es alta (0) o edición: no se confía en lo que traiga el formulario
+            fd.set('d', String(DATAID_ENCUESTAS));
+            fd.set('rid', p.rid ? String(p.rid) : '0');
+            fd.set(nombre('id'), String(p.id));
+            fd.set(nombre('pregunta'), p.pregunta);
+            fd.set(nombre('tipo'), p.tipo);
+            fd.set(nombre('respuestas'), p.opciones.map(function(o) { return escapar(o.texto); }).join('<br>'));
+            fd.set(nombre('criticidad'), p.opciones.map(function(o) { return o.criticidad === null ? '' : String(o.criticidad); }).join('<br>'));
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
+            return r.text();
+          })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var error = doc.querySelector('.error, .alert-danger, .invalid-feedback');
+            if (error && error.textContent.trim()) throw new Error(error.textContent.trim());
+          });
+      }
+
+      // BORRAR UNA ENTRADA (CONFIRMACIÓN NATIVA DE MOODLE)
+      function borrarPreguntaMoodle(p) {
+        var fd = new FormData();
+        fd.append('d', DATAID_ENCUESTAS);
+        fd.append('delete', p.rid);
+        fd.append('confirm', 1);
+        fd.append('sesskey', M.cfg.sesskey);
+        return fetch(M.cfg.wwwroot + '/mod/data/view.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function(r) { if (!r.ok) throw new Error('Moodle respondió ' + r.status); });
+      }
+
+      // ---------------------------------------------------------
+      // ESTADO EN MEMORIA
+      // ---------------------------------------------------------
+      var rolActual = ROL_INICIAL;
+      var preguntas = [];
+      var conectado = !ES_VISTA_LOCAL && !!window.M && !!CMID_ENCUESTAS;
+      var editando = null; // copia de la pregunta que se edita
+      var aBorrar = null;
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function mostrar(el, visible, modo) {
+        el.style.setProperty('display', visible ? (modo || 'flex') : 'none', 'important');
+      }
+
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      function chipTipo(tipo) {
+        var t = TIPOS[tipo] || { etiqueta: tipo };
+        return '<span style="display: inline-flex !important; align-items: center !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid #dadee7 !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' + escapar(t.etiqueta) + '</span>';
+      }
+
+      // RANGO DE CRITICIDAD DE UNA PREGUNTA, O AVISO SI FALTA
+      // ---------------------------------------------------------
+      // RANGOS DEL TIPO NÚMERO (SE GUARDAN COMO "desde-hasta"; "3-" = 3 o más)
+      // ---------------------------------------------------------
+      function parsearRango(texto) {
+        var t = String(texto || '').trim().toLowerCase();
+        var m;
+        if ((m = t.match(/^(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)?$/))) return { desde: parseFloat(m[1].replace(',', '.')), hasta: m[2] === undefined ? null : parseFloat(m[2].replace(',', '.')) };
+        if ((m = t.match(/^(\d+(?:[.,]\d+)?)\s*o\s*m[aá]s$/))) return { desde: parseFloat(m[1].replace(',', '.')), hasta: null };
+        if ((m = t.match(/^(\d+(?:[.,]\d+)?)$/))) { var n = parseFloat(m[1].replace(',', '.')); return { desde: n, hasta: n }; }
+        return null;
+      }
+
+      // TEXTO LEGIBLE DE UN RANGO: "0", "1 a 2", "3 o más"
+      function etiquetaRango(texto) {
+        var r = parsearRango(texto);
+        if (!r) return texto;
+        if (r.hasta === null) return r.desde + ' o más';
+        return r.desde === r.hasta ? String(r.desde) : r.desde + ' a ' + r.hasta;
+      }
+
+      function resumenCriticidad(p) {
+        if (!TIPOS[p.tipo] || !TIPOS[p.tipo].conOpciones) return '<span style="color: #94a0b8 !important;">No aplica</span>';
+        var valores = p.opciones.map(function(o) { return o.criticidad; });
+        if (!valores.length || valores.some(function(v) { return v === null; })) {
+          return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; color: #7a5d06 !important; font-weight: 600 !important;"><span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: #c2940a !important;"></span>Incompleta</span>';
+        }
+        return '<span style="color: #0b0e14 !important;">' + Math.min.apply(null, valores) + ' – ' + Math.max.apply(null, valores) +
+          '</span> <span style="color: #47536b !important; font-size: 12px !important;">· ' + p.opciones.length + (p.tipo === 'numero' ? (p.opciones.length === 1 ? ' rango' : ' rangos') : ' opciones') + '</span>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; box-sizing: border-box !important;';
+
+      function renderizarAviso() {
+        var aviso = document.getElementById('aviso-datos-encuestas');
+        if (conectado) {
+          aviso.style.setProperty('background-color', '#e5f2ff', 'important');
+          aviso.style.setProperty('border', '1px solid rgba(77, 166, 255, 0.4)', 'important');
+          aviso.innerHTML = '<span style="color: #026bd4 !important; padding-top: 1px !important;">' + icono('info', 20) + '</span><span>Conectado a la base <b style="font-weight: 600 !important;">Encuestas</b> de la sección Zhakyz (Database).</span>';
+        } else {
+          aviso.style.setProperty('background-color', '#fdf1ce', 'important');
+          aviso.style.setProperty('border', '1px solid rgba(246, 206, 85, 0.5)', 'important');
+          aviso.innerHTML = '<span style="color: #aa8109 !important; padding-top: 1px !important;">' + icono('alerta', 20) + '</span><span><b style="font-weight: 600 !important;">Datos de prueba.</b> Vista local con preguntas de ejemplo: los cambios no se guardan en Moodle. En Moodle, esta sección lee y escribe la base Encuestas.</span>';
+        }
+      }
+
+      function renderizarResumen() {
+        var cuenta = function(t) { return preguntas.filter(function(p) { return p.tipo === t; }).length; };
+        var incompletas = preguntas.filter(function(p) {
+          return TIPOS[p.tipo] && TIPOS[p.tipo].conOpciones && (!p.opciones.length || p.opciones.some(function(o) { return o.criticidad === null; }));
+        }).length;
+        var datos = [
+          { titulo: 'Preguntas', valor: preguntas.length, detalle: 'en la base Encuestas' },
+          { titulo: 'Con opciones', valor: cuenta('seleccion unica') + cuenta('seleccion multiple') + cuenta('numero'), detalle: 'selección o número' },
+          { titulo: 'Texto libre', valor: cuenta('texto'), detalle: 'sin criticidad' },
+          { titulo: 'Criticidad incompleta', valor: incompletas, detalle: incompletas ? 'revisar antes de usar' : 'todo configurado', alerta: incompletas > 0 }
+        ];
+        document.getElementById('grilla-resumen-encuestas').innerHTML = datos.map(function(k) {
+          return '<div style="flex: 1 1 150px !important; ' + TARJETA + '">' +
+            '<div style="font-size: 14px !important; font-weight: 500 !important;">' + k.titulo + '</div>' +
+            '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; color: ' + (k.alerta ? '#7a5d06' : '#0b0e14') + ' !important;">' + k.valor + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important;">' + k.detalle + '</div></div>';
+        }).join('');
+      }
+
+      function renderizarTabla() {
+        var q = document.getElementById('filtro-busqueda-preguntas').value.trim().toLowerCase();
+        var tipo = document.getElementById('filtro-tipo-preguntas').value;
+        var lista = preguntas.filter(function(p) {
+          return (!q || p.pregunta.toLowerCase().indexOf(q) !== -1) && (!tipo || p.tipo === tipo);
+        }).sort(function(a, b) { return a.id - b.id; });
+        var td = 'padding: 0 12px !important; height: 52px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; vertical-align: middle !important;';
+        var btn = 'width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; color: #47536b !important;';
+        var puede = ROLES[rolActual].puedeEditar;
+        document.getElementById('cuerpo-tabla-preguntas').innerHTML = lista.length ? lista.map(function(p) {
+          var acciones = puede
+            ? '<span role="button" tabindex="0" data-accion="editar" data-rid="' + escapar(p.rid) + '" aria-label="Editar" title="Editar" style="' + btn + '">' + icono('editar', 18) + '</span>' +
+              '<span role="button" tabindex="0" data-accion="borrar" data-rid="' + escapar(p.rid) + '" aria-label="Eliminar" title="Eliminar" style="' + btn + '">' + icono('borrar', 18) + '</span>'
+            : '<span role="button" tabindex="0" data-accion="editar" data-rid="' + escapar(p.rid) + '" aria-label="Ver" title="Ver" style="' + btn + '">' + icono('ver', 18) + '</span>';
+          return '<tr style="animation: zk-aparecer 0.2s ease both !important;">' +
+            '<td style="' + td + ' text-align: right !important; color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + p.id + '</td>' +
+            '<td style="' + td + ' font-weight: 500 !important;">' + escapar(p.pregunta) + '</td>' +
+            '<td style="' + td + '">' + chipTipo(p.tipo) + '</td>' +
+            '<td style="' + td + ' white-space: nowrap !important;">' + resumenCriticidad(p) + '</td>' +
+            '<td style="' + td + ' text-align: right !important; white-space: nowrap !important;"><span style="display: inline-flex !important; gap: 4px !important;">' + acciones + '</span></td></tr>';
+        }).join('') : '<tr><td colspan="5" style="padding: 32px !important; text-align: center !important; color: #47536b !important;">' +
+          (preguntas.length ? 'No hay preguntas con esos filtros.' : 'Todavía no hay preguntas cargadas.' + (puede ? ' Creá la primera con "Nueva pregunta".' : '')) + '</td></tr>';
+        document.getElementById('txt-total-preguntas').textContent = 'Mostrando ' + lista.length + ' de ' + preguntas.length + ' preguntas.';
+      }
+
+      function renderizarTodo() {
+        renderizarAviso();
+        renderizarResumen();
+        renderizarTabla();
+      }
+
+      // ---------------------------------------------------------
+      // EDITOR DE PREGUNTA
+      // ---------------------------------------------------------
+      var CAMPO = 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important;';
+      var ETIQUETA = 'display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;';
+
+      // VISTA DE LA PREGUNTA COMO LA VERÍA EL ESTUDIANTE
+      function vistaEstudiante(p) {
+        var opciones = p.opciones.filter(function(o) { return o.texto.trim(); });
+        var cuerpo;
+        if (p.tipo === 'texto') {
+          cuerpo = '<div style="height: 64px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #fcfcfc !important;"></div>';
+        } else if (p.tipo === 'numero') {
+          cuerpo = '<div style="width: 140px !important; ' + CAMPO + '"></div>';
+        } else {
+          var marca = p.tipo === 'seleccion unica' ? '50%' : '4px';
+          cuerpo = opciones.length ? opciones.map(function(o) {
+            return '<div style="display: flex !important; align-items: center !important; gap: 8px !important; padding: 4px 0 !important;">' +
+              '<span style="width: 16px !important; height: 16px !important; border: 2px solid #94a0b8 !important; border-radius: ' + marca + ' !important; box-sizing: border-box !important;"></span>' + escapar(o.texto) + '</div>';
+          }).join('') : '<span style="color: #94a0b8 !important;">Sin opciones todavía.</span>';
+        }
+        return '<div style="font-weight: 500 !important; margin-bottom: 8px !important;">' + (escapar(p.pregunta) || '<span style="color: #94a0b8 !important;">(escribí la pregunta)</span>') + '</div>' + cuerpo;
+      }
+
+      // FILA EDITABLE DE UN RANGO (TIPO NÚMERO): DESDE, HASTA (VACÍO = SIN TOPE) Y CRITICIDAD
+      function filaRango(o, i, soloLectura) {
+        var dis = soloLectura ? ' disabled' : '';
+        var r = parsearRango(o.texto) || { desde: '', hasta: null };
+        var crudo = String(o.texto || '').split('-');
+        var desde = r.desde !== '' ? r.desde : (crudo[0] || '');
+        var hasta = r.hasta === null ? (parsearRango(o.texto) ? '' : (crudo[1] || '')) : r.hasta;
+        var num = 'type="number" min="0" step="1"' + dis;
+        return '<div data-opcion="' + i + '" style="display: flex !important; gap: 8px !important; align-items: center !important; margin-bottom: 8px !important; flex-wrap: wrap !important;">' +
+          '<span style="font-size: 13px !important; color: #47536b !important;">Desde</span>' +
+          '<input data-campo="desde" ' + num + ' value="' + escapar(desde) + '" aria-label="Desde, rango ' + (i + 1) + '" style="width: 90px !important; ' + CAMPO + '">' +
+          '<span style="font-size: 13px !important; color: #47536b !important;">hasta</span>' +
+          '<input data-campo="hasta" ' + num + ' value="' + escapar(hasta) + '" placeholder="sin tope" aria-label="Hasta, rango ' + (i + 1) + '" style="width: 100px !important; ' + CAMPO + '">' +
+          '<span style="font-size: 13px !important; color: #47536b !important; margin-left: auto !important;">criticidad</span>' +
+          '<input data-campo="criticidad" type="number" min="' + CRITICIDAD_MIN + '" max="' + CRITICIDAD_MAX + '" step="1" value="' + (o.criticidad === null ? '' : o.criticidad) +
+          '" placeholder="0–10" aria-label="Criticidad del rango ' + (i + 1) + '"' + dis + ' style="width: 84px !important; ' + CAMPO + '">' +
+          (soloLectura ? '' : '<span role="button" tabindex="0" data-accion="quitar-opcion" data-indice="' + i + '" aria-label="Quitar rango" title="Quitar rango" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important;">' + icono('quitar', 20) + '</span>') +
+          '</div>';
+      }
+
+      // FILA EDITABLE DE UNA OPCIÓN
+      function filaOpcion(o, i, soloLectura) {
+        if (editando && editando.tipo === 'numero') return filaRango(o, i, soloLectura);
+        var dis = soloLectura ? ' disabled' : '';
+        return '<div data-opcion="' + i + '" style="display: flex !important; gap: 8px !important; align-items: center !important; margin-bottom: 8px !important;">' +
+          '<input data-campo="texto" value="' + escapar(o.texto) + '" placeholder="Opción ' + (i + 1) + '" aria-label="Texto de la opción ' + (i + 1) + '"' + dis + ' style="flex: 1 1 auto !important; ' + CAMPO + '">' +
+          '<input data-campo="criticidad" type="number" min="' + CRITICIDAD_MIN + '" max="' + CRITICIDAD_MAX + '" step="1" value="' + (o.criticidad === null ? '' : o.criticidad) +
+          '" placeholder="0–10" aria-label="Criticidad de la opción ' + (i + 1) + '"' + dis + ' style="width: 84px !important; ' + CAMPO + '">' +
+          (soloLectura ? '' : '<span role="button" tabindex="0" data-accion="quitar-opcion" data-indice="' + i + '" aria-label="Quitar opción" title="Quitar opción" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important;">' + icono('quitar', 20) + '</span>') +
+          '</div>';
+      }
+
+      function renderizarEditor() {
+        var p = editando;
+        var soloLectura = !ROLES[rolActual].puedeEditar;
+        var dis = soloLectura ? ' disabled' : '';
+        var tipo = TIPOS[p.tipo];
+        document.getElementById('titulo-editor-pregunta').textContent = soloLectura ? 'Pregunta ' + p.id : (p.rid ? 'Editar pregunta ' + p.id : 'Nueva pregunta');
+        var html = '<div style="display: flex !important; gap: 12px !important; flex-wrap: wrap !important; margin-bottom: 16px !important;">' +
+          '<div style="flex: 0 0 88px !important;"><label style="' + ETIQUETA + '">id</label><input value="' + p.id + '" disabled style="width: 100% !important; ' + CAMPO + ' color: #47536b !important;"></div>' +
+          '<div style="flex: 1 1 200px !important;"><label for="campo-tipo-pregunta" style="' + ETIQUETA + '">Tipo</label><select id="campo-tipo-pregunta"' + dis + ' style="width: 100% !important; ' + CAMPO + '">' +
+          Object.keys(TIPOS).map(function(k) { return '<option value="' + k + '"' + (k === p.tipo ? ' selected' : '') + '>' + TIPOS[k].etiqueta + '</option>'; }).join('') +
+          '</select></div></div>' +
+          '<div style="margin-bottom: 16px !important;"><label for="campo-texto-pregunta" style="' + ETIQUETA + '">Pregunta</label>' +
+          '<input id="campo-texto-pregunta" value="' + escapar(p.pregunta) + '" placeholder="Por ejemplo: ¿Trabajás actualmente?"' + dis + ' style="width: 100% !important; ' + CAMPO + '"></div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important; margin: -8px 0 16px 0 !important;">' + escapar(tipo.ayuda) + '</div>';
+        if (tipo.conOpciones) {
+          html += '<div style="display: flex !important; justify-content: space-between !important; align-items: baseline !important; margin-bottom: 8px !important;">' +
+            '<span style="font-size: 14px !important; font-weight: 500 !important;">' + (p.tipo === 'numero' ? 'Rangos de criticidad <span style="font-weight: 400 !important; color: #47536b !important;">(el estudiante no los ve)</span>' : 'Opciones y criticidad') + '</span>' +
+            '<span style="font-size: 12px !important; color: #47536b !important;">Criticidad de ' + CRITICIDAD_MIN + ' (sin riesgo) a ' + CRITICIDAD_MAX + ' (máximo riesgo)</span></div>' +
+            '<div id="lista-opciones">' + p.opciones.map(function(o, i) { return filaOpcion(o, i, soloLectura); }).join('') + '</div>' +
+            (soloLectura ? '' : '<div role="button" tabindex="0" data-accion="agregar-opcion" style="display: inline-flex !important; align-items: center !important; gap: 6px !important; color: #026bd4 !important; font-weight: 500 !important; cursor: pointer !important; margin-bottom: 16px !important;">' + icono('agregar', 18) + (p.tipo === 'numero' ? 'Agregar rango' : 'Agregar opción') + '</div>');
+        }
+        html += '<div style="border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; padding: 12px 14px !important; margin: 8px 0 16px 0 !important;">' +
+          '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 8px !important;">Vista del estudiante</div>' +
+          '<div id="vista-previa-pregunta">' + vistaEstudiante(p) + '</div></div>' +
+          '<div id="txt-error-pregunta" style="display: none; color: #910808 !important; font-size: 14px !important; margin-bottom: 12px !important;"></div>';
+        if (!soloLectura) {
+          html += '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important;">' +
+            '<div role="button" tabindex="0" data-accion="cerrar-editor" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important;">Cancelar</div>' +
+            '<div id="btn-guardar-pregunta" role="button" tabindex="0" data-accion="guardar" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important;">Guardar pregunta</div></div>';
+        }
+        document.getElementById('cuerpo-editor-pregunta').innerHTML = html;
+      }
+
+      // LEER LO QUE ESCRIBIÓ EL USUARIO EN EL EDITOR
+      function leerEditor() {
+        var texto = document.getElementById('campo-texto-pregunta');
+        if (texto) editando.pregunta = texto.value;
+        var filas = document.querySelectorAll('#lista-opciones [data-opcion]');
+        editando.opciones = Array.prototype.map.call(filas, function(f) {
+          var n = parseFloat(f.querySelector('[data-campo="criticidad"]').value);
+          var desde = f.querySelector('[data-campo="desde"]');
+          var texto = desde ? desde.value.trim() + '-' + f.querySelector('[data-campo="hasta"]').value.trim() : f.querySelector('[data-campo="texto"]').value;
+          return { texto: texto, criticidad: isNaN(n) ? null : n };
+        });
+      }
+
+      function abrirEditor(p) {
+        editando = JSON.parse(JSON.stringify(p));
+        renderizarEditor();
+        mostrar(document.getElementById('modal-editor-pregunta'), true);
+        var foco = document.getElementById('campo-texto-pregunta');
+        if (foco && !foco.disabled) foco.focus();
+      }
+
+      function cerrarEditor() {
+        editando = null;
+        mostrar(document.getElementById('modal-editor-pregunta'), false);
+      }
+
+      // VALIDAR ANTES DE GUARDAR
+      function validar(p) {
+        if (!p.pregunta.trim()) return 'Escribí la pregunta.';
+        if (p.tipo === 'numero') return validarRangos(p);
+        if (TIPOS[p.tipo].conOpciones) {
+          var validas = p.opciones.filter(function(o) { return o.texto.trim(); });
+          if (validas.length < 2) return 'Agregá al menos dos opciones.';
+          if (validas.some(function(o) { return o.criticidad === null || o.criticidad < CRITICIDAD_MIN || o.criticidad > CRITICIDAD_MAX; })) {
+            return 'Cada opción necesita una criticidad entre ' + CRITICIDAD_MIN + ' y ' + CRITICIDAD_MAX + '.';
+          }
+          var textos = validas.map(function(o) { return o.texto.trim().toLowerCase(); });
+          if (textos.some(function(t, i) { return textos.indexOf(t) !== i; })) return 'Hay opciones repetidas.';
+        }
+        return null;
+      }
+
+      // RANGOS: AL MENOS UNO, DESDE ≤ HASTA, SIN SUPERPOSICIONES Y SIN TOPE SOLO EN EL ÚLTIMO
+      function validarRangos(p) {
+        if (!p.opciones.length) return 'Agregá al menos un rango.';
+        var rangos = p.opciones.map(function(o) { return { r: parsearRango(o.texto), c: o.criticidad, texto: o.texto }; });
+        if (rangos.some(function(x) { return !x.r; })) return 'Cada rango necesita un número en "desde".';
+        if (rangos.some(function(x) { return x.r.hasta !== null && x.r.hasta < x.r.desde; })) return 'En un rango, "hasta" no puede ser menor que "desde".';
+        if (rangos.some(function(x) { return x.c === null || x.c < CRITICIDAD_MIN || x.c > CRITICIDAD_MAX; })) return 'Cada rango necesita una criticidad entre ' + CRITICIDAD_MIN + ' y ' + CRITICIDAD_MAX + '.';
+        rangos.sort(function(a, b) { return a.r.desde - b.r.desde; });
+        for (var i = 1; i < rangos.length; i++) {
+          var prev = rangos[i - 1].r;
+          if (prev.hasta === null || prev.hasta >= rangos[i].r.desde) return 'Los rangos se superponen: revisá "' + etiquetaRango(rangos[i - 1].texto) + '" y "' + etiquetaRango(rangos[i].texto) + '".';
+        }
+        return null;
+      }
+
+      function guardarPregunta() {
+        leerEditor();
+        var p = editando;
+        p.pregunta = p.pregunta.trim();
+        p.opciones = !TIPOS[p.tipo].conOpciones ? []
+          : p.tipo === 'numero'
+            ? p.opciones.filter(function(o) { return o.texto.replace('-', '').trim(); })
+              .map(function(o) { var r = parsearRango(o.texto); return { texto: r ? r.desde + '-' + (r.hasta === null ? '' : r.hasta) : o.texto, criticidad: o.criticidad }; })
+              .sort(function(a, b) { return (parsearRango(a.texto) || { desde: 0 }).desde - (parsearRango(b.texto) || { desde: 0 }).desde; })
+            : p.opciones.filter(function(o) { return o.texto.trim(); }).map(function(o) { return { texto: o.texto.trim(), criticidad: o.criticidad }; });
+        var error = validar(p);
+        var caja = document.getElementById('txt-error-pregunta');
+        if (error) {
+          caja.textContent = error;
+          mostrar(caja, true, 'block');
+          return;
+        }
+        var btn = document.getElementById('btn-guardar-pregunta');
+        btn.textContent = 'Guardando…';
+        var promesa = conectado ? guardarPreguntaMoodle(p).then(leerPreguntasMoodle) : Promise.resolve(null);
+        promesa.then(function(desdeMoodle) {
+          if (desdeMoodle) {
+            preguntas = desdeMoodle;
+          } else {
+            if (!p.rid) p.rid = 'local-' + Date.now();
+            preguntas = preguntas.filter(function(x) { return x.rid !== p.rid; }).concat([p]);
+          }
+          cerrarEditor();
+          renderizarTodo();
+        }).catch(function(e) {
+          btn.textContent = 'Guardar pregunta';
+          caja.textContent = 'No se pudo guardar: ' + e.message;
+          mostrar(caja, true, 'block');
+        });
+      }
+
+      // ---------------------------------------------------------
+      // BORRADO
+      // ---------------------------------------------------------
+      function pedirBorrado(p) {
+        aBorrar = p;
+        document.getElementById('txt-borrar-pregunta').textContent =
+          'Se va a eliminar la pregunta ' + p.id + ': "' + p.pregunta + '". Esta acción no se puede deshacer.';
+        mostrar(document.getElementById('modal-borrar-pregunta'), true);
+      }
+
+      function confirmarBorrado() {
+        var p = aBorrar;
+        var promesa = conectado ? borrarPreguntaMoodle(p).then(leerPreguntasMoodle) : Promise.resolve(null);
+        promesa.then(function(desdeMoodle) {
+          preguntas = desdeMoodle || preguntas.filter(function(x) { return x.rid !== p.rid; });
+          aBorrar = null;
+          mostrar(document.getElementById('modal-borrar-pregunta'), false);
+          renderizarTodo();
+        }).catch(function(e) {
+          document.getElementById('txt-borrar-pregunta').textContent = 'No se pudo eliminar: ' + e.message;
+        });
+      }
+
+      // ---------------------------------------------------------
+      // ROL Y VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function aplicarRol(rol) {
+        rolActual = rol;
+        document.getElementById('badge-rol-encuestas').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
+        mostrar(document.getElementById('btn-nueva-pregunta'), ROLES[rol].puedeEditar, 'inline-flex');
+        var botones = document.querySelectorAll('#banco-preguntas [data-preview-rol]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = botones[i].getAttribute('data-preview-rol') === rol;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+        renderizarTabla();
+      }
+
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' + Object.keys(ROLES).map(function(rol) {
+            return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+          }).join('');
+        var aviso = document.getElementById('aviso-datos-encuestas');
+        aviso.parentNode.insertBefore(barra, aviso.nextSibling);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      function buscar(rid) {
+        return preguntas.filter(function(p) { return String(p.rid) === String(rid); })[0];
+      }
+
+      function accion(el) {
+        var a = el.getAttribute('data-accion');
+        if (a === 'nueva') {
+          var siguiente = preguntas.reduce(function(m, p) { return Math.max(m, p.id || 0); }, 0) + 1;
+          abrirEditor({ rid: null, id: siguiente, pregunta: '', tipo: 'seleccion unica', opciones: [{ texto: '', criticidad: null }, { texto: '', criticidad: null }] });
+        } else if (a === 'editar') {
+          abrirEditor(buscar(el.getAttribute('data-rid')));
+        } else if (a === 'borrar') {
+          pedirBorrado(buscar(el.getAttribute('data-rid')));
+        } else if (a === 'agregar-opcion') {
+          leerEditor();
+          editando.opciones.push({ texto: '', criticidad: null });
+          renderizarEditor();
+          var filas = document.querySelectorAll('#lista-opciones [data-campo="texto"], #lista-opciones [data-campo="desde"]');
+          filas[filas.length - 1].focus();
+        } else if (a === 'quitar-opcion') {
+          leerEditor();
+          editando.opciones.splice(parseInt(el.getAttribute('data-indice'), 10), 1);
+          renderizarEditor();
+        } else if (a === 'guardar') {
+          guardarPregunta();
+        } else if (a === 'cerrar-editor') {
+          cerrarEditor();
+        }
+      }
+
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#banco-preguntas')) return;
+        var rol = t.closest('[data-preview-rol]');
+        if (rol) return aplicarRol(rol.getAttribute('data-preview-rol'));
+        if (t.closest('#btn-cerrar-editor') || t.id === 'modal-editor-pregunta') return cerrarEditor();
+        if (t.closest('#btn-cancelar-borrado') || t.id === 'modal-borrar-pregunta') return mostrar(document.getElementById('modal-borrar-pregunta'), false);
+        if (t.closest('#btn-confirmar-borrado')) return confirmarBorrado();
+        var el = t.closest('[data-accion]');
+        if (el) accion(el);
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (!e.target.closest || !e.target.closest('#banco-preguntas')) return;
+        if (e.key === 'Escape') {
+          if (aBorrar) mostrar(document.getElementById('modal-borrar-pregunta'), false);
+          else if (editando) cerrarEditor();
+        }
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute('role') === 'button') {
+          e.preventDefault();
+          e.target.click();
+        }
+      });
+
+      document.addEventListener('input', function(e) {
+        if (!e.target.closest || !e.target.closest('#banco-preguntas')) return;
+        if (e.target.id === 'filtro-busqueda-preguntas') return renderizarTabla();
+        if (editando && e.target.closest('#cuerpo-editor-pregunta')) {
+          leerEditor();
+          document.getElementById('vista-previa-pregunta').innerHTML = vistaEstudiante(editando);
+        }
+      });
+
+      document.addEventListener('change', function(e) {
+        if (!e.target.closest || !e.target.closest('#banco-preguntas')) return;
+        if (e.target.id === 'filtro-tipo-preguntas') return renderizarTabla();
+        if (e.target.id === 'campo-tipo-pregunta') {
+          var anterior = editando.tipo;
+          leerEditor();
+          editando.tipo = e.target.value;
+          // Opciones y rangos no son intercambiables: al pasar de uno a otro se empieza de cero
+          if ((anterior === 'numero') !== (editando.tipo === 'numero')) editando.opciones = [];
+          var minimo = editando.tipo === 'numero' ? 1 : 2;
+          if (TIPOS[editando.tipo].conOpciones) {
+            while (editando.opciones.length < minimo) editando.opciones.push({ texto: '', criticidad: null });
+          }
+          renderizarEditor();
+        }
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      document.getElementById('filtro-tipo-preguntas').innerHTML = '<option value="">Todos los tipos</option>' +
+        Object.keys(TIPOS).map(function(k) { return '<option value="' + k + '">' + TIPOS[k].etiqueta + '</option>'; }).join('');
+      var huecos = document.querySelectorAll('#banco-preguntas [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      aplicarRol(ROL_INICIAL);
+      renderizarAviso();
+      (conectado ? leerPreguntasMoodle() : Promise.resolve(PREGUNTAS_PRUEBA.slice())).then(function(lista) {
+        preguntas = lista;
+        renderizarTodo();
+      }).catch(function(e) {
+        document.getElementById('cuerpo-tabla-preguntas').innerHTML =
+          '<tr><td colspan="5" style="padding: 24px !important; color: #910808 !important;">No se pudo leer la base Encuestas: ' + escapar(e.message) + '</td></tr>';
+      });
+    })();
+  </script>
+</nolink>
+</div>

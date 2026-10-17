@@ -1,0 +1,41 @@
+{
+  "nombre": "Encuestas y Preguntas",
+  "descripcion": "Grupo de ítems de la sección Zhakyz: banco de preguntas, armado de las encuestas inicial y cuatrimestral, y respuesta de los estudiantes.",
+  "moodle": {
+    "tipo": "subseccion",
+    "curso": 1732,
+    "seccion_padre_id": 15647,
+    "seccion_id": 15705
+  },
+  "items": [
+    {
+      "carpeta": "preguntas",
+      "nombre": "Preguntas",
+      "tipo": "pagina",
+      "moodle": {
+        "cmid": 59506,
+        "nombre_publicado": "Encuestas y Preguntas"
+      },
+      "nota": "Publicado antes de separar el grupo: en Moodle todavía se llama \"Encuestas y Preguntas\". Al republicarlo se actualiza el contenido (el nombre de la actividad se cambia aparte)."
+    },
+    {
+      "carpeta": "encuestas",
+      "nombre": "Encuestas",
+      "tipo": "pagina",
+      "moodle": {
+        "cmid": null
+      },
+      "nota": "Sin publicar. Necesita la base de composición (data/moodle/BASE_ENCUESTAS_ARMADO.json)."
+    },
+    {
+      "carpeta": "responder",
+      "nombre": "Mis encuestas",
+      "tipo": "pagina",
+      "rol": "EST",
+      "moodle": {
+        "cmid": null
+      },
+      "nota": "Sin publicar. Necesita las bases BASE_ENCUESTAS_ARMADO.json y BASE_RESPUESTAS.json (propuestas) y que el DNI venga de la base de estudiantes."
+    }
+  ]
+}
