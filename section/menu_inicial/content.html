@@ -1,88 +1,92 @@
+<!-- SECCIÓN: MENÚ DEL EQUIPO DE SEGUIMIENTO (ROLES ADM, GES, TUT, PAR) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="menu-equipo"
-  style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 28px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: left !important;">
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+
+  <!-- LEYENDA: DATOS DE PRUEBA -->
+  <div id="aviso-datos-prueba-menu"
+    style="display: flex !important; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; border-radius: 10px !important; color: #0b0e14 !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Los números y estudiantes que se muestran son de prueba (integrantes de Zhakyz con datos ficticios). Todavía no hay datos reales cargados.</span>
+  </div>
 
   <!-- ENCABEZADO -->
   <div
-    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 22px !important;">
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 24px !important;">
     <div>
-      <span
-        style="display: inline-block !important; background-color: #e0f2fe !important; color: #0284c7 !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 5px 12px !important; border-radius: 20px !important; margin-bottom: 10px !important;">
-        Proyecto Travesía</span>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · SBIRE</div>
       <h3
-        style="margin: 0 0 4px 0 !important; color: #0f172a !important; font-size: 22px !important; font-weight: 700 !important; line-height: 1.3 !important;">
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
         Menú del Equipo de Seguimiento</h3>
       <p id="txt-saludo-equipo"
-        style="margin: 0 !important; color: #64748b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
       </p>
     </div>
     <div id="badge-rol-usuario"
-      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 20px !important; padding: 6px 12px 6px 6px !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important;">
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
     </div>
   </div>
 
   <!-- RESUMEN DEL PERIODO -->
-  <div id="bloque-resumen" style="margin-bottom: 18px !important;">
-    <h5
-      style="margin: 0 0 10px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
-      Resumen del período <span style="color: #0284c7 !important;">2026-2C</span></h5>
+  <div id="bloque-resumen" style="margin-bottom: 24px !important;">
+    <div style="display: flex !important; align-items: baseline !important; gap: 8px !important; margin: 0 0 12px 0 !important;">
+      <h5 style="margin: 0 !important; color: #0b0e14 !important; font-size: 18px !important; font-weight: 600 !important; line-height: 1.4 !important;">Resumen del período</h5>
+      <span style="font-size: 12px !important; color: #47536b !important;">Cierre 2026-2</span>
+    </div>
     <div id="grilla-resumen"
-      style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">
+      style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important;">
     </div>
   </div>
 
   <!-- ESTADO DEL SISTEMA -->
   <div id="bloque-estado-sistema" data-roles="ADM"
-    style="background-color: #fffbeb !important; border: 1px solid #fde68a !important; border-radius: 12px !important; padding: 12px 16px !important; margin-bottom: 26px !important; font-size: 13px !important; color: #78350f !important;">
-    <div style="font-weight: 700 !important; margin-bottom: 6px !important;">⚠️ Estado del sistema</div>
-    <div
-      style="display: flex !important; flex-wrap: wrap !important; gap: 6px 18px !important;">
-      <span>✅ Configuración cargada</span>
-      <span>✅ Bases de datos (9/9)</span>
-      <span>✅ Plan 2024</span>
-      <span style="color: #b91c1c !important; font-weight: 700 !important;">❌ Falta cargar Plan 2003</span>
-      <span>✅ Período abierto hasta 15/12</span>
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 32px !important;">
+    <div style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin-bottom: 10px !important;">Estado del sistema</div>
+    <div id="lista-estado-sistema"
+      style="display: flex !important; flex-wrap: wrap !important; gap: 8px 24px !important;">
     </div>
   </div>
 
   <!-- GRUPO 1: SEGUIMIENTO DE ESTUDIANTES -->
-  <div id="grupo-seguimiento" style="margin-bottom: 28px !important;">
-    <h5
-      style="margin: 0 0 12px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
+  <div id="grupo-seguimiento" style="margin-bottom: 32px !important;">
+    <h5 style="margin: 0 0 12px 0 !important; color: #0b0e14 !important; font-size: 18px !important; font-weight: 600 !important; line-height: 1.4 !important;">
       Seguimiento de estudiantes</h5>
     <div id="grilla-seguimiento"
-      style="display: flex !important; flex-wrap: wrap !important; gap: 18px !important;">
+      style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important;">
     </div>
   </div>
 
   <!-- GRUPO 2: GESTION DE DATOS Y CONFIGURACION -->
   <div id="grupo-gestion" style="margin-bottom: 8px !important;">
-    <h5
-      style="margin: 0 0 12px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
+    <h5 style="margin: 0 0 12px 0 !important; color: #0b0e14 !important; font-size: 18px !important; font-weight: 600 !important; line-height: 1.4 !important;">
       Gestión de datos y configuración</h5>
     <div id="grilla-gestion"
-      style="display: flex !important; flex-wrap: wrap !important; gap: 18px !important;">
+      style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important;">
     </div>
   </div>
 
   <!-- ACCESO: VER COMO ESTUDIANTE -->
   <a id="btn-ver-como-estudiante" data-roles="ADM" href="#" target="_blank"
-    style="display: flex !important; align-items: center !important; justify-content: space-between !important; margin-top: 24px !important; padding: 14px 18px !important; border: 2px dashed #cbd5e1 !important; border-radius: 12px !important; color: #334155 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important;">
-    <span>👁 Ver como estudiante <span style="color: #94a3b8 !important; font-weight: 400 !important;">— abre la sección del alumno en vista previa</span></span>
-    <span style="color: #0284c7 !important; font-weight: 700 !important;">Abrir →</span>
+    style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; margin-top: 24px !important; padding: 12px 16px !important; background-color: #ffffff !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; color: #0b0e14 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 500 !important;">
+    <span style="display: flex !important; align-items: center !important; gap: 10px !important;"><span data-icono="ver" style="color: #47536b !important;"></span>Ver como estudiante
+      <span style="color: #47536b !important; font-weight: 400 !important;">· abre la sección del alumno en vista previa</span></span>
+    <span data-icono="flecha" style="color: #026bd4 !important;"></span>
   </a>
 
   <!-- NOTA: ACCESO DE ESTUDIANTES -->
   <p
-    style="margin: 22px 0 0 0 !important; color: #94a3b8 !important; font-size: 12px !important; line-height: 1.5 !important; text-align: center !important;">
-    Esta sección está restringida por grupo en Moodle. Los estudiantes acceden a
-    su propia sección (Mi Trayectoria).</p>
+    style="margin: 24px 0 0 0 !important; color: #47536b !important; font-size: 12px !important; line-height: 1.5 !important; text-align: center !important;">
+    Esta sección está restringida por grupo en Moodle. Los estudiantes acceden a su propia sección (Mi Trayectoria).</p>
+
   <!-- PIE DE PÁGINA ZHAKYZ -->
   <div id="footer-zhakyz"
-    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 28px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid #e2e8f0 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 12px !important; color: #94a3b8 !important; text-align: left !important;">
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
     <span
-      style="color: #0f172a !important; font-weight: 800 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
-      ⚔ Zhakyz &amp; Asociados</span>
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
     <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
   </div>
 
@@ -90,20 +94,40 @@
   <script>
     (function() {
       // ---------------------------------------------------------
-      // CONFIGURACIÓN DE ROLES
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-menu-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-menu-style';
+        styleEl.innerHTML =
+          '#menu-equipo [data-accion]:focus-visible, #menu-equipo a:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
       // ---------------------------------------------------------
       // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
       var ROL_INICIAL = 'ADM';
       // URL de la sección del alumno (en Moodle: course/section.php?id=...)
       var URL_SECCION_ALUMNO = '../section_sample/content.html';
+      // Destino de cada tarjeta (en Moodle: course/section.php?id=... de cada sección)
+      var DESTINOS = {
+        'btn-tablero-criticidad': '../tablero_estudiantes/content.html'
+      };
+      // Acceso "Ver como estudiante" (oculto por ahora)
+      var MOSTRAR_VISTA_ALUMNO = false;
       // La barra para cambiar de rol solo existe al abrir el archivo localmente
-      var ES_VISTA_LOCAL = window.location.protocol === 'file:';
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Leyenda de datos de prueba (quitar cuando haya datos reales)
+      var MOSTRAR_AVISO_PRUEBA = true;
 
       var ROLES = {
-        ADM: { nombre: 'Administrador', fondo: '#e2e8f0', texto: '#1e293b' },
-        GES: { nombre: 'Gestor Dpto. Industrial', fondo: '#f3e8ff', texto: '#7e22ce' },
-        TUT: { nombre: 'Tutor / Entrevistador', fondo: '#e0f2fe', texto: '#0284c7' },
-        PAR: { nombre: 'Asesor Par', fondo: '#ccfbf1', texto: '#0f766e' }
+        ADM: { nombre: 'Administrador' },
+        GES: { nombre: 'Gestor Dpto. Industrial' },
+        TUT: { nombre: 'Tutor / Entrevistador' },
+        PAR: { nombre: 'Asesor Par' }
       };
 
       var SALUDOS = {
@@ -114,77 +138,148 @@
       };
 
       // ---------------------------------------------------------
-      // DATOS DE EJEMPLO DEL RESUMEN
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
       // ---------------------------------------------------------
-      var RESUMEN = [
-        { id: 'riesgo-alto', icono: '🔴', valor: 12, etiqueta: 'en riesgo alto', color: '#dc2626', fondo: '#fef2f2', roles: ['ADM', 'GES', 'TUT'] },
-        { id: 'riesgo-medio', icono: '🟡', valor: 31, etiqueta: 'en riesgo medio', color: '#b45309', fondo: '#fffbeb', roles: ['ADM', 'GES', 'TUT'] },
-        { id: 'sin-encuesta', icono: '📝', valor: 18, etiqueta: 'sin encuesta del período', color: '#0f766e', fondo: '#f0fdfa', roles: ['ADM', 'GES'] },
-        { id: 'entrevistas', icono: '🤝', valor: 5, etiqueta: 'entrevistas pendientes', color: '#0284c7', fondo: '#f0f9ff', roles: ['ADM', 'TUT'] },
-        { id: 'mis-entrevistas', icono: '🤝', valor: 2, etiqueta: 'entrevistas tuyas pendientes', color: '#0f766e', fondo: '#f0fdfa', roles: ['PAR'] },
-        { id: 'importacion', icono: '📥', valor: '10/10', etiqueta: 'última importación', color: '#7e22ce', fondo: '#faf5ff', roles: ['ADM', 'GES'] }
-      ];
+      var ICONOS = {
+        tablero: '<path d="m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/><path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>',
+        entrevistas: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM5 7V5h14v2H5zm2 4h10v2H7zm0 4h7v2H7z"/>',
+        indicadores: '<path d="M21 8c-1.45 0-2.26 1.44-1.93 2.51l-3.55 3.56c-.3-.09-.74-.09-1.04 0l-2.55-2.55C12.27 10.45 11.46 9 10 9c-1.45 0-2.27 1.44-1.93 2.52l-4.56 4.55C2.44 15.74 1 16.55 1 18c0 1.1.9 2 2 2 1.45 0 2.26-1.44 1.93-2.51l4.55-4.56c.3.09.74.09 1.04 0l2.55 2.55C12.73 16.55 13.54 18 15 18c1.45 0 2.27-1.44 1.93-2.52l3.56-3.55c1.07.33 2.51-.48 2.51-1.93 0-1.1-.9-2-2-2z"/><path d="m15 9 .94-2.07L18 6l-2.06-.93L15 3l-.92 2.07L12 6l2.08.93zM3.5 11 4 9l2-.5L4 8l-.5-2L3 8l-2 .5L3 9z"/>',
+        reportes: '<path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>',
+        importar: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>',
+        encuestas: '<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-6.49-5.84c.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.6.58 1.73.01 2.57-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c.01-.41-.06-1.08.26-1.66zm-.56 3.79c0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04 0 .58-.44 1.05-1.04 1.05-.58 0-1.05-.47-1.05-1.05z"/>',
+        plan: '<path d="M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3h7zM7 9H4V5h3v4zm10 6h3v4h-3v-4zm0-10h3v4h-3V5z"/>',
+        configuracion: '<path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.566.566 0 0 0-.18-.03c-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.06.02.12.03.18.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-1.98-1.71c.04.31.05.52.05.73 0 .21-.02.43-.05.73l-.14 1.13.89.7 1.08.84-.7 1.21-1.27-.51-1.04-.42-.9.68c-.43.32-.84.56-1.25.73l-1.06.43-.16 1.13-.2 1.35h-1.4l-.19-1.35-.16-1.13-1.06-.43c-.43-.18-.83-.41-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21 1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7-1.08-.84.7-1.21 1.27.51 1.04.42.9-.68c.43-.32.84-.56 1.25-.73l1.06-.43.16-1.13.2-1.35h1.39l.19 1.35.16 1.13 1.06.43c.43.18.83.41 1.23.71l.91.7 1.06-.43 1.27-.51.7 1.21-1.07.85-.89.7.14 1.13zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>',
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>',
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        flecha: '<path d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
 
       // ---------------------------------------------------------
-      // DEFINICIÓN DE TARJETAS
+      // SEMÁFORO (TOKENS DE diseno-ui)
       // ---------------------------------------------------------
-      var TARJETAS = [
-        { id: 'tablero-criticidad', grupo: 'seguimiento', icono: '🚦', fondoIcono: '#fee2e2', titulo: 'Tablero de Criticidad', texto: 'Semáforo de cada estudiante, lista de a quién contactar y cambio manual del estado de criticidad.', cta: 'Ver estudiantes', color: '#0284c7', roles: ['ADM', 'GES', 'TUT'] },
-        { id: 'entrevistas', grupo: 'seguimiento', icono: '🤝', fondoIcono: '#ccfbf1', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', color: '#0d9488', roles: ['ADM', 'TUT', 'PAR'] },
-        { id: 'indicadores', grupo: 'seguimiento', icono: '📈', fondoIcono: '#e0f2fe', titulo: 'Indicadores de Cohorte', texto: 'Retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas.', cta: 'Ver indicadores', color: '#0284c7', roles: ['ADM', 'GES', 'TUT'] },
-        { id: 'reportes', grupo: 'seguimiento', icono: '📄', fondoIcono: '#f1f5f9', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', color: '#475569', roles: ['ADM', 'GES', 'TUT'] },
-        { id: 'importar-datos', grupo: 'gestion', icono: '📥', fondoIcono: '#f3e8ff', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', color: '#7e22ce', roles: ['ADM', 'GES'] },
-        { id: 'encuestas', grupo: 'gestion', icono: '📝', fondoIcono: '#ccfbf1', titulo: 'Encuestas y Preguntas', texto: 'Preguntas con su criticidad, períodos y quién no respondió (alerta por omisión).', cta: 'Gestionar encuestas', color: '#0d9488', roles: ['ADM', 'GES'] },
-        { id: 'plan-estudios', grupo: 'gestion', icono: '🗺️', fondoIcono: '#fef3c7', titulo: 'Plan de Estudios y Correlativas', texto: 'Planes 2003 y 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', color: '#b45309', roles: ['ADM', 'GES'] },
-        { id: 'configuracion', grupo: 'gestion', icono: '⚙️', fondoIcono: '#e2e8f0', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores, cierre de período y roles.', cta: 'Configurar', color: '#1e293b', roles: ['ADM'] }
-      ];
+      var SEMAFORO = {
+        alto: { texto: 'Riesgo alto', punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', color: '#910808' },
+        medio: { texto: 'Riesgo medio', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' }
+      };
 
-      // CHIP DE ROL
+      // CHIP DE ESTADO: PUNTO + TEXTO
+      function chipEstado(clave) {
+        var s = SEMAFORO[clave];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + s.borde +
+          ' !important; background-color: ' + s.fondo + ' !important; color: ' + s.color + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + s.punto + ' !important;"></span>' + s.texto + '</span>';
+      }
+
+      // CHIP DE ROL (NEUTRO)
       function chipRol(rol) {
-        var r = ROLES[rol];
-        return '<span style="background-color: ' + r.fondo + ' !important; color: ' + r.texto +
-          ' !important; font-size: 10px !important; font-weight: 800 !important; padding: 3px 7px !important; border-radius: 6px !important;">' +
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' +
           rol + '</span>';
       }
 
       // ---------------------------------------------------------
+      // DATOS DE PRUEBA DEL RESUMEN (COINCIDEN CON LOS 6 INTEGRANTES DEL TABLERO)
+      // ---------------------------------------------------------
+      var RESUMEN = [
+        { id: 'riesgo-alto', titulo: 'Riesgo alto', valor: 2, detalle: 'estudiantes', estado: 'alto', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'riesgo-medio', titulo: 'Riesgo medio', valor: 1, detalle: 'estudiante', estado: 'medio', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'sin-encuesta', titulo: 'Sin encuesta', valor: 1, detalle: 'no respondió la del período', icono: 'encuestas', roles: ['ADM', 'GES'] },
+        { id: 'entrevistas', titulo: 'Entrevistas pendientes', valor: 2, detalle: 'a coordinar', icono: 'entrevistas', roles: ['ADM', 'TUT'] },
+        { id: 'mis-entrevistas', titulo: 'Tus entrevistas', valor: 1, detalle: 'pendiente', icono: 'entrevistas', roles: ['PAR'] },
+        { id: 'importacion', titulo: 'Última importación', valor: '10/10', detalle: 'notas de parciales', icono: 'importar', roles: ['ADM', 'GES'] }
+      ];
+
+      var ESTADO_SISTEMA = [
+        { ok: true, texto: 'Configuración cargada' },
+        { ok: true, texto: 'Bases de datos (9/9)' },
+        { ok: true, texto: 'Plan 2024' },
+        { ok: false, texto: 'Falta cargar el Plan 2003' },
+        { ok: true, texto: 'Período abierto hasta el 15/12' }
+      ];
+
+      // ---------------------------------------------------------
+      // DEFINICIÓN DE TARJETAS (UNA SOLA ACCIÓN PRINCIPAL: EL TABLERO)
+      // ---------------------------------------------------------
+      var TARJETAS = [
+        { id: 'tablero-criticidad', grupo: 'seguimiento', icono: 'tablero', titulo: 'Tablero de Criticidad', texto: 'Estado calculado y asignado de cada estudiante, y a quién contactar.', cta: 'Ver estudiantes', principal: true, roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'entrevistas', grupo: 'seguimiento', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', roles: ['ADM', 'TUT', 'PAR'] },
+        { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas.', cta: 'Ver indicadores', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'reportes', grupo: 'seguimiento', icono: 'reportes', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'importar-datos', grupo: 'gestion', icono: 'importar', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', roles: ['ADM', 'GES'] },
+        { id: 'encuestas', grupo: 'gestion', icono: 'encuestas', titulo: 'Encuestas y Preguntas', texto: 'Preguntas con su criticidad, períodos y quién no respondió (alerta por omisión).', cta: 'Gestionar encuestas', roles: ['ADM', 'GES'] },
+        { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Planes 2003 y 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
+        { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores, cierre de período y roles.', cta: 'Configurar', roles: ['ADM'] }
+      ];
+
+      var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important;';
+
+      // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
-      // HTML DE UNA TARJETA DE RESUMEN
+      // HTML DE UNA TARJETA DE ESTADÍSTICA
       function htmlResumen(k) {
-        return '<div id="kpi-' + k.id + '" data-roles="' + k.roles.join(',') +
-          '" style="flex: 1 1 140px !important; background-color: ' + k.fondo +
-          ' !important; border-radius: 12px !important; padding: 12px 14px !important; box-sizing: border-box !important; cursor: pointer !important;">' +
-          '<div style="font-size: 22px !important; font-weight: 800 !important; color: ' + k.color + ' !important; line-height: 1.2 !important;">' +
-          k.icono + ' ' + k.valor + '</div>' +
-          '<div style="font-size: 12px !important; color: #475569 !important; margin-top: 2px !important;">' + k.etiqueta + '</div></div>';
+        var marca = k.estado ? chipEstado(k.estado)
+          : '<span style="color: #566481 !important;">' + icono(k.icono, 20) + '</span>';
+        return '<div id="kpi-' + k.id + '" data-accion="kpi" tabindex="0" data-roles="' + k.roles.join(',') +
+          '" style="flex: 1 1 130px !important; ' + TARJETA + ' gap: 4px !important; cursor: pointer !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">' + k.titulo + '</div>' +
+          '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important;">' +
+          '<span style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; color: #0b0e14 !important;">' + k.valor + '</span>' + marca + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + k.detalle + '</div></div>';
+      }
+
+      // HTML DE UN ÍTEM DEL ESTADO DEL SISTEMA
+      function htmlEstadoSistema(item) {
+        var color = item.ok ? '#1f7a1f' : '#910808';
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; font-size: 14px !important; color: ' +
+          (item.ok ? '#47536b' : '#910808') + ' !important; font-weight: ' + (item.ok ? '400' : '600') + ' !important;">' +
+          '<span style="color: ' + color + ' !important;">' + icono(item.ok ? 'ok' : 'error', 18) + '</span>' + item.texto + '</span>';
       }
 
       // HTML DE UNA TARJETA DE MÓDULO
       function htmlTarjeta(t) {
+        var boton = t.principal
+          ? 'border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important;'
+          : 'border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important;';
         return '<div id="card-' + t.id + '" data-roles="' + t.roles.join(',') +
-          '" style="flex: 1 1 340px !important; max-width: 390px !important; background-color: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 14px !important; padding: 20px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; box-sizing: border-box !important;">' +
-          '<div style="margin: 0 0 16px 0 !important;">' +
-          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; margin-bottom: 12px !important;">' +
-          '<div style="width: 44px !important; height: 44px !important; background-color: ' + t.fondoIcono +
-          ' !important; border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 22px !important;">' +
-          t.icono + '</div>' +
+          '" style="flex: 1 1 340px !important; max-width: 401px !important; ' + TARJETA + ' gap: 16px !important; justify-content: space-between !important;">' +
+          '<div>' +
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 8px !important; margin-bottom: 12px !important;">' +
+          '<span style="width: 36px !important; height: 36px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono(t.icono, 20) + '</span>' +
           '<div id="roles-' + t.id + '" style="display: flex !important; gap: 4px !important; flex-wrap: wrap !important; justify-content: flex-end !important;">' +
           t.roles.map(chipRol).join('') + '</div></div>' +
-          '<h4 style="margin: 0 0 6px 0 !important; color: #0f172a !important; font-size: 17px !important; font-weight: 700 !important;">' + t.titulo + '</h4>' +
-          '<p style="margin: 0 !important; color: #64748b !important; font-size: 13.5px !important; line-height: 1.45 !important;">' + t.texto + '</p></div>' +
-          '<div id="btn-' + t.id + '" style="width: 100% !important; background-color: ' + t.color +
-          ' !important; color: #ffffff !important; border-radius: 8px !important; padding: 11px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; text-align: center !important; box-sizing: border-box !important; cursor: pointer !important;">' +
-          t.cta + '</div></div>';
+          '<h4 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">' + t.titulo + '</h4>' +
+          '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">' + t.texto + '</p></div>' +
+          '<div id="btn-' + t.id + '" data-accion="tarjeta" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; ' + boton +
+          ' font-size: 14px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important; cursor: pointer !important;">' +
+          t.cta + icono('flecha', 18) + '</div></div>';
       }
 
       // PINTAR TODAS LAS GRILLAS
       function renderizar() {
         document.getElementById('grilla-resumen').innerHTML = RESUMEN.map(htmlResumen).join('');
+        document.getElementById('lista-estado-sistema').innerHTML = ESTADO_SISTEMA.map(htmlEstadoSistema).join('');
         document.getElementById('grilla-seguimiento').innerHTML =
           TARJETAS.filter(function(t) { return t.grupo === 'seguimiento'; }).map(htmlTarjeta).join('');
         document.getElementById('grilla-gestion').innerHTML =
           TARJETAS.filter(function(t) { return t.grupo === 'gestion'; }).map(htmlTarjeta).join('');
+        // Íconos declarados en el HTML con data-icono
+        var huecos = document.querySelectorAll('#menu-equipo [data-icono]');
+        for (var i = 0; i < huecos.length; i++) {
+          huecos[i].innerHTML = icono(huecos[i].getAttribute('data-icono'), 20);
+        }
       }
 
       // ---------------------------------------------------------
@@ -206,16 +301,20 @@
 
       // APLICAR LA VISTA DE UN ROL
       function aplicarRol(rol) {
-        var r = ROLES[rol];
         document.getElementById('txt-saludo-equipo').textContent = SALUDOS[rol];
         document.getElementById('badge-rol-usuario').innerHTML =
-          chipRol(rol) + '<span>' + r.nombre + '</span>';
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
 
         var elementos = document.querySelectorAll('#menu-equipo [data-roles]');
         for (var i = 0; i < elementos.length; i++) {
           var roles = elementos[i].getAttribute('data-roles').split(',');
           mostrar(elementos[i], roles.indexOf(rol) !== -1);
         }
+        if (!MOSTRAR_VISTA_ALUMNO) {
+          mostrar(document.getElementById('btn-ver-como-estudiante'), false);
+        }
+
         // Ocultar grupos sin tarjetas visibles
         ['seguimiento', 'gestion'].forEach(function(g) {
           var visibles = TARJETAS.filter(function(t) {
@@ -228,23 +327,38 @@
         var botones = document.querySelectorAll('[data-preview-rol]');
         for (var j = 0; j < botones.length; j++) {
           var activo = botones[j].getAttribute('data-preview-rol') === rol;
-          botones[j].style.backgroundColor = activo ? '#38bdf8' : '#334155';
-          botones[j].style.color = activo ? '#0f172a' : '#e2e8f0';
+          botones[j].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[j].style.color = activo ? '#0b0e14' : '#c2c9d6';
         }
       }
 
       // ---------------------------------------------------------
-      // DELEGACIÓN DE EVENTOS DE CLIC
+      // DELEGACIÓN DE EVENTOS
       // ---------------------------------------------------------
+      // ACTIVAR UNA TARJETA O UN KPI
+      function activar(el) {
+        if (DESTINOS[el.id]) {
+          window.location.href = DESTINOS[el.id];
+          return;
+        }
+        alert('Vista previa: "' + el.id + '" todavía no tiene destino.');
+      }
+
       document.addEventListener('click', function(e) {
+        if (!e.target.closest || !e.target.closest('#menu-equipo')) return;
         var btnRol = e.target.closest('[data-preview-rol]');
         if (btnRol) {
           aplicarRol(btnRol.getAttribute('data-preview-rol'));
           return;
         }
-        var tarjeta = e.target.closest('[id^="btn-"], [id^="kpi-"]');
-        if (tarjeta && tarjeta.id !== 'btn-ver-como-estudiante') {
-          alert('Vista previa: "' + tarjeta.id + '" todavía no tiene destino.');
+        var accion = e.target.closest('[data-accion]');
+        if (accion) activar(accion);
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('#menu-equipo [data-accion]')) {
+          e.preventDefault();
+          activar(e.target.closest('[data-accion]'));
         }
       });
 
@@ -254,16 +368,23 @@
       function crearBarraPreview() {
         var barra = document.createElement('div');
         barra.id = 'barra-preview';
-        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 10px !important; padding: 10px 14px !important; margin: -8px 0 22px 0 !important; background-color: #0f172a !important; color: #e2e8f0 !important; border-radius: 10px !important; font-size: 13px !important;');
-        barra.innerHTML = '<b>👁 Vista previa local — ver como:</b>' +
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' +
           Object.keys(ROLES).map(function(rol) {
-            return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 800; font-size: 12px;">' + rol + '</button>';
-          }).join('') +
-          '<span style="margin-left: auto !important; color: #94a3b8 !important; font-size: 12px !important;">Los números son de ejemplo</span>';
-        var menu = document.getElementById('menu-equipo');
-        menu.insertBefore(barra, menu.firstChild);
+            return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+          }).join('');
+        // La barra va debajo de la leyenda de datos de prueba
+        var aviso = document.getElementById('aviso-datos-prueba-menu');
+        aviso.parentNode.insertBefore(barra, aviso.nextSibling);
       }
 
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      if (!MOSTRAR_AVISO_PRUEBA) {
+        document.getElementById('aviso-datos-prueba-menu').style.setProperty('display', 'none', 'important');
+      }
       document.getElementById('btn-ver-como-estudiante').href = URL_SECCION_ALUMNO;
       if (ES_VISTA_LOCAL) crearBarraPreview();
       renderizar();
