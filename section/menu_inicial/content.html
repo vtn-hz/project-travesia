@@ -1,0 +1,265 @@
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="menu-equipo"
+  style="position: relative !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; padding: 28px 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; color: #1e293b !important; box-sizing: border-box !important; text-align: left !important;">
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 22px !important;">
+    <div>
+      <span
+        style="display: inline-block !important; background-color: #e0f2fe !important; color: #0284c7 !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 5px 12px !important; border-radius: 20px !important; margin-bottom: 10px !important;">
+        Proyecto Travesía</span>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0f172a !important; font-size: 22px !important; font-weight: 700 !important; line-height: 1.3 !important;">
+        Menú del Equipo de Seguimiento</h3>
+      <p id="txt-saludo-equipo"
+        style="margin: 0 !important; color: #64748b !important; font-size: 14px !important; line-height: 1.5 !important;">
+      </p>
+    </div>
+    <div id="badge-rol-usuario"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 20px !important; padding: 6px 12px 6px 6px !important; font-size: 13px !important; font-weight: 600 !important; color: #334155 !important;">
+    </div>
+  </div>
+
+  <!-- RESUMEN DEL PERIODO -->
+  <div id="bloque-resumen" style="margin-bottom: 18px !important;">
+    <h5
+      style="margin: 0 0 10px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
+      Resumen del período <span style="color: #0284c7 !important;">2026-2C</span></h5>
+    <div id="grilla-resumen"
+      style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">
+    </div>
+  </div>
+
+  <!-- ESTADO DEL SISTEMA -->
+  <div id="bloque-estado-sistema" data-roles="ADM"
+    style="background-color: #fffbeb !important; border: 1px solid #fde68a !important; border-radius: 12px !important; padding: 12px 16px !important; margin-bottom: 26px !important; font-size: 13px !important; color: #78350f !important;">
+    <div style="font-weight: 700 !important; margin-bottom: 6px !important;">⚠️ Estado del sistema</div>
+    <div
+      style="display: flex !important; flex-wrap: wrap !important; gap: 6px 18px !important;">
+      <span>✅ Configuración cargada</span>
+      <span>✅ Bases de datos (9/9)</span>
+      <span>✅ Plan 2024</span>
+      <span style="color: #b91c1c !important; font-weight: 700 !important;">❌ Falta cargar Plan 2003</span>
+      <span>✅ Período abierto hasta 15/12</span>
+    </div>
+  </div>
+
+  <!-- GRUPO 1: SEGUIMIENTO DE ESTUDIANTES -->
+  <div id="grupo-seguimiento" style="margin-bottom: 28px !important;">
+    <h5
+      style="margin: 0 0 12px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
+      Seguimiento de estudiantes</h5>
+    <div id="grilla-seguimiento"
+      style="display: flex !important; flex-wrap: wrap !important; gap: 18px !important;">
+    </div>
+  </div>
+
+  <!-- GRUPO 2: GESTION DE DATOS Y CONFIGURACION -->
+  <div id="grupo-gestion" style="margin-bottom: 8px !important;">
+    <h5
+      style="margin: 0 0 12px 0 !important; color: #64748b !important; font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 1px !important;">
+      Gestión de datos y configuración</h5>
+    <div id="grilla-gestion"
+      style="display: flex !important; flex-wrap: wrap !important; gap: 18px !important;">
+    </div>
+  </div>
+
+  <!-- ACCESO: VER COMO ESTUDIANTE -->
+  <a id="btn-ver-como-estudiante" data-roles="ADM" href="#" target="_blank"
+    style="display: flex !important; align-items: center !important; justify-content: space-between !important; margin-top: 24px !important; padding: 14px 18px !important; border: 2px dashed #cbd5e1 !important; border-radius: 12px !important; color: #334155 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important;">
+    <span>👁 Ver como estudiante <span style="color: #94a3b8 !important; font-weight: 400 !important;">— abre la sección del alumno en vista previa</span></span>
+    <span style="color: #0284c7 !important; font-weight: 700 !important;">Abrir →</span>
+  </a>
+
+  <!-- NOTA: ACCESO DE ESTUDIANTES -->
+  <p
+    style="margin: 22px 0 0 0 !important; color: #94a3b8 !important; font-size: 12px !important; line-height: 1.5 !important; text-align: center !important;">
+    Esta sección está restringida por grupo en Moodle. Los estudiantes acceden a
+    su propia sección (Mi Trayectoria).</p>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN DE ROLES
+      // ---------------------------------------------------------
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      var ROL_INICIAL = 'ADM';
+      // URL de la sección del alumno (en Moodle: course/section.php?id=...)
+      var URL_SECCION_ALUMNO = '../section_sample/content.html';
+      // La barra para cambiar de rol solo existe al abrir el archivo localmente
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:';
+
+      var ROLES = {
+        ADM: { nombre: 'Administrador', fondo: '#e2e8f0', texto: '#1e293b' },
+        GES: { nombre: 'Gestor Dpto. Industrial', fondo: '#f3e8ff', texto: '#7e22ce' },
+        TUT: { nombre: 'Tutor / Entrevistador', fondo: '#e0f2fe', texto: '#0284c7' },
+        PAR: { nombre: 'Asesor Par', fondo: '#ccfbf1', texto: '#0f766e' }
+      };
+
+      var SALUDOS = {
+        ADM: 'Tenés acceso a todos los módulos y a la configuración del sistema.',
+        GES: 'Cargá datos y revisá el estado de las encuestas y los indicadores.',
+        TUT: 'Revisá a quién contactar y gestioná tus entrevistas.',
+        PAR: 'Gestioná las entrevistas con los estudiantes que acompañás.'
+      };
+
+      // ---------------------------------------------------------
+      // DATOS DE EJEMPLO DEL RESUMEN
+      // ---------------------------------------------------------
+      var RESUMEN = [
+        { id: 'riesgo-alto', icono: '🔴', valor: 12, etiqueta: 'en riesgo alto', color: '#dc2626', fondo: '#fef2f2', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'riesgo-medio', icono: '🟡', valor: 31, etiqueta: 'en riesgo medio', color: '#b45309', fondo: '#fffbeb', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'sin-encuesta', icono: '📝', valor: 18, etiqueta: 'sin encuesta del período', color: '#0f766e', fondo: '#f0fdfa', roles: ['ADM', 'GES'] },
+        { id: 'entrevistas', icono: '🤝', valor: 5, etiqueta: 'entrevistas pendientes', color: '#0284c7', fondo: '#f0f9ff', roles: ['ADM', 'TUT'] },
+        { id: 'mis-entrevistas', icono: '🤝', valor: 2, etiqueta: 'entrevistas tuyas pendientes', color: '#0f766e', fondo: '#f0fdfa', roles: ['PAR'] },
+        { id: 'importacion', icono: '📥', valor: '10/10', etiqueta: 'última importación', color: '#7e22ce', fondo: '#faf5ff', roles: ['ADM', 'GES'] }
+      ];
+
+      // ---------------------------------------------------------
+      // DEFINICIÓN DE TARJETAS
+      // ---------------------------------------------------------
+      var TARJETAS = [
+        { id: 'tablero-criticidad', grupo: 'seguimiento', icono: '🚦', fondoIcono: '#fee2e2', titulo: 'Tablero de Criticidad', texto: 'Semáforo de cada estudiante, lista de a quién contactar y cambio manual del estado de criticidad.', cta: 'Ver estudiantes', color: '#0284c7', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'entrevistas', grupo: 'seguimiento', icono: '🤝', fondoIcono: '#ccfbf1', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', color: '#0d9488', roles: ['ADM', 'TUT', 'PAR'] },
+        { id: 'indicadores', grupo: 'seguimiento', icono: '📈', fondoIcono: '#e0f2fe', titulo: 'Indicadores de Cohorte', texto: 'Retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas.', cta: 'Ver indicadores', color: '#0284c7', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'reportes', grupo: 'seguimiento', icono: '📄', fondoIcono: '#f1f5f9', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', color: '#475569', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'importar-datos', grupo: 'gestion', icono: '📥', fondoIcono: '#f3e8ff', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', color: '#7e22ce', roles: ['ADM', 'GES'] },
+        { id: 'encuestas', grupo: 'gestion', icono: '📝', fondoIcono: '#ccfbf1', titulo: 'Encuestas y Preguntas', texto: 'Preguntas con su criticidad, períodos y quién no respondió (alerta por omisión).', cta: 'Gestionar encuestas', color: '#0d9488', roles: ['ADM', 'GES'] },
+        { id: 'plan-estudios', grupo: 'gestion', icono: '🗺️', fondoIcono: '#fef3c7', titulo: 'Plan de Estudios y Correlativas', texto: 'Planes 2003 y 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', color: '#b45309', roles: ['ADM', 'GES'] },
+        { id: 'configuracion', grupo: 'gestion', icono: '⚙️', fondoIcono: '#e2e8f0', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores, cierre de período y roles.', cta: 'Configurar', color: '#1e293b', roles: ['ADM'] }
+      ];
+
+      // CHIP DE ROL
+      function chipRol(rol) {
+        var r = ROLES[rol];
+        return '<span style="background-color: ' + r.fondo + ' !important; color: ' + r.texto +
+          ' !important; font-size: 10px !important; font-weight: 800 !important; padding: 3px 7px !important; border-radius: 6px !important;">' +
+          rol + '</span>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      // HTML DE UNA TARJETA DE RESUMEN
+      function htmlResumen(k) {
+        return '<div id="kpi-' + k.id + '" data-roles="' + k.roles.join(',') +
+          '" style="flex: 1 1 140px !important; background-color: ' + k.fondo +
+          ' !important; border-radius: 12px !important; padding: 12px 14px !important; box-sizing: border-box !important; cursor: pointer !important;">' +
+          '<div style="font-size: 22px !important; font-weight: 800 !important; color: ' + k.color + ' !important; line-height: 1.2 !important;">' +
+          k.icono + ' ' + k.valor + '</div>' +
+          '<div style="font-size: 12px !important; color: #475569 !important; margin-top: 2px !important;">' + k.etiqueta + '</div></div>';
+      }
+
+      // HTML DE UNA TARJETA DE MÓDULO
+      function htmlTarjeta(t) {
+        return '<div id="card-' + t.id + '" data-roles="' + t.roles.join(',') +
+          '" style="flex: 1 1 340px !important; max-width: 390px !important; background-color: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 14px !important; padding: 20px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; box-sizing: border-box !important;">' +
+          '<div style="margin: 0 0 16px 0 !important;">' +
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; margin-bottom: 12px !important;">' +
+          '<div style="width: 44px !important; height: 44px !important; background-color: ' + t.fondoIcono +
+          ' !important; border-radius: 12px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 22px !important;">' +
+          t.icono + '</div>' +
+          '<div id="roles-' + t.id + '" style="display: flex !important; gap: 4px !important; flex-wrap: wrap !important; justify-content: flex-end !important;">' +
+          t.roles.map(chipRol).join('') + '</div></div>' +
+          '<h4 style="margin: 0 0 6px 0 !important; color: #0f172a !important; font-size: 17px !important; font-weight: 700 !important;">' + t.titulo + '</h4>' +
+          '<p style="margin: 0 !important; color: #64748b !important; font-size: 13.5px !important; line-height: 1.45 !important;">' + t.texto + '</p></div>' +
+          '<div id="btn-' + t.id + '" style="width: 100% !important; background-color: ' + t.color +
+          ' !important; color: #ffffff !important; border-radius: 8px !important; padding: 11px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; text-align: center !important; box-sizing: border-box !important; cursor: pointer !important;">' +
+          t.cta + '</div></div>';
+      }
+
+      // PINTAR TODAS LAS GRILLAS
+      function renderizar() {
+        document.getElementById('grilla-resumen').innerHTML = RESUMEN.map(htmlResumen).join('');
+        document.getElementById('grilla-seguimiento').innerHTML =
+          TARJETAS.filter(function(t) { return t.grupo === 'seguimiento'; }).map(htmlTarjeta).join('');
+        document.getElementById('grilla-gestion').innerHTML =
+          TARJETAS.filter(function(t) { return t.grupo === 'gestion'; }).map(htmlTarjeta).join('');
+      }
+
+      // ---------------------------------------------------------
+      // FILTRADO POR ROL
+      // ---------------------------------------------------------
+      // MOSTRAR U OCULTAR UN ELEMENTO
+      function mostrar(el, visible) {
+        if (el.dataset.displayOriginal === undefined) {
+          el.dataset.displayOriginal = el.style.getPropertyValue('display');
+        }
+        if (visible && el.dataset.displayOriginal) {
+          el.style.setProperty('display', el.dataset.displayOriginal, 'important');
+        } else if (visible) {
+          el.style.removeProperty('display');
+        } else {
+          el.style.setProperty('display', 'none', 'important');
+        }
+      }
+
+      // APLICAR LA VISTA DE UN ROL
+      function aplicarRol(rol) {
+        var r = ROLES[rol];
+        document.getElementById('txt-saludo-equipo').textContent = SALUDOS[rol];
+        document.getElementById('badge-rol-usuario').innerHTML =
+          chipRol(rol) + '<span>' + r.nombre + '</span>';
+
+        var elementos = document.querySelectorAll('#menu-equipo [data-roles]');
+        for (var i = 0; i < elementos.length; i++) {
+          var roles = elementos[i].getAttribute('data-roles').split(',');
+          mostrar(elementos[i], roles.indexOf(rol) !== -1);
+        }
+        // Ocultar grupos sin tarjetas visibles
+        ['seguimiento', 'gestion'].forEach(function(g) {
+          var visibles = TARJETAS.filter(function(t) {
+            return t.grupo === g && t.roles.indexOf(rol) !== -1;
+          });
+          mostrar(document.getElementById('grupo-' + g), visibles.length > 0);
+        });
+
+        // Resaltar el botón activo de la barra de vista previa
+        var botones = document.querySelectorAll('[data-preview-rol]');
+        for (var j = 0; j < botones.length; j++) {
+          var activo = botones[j].getAttribute('data-preview-rol') === rol;
+          botones[j].style.backgroundColor = activo ? '#38bdf8' : '#334155';
+          botones[j].style.color = activo ? '#0f172a' : '#e2e8f0';
+        }
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS DE CLIC
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var btnRol = e.target.closest('[data-preview-rol]');
+        if (btnRol) {
+          aplicarRol(btnRol.getAttribute('data-preview-rol'));
+          return;
+        }
+        var tarjeta = e.target.closest('[id^="btn-"], [id^="kpi-"]');
+        if (tarjeta && tarjeta.id !== 'btn-ver-como-estudiante') {
+          alert('Vista previa: "' + tarjeta.id + '" todavía no tiene destino.');
+        }
+      });
+
+      // ---------------------------------------------------------
+      // BARRA DE VISTA PREVIA (SOLO EN LOCAL)
+      // ---------------------------------------------------------
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.id = 'barra-preview';
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 10px !important; padding: 10px 14px !important; margin: -8px 0 22px 0 !important; background-color: #0f172a !important; color: #e2e8f0 !important; border-radius: 10px !important; font-size: 13px !important;');
+        barra.innerHTML = '<b>👁 Vista previa local — ver como:</b>' +
+          Object.keys(ROLES).map(function(rol) {
+            return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 800; font-size: 12px;">' + rol + '</button>';
+          }).join('') +
+          '<span style="margin-left: auto !important; color: #94a3b8 !important; font-size: 12px !important;">Los números son de ejemplo</span>';
+        var menu = document.getElementById('menu-equipo');
+        menu.insertBefore(barra, menu.firstChild);
+      }
+
+      document.getElementById('btn-ver-como-estudiante').href = URL_SECCION_ALUMNO;
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      renderizar();
+      aplicarRol(ROL_INICIAL);
+    })();
+  </script>
+</div>
