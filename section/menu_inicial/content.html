@@ -1,3 +1,4 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-10-17 -->
 <!-- SECCIÓN: MENÚ DEL EQUIPO DE SEGUIMIENTO (ROLES ADM, GES, TUT, PAR) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -114,11 +115,15 @@
       var ROL_INICIAL = 'ADM';
       // URL de la sección del alumno (en Moodle: course/section.php?id=...)
       var URL_SECCION_ALUMNO = '../section_sample/content.html';
-      // Destino de cada tarjeta (en Moodle: course/section.php?id=... de cada sección)
-      var DESTINOS = {
+      // Destino de cada tarjeta en local (archivos del repo)
+      var DESTINOS_LOCAL = {
         'btn-tablero-criticidad': '../tablero_estudiantes/content.html',
         'btn-encuestas': '../encuestas_preguntas/preguntas/content.html',
         'btn-armado-encuestas': '../encuestas_preguntas/encuestas/content.html'
+      };
+      // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
+      var DESTINOS_MOODLE = {
+        'btn-encuestas': '/mod/page/view.php?id=59506'
       };
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
@@ -127,6 +132,7 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Leyenda de datos de prueba (quitar cuando haya datos reales)
       var MOSTRAR_AVISO_PRUEBA = true;
+      var DESTINOS = ES_VISTA_LOCAL ? DESTINOS_LOCAL : DESTINOS_MOODLE;
 
       var ROLES = {
         ADM: { nombre: 'Administrador' },
@@ -345,10 +351,10 @@
       // ACTIVAR UNA TARJETA O UN KPI
       function activar(el) {
         if (DESTINOS[el.id]) {
-          window.location.href = DESTINOS[el.id];
+          window.location.href = ES_VISTA_LOCAL ? DESTINOS[el.id] : (window.M && M.cfg ? M.cfg.wwwroot : '') + DESTINOS[el.id];
           return;
         }
-        alert('Vista previa: "' + el.id + '" todavía no tiene destino.');
+        alert(ES_VISTA_LOCAL ? 'Vista previa: "' + el.id + '" todavía no tiene destino.' : 'Esta sección todavía no está disponible.');
       }
 
       document.addEventListener('click', function(e) {
