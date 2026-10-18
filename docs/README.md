@@ -20,6 +20,7 @@ docs/
 ├── models/                ← Modelos de cálculo propios (fórmulas, reglas, casos de prueba)
 │   ├── MODELO_UBICACION_Y_ATRASO.md
 │   ├── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
+│   ├── MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md ← ICE: encuesta cuatrimestral + fórmula de 0 a 100
 │   ├── MODELO_DE_DATOS_V2.md      ← DER del SBIRE (23 entidades)
 │   └── MODELO_SIMPLIFICADO_MOODLE.md ← El DER llevado a 12 bases de Moodle
 ├── decisions/             ← Registros de Decisiones (ADR)
@@ -79,5 +80,6 @@ Sirve como vista rápida de la historia del proyecto.
 - [Moodle](context/platform/MOODLE_SECCIONES_Y_HERRAMIENTAS.md) — Secciones, herramientas y patrones de integración
 - [Modelo de ubicación y atraso](models/MODELO_UBICACION_Y_ATRASO.md) — Cuatrimestre equivalente, deuda e inactividad
 - [Modelo de criticidad por correlativas](models/MODELO_CRITICIDAD_POR_CORRELATIVAS.md) — Qué materias pendientes traban más
+- [Índice de Criticidad Estudiantil (ICE)](models/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md) — 10 preguntas de la encuesta cuatrimestral y la fórmula de 0 a 100
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
 - [Reglas de desarrollo](../RULES.md) — Convenciones de código
