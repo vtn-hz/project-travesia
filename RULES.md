@@ -16,6 +16,7 @@ Estas reglas están por encima de todas las demás.
 5. **Datos de prueba = integrantes de Zhakyz.** Toda información de prueba usa a los 6 integrantes del equipo (ver `docs/context/EQUIPO_ZHAKYZ.md`) con datos académicos ficticios. No se inventan personas y no se usan datos de estudiantes reales.
 6. **No se reutilizan bases de datos de otros equipos.** Nuestras actividades leen y escriben solo bases creadas en la sección Zhakyz.
 7. Toda automatización (por ejemplo, Playwright) bloquea por defecto cualquier petición que no sea `GET` y cualquier URL con `sesskey`. Solo se habilita la escritura puntual que se confirmó, limitada a la sección 15647.
+8. **Los datos del entorno y los ids de Moodle viven en [`moodle.config.json`](moodle.config.json)** (campus, curso, sección Zhakyz, subsecciones, páginas y bases). Si cambia un id, se cambia ahí y se corre `node .skills/publicar-seccion/sincronizar_config.js`; nunca se edita el número a mano en una sección.
 
 | Elemento en Moodle | Archivo en el repo |
 |---|---|
@@ -38,7 +39,7 @@ Estas reglas están por encima de todas las demás.
   - **Sección con ítems (grupo):** `section/<grupo>/<item>/content.html`, más un `section/<grupo>/seccion.json`. El grupo representa una **subsección de Moodle** dentro de Zhakyz, y cada ítem es una actividad (Página o Área de texto) de esa subsección.
     ```
     section/encuestas_preguntas/
-    ├── seccion.json            ← nombre e ids de Moodle del grupo y de sus ítems
+    ├── seccion.json            ← nombre del grupo y de sus ítems (los ids están en moodle.config.json)
     ├── preguntas/content.html
     └── encuestas/content.html
     ```
@@ -104,7 +105,7 @@ Sistema de diseño oficial: **skill [`diseno-ui`](.skills/diseno-ui/SKILL.md)**,
 ## JavaScript
 
 - Todo dentro de un **IIFE** `(function() { ... })()` — sin contaminación global.
-- **Constantes de configuración Moodle** (CMIDs, IDs de campo) como `var` al inicio del IIFE.
+- **Constantes de configuración Moodle** (CMIDs, IDs de campo) como `var` al inicio del IIFE. Cada id que está en `moodle.config.json` se marca con `// @config <ruta>` al final de la línea (por ejemplo `var CMID_PREGUNTAS = 59498; // @config bases.preguntas.cmid`). `sincronizar_config.js` copia el valor y `publicar.js` no publica un archivo desactualizado.
 - **Delegación de eventos**: un solo listener `click` en `document` con `e.target.closest()`, un solo listener `submit`.
 - **Vanilla JS puro** — sin jQuery, sin frameworks, sin librerías externas.
 - **Async/await** para operaciones con `fetch`.

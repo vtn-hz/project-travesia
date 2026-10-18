@@ -34,9 +34,9 @@ Zhakyz (sección 15647)
 
 | Sección | Archivo | Estado | En Moodle | Qué falta |
 |---|---|---|---|---|
-| Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Nada. Incluye el script que quita el link de los títulos de subsección |
-| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible" |
-| Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Nada |
+| Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
+| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". Republicar: el repo agregó la marca `// @config` (mismo destino) |
+| Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Mis encuestas (responder) | [`section/encuestas_preguntas/responder`](section/encuestas_preguntas/responder/content.html) | **Local** | — | Crear las bases Armado de encuestas y Respuestas; definir el origen del DNI |
 | Tablero de Criticidad | [`section/tablero_estudiantes`](section/tablero_estudiantes/content.html) | **Local** | — | Crear las bases (Estudiantes, Situación académica, Criticidad); detectar roles. Depende del ADR-005 |
@@ -45,7 +45,7 @@ Zhakyz (sección 15647)
 
 ## Bases de datos de Moodle
 
-El modelo completo está en [`MODELO_SIMPLIFICADO_MOODLE.md`](docs/models/MODELO_SIMPLIFICADO_MOODLE.md): 12 bases, que salen del [DER v2](docs/models/MODELO_DE_DATOS_V2.md).
+Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.json) → `bases`. El modelo completo está en [`MODELO_SIMPLIFICADO_MOODLE.md`](docs/models/MODELO_SIMPLIFICADO_MOODLE.md): 12 bases, que salen del [DER v2](docs/models/MODELO_DE_DATOS_V2.md).
 
 | # | Base | Definición | Estado |
 |---|---|---|---|

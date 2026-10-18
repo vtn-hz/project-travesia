@@ -14,6 +14,7 @@ Este archivo es para cualquier agente de IA que trabaje en el repo (Codex, Curso
    - Relación 1 a 1 entre lo que está en Moodle y el repo.
    - Los datos de prueba son siempre los 6 integrantes del equipo, con datos ficticios.
    - Estilo de las secciones: HTML autocontenido, estilos inline con `!important` y vanilla JS en un IIFE.
+   - Los ids de Moodle se cambian en `moodle.config.json` y se copian a las secciones con `node .skills/publicar-seccion/sincronizar_config.js` (líneas `// @config`).
 2. **[`DEPLOY.md`](DEPLOY.md)**: qué está publicado en Moodle, qué está en local y qué está en revisión. Actualizarlo en cada publicación.
 3. **[`docs/README.md`](docs/README.md)**: índice de la documentación (requerimientos, investigación, plataforma, modelos, ADRs y specs).
 
@@ -33,7 +34,8 @@ Procedimientos paso a paso para tareas que se repiten. Si una tarea coincide con
 section/<nombre>/content.html   ← cada pantalla que se pega en Moodle
 section/<grupo>/<item>/content.html + seccion.json ← grupo = subsección de Moodle con varios ítems
 docs/                           ← contexto, modelos, ADRs y specs
-data/                           ← datos para importar (plan de estudios)
+moodle.config.json              ← campus, curso, sección Zhakyz e ids de Moodle (única fuente)
+data/                           ← datos para importar (plan de estudios) y definiciones de bases
 assets/                         ← logos
 .skills/                        ← procedimientos para agentes (Agent Skills)
 ```

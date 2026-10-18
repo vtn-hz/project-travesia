@@ -14,7 +14,8 @@ Sube un `content.html` del repo a Moodle con el script [`publicar.js`](publicar.
 3. **Primero simular.** Correr **siempre** el script sin `--confirmar`, mostrar el resultado (destino, tamaño, cambios) y recién con el OK correr con `--confirmar`.
 4. **Relación 1 a 1:** el repo es la fuente. Primero se commitea o se guarda el cambio local y después se publica. El script escribe en el archivo el comentario `<!-- PUBLICADO EN MOODLE: … -->` con el destino y el cmid, y al terminar hay que agregar o actualizar la fila en la tabla de `RULES.md`.
 5. **Nunca notificar:** el script desactiva siempre "Notificación de contenido del curso", para que nadie reciba un aviso por cada publicación.
-6. **Credenciales** solo por variables de entorno (`MOODLE_USUARIO` y `MOODLE_CLAVE`), pedidas al usuario en el momento. No se guardan en archivos, en el repo ni en la memoria.
+6. **Ids desde `moodle.config.json`.** El campus, el curso, la sección y los ids de subsecciones, páginas y bases salen de [`moodle.config.json`](../../moodle.config.json). El script se niega a publicar si las líneas `// @config` del archivo no coinciden con ese archivo: correr `node .skills/publicar-seccion/sincronizar_config.js`.
+7. **Credenciales** solo por variables de entorno (`MOODLE_USUARIO` y `MOODLE_CLAVE`), pedidas al usuario en el momento. No se guardan en archivos, en el repo ni en la memoria.
 
 ## Dónde publicar cada cosa
 
@@ -24,7 +25,7 @@ Sube un `content.html` del repo a Moodle con el script [`publicar.js`](publicar.
 | `etiqueta` | **Área de texto y medios** (`mod_label`): se ve dentro de la sección | Bloques chicos que tienen que verse sin hacer clic |
 | `resumen` | **Resumen** de la sección Zhakyz | Solo el encabezado del equipo (`resumen_zhakyz`) |
 
-**Ítems de un grupo** (`section/<grupo>/<item>/content.html`): el grupo es una subsección de Zhakyz. Si no se pasa `--subseccion`, el script la toma del campo `nombre` de `section/<grupo>/seccion.json` (y la crea si no existe). Después de publicar, anotar el `cmid` del ítem en ese `seccion.json`.
+**Ítems de un grupo** (`section/<grupo>/<item>/content.html`): el grupo es una subsección de Zhakyz. Si no se pasa `--subseccion`, el script la toma del campo `nombre` de `section/<grupo>/seccion.json` (y la crea si no existe). Después de publicar, anotar el `cmid` del ítem en `moodle.config.json` → `paginas.<clave>` (la clave está en `moodle.config` del ítem en `seccion.json`) y correr `sincronizar_config.js`, así las secciones que enlazan a esa página toman el id.
 
 Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabla de `RULES.md`) tiene el **cmid**: usar `--cmid` para **actualizar**. No crear un duplicado.
 
@@ -65,7 +66,7 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
 
 Para las bases (`mod_data`) que usan las secciones, el flujo es el mismo (simular → confirmar → verificar) con `crear_base.js`:
 
-1. Definir la base en `data/moodle/BASE_<NOMBRE>.json`: nombre, descripción, subsección de Zhakyz y campos (`text`, `menu` con `opciones`, `textarea`, `number`, etc.). Ver `BASE_ENCUESTAS.json`.
+1. Definir la base en `data/moodle/BASE_<NOMBRE>.json`: `clave` (la entrada de `bases` en `moodle.config.json`), nombre, descripción, subsección de Zhakyz y campos (`text`, `menu` con `opciones`, `textarea`, `number`, etc.). Ver `BASE_ENCUESTAS.json`.
 2. Simular:
    ```bash
    MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) node .skills/publicar-seccion/crear_base.js --definicion data/moodle/BASE_<NOMBRE>.json
@@ -74,16 +75,17 @@ Para las bases (`mod_data`) que usan las secciones, el flujo es el mismo (simula
    - crea la subsección dentro de Zhakyz si no existe;
    - crea la base sin fechas de disponibilidad y sin notificar;
    - crea los campos y los verifica;
-   - escribe los ids (cmid y d) en el JSON.
+   - escribe los ids (cmid y d) en `moodle.config.json` → `bases.<clave>` (y la subsección en `subsecciones`);
+   - corre la sincronización, así las secciones que usan esa base toman los ids.
    
-   Se niega si la base ya existe.
-4. Agregar la fila a la tabla de `RULES.md` (el script la imprime) y usar esos ids en la configuración de la sección.
+   Se niega si `bases.<clave>` ya tiene cmid.
+4. Agregar la fila a la tabla de `RULES.md` (el script la imprime) y commitear `moodle.config.json` junto con las secciones actualizadas.
 
 ### Cambiar los campos de una base existente (`recrear_campos.js`)
 
 Moodle ordena los campos por orden de creación y no permite reordenarlos ni cambiarles el tipo. Para cambiar el orden, los nombres o los tipos:
 1. Editar los campos en el JSON de la definición.
-2. Correr `recrear_campos.js --definicion …`, primero simulando y después con `--confirmar`.
+2. Correr `recrear_campos.js --definicion …`, primero simulando y después con `--confirmar`. Los ids de la base los toma de `moodle.config.json` → `bases.<clave>`.
 
 El script borra todos los campos y los crea de nuevo en el orden del JSON. **Solo funciona si la base está vacía y está dentro de Zhakyz**: si tiene entradas, se niega, porque se perderían datos.
 

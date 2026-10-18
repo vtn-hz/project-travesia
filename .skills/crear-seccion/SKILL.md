@@ -43,7 +43,7 @@ Las reglas de estilo están en **`RULES.md`** (raíz del repo), que es la fuente
 
 - **Sección simple:** una pantalla sola → `section/<nombre>/content.html`.
 - **Ítem de un grupo:** varias pantallas que van juntas en una **subsección de Moodle** (por ejemplo "Encuestas y Preguntas" → `preguntas` y `encuestas`) → `section/<grupo>/<item>/content.html`.
-  - El grupo tiene un `section/<grupo>/seccion.json` con el nombre de la subsección en Moodle y la lista de ítems (carpeta, nombre, tipo y `cmid` cuando se publique). Si el grupo es nuevo, crearlo. Si ya existe, agregar el ítem a `items`. Ejemplo: `section/encuestas_preguntas/seccion.json`.
+  - El grupo tiene un `section/<grupo>/seccion.json` con el nombre de la subsección en Moodle y la lista de ítems (carpeta, nombre, tipo y la clave de `moodle.config.json` → `paginas` donde va su `cmid`). Si el grupo es nuevo, crearlo. Si ya existe, agregar el ítem a `items`. Ejemplo: `section/encuestas_preguntas/seccion.json`.
   - Los links relativos desde un ítem suben dos niveles: `../../<otra>/content.html`. Desde una sección simple hacia un ítem: `../<grupo>/<item>/content.html`.
   - El contenedor raíz de cada ítem tiene un id propio y único (por ejemplo `banco-preguntas`, `armado-encuestas`), porque en Moodle varios ítems pueden convivir en la misma página del curso.
 
