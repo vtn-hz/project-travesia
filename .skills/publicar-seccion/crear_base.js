@@ -5,18 +5,21 @@
 //   MOODLE_USUARIO=... MOODLE_CLAVE=... NODE_PATH=$(npm root -g) node .skills/publicar-seccion/crear_base.js \
 //     --definicion data/moodle/BASE_<NOMBRE>.json [--confirmar]
 //
-// La definición indica el nombre, la subsección de Zhakyz donde va (se crea si no existe) y los campos.
-// Al terminar, escribe en la definición los ids de Moodle (relación 1 a 1).
+// La definición indica la clave, el nombre, la subsección de Zhakyz donde va (se crea si no existe) y los campos.
+// Al terminar, escribe los ids de Moodle en moodle.config.json → bases.<clave> (relación 1 a 1)
+// y actualiza las secciones que los usan (líneas "// @config").
 const { chromium } = require('playwright');
 const fs = require('fs');
+const config = require('./config');
 
 // ---------------------------------------------------------
-// CONSTANTES (ÚNICO DESTINO PERMITIDO)
+// CONSTANTES (ÚNICO DESTINO PERMITIDO, DESDE moodle.config.json)
 // ---------------------------------------------------------
-const BASE = 'https://ingenieria.campus.mdp.edu.ar';
-const CURSO = '1732';
-const SECCION_ID = '15647'; // Zhakyz: se identifica por id (el número de posición cambia)
-const SECCION_NOMBRE = 'Zhakyz';
+const CONFIG = config.cargar();
+const BASE = CONFIG.campus;
+const CURSO = String(CONFIG.curso);
+const SECCION_ID = String(CONFIG.seccion.id); // Zhakyz: se identifica por id (el número de posición cambia)
+const SECCION_NOMBRE = CONFIG.seccion.nombre;
 const TIPOS_CAMPO = ['text', 'menu', 'textarea', 'number', 'radiobutton', 'checkbox', 'multimenu', 'date', 'url'];
 
 function salir(msg) {
@@ -33,12 +36,13 @@ const confirmar = argv.includes('--confirmar');
 if (!rutaDef || !fs.existsSync(rutaDef)) salir('Falta --definicion o no existe.');
 if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOODLE_USUARIO y MOODLE_CLAVE en el entorno.');
 const def = JSON.parse(fs.readFileSync(rutaDef, 'utf8'));
-if (!def.nombre || !def.subseccion || !Array.isArray(def.campos) || !def.campos.length) salir('La definición necesita nombre, subseccion y campos.');
+if (!def.clave || !def.nombre || !def.subseccion || !Array.isArray(def.campos) || !def.campos.length) salir('La definición necesita clave, nombre, subseccion y campos.');
 def.campos.forEach((c) => {
   if (!TIPOS_CAMPO.includes(c.tipo)) salir(`Tipo de campo no soportado: ${c.tipo}`);
   if (c.tipo === 'menu' && !(c.opciones || []).length) salir(`El campo ${c.nombre} necesita opciones.`);
 });
-if (def.moodle && def.moodle.cmid) salir(`La definición ya tiene cmid ${def.moodle.cmid}: la base ya existe. No se crea otra.`);
+const existente = CONFIG.bases[def.clave];
+if (existente && existente.cmid) salir(`bases.${def.clave} ya tiene cmid ${existente.cmid} en moodle.config.json: la base ya existe. No se crea otra.`);
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -173,12 +177,15 @@ if (def.moodle && def.moodle.cmid) salir(`La definición ya tiene cmid ${def.moo
   const creados = await page.$$eval('#region-main table tr', (filas) => filas.map((tr) => [...tr.querySelectorAll('td')].map((td) => td.innerText.trim())).filter((f) => f.length > 1 && f[0]).map((f) => f[0]));
   const faltan = def.campos.map((c) => c.nombre).filter((n) => !creados.includes(n));
 
-  // 5) RELACIÓN 1 A 1: GUARDAR LOS IDS EN LA DEFINICIÓN
-  def.moodle = Object.assign({}, def.moodle, {
-    curso: Number(CURSO), seccion_id: Number(SECCION_ID), subseccion_id: Number(sub.id), subseccion_cmid: subCm ? Number(subCm.id) : null,
-    cmid: Number(cmid), dataid: Number(estado.dataId), creada: new Date().toISOString().slice(0, 10)
+  // 5) RELACIÓN 1 A 1: GUARDAR LOS IDS EN moodle.config.json Y PASARLOS A LAS SECCIONES
+  const actual = config.cargar();
+  actual.subsecciones[def.subseccion] = { id: Number(sub.id), cmid: subCm ? Number(subCm.id) : null };
+  actual.bases[def.clave] = Object.assign({}, actual.bases[def.clave], {
+    cmid: Number(cmid), dataid: Number(estado.dataId), definicion: rutaDef, subseccion: def.subseccion, creada: new Date().toISOString().slice(0, 10)
   });
-  fs.writeFileSync(rutaDef, JSON.stringify(def, null, 2) + '\n');
+  config.guardar(actual);
+  console.log(`✔ moodle.config.json → bases.${def.clave} (cmid ${cmid}, d=${estado.dataId})`);
+  config.sincronizar().filter((r) => r.cambios.length).forEach((r) => console.log(`✔ ${r.archivo}: ${r.cambios.join('; ')}`));
 
   console.log(`\n${faltan.length ? '⚠ Faltan campos: ' + faltan.join(', ') : '✔ Los ' + def.campos.length + ' campos están creados'}`);
   console.log(`Ver en Moodle : ${BASE}/mod/data/view.php?id=${cmid}`);

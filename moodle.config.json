@@ -1,0 +1,28 @@
+{
+  "campus": "https://ingenieria.campus.mdp.edu.ar",
+  "curso": 1732,
+  "seccion": {
+    "id": 15647,
+    "nombre": "Zhakyz"
+  },
+  "subsecciones": {
+    "Database": { "id": 15700, "cmid": 59497 },
+    "Encuestas y Preguntas": { "id": 15705, "cmid": null },
+    "Pruebas": { "id": 15701, "cmid": null }
+  },
+  "paginas": {
+    "hub": 59511,
+    "preguntas": 59506,
+    "encuestas": null,
+    "responder": null,
+    "tablero": null,
+    "detalle": null
+  },
+  "bases": {
+    "preguntas": { "cmid": 59498, "dataid": 114, "definicion": "data/moodle/BASE_ENCUESTAS.json", "subseccion": "Database", "creada": "2026-10-17" },
+    "armado": { "cmid": null, "dataid": null, "definicion": "data/moodle/BASE_ENCUESTAS_ARMADO.json" },
+    "respuestas": { "cmid": null, "dataid": null, "definicion": "data/moodle/BASE_RESPUESTAS.json" },
+    "estudiantes": { "cmid": null, "dataid": null },
+    "criticidad": { "cmid": null, "dataid": null }
+  }
+}

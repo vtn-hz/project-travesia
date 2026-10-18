@@ -1,4 +1,5 @@
 {
+  "clave": "respuestas",
   "nombre": "Respuestas",
   "descripcion": "Respuestas de los estudiantes a las encuestas. Solo se agregan entradas: editar una respuesta crea una entrada nueva y la anterior se conserva.",
   "subseccion": "Database",
@@ -19,14 +20,5 @@
       { "id": 3, "pregunta": "¿Qué dificultades tuviste este cuatrimestre?", "respuesta": ["Horarios", "Económicas"], "criticidad": [3, 6] },
       { "id": 4, "pregunta": "¿Querés contarnos algo más?", "respuesta": "Me cuesta organizar los horarios.", "criticidad": null }
     ]
-  },
-  "moodle": {
-    "curso": 1732,
-    "seccion_id": 15647,
-    "subseccion_cmid": null,
-    "subseccion_id": null,
-    "cmid": null,
-    "dataid": null,
-    "creada": null
   }
 }

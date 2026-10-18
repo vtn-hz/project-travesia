@@ -1,4 +1,5 @@
 {
+  "clave": "preguntas",
   "nombre": "Preguntas",
   "descripcion": "Preguntas de las encuestas del sistema (una entrada por pregunta) con su tipo, opciones de respuesta y criticidad.",
   "subseccion": "Database",
@@ -35,14 +36,5 @@
       "tipo": "textarea",
       "descripcion": "Criticidad de cada opción de respuesta"
     }
-  ],
-  "moodle": {
-    "curso": 1732,
-    "seccion_id": 15647,
-    "subseccion_cmid": 59497,
-    "subseccion_id": 15700,
-    "cmid": 59498,
-    "dataid": 114,
-    "creada": "2026-10-17"
-  }
+  ]
 }

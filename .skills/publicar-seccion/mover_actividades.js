@@ -7,10 +7,12 @@
 //   Con --subseccion "Zhakyz" las actividades se mueven al FINAL de la sección principal (sirve para ordenar subsecciones).
 const { chromium } = require('playwright');
 
-const BASE = 'https://ingenieria.campus.mdp.edu.ar';
-const CURSO = '1732';
-const SECCION_ID = '15647';
-const SECCION_NOMBRE = 'Zhakyz';
+const CONFIG = require('./config').cargar();
+
+const BASE = CONFIG.campus;
+const CURSO = String(CONFIG.curso);
+const SECCION_ID = String(CONFIG.seccion.id);
+const SECCION_NOMBRE = CONFIG.seccion.nombre;
 
 function salir(msg) {
   console.error('✖ ' + msg);

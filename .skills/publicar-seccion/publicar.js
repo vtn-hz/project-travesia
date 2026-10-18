@@ -13,16 +13,18 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const crypto = require('crypto');
+const config = require('./config');
 
 // ---------------------------------------------------------
-// CONSTANTES (ÚNICO DESTINO PERMITIDO)
+// CONSTANTES (ÚNICO DESTINO PERMITIDO, DESDE moodle.config.json)
 // La sección se identifica por su id, que no cambia. El número de posición (section=N)
 // cambia si se agregan o se borran secciones, así que se lee en el momento.
 // ---------------------------------------------------------
-const BASE = 'https://ingenieria.campus.mdp.edu.ar';
-const CURSO = '1732';
-const SECCION_ID = '15647';
-const SECCION_NOMBRE = 'Zhakyz';
+const CONFIG = config.cargar();
+const BASE = CONFIG.campus;
+const CURSO = String(CONFIG.curso);
+const SECCION_ID = String(CONFIG.seccion.id);
+const SECCION_NOMBRE = CONFIG.seccion.nombre;
 const TIPOS = {
   pagina: { modulo: 'page', campo: 'page[text]', etiqueta: 'Página' },
   etiqueta: { modulo: 'label', campo: 'introeditor[text]', etiqueta: 'Área de texto y medios' },
@@ -52,6 +54,10 @@ function leerArgs() {
   if (o.tipo !== 'resumen' && !o.cmid && !o.nombre) salir('Para crear una actividad nueva hace falta --nombre.');
   if (o.cmid && !/^\d+$/.test(o.cmid)) salir('--cmid tiene que ser numérico.');
   if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOODLE_USUARIO y MOODLE_CLAVE en el entorno.');
+  // Los valores "// @config" del archivo tienen que coincidir con moodle.config.json
+  const sync = config.aplicar(fs.readFileSync(o.archivo, 'utf8'), CONFIG);
+  if (sync.errores.length) salir('Rutas @config inexistentes:\n  ' + sync.errores.join('\n  '));
+  if (sync.cambios.length) salir('El archivo no coincide con moodle.config.json. Correr sincronizar_config.js:\n  ' + sync.cambios.join('\n  '));
   return o;
 }
 

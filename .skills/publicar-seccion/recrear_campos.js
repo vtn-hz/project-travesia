@@ -6,12 +6,15 @@
 // Uso (por defecto SIMULA; solo escribe con --confirmar):
 //   MOODLE_USUARIO=... MOODLE_CLAVE=... NODE_PATH=$(npm root -g) node .skills/publicar-seccion/recrear_campos.js \
 //     --definicion data/moodle/BASE_<NOMBRE>.json [--confirmar]
+// La base se busca en moodle.config.json → bases.<clave de la definición>.
 const { chromium } = require('playwright');
 const fs = require('fs');
 
-const BASE = 'https://ingenieria.campus.mdp.edu.ar';
-const SECCION_ID = '15647';
-const SECCION_NOMBRE = 'Zhakyz';
+const CONFIG = require('./config').cargar();
+
+const BASE = CONFIG.campus;
+const SECCION_ID = String(CONFIG.seccion.id);
+const SECCION_NOMBRE = CONFIG.seccion.nombre;
 
 function salir(msg) {
   console.error('✖ ' + msg);
@@ -24,9 +27,12 @@ const confirmar = argv.includes('--confirmar');
 if (!rutaDef || !fs.existsSync(rutaDef)) salir('Falta --definicion o no existe.');
 if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOODLE_USUARIO y MOODLE_CLAVE en el entorno.');
 const def = JSON.parse(fs.readFileSync(rutaDef, 'utf8'));
-const cmid = def.moodle && def.moodle.cmid ? String(def.moodle.cmid) : null;
-const dataId = def.moodle && def.moodle.dataid ? String(def.moodle.dataid) : null;
-if (!cmid || !dataId) salir('La definición no tiene cmid/dataid: la base no existe todavía (usar crear_base.js).');
+// Los ids de la base están en moodle.config.json → bases.<clave>
+const ids = def.clave ? CONFIG.bases[def.clave] : null;
+if (!ids) salir(`La definición necesita "clave" y moodle.config.json una entrada bases.${def.clave || '<clave>'}.`);
+const cmid = ids.cmid ? String(ids.cmid) : null;
+const dataId = ids.dataid ? String(ids.dataid) : null;
+if (!cmid || !dataId) salir(`bases.${def.clave} no tiene cmid/dataid: la base no existe todavía (usar crear_base.js).`);
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
