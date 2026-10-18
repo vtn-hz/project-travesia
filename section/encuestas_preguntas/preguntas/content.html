@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Preguntas" (cmid 59506) · 2026-10-17 -->
 <!-- ÍTEM: PREGUNTAS (BANCO DE PREGUNTAS) · GRUPO encuestas_preguntas (ROLES ADM, GES) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: BASE "Encuestas" DE ZHAKYZ (cmid 59498, d=114) — data/moodle/BASE_ENCUESTAS.json -->
+<!-- DATOS: BASE "Preguntas" DE ZHAKYZ (moodle.config.json → bases.preguntas) — data/moodle/BASE_ENCUESTAS.json -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="banco-preguntas"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -136,9 +136,10 @@
       // Vista previa local: archivo abierto directo o con Live Server
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-      // Base "Encuestas" de la sección Zhakyz (data/moodle/BASE_ENCUESTAS.json)
-      var CMID_ENCUESTAS = 59498;
-      var DATAID_ENCUESTAS = 114;
+      // Base "Preguntas" de la sección Zhakyz (data/moodle/BASE_ENCUESTAS.json)
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_ENCUESTAS = 59498; // @config bases.preguntas.cmid
+      var DATAID_ENCUESTAS = 114; // @config bases.preguntas.dataid
       // Escala de criticidad de cada opción de respuesta
       var CRITICIDAD_MIN = 0;
       var CRITICIDAD_MAX = 10;

@@ -55,13 +55,14 @@
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-      var CURSO = 1732;
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CURSO = 1732; // @config curso
       // Tablero de Criticidad: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_TABLERO_LOCAL = '../tablero_estudiantes/content.html';
-      var CMID_TABLERO = null;
+      var CMID_TABLERO = null; // @config paginas.tablero
       // Bases de Zhakyz (null hasta que se creen)
-      var CMID_ESTUDIANTES = null;
-      var CMID_ASIGNACIONES = null; // lectura y escritura: estados asignados (Req 10)
+      var CMID_ESTUDIANTES = null; // @config bases.estudiantes.cmid
+      var CMID_ASIGNACIONES = null; // @config bases.criticidad.cmid · lectura y escritura: estados asignados (Req 10)
       var CAMPOS_ASIGNACIONES = { usuario: null, nivel: null, motivo: null }; // IDs field_<id>
 
       // Índice de criticidad de 0 a 100 (provisorio: 1.er año = 100 − % de materias esperadas aprobadas, Req 4)

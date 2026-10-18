@@ -125,11 +125,12 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
 
       // Bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
-      var CMID_ESTUDIANTES = null; // lectura: una entrada por estudiante
-      var CMID_ASIGNACIONES = null; // lectura: estados asignados (se asignan desde el detalle, Req 10)
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_ESTUDIANTES = null; // @config bases.estudiantes.cmid · lectura: una entrada por estudiante
+      var CMID_ASIGNACIONES = null; // @config bases.criticidad.cmid · lectura: estados asignados (se asignan desde el detalle, Req 10)
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
-      var CMID_DETALLE = null;
+      var CMID_DETALLE = null; // @config paginas.detalle
 
       // Estado calculado: solo criterios de los requerimientos (los modelos todavía no se aplican)
       var UMBRALES = {

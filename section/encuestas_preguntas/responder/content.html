@@ -1,6 +1,6 @@
 <!-- ÍTEM: RESPONDER ENCUESTA (VISTA DEL ESTUDIANTE) · GRUPO encuestas_preguntas (ROL EST) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: preguntas (cmid 59498) + armado (BASE_ENCUESTAS_ARMADO.json) → respuestas (BASE_RESPUESTAS.json, propuesta) -->
+<!-- DATOS: preguntas (moodle.config.json → bases.preguntas) + armado (BASE_ENCUESTAS_ARMADO.json) → respuestas (BASE_RESPUESTAS.json, propuesta) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="responder-encuesta"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -72,10 +72,11 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var PERIODO_ACTUAL = '2026-2';
       // Bases de Zhakyz: null hasta que se creen (data/moodle/BASE_*.json)
-      var CMID_PREGUNTAS = 59498;
-      var CMID_ARMADO = null;
-      var CMID_RESPUESTAS = null;
-      var DATAID_RESPUESTAS = null;
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_PREGUNTAS = 59498; // @config bases.preguntas.cmid
+      var CMID_ARMADO = null; // @config bases.armado.cmid
+      var CMID_RESPUESTAS = null; // @config bases.respuestas.cmid
+      var DATAID_RESPUESTAS = null; // @config bases.respuestas.dataid
 
       var ENCUESTAS = {
         inicial: { etiqueta: 'Encuesta inicial', frecuencia: 'Una sola vez. Podés actualizarla cuando cambie tu situación.', porPeriodo: false },

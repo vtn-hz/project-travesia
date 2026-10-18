@@ -67,6 +67,8 @@
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
+      // Cada id sale de moodle.config.json: marcar la línea con "// @config <ruta>" (por ejemplo bases.preguntas.cmid)
+      // y correr sincronizar_config.js, que copia el valor
       var CMID_DATOS = null;
 
       var ROLES = {

@@ -1,6 +1,6 @@
 <!-- ÍTEM: ENCUESTAS (ARMADO DE LA ENCUESTA INICIAL Y CUATRIMESTRAL) · GRUPO encuestas_preguntas (ROLES ADM, GES) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: banco de preguntas = base de Zhakyz cmid 59498; composición = data/moodle/BASE_ENCUESTAS_ARMADO.json (propuesta, sin crear) -->
+<!-- DATOS: banco de preguntas = base de Zhakyz (moodle.config.json → bases.preguntas); composición = data/moodle/BASE_ENCUESTAS_ARMADO.json (propuesta, sin crear) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="armado-encuestas"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -129,11 +129,12 @@
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       // Banco de preguntas (base de Zhakyz, data/moodle/BASE_ENCUESTAS.json)
-      var CMID_PREGUNTAS = 59498;
+      var CMID_PREGUNTAS = 59498; // @config bases.preguntas.cmid
       // Composición de las encuestas (data/moodle/BASE_ENCUESTAS_ARMADO.json): null hasta que se cree
-      var CMID_ARMADO = null;
-      var DATAID_ARMADO = null;
+      var CMID_ARMADO = null; // @config bases.armado.cmid
+      var DATAID_ARMADO = null; // @config bases.armado.dataid
 
       var ROLES = {
         ADM: { nombre: 'Administrador', puedeEditar: true },
