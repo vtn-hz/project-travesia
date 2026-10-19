@@ -633,7 +633,7 @@
         var ultima = {};
         entradas.forEach(function(e, i) {
           var clave = e.plan + '|' + e.codigo;
-          var orden = e.rid ? parseInt(e.rid, 10) : i;
+          var orden = /^\d+$/.test(e.rid || '') ? parseInt(e.rid, 10) : i;
           if (!ultima[clave] || orden >= ultima[clave].orden) ultima[clave] = { orden: orden, e: e };
         });
         return Object.keys(ultima).map(function(k) { return ultima[k].e; })
@@ -645,7 +645,15 @@
         var doc = new DOMParser().parseFromString(html, 'text/html');
         var propias = doc.querySelectorAll('.zk-registro');
         if (propias.length) {
-          return Array.prototype.map.call(propias, function(el) { return Object.assign({}, el.dataset); });
+          // Cada campo es una celda con data-campo; el texto se lee de la celda, no de un atributo, por si un filtro de Moodle le agrega HTML
+          return Array.prototype.map.call(propias, function(el) {
+            var valores = {};
+            el.querySelectorAll('[data-campo]').forEach(function(c) { valores[c.getAttribute('data-campo')] = c.textContent.trim(); });
+            var enlace = el.querySelector('a[href*="rid="]');
+            valores.rid = /^\d+$/.test(el.getAttribute('data-rid') || '') ? el.getAttribute('data-rid')
+              : enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+            return valores;
+          });
         }
         return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
           var valores = {};
