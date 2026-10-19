@@ -250,7 +250,7 @@ Una entrada por **foto** (cálculo del sistema en un corte) o por **estado asign
 | `rid_acompanamiento` | number | `Entrevista.id_asignacion` | Define tutor y estudiante |
 | `dni` | text | (copia) | Permite filtrar sin leer Acompañamientos |
 | `rid_alerta` | number | `Entrevista.id_alerta` | Opcional |
-| `originada_por` | menu (`tutor`, `estudiante`, `alerta`) | `Entrevista.originada_por` | |
+| `originada_por` | menu (`tutor`, `estudiante`) | `Entrevista.originada_por` | Quién la pidió. Si nació de una alerta, lo indica `rid_alerta` |
 | `estado` | menu (`solicitada`, `rechazada`, `programada`, `realizada`, `no_asistio`, `cancelada`) | `Entrevista.estado` | |
 | `motivo` | text | `Entrevista.motivo` | Opcional |
 | `fecha_solicitud` | text (fecha y hora) | `Entrevista.fecha_solicitud` | |

@@ -241,7 +241,7 @@ erDiagram
     int id_entrevista PK
     int id_asignacion FK "Define tutor y estudiante"
     int id_alerta FK "opcional: Alerta que la originó"
-    string originada_por "tutor / estudiante / alerta; reemplaza emisor (1 / 2)"
+    string originada_por "tutor / estudiante; reemplaza emisor (1 / 2). Si nació de una alerta, lo indica id_alerta"
     string estado "solicitada / rechazada / programada / realizada / no_asistio / cancelada"
     string motivo "opcional: Por qué se pide; reemplaza mensaje"
     datetime fecha_solicitud
@@ -558,7 +558,7 @@ El ciclo completo de una entrevista, desde la solicitud hasta su realización. U
 | `id_entrevista` | entero | PK | no |  |
 | `id_asignacion` | entero | FK | no | Define tutor y estudiante |
 | `id_alerta` | entero | FK | sí | Alerta que la originó |
-| `originada_por` | texto |  | no | tutor / estudiante / alerta; reemplaza emisor (1 / 2) |
+| `originada_por` | texto |  | no | tutor / estudiante; reemplaza emisor (1 / 2). Si nació de una alerta, lo indica `id_alerta` |
 | `estado` | texto |  | no | solicitada / rechazada / programada / realizada / no_asistio / cancelada |
 | `motivo` | texto |  | sí | Por qué se pide; reemplaza mensaje |
 | `fecha_solicitud` | fecha-hora |  | no |  |
@@ -656,7 +656,6 @@ Nada de esto está en el modelo de arriba.
 **Inconsistencias del documento original**
 
 - El texto dice "22 entidades más Lote_Importacion"; en total son 23.
-- `Entrevista.originada_por = alerta` e `Entrevista.id_alerta` guardan lo mismo y pueden contradecirse.
 - "Recursa" figura como calculado y también como respuesta declarada en `Respuesta`; son dos datos distintos.
 
 **Datos que faltan (propuestas)**
