@@ -32,7 +32,7 @@ Zhakyz (sección 15647)
 │   └── Encuesta 1: encuesta (cmid 59508)            Solo en Moodle
 ├── Database (subsección 15700)
 │   ├── Preguntas: base de datos (cmid 59498, d=114) Publicado
-│   └── Materias: base de datos (cmid 59717, d=152)  Publicado (sin entradas)
+│   └── Materias: base de datos (cmid 59717, d=152)  Publicado (95 materias)
 ├── Pruebas (subsección 15701)                       Solo en Moodle
 │   └── BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing
 └── asdsad: encuesta (cmid 59541), fuera de las subsecciones   Solo en Moodle (parece una prueba)
@@ -44,7 +44,7 @@ Zhakyz (sección 15647)
 |---|---|---|---|---|
 | Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
 | Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. La tarjeta Plan de Estudios enlaza a su página (cmid 59718). Última publicación: 2026-10-19 |
-| Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Plan de Estudios, conectada a la base Materias (d=152). La tarjeta del Hub enlaza a esta página | La carga a Moodle no se probó con un CSV real. La plantilla de lista propia (`data/moodle/plantillas/materias/`) no está cargada: la tabla Materias registradas lee la plantilla por defecto. Última publicación: 2026-10-19 |
+| Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Plan de Estudios, conectada a la base Materias (d=152). La tarjeta del Hub enlaza a esta página | Ninguno. Cargados los dos planes (95 materias desde `PLANES_CARGA.csv`). Última publicación: 2026-10-19 |
 | Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |
@@ -63,7 +63,7 @@ Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.j
 | 6 | Preguntas | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) | **Publicado** (cmid 59498, d=114). Al modelo le faltan los campos `variable`, `por_materia` y el tipo `likert` |
 | — | Carga_Parciales_Primero | [`data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json`](data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json) | **Importado** (cmid 59521, d=117). Una entrada por evaluación; en el modelo equivale a Situación académica |
 | — | Carga_Materias_Primero | [`data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json`](data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json) | **Importado** (cmid 59522, d=118). Materia, `esCritica` y `Umbral`; en el modelo equivale a Materias |
-| 1 | Materias | [`data/moodle/BASE_MATERIAS.json`](data/moodle/BASE_MATERIAS.json) | **Publicado** (cmid 59717, d=152), sin entradas. Reemplaza a Carga_Materias_Primero |
+| 1 | Materias | [`data/moodle/BASE_MATERIAS.json`](data/moodle/BASE_MATERIAS.json) | **Publicado** (cmid 59717, d=152), con los planes 2024 y 2003 (95 materias) y plantillas con el estilo de Carga_Parciales_Primero. Reemplaza a Carga_Materias_Primero |
 | 7 | Armado de encuestas | [`data/moodle/BASE_ENCUESTAS_ARMADO.json`](data/moodle/BASE_ENCUESTAS_ARMADO.json) | **Propuesta** |
 | 8 | Respuestas | [`data/moodle/BASE_RESPUESTAS.json`](data/moodle/BASE_RESPUESTAS.json) | **Propuesta** |
 | 2–5, 9–10 | Períodos, Indicadores, Estudiantes, Situación académica, Criticidad, Alertas | Solo en el modelo | **En revisión** ([ADR-005](docs/decisions/005-modelo-de-bases-moodle.md)) |
