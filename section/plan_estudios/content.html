@@ -29,8 +29,12 @@
   <div id="aviso-datos-prueba-plan"
     style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
     <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
-    <span><b style="font-weight: 600 !important;">Vista de prueba.</b> La base Materias de la sección Zhakyz todavía no está creada: la revisión del archivo funciona completa, pero la carga se guarda solo en esta vista.</span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> La base Materias de la sección Zhakyz todavía no está creada: lo que se ve como cargado es el Plan 2024 de ejemplo, y una carga nueva se guarda solo en esta vista.</span>
   </div>
+
+  <!-- BASE ACTUAL: MATERIAS VIGENTES (LO ARMA EL SCRIPT) -->
+  <div id="bloque-base-plan"
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important; box-sizing: border-box !important;"></div>
 
   <!-- PASO 1: FORMATO DEL CSV -->
   <div id="bloque-formato-plan"
@@ -39,15 +43,15 @@
       <span data-icono="info"
         style="width: 36px !important; height: 36px !important; flex: 0 0 36px !important; border-radius: 8px !important; background-color: #e5f2ff !important; border: 1px solid #99ccff !important; color: #026bd4 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></span>
       <div>
-        <h4 style="margin: 0 0 2px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">1. Cómo tiene que venir el archivo</h4>
-        <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Una fila por materia. Puede traer uno o varios planes.</p>
+        <h4 style="margin: 0 0 2px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">1. Formato del archivo</h4>
+        <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Un archivo .csv con una materia por fila. Puede traer uno o varios planes.</p>
       </div>
     </div>
-    <ul id="lista-reglas-plan" style="margin: 0 0 16px 0 !important; padding: 0 0 0 20px !important; color: #0b0e14 !important; font-size: 14px !important; line-height: 1.6 !important;">
-      <li>La <b style="font-weight: 600 !important;">primera fila</b> lleva los nombres de las columnas, tal como están abajo. El orden no importa y las columnas que sobren se ignoran.</li>
-      <li>Separador <b style="font-weight: 600 !important;">coma</b> o <b style="font-weight: 600 !important;">punto y coma</b>: se detecta solo. Desde Excel, guardar como <b style="font-weight: 600 !important;">CSV UTF-8</b> para que no se pierdan las tildes.</li>
-      <li>En <code style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; background-color: #f5f6fa !important; padding: 1px 5px !important; border-radius: 4px !important;">desbloquea</code> va cada materia como <code style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; background-color: #f5f6fa !important; padding: 1px 5px !important; border-radius: 4px !important;">codigo:cuatrimestre</code>, separadas por coma. Si el separador del archivo también es la coma, la celda va entre comillas (Excel lo hace solo).</li>
-    </ul>
+    <div style="font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Ejemplo</div>
+    <div id="ejemplo-formato-plan"
+      style="overflow-x: auto !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; margin-bottom: 6px !important;"></div>
+    <p style="margin: 0 0 16px 0 !important; font-size: 12px !important; color: #47536b !important;">La fila 1 lleva los nombres de las columnas. Desde la fila 2, una materia por fila.</p>
+    <div style="font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Qué va en cada columna</div>
     <div id="tabla-formato-plan"
       style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 16px !important;"></div>
     <div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">
@@ -145,7 +149,7 @@
         { n: 'tipo', r: true, va: 'obligatoria · electiva · optativa · ingles', d: 'Tipo de espacio curricular.', ex: 'obligatoria' },
         { n: 'creditos', r: false, va: 'Número', d: 'Créditos.', ex: '6' },
         { n: 'horas', r: false, va: 'Número', d: 'Carga horaria total.', ex: '96' },
-        { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Las materias que habilita al aprobarla, solo las directas. El cuatrimestre tiene que coincidir con el de la fila de esa materia.', ex: 'INGM102:2, INGF101:2' }
+        { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Las materias que habilita al aprobarla, solo las directas. El cuatrimestre tiene que coincidir con el de la fila de esa materia.', ex: 'ING6101:2, INGF101:2, INGM102:2' }
       ];
       // Encabezados alternativos que se aceptan (ya sin tildes ni mayúsculas)
       var ALIAS = { ano: 'anio', 'año': 'anio', cuatri: 'cuatrimestre', duración: 'duracion', 'código': 'codigo', 'créditos': 'creditos' };
@@ -247,7 +251,10 @@
         guardadas: 0,
         resultado: null,  // { ok: bool, texto }
         fatal: null,      // { fatal, encontradas } si el archivo no se puede leer
-        desconocidas: []  // columnas que no son del formato
+        desconocidas: [], // columnas que no son del formato
+        base: null,       // materias vigentes de la base (null mientras se lee)
+        errorBase: '',
+        planBase: ''      // plan que se muestra en la base actual
       };
 
       // ---------------------------------------------------------
@@ -601,7 +608,10 @@
         if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
           estado.guardando = false;
           estado.guardadas = entradas.length;
-          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Vista de prueba:</b> se revisaron ' + entradas.length + ' materias del ' + escapar(resumen) + ' y quedaron listas, pero no se guardó nada porque la base Materias todavía no existe.' };
+          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Vista de prueba:</b> se cargaron ' + entradas.length + ' materias del ' + escapar(resumen) + ' en esta vista. Arriba, en "Lo que está cargado hoy", ya se ven como vigentes. En Moodle no se guardó nada porque la base Materias todavía no existe.' };
+          estado.base = vigentes(estado.base.concat(entradas));
+          estado.planBase = entradas[0].plan;
+          renderizarBase();
           return renderizarResultado();
         }
         leerFormularioMoodle().then(function(base) {
@@ -622,6 +632,7 @@
         }).then(function() {
           estado.guardando = false;
           renderizarResultado();
+          cargarBase();
         });
       }
 
@@ -631,8 +642,104 @@
       }
 
       // ---------------------------------------------------------
+      // BASE ACTUAL
+      // ---------------------------------------------------------
+      // VIGENTES: LA ENTRADA MÁS NUEVA (rid MÁS ALTO) DE CADA plan + codigo, SIN LAS DADAS DE BAJA
+      function vigentes(entradas) {
+        var ultima = {};
+        entradas.forEach(function(e, i) {
+          var clave = e.plan + '|' + e.codigo;
+          var orden = e.rid ? parseInt(e.rid, 10) : i;
+          if (!ultima[clave] || orden >= ultima[clave].orden) ultima[clave] = { orden: orden, e: e };
+        });
+        return Object.keys(ultima).map(function(k) { return ultima[k].e; })
+          .filter(function(e) { return e.estado !== 'baja'; });
+      }
+
+      // LEE LA BASE MATERIAS (PLANTILLA DE LISTA CON .zk-registro Y UN data-* POR CAMPO) O USA EL EJEMPLO
+      function cargarBase() {
+        if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
+          estado.base = vigentes(leerCsv(EJEMPLO_CSV).filas.map(function(f) { return f.v; }));
+          return renderizarBase();
+        }
+        estado.base = null;
+        renderizarBase();
+        fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_MATERIAS + '&perpage=1000', { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            estado.base = vigentes(Array.prototype.map.call(doc.querySelectorAll('.zk-registro'), function(el) {
+              return Object.assign({}, el.dataset);
+            }));
+            estado.errorBase = '';
+          }, function() {
+            estado.base = [];
+            estado.errorBase = 'No se pudo leer la base Materias.';
+          })
+          .then(renderizarBase);
+      }
+
+      function ordenarMaterias(a, b) {
+        return (parseInt(a.cuatrimestre, 10) - parseInt(b.cuatrimestre, 10)) || (a.codigo < b.codigo ? -1 : 1);
+      }
+
+      function renderizarBase() {
+        var h = '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px 16px !important; margin-bottom: 12px !important;">' +
+          '<div><h4 style="margin: 0 0 2px 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">Lo que está cargado hoy</h4>' +
+          '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">La versión vigente de cada materia en la base Materias.</p></div>';
+        if (estado.base === null) {
+          document.getElementById('bloque-base-plan').innerHTML = h + '</div><p style="margin: 0 !important; color: #47536b !important;">Leyendo la base…</p>';
+          return;
+        }
+        var planes = {};
+        estado.base.forEach(function(e) { planes[e.plan] = (planes[e.plan] || 0) + 1; });
+        var lista = Object.keys(planes).sort().reverse();
+        if (lista.indexOf(estado.planBase) === -1) estado.planBase = lista[0] || '';
+        h += '<div style="display: flex !important; gap: 6px !important; flex-wrap: wrap !important;">' + lista.map(function(p) {
+          var activa = p === estado.planBase;
+          return '<button type="button" data-plan-base="' + escapar(p) + '" aria-pressed="' + activa + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; border: 1px solid ' + (activa ? '#333c4d' : '#dadee7') + ' !important; background-color: ' + (activa ? '#0b0e14' : '#ffffff') + ' !important; color: ' + (activa ? '#ffffff' : '#0b0e14') + ' !important;">Plan ' + escapar(p) + ' (' + planes[p] + ')</button>';
+        }).join('') + '</div></div>';
+        if (estado.errorBase) h += aviso('error', escapar(estado.errorBase));
+        if (!lista.length) {
+          h += '<p style="margin: 0 !important; color: #47536b !important;">Todavía no hay materias cargadas. Subí el primer plan con los pasos de abajo.</p>';
+          document.getElementById('bloque-base-plan').innerHTML = h;
+          return;
+        }
+        var filas = estado.base.filter(function(e) { return e.plan === estado.planBase; }).sort(ordenarMaterias);
+        var THF = TH + ' position: sticky !important; top: 0 !important; z-index: 1 !important;';
+        h += '<div style="overflow: auto !important; max-height: 380px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">' +
+          '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 680px !important;">' +
+          '<thead><tr><th style="' + THF + '">Materia</th><th style="' + THF + '">Año</th><th style="' + THF + '">Cuatr.</th><th style="' + THF + '">Tipo</th><th style="' + THF + '">Créd.</th><th style="' + THF + '">Desbloquea</th></tr></thead><tbody>' +
+          filas.map(function(e) {
+            var c = parseInt(e.cuatrimestre, 10);
+            return '<tr style="' + TR + '">' +
+              '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(e.nombre) + '</div><div style="font-size: 12px !important; color: #47536b !important;">' + escapar(e.codigo) + '</div></td>' +
+              '<td style="' + TD + ' text-align: right !important;">' + escapar(e.anio) + '</td>' +
+              '<td style="' + TD + ' white-space: nowrap !important;">' + escapar(e.cuatrimestre) + (e.duracion === 'anual' ? '–' + (c + 1) + ' <span style="color: #47536b !important;">(anual)</span>' : '') + '</td>' +
+              '<td style="' + TD + '">' + escapar(e.tipo) + '</td>' +
+              '<td style="' + TD + ' text-align: right !important;">' + escapar(e.creditos) + '</td>' +
+              '<td style="' + TD + ' min-width: 200px !important;">' + htmlDesbloquea({ desbloquea: partirDesbloquea(e.desbloquea) }) + '</td></tr>';
+          }).join('') + '</tbody></table></div>';
+        document.getElementById('bloque-base-plan').innerHTML = h;
+      }
+
+      // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
+      // EJEMPLO DEL ARCHIVO: FILA 1 CON LOS ENCABEZADOS Y FILA 2 CON UNA MATERIA
+      function renderizarEjemplo() {
+        var celda = 'border: 0 !important; border-left: 1px solid #dadee7 !important; padding: 6px 10px !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 12px !important; white-space: nowrap !important; text-align: left !important;';
+        var num = 'border: 0 !important; padding: 6px 8px !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 12px !important; text-align: center !important; width: 28px !important;';
+        document.getElementById('ejemplo-formato-plan').innerHTML =
+          '<table style="border-collapse: collapse !important; margin: 0 !important; min-width: 100% !important;"><tbody>' +
+          '<tr style="border: 0 !important;"><td style="' + num + '">1</td>' + COLUMNAS.map(function(c) {
+            return '<td style="' + celda + ' background-color: #f5f6fa !important; font-weight: 600 !important;">' + c.n + '</td>';
+          }).join('') + '</tr>' +
+          '<tr style="border: 0 !important; border-top: 1px solid #dadee7 !important;"><td style="' + num + '">2</td>' + COLUMNAS.map(function(c) {
+            return '<td style="' + celda + '">' + escapar(c.ex) + '</td>';
+          }).join('') + '</tr></tbody></table>';
+      }
+
       // TABLA DEL FORMATO ESPERADO
       function renderizarFormato() {
         document.getElementById('tabla-formato-plan').innerHTML =
@@ -845,6 +952,8 @@
         if (!t.closest || !t.closest('#carga-plan')) return;
         var btnRol = t.closest('[data-preview-rol]');
         if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        var planBase = t.closest('[data-plan-base]');
+        if (planBase) { estado.planBase = planBase.getAttribute('data-plan-base'); return renderizarBase(); }
         var filtro = t.closest('[data-filtro-plan]');
         if (filtro) { estado.filtro = filtro.getAttribute('data-filtro-plan'); return renderizarResultado(); }
         if (t.closest('#btn-plantilla-plan')) return descargarPlantilla();
@@ -906,8 +1015,10 @@
         document.getElementById('btn-ejemplo-plan').style.setProperty('display', 'inline-flex', 'important');
       }
       aplicarRol(ROL_INICIAL);
+      renderizarEjemplo();
       renderizarFormato();
       renderizarResultado();
+      cargarBase();
     })();
   </script>
 </nolink>
