@@ -48,6 +48,6 @@ plan,codigo,nombre,anio,cuatrimestre,cuat_inicio,cuat_fin,creditos,horas,tipo,no
 2024,ING8504,Proyecto de Ingeniería Industrial IV,5,Anual,9,10,10,160,obligatoria,
 2024,ING8309,Gestión Integral del Mantenimiento,5,2,10,10,4,64,obligatoria,
 2024,ING8304,Empresas y Servicios Basadas en el Conocimiento,5,2,10,10,4,64,obligatoria,
-2024,ELEC4,Electiva IV,5,2,10,10,4,64,electiva,"LuminaTech la cargó como ""Electiva VI"""
+2024,ELEC4,Electiva IV,5,2,10,10,4,64,electiva,
 2024,OPT1,Optativa I,5,2,10,10,4,64,optativa,
 2024,OPT2,Optativa II,5,2,10,10,4,64,optativa,

@@ -1,0 +1,67 @@
+plan,codigo_materia,codigo_requerida,nombre_requerida
+2003,633,RA8,Introducción a la Ingeniería
+2003,631,RA8,Introducción a la Ingeniería
+2003,1BA,RA8,Introducción a la Ingeniería
+2003,634,633,Análisis Matemático A
+2003,632,631,Álgebra A
+2003,615,631,Álgebra A
+2003,615,633,Análisis Matemático A
+2003,722,631,Álgebra A
+2003,722,633,Análisis Matemático A
+2003,635,632,Álgebra B
+2003,635,634,Análisis Matemático B
+2003,290,631,Álgebra A
+2003,628,634,Análisis Matemático B
+2003,228,634,Análisis Matemático B
+2003,228,722,Física 1
+2003,723,632,Álgebra B
+2003,723,634,Análisis Matemático B
+2003,723,722,Física 1
+2003,3E4,635,Análisis Matemático C
+2003,3E4,723,Física 2
+2003,724,723,Física 2
+2003,638,635,Análisis Matemático C
+2003,638,723,Física 2
+2003,639,615,Computación
+2003,639,635,Análisis Matemático C
+2003,2B5,1BA,Química General I
+2003,2B5,635,Análisis Matemático C
+2003,2B5,723,Física 2
+2003,857,628,Estadística Básica
+2003,877,628,Estadística Básica
+2003,579,1BA,Química General I
+2003,579,228,Estática y Resistencia de Materiales
+2003,848,628,Estadística Básica
+2003,1OF,2B5,Termodinámica y Máquinas Térmicas
+2003,727,724,Física 3
+2003,834,615,Computación
+2003,834,628,Estadística Básica
+2003,3M4,3E4,Electrotecnia General
+2003,2C2,1OF,Procesos Industriales I
+2003,2C2,228,Estática y Resistencia de Materiales
+2003,849,877,Investigación Operativa I
+2003,849,848,Organización y Dirección Industrial I
+2003,839,848,Organización y Dirección Industrial I
+2003,4E3,3E4,Electrotecnia General
+2003,4E3,727,Física Experimental
+2003,4E3,638,Matemática Avanzada
+2003,860,877,Investigación Operativa I
+2003,860,834,Informática en la Empresa
+2003,847,857,Economía Industrial
+2003,847,849,Organización y Dirección Industrial II
+2003,2B7,290,Dibujo I
+2003,2B7,579,Materiales Industriales
+2003,875,847,Marketing Industrial
+2003,875,860,Investigación Operativa II
+2003,864,4E3,Introducción a la Electrónica Industrial
+2003,864,2C2,Mecánica de los Fluidos
+2003,864,3M4,Máquinas y Accionamientos Eléctricos
+2003,2C5,2B7,Mecanismos y Elementos de Máquinas
+2003,816,839,Administración de Recursos Humanos
+2003,828,849,Organización y Dirección Industrial II
+2003,840,857,Economía Industrial
+2003,858,849,Organización y Dirección Industrial II
+2003,866,839,Administración de Recursos Humanos
+2003,866,849,Organización y Dirección Industrial II
+2003,867,828,Gestión de la Calidad
+2003,876,828,Gestión de la Calidad
