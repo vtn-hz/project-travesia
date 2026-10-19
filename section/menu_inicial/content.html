@@ -126,8 +126,10 @@
       // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_PAGINA_PREGUNTAS = 59506; // @config paginas.preguntas
+      var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var DESTINOS_MOODLE = {
-        'btn-encuestas': '/mod/page/view.php?id=' + CMID_PAGINA_PREGUNTAS
+        'btn-encuestas': '/mod/page/view.php?id=' + CMID_PAGINA_PREGUNTAS,
+        'btn-plan-estudios': '/mod/page/view.php?id=' + CMID_PAGINA_PLAN
       };
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;

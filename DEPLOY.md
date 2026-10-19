@@ -2,7 +2,7 @@
 
 Qué está publicado en Moodle, qué está solo en local y qué está en revisión. Curso 1732 → sección **Zhakyz** (id 15647).
 
-> **Última actualización:** 2026-10-19 (base Materias creada y página Plan de Estudios publicada; Entrevistas y Tutorías en revisión, sin publicar). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
+> **Última actualización:** 2026-10-19 (Hub republicado con el enlace a Plan de Estudios; Entrevistas y Tutorías en revisión, sin publicar). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
 
 ## Estados
 
@@ -22,10 +22,11 @@ Zhakyz (sección 15647)
 ├── Resumen: logo, nombre y lema                    Publicado
 ├── Hub (subsección 15706)
 │   ├── Hub: menú inicial (cmid 59511)               Publicado
-│   ├── Plan de Estudios: página (cmid 59718)       Publicado
 │   ├── Carga_Parciales_Primero: base (cmid 59521, d=117)   Importado
 │   ├── Carga_Materias_Primero: base (cmid 59522, d=118)    Importado
 │   └── Listado_Criticidad_Primero: página (cmid 59523)     Importado
+├── Plan de Estudios (subsección 15721)
+│   └── Plan de Estudios: página (cmid 59718)       Publicado
 ├── Encuestas y Preguntas (subsección 15705)
 │   ├── Preguntas: página (cmid 59506)               Publicado
 │   └── Encuesta 1: encuesta (cmid 59508)            Solo en Moodle
@@ -42,8 +43,8 @@ Zhakyz (sección 15647)
 | Sección | Archivo | Estado | En Moodle | Qué falta |
 |---|---|---|---|---|
 | Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
-| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. Última publicación: 2026-10-19 |
-| Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Hub, conectada a la base Materias (d=152) | La tarjeta del Hub todavía no enlaza a la página en Moodle (falta republicar el Hub). La carga a Moodle no se probó con un CSV real. La plantilla de lista propia (`data/moodle/plantillas/materias/`) no está cargada: la tabla Materias registradas lee la plantilla por defecto. Última publicación: 2026-10-19 |
+| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. La tarjeta Plan de Estudios enlaza a su página (cmid 59718). Última publicación: 2026-10-19 |
+| Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Plan de Estudios, conectada a la base Materias (d=152). La tarjeta del Hub enlaza a esta página | La carga a Moodle no se probó con un CSV real. La plantilla de lista propia (`data/moodle/plantillas/materias/`) no está cargada: la tabla Materias registradas lee la plantilla por defecto. Última publicación: 2026-10-19 |
 | Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |
