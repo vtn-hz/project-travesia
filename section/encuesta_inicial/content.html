@@ -207,12 +207,27 @@
         return document.getElementById('feedback_item_' + ITEM_CREDITOS);
       }
 
-      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO)
+      // EL CAMPO SOLO SE BLOQUEA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, EL ESTUDIANTE LO COMPLETA A MANO
+      function calculoActivo() {
+        return estado.materias !== null && !estado.error;
+      }
+
+      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO) Y EL CAMPO QUEDA DE SOLO LECTURA
       function escribirTotal() {
         var campo = campoCreditos();
-        if (!campo) return;
-        campo.value = formatear(totales().creditos);
-        campo.dispatchEvent(new Event('change', { bubbles: true }));
+        if (!campo || !calculoActivo()) return;
+        if (!campo.readOnly) {
+          campo.readOnly = true;
+          campo.setAttribute('aria-readonly', 'true');
+          campo.title = 'Se calcula con las materias seleccionadas en el cuadro Materias aprobadas.';
+          campo.style.setProperty('background-color', '#f5f6fa', 'important');
+          campo.style.setProperty('cursor', 'not-allowed', 'important');
+        }
+        var total = formatear(totales().creditos);
+        if (campo.value !== total) {
+          campo.value = total;
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }
       }
 
       // ---------------------------------------------------------
@@ -317,6 +332,16 @@
           renderizar();
         }
       });
+
+      // Si el valor del campo cambia por cualquier otra vía, vuelve a ser la suma
+      document.addEventListener('input', function(e) {
+        if (e.target === campoCreditos()) escribirTotal();
+      });
+
+      // Antes de enviar la encuesta se escribe la suma una vez más
+      document.addEventListener('submit', function(e) {
+        if (campoCreditos() && e.target.contains(campoCreditos())) escribirTotal();
+      }, true);
 
       // ---------------------------------------------------------
       // INICIO

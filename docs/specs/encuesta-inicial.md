@@ -30,6 +30,8 @@ Que el estudiante seleccione las materias que tiene aprobadas y que el total de 
 - Botón por plan (2024 primero). Las materias se agrupan por año (`ceil(cuatrimestre / 2)`) y cada una muestra código, cuatrimestre (las anuales, los dos) y créditos.
 - Cada selección actualiza el total de créditos, la cantidad de materias y el porcentaje sobre los créditos del plan, y escribe el total en el input `feedback_item_8253` de la encuesta.
 - "Seleccionar todas" / "Quitar todas" por año.
+- **El total no se edita a mano:** cuando la lista de materias se pudo leer, la pregunta `creditos_aprobados` queda de solo lectura y siempre muestra la suma. Si su valor cambia por otra vía, vuelve a la suma, y antes de enviar la encuesta se escribe una vez más. Si la base no se pudo leer, el campo queda editable para completarlo a mano.
+- Es un control del navegador: Moodle no puede validar en el servidor que el número coincida con las materias.
 - Si la base no se puede leer o está vacía, avisa que el total se completa a mano en la pregunta siguiente.
 - En local muestra unas pocas materias de ejemplo y simula la pregunta numérica.
 
