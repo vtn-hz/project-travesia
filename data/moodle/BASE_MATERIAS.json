@@ -10,7 +10,7 @@
       "nombre": "plan",
       "tipo": "menu",
       "requerido": true,
-      "descripcion": "Plan de estudios. Clave junto con codigo.",
+      "descripcion": "Plan de estudios (por ejemplo 2024). Clave junto con codigo.",
       "opciones": [
         "2024",
         "2003"
@@ -27,19 +27,6 @@
       "tipo": "text",
       "requerido": true,
       "descripcion": "Nombre oficial."
-    },
-    {
-      "nombre": "anio",
-      "tipo": "menu",
-      "requerido": true,
-      "descripcion": "Año de la carrera.",
-      "opciones": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
     },
     {
       "nombre": "cuatrimestre",
