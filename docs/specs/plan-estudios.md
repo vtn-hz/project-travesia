@@ -23,7 +23,7 @@ Cargar uno o varios planes de estudio desde un CSV. La página explica el format
 ## Pasos de la pantalla
 
 0. **Lo que está cargado hoy:** la versión vigente de cada materia (la entrada más nueva de cada `plan + codigo`, sin las dadas de baja), con un selector por plan. En Moodle se lee de la plantilla de lista de la base ([`plantillas/materias`](../../data/moodle/plantillas/materias/)); en local se muestra el Plan 2024 de ejemplo y se actualiza al cargar.
-1. **Formato:** un ejemplo del archivo (fila 1 con los encabezados y fila 2 con una materia) y una tabla con cada columna, si es obligatoria, qué valores acepta y un ejemplo. Botón para descargar una plantilla CSV. En local, botón "Probar con el Plan 2024".
+1. **Formato:** un ejemplo del archivo (fila 1 con los encabezados y fila 2 con una materia) y una tabla con cada columna, si es obligatoria, qué valores acepta y un ejemplo. Botón para descargar una plantilla CSV.
 2. **Subir el archivo:** zona para arrastrar o elegir un `.csv`. Nada se guarda todavía.
 3. **Revisión:** totales (materias, listas, errores, advertencias), lista de problemas por fila y vista previa con el estado de cada materia. Filtro "Con problemas".
 4. **Carga:** el botón principal se habilita solo sin errores. Cada fila es una entrada nueva en Materias con `estado = vigente` y `cambio = Carga desde <archivo>`.

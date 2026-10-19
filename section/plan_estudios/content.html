@@ -51,9 +51,6 @@
       <button type="button" id="btn-plantilla-plan"
         style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important;">
         <span data-icono="descargar"></span>Descargar plantilla</button>
-      <button type="button" id="btn-ejemplo-plan"
-        style="display: none; height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important; align-items: center !important; gap: 8px !important;">
-        <span data-icono="ver"></span>Probar con el Plan 2024</button>
     </div>
   </div>
 
@@ -950,7 +947,6 @@
         var filtro = t.closest('[data-filtro-plan]');
         if (filtro) { estado.filtro = filtro.getAttribute('data-filtro-plan'); return renderizarResultado(); }
         if (t.closest('#btn-plantilla-plan')) return descargarPlantilla();
-        if (t.closest('#btn-ejemplo-plan')) return procesarTexto(EJEMPLO_CSV, 'PLAN_2024_CARGA.csv');
         if (t.closest('#btn-quitar-plan')) return quitarArchivo();
         if (t.closest('#btn-completar-plan')) { completarCuatrimestres(); return renderizarResultado(); }
         if (t.closest('#btn-descargar-corregido-plan')) return descargarCorregido();
@@ -1000,10 +996,7 @@
       for (var h = 0; h < huecos.length; h++) {
         huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
       }
-      if (ES_VISTA_LOCAL) {
-        crearBarraPreview();
-        document.getElementById('btn-ejemplo-plan').style.setProperty('display', 'inline-flex', 'important');
-      }
+      if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
       renderizarEjemplo();
       renderizarFormato();
