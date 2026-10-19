@@ -1,0 +1,914 @@
+<!-- SECCIÓN: PLAN DE ESTUDIOS Y CORRELATIVAS · CARGA POR CSV (ROLES ADM, GES) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="carga-plan"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · SBIRE</div>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Plan de Estudios y Correlativas</h3>
+      <p
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Cargá un plan desde un archivo CSV. Antes de guardar, la página revisa cada fila y te dice qué corregir.</p>
+    </div>
+    <div id="badge-rol-plan"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO: BASE TODAVÍA NO CREADA -->
+  <div id="aviso-datos-prueba-plan"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Vista de prueba.</b> La base Materias de la sección Zhakyz todavía no está creada: la revisión del archivo funciona completa, pero la carga se guarda solo en esta vista.</span>
+  </div>
+
+  <!-- PASO 1: FORMATO DEL CSV -->
+  <div id="bloque-formato-plan"
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important; box-sizing: border-box !important;">
+    <div style="display: flex !important; align-items: flex-start !important; gap: 12px !important; margin-bottom: 12px !important;">
+      <span data-icono="info"
+        style="width: 36px !important; height: 36px !important; flex: 0 0 36px !important; border-radius: 8px !important; background-color: #e5f2ff !important; border: 1px solid #99ccff !important; color: #026bd4 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></span>
+      <div>
+        <h4 style="margin: 0 0 2px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">1. Cómo tiene que venir el archivo</h4>
+        <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Una fila por materia. Puede traer uno o varios planes.</p>
+      </div>
+    </div>
+    <ul id="lista-reglas-plan" style="margin: 0 0 16px 0 !important; padding: 0 0 0 20px !important; color: #0b0e14 !important; font-size: 14px !important; line-height: 1.6 !important;">
+      <li>La <b style="font-weight: 600 !important;">primera fila</b> lleva los nombres de las columnas, tal como están abajo. El orden no importa y las columnas que sobren se ignoran.</li>
+      <li>Separador <b style="font-weight: 600 !important;">coma</b> o <b style="font-weight: 600 !important;">punto y coma</b>: se detecta solo. Desde Excel, guardar como <b style="font-weight: 600 !important;">CSV UTF-8</b> para que no se pierdan las tildes.</li>
+      <li>En <code style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; background-color: #f5f6fa !important; padding: 1px 5px !important; border-radius: 4px !important;">desbloquea</code> va cada materia como <code style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; background-color: #f5f6fa !important; padding: 1px 5px !important; border-radius: 4px !important;">codigo:cuatrimestre</code>, separadas por coma. Si el separador del archivo también es la coma, la celda va entre comillas (Excel lo hace solo).</li>
+    </ul>
+    <div id="tabla-formato-plan"
+      style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 16px !important;"></div>
+    <div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">
+      <button type="button" id="btn-plantilla-plan"
+        style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important;">
+        <span data-icono="descargar"></span>Descargar plantilla</button>
+      <button type="button" id="btn-ejemplo-plan"
+        style="display: none; height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important; align-items: center !important; gap: 8px !important;">
+        <span data-icono="ver"></span>Probar con el Plan 2024</button>
+    </div>
+  </div>
+
+  <!-- PASO 2: SUBIR EL ARCHIVO -->
+  <div id="bloque-archivo-plan"
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important; box-sizing: border-box !important;">
+    <h4 style="margin: 0 0 12px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">2. Subir el archivo</h4>
+    <label id="zona-archivo-plan" for="campo-archivo-plan" tabindex="0" role="button" aria-label="Elegir un archivo CSV"
+      style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 6px !important; padding: 28px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #fcfcfc !important; color: #47536b !important; text-align: center !important; cursor: pointer !important;">
+      <span data-icono="importar" style="color: #566481 !important;"></span>
+      <span style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">Arrastrá el CSV acá o hacé clic para elegirlo</span>
+      <span style="font-size: 12px !important; color: #47536b !important;">Solo archivos .csv. Nada se guarda hasta que confirmes la carga.</span>
+    </label>
+    <input type="file" id="campo-archivo-plan" accept=".csv,text/csv" style="display: none !important;">
+    <div id="info-archivo-plan"
+      style="display: none; align-items: center !important; justify-content: space-between !important; gap: 12px !important; flex-wrap: wrap !important; padding: 10px 12px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #f5f6fa !important;">
+      <span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; min-width: 0 !important;">
+        <span data-icono="importar" style="color: #47536b !important;"></span>
+        <span id="txt-archivo-plan" style="font-weight: 500 !important; overflow-wrap: anywhere !important;"></span>
+      </span>
+      <button type="button" id="btn-quitar-plan"
+        style="height: 36px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
+        <span data-icono="cerrar"></span>Elegir otro archivo</button>
+    </div>
+  </div>
+
+  <!-- PASO 3: REVISIÓN Y CARGA (LO ARMA EL SCRIPT) -->
+  <div id="resultado-plan"></div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-plan-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-plan-style';
+        styleEl.innerHTML =
+          '#carga-plan > nolink { display: block; }' +
+          '#carga-plan button:focus-visible, #carga-plan [tabindex]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '#carga-plan tbody tr:hover td { background-color: rgba(218, 222, 231, 0.2); }' +
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en GES.
+      var ROL_INICIAL = 'GES';
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Base Materias de la sección Zhakyz (null hasta que se cree). Definición: data/moodle/BASE_MATERIAS.json
+      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var DATAID_MATERIAS = null; // @config bases.materias.dataid
+      // Problemas que se muestran en la lista antes de resumir el resto
+      var MAX_PROBLEMAS = 40;
+
+      var ROLES = {
+        ADM: { nombre: 'Administrador' },
+        GES: { nombre: 'Gestor Dpto. Industrial' }
+      };
+
+      var PLANES = ['2024', '2003'];
+      var DURACIONES = ['cuatrimestral', 'anual'];
+      var TIPOS = ['obligatoria', 'electiva', 'optativa', 'ingles'];
+
+      // COLUMNAS DEL CSV: MISMO NOMBRE Y ORDEN QUE LOS CAMPOS DE LA BASE (estado y cambio los pone la página)
+      var COLUMNAS = [
+        { n: 'plan', r: true, va: '2024 · 2003', d: 'Plan de estudios.', ex: '2024' },
+        { n: 'codigo', r: true, va: 'Letras y números, sin espacios', d: 'Código institucional. No se puede repetir dentro del mismo plan.', ex: 'INGM101' },
+        { n: 'nombre', r: true, va: 'Texto', d: 'Nombre oficial.', ex: 'Análisis Matemático I' },
+        { n: 'anio', r: true, va: '1 a 5', d: 'Año de la carrera. También se acepta el encabezado "año".', ex: '1' },
+        { n: 'cuatrimestre', r: true, va: '1 a 10', d: 'Cuatrimestre del plan en el que empieza, contado desde el ingreso.', ex: '1' },
+        { n: 'duracion', r: true, va: 'cuatrimestral · anual', d: 'La anual termina en el cuatrimestre siguiente al de inicio.', ex: 'cuatrimestral' },
+        { n: 'tipo', r: true, va: 'obligatoria · electiva · optativa · ingles', d: 'Tipo de espacio curricular.', ex: 'obligatoria' },
+        { n: 'creditos', r: false, va: 'Número', d: 'Créditos.', ex: '6' },
+        { n: 'horas', r: false, va: 'Número', d: 'Carga horaria total.', ex: '96' },
+        { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Las materias que habilita al aprobarla, solo las directas. El cuatrimestre tiene que coincidir con el de la fila de esa materia.', ex: 'INGM102:2, INGF101:2' }
+      ];
+      // Encabezados alternativos que se aceptan (ya sin tildes ni mayúsculas)
+      var ALIAS = { ano: 'anio', 'año': 'anio', cuatri: 'cuatrimestre', duración: 'duracion', 'código': 'codigo', 'créditos': 'creditos' };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        importar: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>',
+        descargar: '<path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/>',
+        cerrar: '<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>',
+        guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // EJEMPLO LOCAL: PLAN 2024 (data/plan_estudios/PLAN_2024_CARGA.csv)
+      // ---------------------------------------------------------
+      var EJEMPLO_CSV = [
+        'plan,codigo,nombre,anio,cuatrimestre,duracion,tipo,creditos,horas,desbloquea',
+        '2024,INGM101,Análisis Matemático I,1,1,cuatrimestral,obligatoria,6,96,"ING6101:2, INGF101:2, INGM102:2"',
+        '2024,INGM105,Álgebra I- B,1,1,cuatrimestral,obligatoria,4,64,"ING6101:2, INGF101:2, INGM106:2"',
+        '2024,ING1103,Fundamentos de Química,1,1,cuatrimestral,obligatoria,4,64,"ING2221:4, ING2219:5"',
+        '2024,INGM102,Análisis Matemático II,1,2,cuatrimestral,obligatoria,5,80,"ING8501:3, INGM103:3, INGM108:3, ING2221:4, ING8414:4, ING2217:5"',
+        '2024,INGM106,Álgebra II,1,2,cuatrimestral,obligatoria,5,80,"INGM103:3, ING2104:6"',
+        '2024,INGF101,Física A,1,2,cuatrimestral,obligatoria,6,96,"ING2218:3, INGF103:3, ING2221:4"',
+        '2024,ING6101,Fundamentos de la Programación,1,2,cuatrimestral,obligatoria,4,64,ING8417:9',
+        '2024,INGF103,Física B- II,2,3,cuatrimestral,obligatoria,6,96,"ING3209:4, INGF106:6"',
+        '2024,INGM103,Análisis Matemático III,2,3,cuatrimestral,obligatoria,6,96,"ING3209:4, ING8405:5"',
+        '2024,INGM108,Probabilidad y Estadística,2,3,cuatrimestral,obligatoria,4,64,"ING8302:4, ING8201:5"',
+        '2024,ING2218,Mecánica del Sólido,2,3,cuatrimestral,obligatoria,4,64,"ING2217:5, ING2219:5, ING2220:8"',
+        '2024,ING8408,Inglés I,2,3,cuatrimestral,ingles,3,48,ING8409:4',
+        '2024,ING8501,Proyecto de Ingeniería Industrial I,2,3,anual,obligatoria,4,64,ING8502:5',
+        '2024,ING8302,Administración Estratégica,2,4,cuatrimestral,obligatoria,4,64,"ING8301:5, ING8308:5, ING8405:5, ING8502:5"',
+        '2024,ING8414,Conceptos de Economía Industrial,2,4,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8418:9"',
+        '2024,ING3209,Máquinas y Equipos Industriales I,2,4,cuatrimestral,obligatoria,5,80,ING8303:7',
+        '2024,ING2221,Termodinámica Industrial,2,4,cuatrimestral,obligatoria,4,64,ING8303:7',
+        '2024,ING8409,Inglés II,2,4,cuatrimestral,ingles,3,48,ING8415:7',
+        '2024,ING8301,Administración de Operaciones,3,5,cuatrimestral,obligatoria,4,64,"ING8307:6, ING8310:6, ING8305:8"',
+        '2024,ING8201,Investigación Operativa A,3,5,cuatrimestral,obligatoria,4,64,"ING8202:6, ING8307:6, ING8310:6"',
+        '2024,ING8308,Gestión de la Tecnología y la Innovación,3,5,cuatrimestral,obligatoria,4,64,ING8304:10',
+        '2024,ING2219,Tecnología de los Materiales,3,5,cuatrimestral,obligatoria,4,64,ING2220:8',
+        '2024,ING8405,"Ética, Legislación y Propiedad Intelectual en el Ejercicio Profesional",3,5,cuatrimestral,obligatoria,4,64,ING8402:7',
+        '2024,ING2217,Mecánica de Fluidos,3,5,cuatrimestral,obligatoria,3,48,ING8303:7',
+        '2024,ING8502,Proyecto de Ingeniería Industrial II,3,5,anual,obligatoria,4,64,"ING8503:7, ING8417:9"',
+        '2024,ING8310,Planificación y Control de la Producción,3,6,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8311:7, ING8402:7, ING8503:7, ING8309:10"',
+        '2024,ING8202,Investigación Operativa B,3,6,cuatrimestral,obligatoria,4,64,"ING8503:7, ING8305:8"',
+        '2024,ING2104,Sistemas de Representación para Ingeniería,3,6,cuatrimestral,obligatoria,3,48,ING2222:8',
+        '2024,INGF106,Física Experimental A,3,6,cuatrimestral,obligatoria,4,64,ING2220:8',
+        '2024,ING8307,Gestión de la Logística Integral y Cadena de Suministros,3,6,cuatrimestral,obligatoria,4,64,ING8418:9',
+        '2024,ELEC1,Electiva I,3,6,cuatrimestral,electiva,4,64,',
+        '2024,ING8303,Diseño de Instalaciones y Procesos,4,7,cuatrimestral,obligatoria,4,64,"ING2222:8, ING8312:9"',
+        '2024,ING8311,Sistemas de Gestión y Mejora Continua,4,7,cuatrimestral,obligatoria,5,80,"ING8312:9, ING8504:9"',
+        '2024,ING8402,Comportamiento Organizacional y Relaciones del Trabajo,4,7,cuatrimestral,obligatoria,4,64,ING8304:10',
+        '2024,ING8306,Gestión Comercial de las Organizaciones,4,7,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8415,Inglés Profesional A,4,7,cuatrimestral,ingles,4,64,ING8416:8',
+        '2024,ING8503,Proyecto de Ingeniería Industrial III,4,7,anual,obligatoria,4,64,ING8504:9',
+        '2024,ING8305,Formulación y Evaluación de Proyectos,4,8,cuatrimestral,obligatoria,5,80,ING8504:9',
+        '2024,ING2220,Introducción a los Procesos de Fabricación,4,8,cuatrimestral,obligatoria,3,48,ING8309:10',
+        '2024,ING2222,Tecnología de Control,4,8,cuatrimestral,obligatoria,4,64,ING8312:9',
+        '2024,ELEC2,Electiva II,4,8,cuatrimestral,electiva,4,64,',
+        '2024,ING8416,Inglés Profesional B,4,8,cuatrimestral,ingles,4,64,',
+        '2024,ING8312,"Sustentabilidad, Higiene y Seguridad",5,9,cuatrimestral,obligatoria,5,80,',
+        '2024,ING8418,Desarrollo Económico y Comercio Internacional,5,9,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8417,Sistemas Informáticos de Gestión,5,9,cuatrimestral,obligatoria,4,64,',
+        '2024,ELEC3,Electiva III,5,9,cuatrimestral,electiva,4,64,',
+        '2024,ING8504,Proyecto de Ingeniería Industrial IV,5,9,anual,obligatoria,10,160,',
+        '2024,ING8309,Gestión Integral del Mantenimiento,5,10,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8304,Empresas y Servicios Basadas en el Conocimiento,5,10,cuatrimestral,obligatoria,4,64,',
+        '2024,ELEC4,Electiva IV,5,10,cuatrimestral,electiva,4,64,',
+        '2024,OPT1,Optativa I,5,10,cuatrimestral,optativa,4,64,',
+        '2024,OPT2,Optativa II,5,10,cuatrimestral,optativa,4,64,'
+      ].join('\n');
+
+      // ---------------------------------------------------------
+      // ESTADO
+      // ---------------------------------------------------------
+      var estado = {
+        archivo: '',      // nombre del archivo
+        avisoLectura: '', // aviso de codificación
+        filas: null,      // [{ n: número de fila, v: { columna: texto } }]
+        revision: null,   // resultado de validar()
+        filtro: 'todas',
+        corregido: false, // se completaron cuatrimestres de desbloquea
+        guardando: false,
+        guardadas: 0,
+        resultado: null,  // { ok: bool, texto }
+        fatal: null,      // { fatal, encontradas } si el archivo no se puede leer
+        desconocidas: []  // columnas que no son del formato
+      };
+
+      // ---------------------------------------------------------
+      // UTILIDADES DE PRESENTACIÓN
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      // COLORES DE CADA NIVEL (SEMÁFORO DE LA SKILL diseno-ui)
+      var NIVELES = {
+        error: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808', etiqueta: 'Error' },
+        alerta: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', etiqueta: 'Revisar' },
+        ok: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', etiqueta: 'Lista' }
+      };
+
+      function chipNivel(nivel, texto) {
+        var c = NIVELES[nivel];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + c.borde + ' !important; background-color: ' + c.fondo + ' !important; color: ' + c.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + c.punto + ' !important;"></span>' + escapar(texto || c.etiqueta) + '</span>';
+      }
+
+      var CODE = 'font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 12px !important; background-color: #f5f6fa !important; padding: 1px 5px !important; border-radius: 4px !important; white-space: nowrap !important;';
+      var TH = 'border: 0 !important; text-align: left !important; padding: 0 12px !important; height: 44px !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 13px !important; font-weight: 500 !important; white-space: nowrap !important;';
+      var TD = 'border: 0 !important; padding: 10px 12px !important; vertical-align: top !important; font-size: 13px !important; color: #0b0e14 !important;';
+      var TR = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;';
+      var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;';
+      var BTN_SEC = 'height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important;';
+
+      function aviso(tipo, html) {
+        var c = {
+          error: ['#fff0f0', 'rgba(246, 85, 85, 0.4)', '#c20a0a', 'error'],
+          alerta: ['#fdf1ce', 'rgba(246, 206, 85, 0.5)', '#aa8109', 'alerta'],
+          info: ['#e5f2ff', 'rgba(77, 166, 255, 0.4)', '#026bd4', 'info'],
+          ok: ['#f6fef6', '#c5f7c5', '#1f7a1f', 'ok']
+        }[tipo];
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: ' + c[0] + ' !important; border: 1px solid ' + c[1] + ' !important; color: #0b0e14 !important; font-size: 14px !important; margin-bottom: 16px !important;">' +
+          '<span style="color: ' + c[2] + ' !important; padding-top: 1px !important;">' + icono(c[3], 20) + '</span><div style="min-width: 0 !important;">' + html + '</div></div>';
+      }
+
+      // ---------------------------------------------------------
+      // LECTURA DEL CSV
+      // ---------------------------------------------------------
+      // SEPARADOR: EL QUE MÁS APARECE EN LA PRIMERA LÍNEA, FUERA DE COMILLAS
+      function detectarSeparador(texto) {
+        var cuenta = { ',': 0, ';': 0, '\t': 0 }, comillas = false;
+        for (var i = 0; i < texto.length; i++) {
+          var c = texto[i];
+          if (c === '"') comillas = !comillas;
+          else if (!comillas && (c === '\n' || c === '\r')) break;
+          else if (!comillas && cuenta[c] !== undefined) cuenta[c]++;
+        }
+        return Object.keys(cuenta).sort(function(a, b) { return cuenta[b] - cuenta[a]; })[0];
+      }
+
+      // CSV A FILAS DE CELDAS (COMILLAS, "" ESCAPADAS Y SALTOS DENTRO DE COMILLAS)
+      function parsearCsv(texto, sep) {
+        var filas = [], fila = [], celda = '', comillas = false;
+        for (var i = 0; i < texto.length; i++) {
+          var c = texto[i];
+          if (comillas) {
+            if (c === '"' && texto[i + 1] === '"') { celda += '"'; i++; }
+            else if (c === '"') comillas = false;
+            else celda += c;
+          } else if (c === '"') comillas = true;
+          else if (c === sep) { fila.push(celda); celda = ''; }
+          else if (c === '\n' || c === '\r') {
+            if (c === '\r' && texto[i + 1] === '\n') i++;
+            fila.push(celda); filas.push(fila); fila = []; celda = '';
+          } else celda += c;
+        }
+        if (celda !== '' || fila.length) { fila.push(celda); filas.push(fila); }
+        return filas;
+      }
+
+      function normalizarEncabezado(s) {
+        var t = s.trim().toLowerCase();
+        if (ALIAS[t]) return ALIAS[t];
+        t = t.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        return ALIAS[t] || t;
+      }
+
+      // TEXTO DEL ARCHIVO A { fatal } O { filas, desconocidas }
+      function leerCsv(texto) {
+        texto = texto.replace(/^﻿/, '');
+        if (!texto.trim()) return { fatal: 'El archivo está vacío.' };
+        var sep = detectarSeparador(texto);
+        var celdas = parsearCsv(texto, sep);
+        var encabezado = celdas[0].map(normalizarEncabezado);
+        var faltan = COLUMNAS.filter(function(c) { return c.r && encabezado.indexOf(c.n) === -1; }).map(function(c) { return c.n; });
+        if (faltan.length) {
+          return { fatal: 'Faltan columnas obligatorias: ' + faltan.join(', ') + '. La primera fila tiene que traer los nombres de las columnas.', encontradas: celdas[0] };
+        }
+        var conocidas = COLUMNAS.map(function(c) { return c.n; });
+        var filas = [];
+        for (var i = 1; i < celdas.length; i++) {
+          if (!celdas[i].some(function(v) { return v.trim() !== ''; })) continue;
+          var v = {};
+          conocidas.forEach(function(n) {
+            var pos = encabezado.indexOf(n);
+            v[n] = pos === -1 || celdas[i][pos] === undefined ? '' : celdas[i][pos].trim();
+          });
+          filas.push({ n: i + 1, v: v });
+        }
+        if (!filas.length) return { fatal: 'El archivo solo tiene la fila de encabezados: no trae materias.' };
+        return {
+          filas: filas,
+          separador: sep,
+          desconocidas: celdas[0].filter(function(h, i) { return h.trim() && conocidas.indexOf(encabezado[i]) === -1; })
+        };
+      }
+
+      // ---------------------------------------------------------
+      // VALIDACIÓN
+      // ---------------------------------------------------------
+      function entero(s, min, max) {
+        if (!/^\d+$/.test(s)) return null;
+        var n = parseInt(s, 10);
+        return n >= min && n <= max ? n : null;
+      }
+
+      // "INGM102:2, INGF101:2" A [{ codigo, cuat, texto }]
+      function partirDesbloquea(s) {
+        if (!s) return [];
+        return s.split(',').map(function(p) { return p.trim(); }).filter(Boolean).map(function(p) {
+          var m = /^([A-Za-z0-9]+)\s*(?::\s*(\d+))?$/.exec(p);
+          return m ? { codigo: m[1].toUpperCase(), cuat: m[2] ? parseInt(m[2], 10) : null, texto: p }
+            : { codigo: null, cuat: null, texto: p };
+        });
+      }
+
+      // REVISA TODAS LAS FILAS: DEVUELVE CADA FILA NORMALIZADA CON SUS PROBLEMAS
+      function validar(filas) {
+        var problemas = [];
+        var porClave = {};
+        var revisadas = filas.map(function(f) {
+          var v = f.v, d = {}, prob = [];
+          function agregar(nivel, campo, msg, arreglable) {
+            var p = { fila: f.n, nivel: nivel, campo: campo, msg: msg, arreglable: !!arreglable };
+            prob.push(p); problemas.push(p);
+          }
+          d.plan = v.plan;
+          if (!v.plan) agregar('error', 'plan', 'Está vacío.');
+          else if (PLANES.indexOf(v.plan) === -1) agregar('error', 'plan', '"' + v.plan + '" no es un plan válido. Tiene que ser ' + PLANES.join(' o ') + '.');
+
+          d.codigo = v.codigo.toUpperCase();
+          if (!d.codigo) agregar('error', 'codigo', 'Está vacío.');
+          else if (!/^[A-Z0-9]+$/.test(d.codigo)) agregar('error', 'codigo', '"' + v.codigo + '" solo puede tener letras y números, sin espacios ni signos.');
+
+          d.nombre = v.nombre;
+          if (!d.nombre) agregar('error', 'nombre', 'Está vacío.');
+
+          d.anio = entero(v.anio, 1, 5);
+          if (d.anio === null) agregar('error', 'anio', (v.anio ? '"' + v.anio + '"' : 'Está vacío:') + ' tiene que ser un número de 1 a 5.');
+
+          d.cuatrimestre = entero(v.cuatrimestre, 1, 10);
+          if (d.cuatrimestre === null) agregar('error', 'cuatrimestre', (v.cuatrimestre ? '"' + v.cuatrimestre + '"' : 'Está vacío:') + ' tiene que ser un número de 1 a 10, contado desde el ingreso.');
+          else if (d.anio !== null && Math.ceil(d.cuatrimestre / 2) !== d.anio) {
+            agregar('alerta', 'cuatrimestre', 'El cuatrimestre ' + d.cuatrimestre + ' corresponde a ' + Math.ceil(d.cuatrimestre / 2) + '.º año, pero anio dice ' + d.anio + '.');
+          }
+
+          d.duracion = v.duracion.toLowerCase();
+          if (DURACIONES.indexOf(d.duracion) === -1) agregar('error', 'duracion', (v.duracion ? '"' + v.duracion + '"' : 'Está vacío:') + ' tiene que ser cuatrimestral o anual.');
+          else if (d.duracion === 'anual' && d.cuatrimestre === 10) agregar('error', 'duracion', 'Una anual no puede empezar en el cuatrimestre 10: terminaría en el 11.');
+          d.fin = d.cuatrimestre === null ? null : d.cuatrimestre + (d.duracion === 'anual' ? 1 : 0);
+
+          d.tipo = v.tipo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+          if (TIPOS.indexOf(d.tipo) === -1) agregar('error', 'tipo', (v.tipo ? '"' + v.tipo + '"' : 'Está vacío:') + ' tiene que ser ' + TIPOS.join(', ') + '.');
+
+          ['creditos', 'horas'].forEach(function(k) {
+            var t = v[k].replace(',', '.');
+            d[k] = t === '' ? '' : t;
+            if (t !== '' && !(/^\d+(\.\d+)?$/.test(t))) agregar('error', k, '"' + v[k] + '" tiene que ser un número.');
+          });
+
+          d.desbloquea = partirDesbloquea(v.desbloquea);
+          d.desbloquea.forEach(function(x) {
+            if (!x.codigo) agregar('error', 'desbloquea', '"' + x.texto + '" no tiene el formato codigo:cuatrimestre (por ejemplo INGM102:2).');
+          });
+
+          var clave = d.plan + '|' + d.codigo;
+          if (d.codigo && porClave[clave]) agregar('error', 'codigo', d.codigo + ' ya aparece en la fila ' + porClave[clave].n + ' del plan ' + d.plan + '.');
+          else if (d.codigo) porClave[clave] = { n: f.n, d: d };
+          return { n: f.n, d: d, problemas: prob };
+        });
+
+        // Segunda pasada: cada materia de desbloquea tiene que existir en el mismo plan y con el mismo cuatrimestre
+        revisadas.forEach(function(r) {
+          var vistos = {};
+          r.d.desbloquea.forEach(function(x) {
+            if (!x.codigo) return;
+            function agregar(nivel, msg, arreglable) {
+              var p = { fila: r.n, nivel: nivel, campo: 'desbloquea', msg: msg, arreglable: !!arreglable };
+              r.problemas.push(p); problemas.push(p);
+            }
+            if (vistos[x.codigo]) return agregar('alerta', x.codigo + ' está repetida.');
+            vistos[x.codigo] = true;
+            if (x.codigo === r.d.codigo) return agregar('error', 'La materia no puede desbloquearse a sí misma.');
+            var destino = porClave[r.d.plan + '|' + x.codigo];
+            if (!destino) return agregar('error', x.codigo + ' no está en el plan ' + r.d.plan + ' de este archivo.');
+            x.nombre = destino.d.nombre;
+            var real = destino.d.cuatrimestre;
+            if (x.cuat === null) {
+              agregar('error', x.codigo + ' no tiene cuatrimestre. En su fila dice ' + real + ': va ' + x.codigo + ':' + real + '.', real !== null);
+            } else if (real !== null && x.cuat !== real) {
+              agregar('error', x.codigo + ':' + x.cuat + ' no coincide con su fila, que dice cuatrimestre ' + real + '.', true);
+            } else if (r.d.fin !== null && real !== null && real <= r.d.fin) {
+              agregar('alerta', x.codigo + ' empieza en el cuatrimestre ' + real + ', antes de que termine esta materia (' + r.d.fin + ').');
+            }
+          });
+        });
+
+        revisadas.forEach(function(r) {
+          r.nivel = r.problemas.some(function(p) { return p.nivel === 'error'; }) ? 'error'
+            : r.problemas.length ? 'alerta' : 'ok';
+        });
+        var planes = {};
+        revisadas.forEach(function(r) { if (PLANES.indexOf(r.d.plan) !== -1) planes[r.d.plan] = (planes[r.d.plan] || 0) + 1; });
+        return {
+          filas: revisadas,
+          problemas: problemas,
+          errores: problemas.filter(function(p) { return p.nivel === 'error'; }).length,
+          alertas: problemas.filter(function(p) { return p.nivel === 'alerta'; }).length,
+          arreglables: problemas.filter(function(p) { return p.arreglable; }).length,
+          planes: planes
+        };
+      }
+
+      // COMPLETA O CORRIGE EL CUATRIMESTRE DE CADA MATERIA DE desbloquea CON EL DE SU FILA
+      function completarCuatrimestres() {
+        var porClave = {};
+        // Si un código está repetido vale la primera fila, como en validar()
+        estado.revision.filas.forEach(function(r) {
+          var clave = r.d.plan + '|' + r.d.codigo;
+          if (!(clave in porClave)) porClave[clave] = r.d.cuatrimestre;
+        });
+        estado.filas.forEach(function(f, i) {
+          var r = estado.revision.filas[i];
+          if (!f.v.desbloquea) return;
+          f.v.desbloquea = r.d.desbloquea.map(function(x) {
+            var real = x.codigo ? porClave[r.d.plan + '|' + x.codigo] : undefined;
+            return real !== undefined && real !== null ? x.codigo + ':' + real : x.texto;
+          }).join(', ');
+        });
+        estado.corregido = true;
+        estado.revision = validar(estado.filas);
+      }
+
+      // ---------------------------------------------------------
+      // ARCHIVOS QUE SE DESCARGAN
+      // ---------------------------------------------------------
+      function celdaCsv(s) {
+        s = String(s === null || s === undefined ? '' : s);
+        return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }
+
+      function descargar(nombre, filas) {
+        var texto = '﻿' + filas.map(function(f) { return f.map(celdaCsv).join(','); }).join('\r\n') + '\r\n';
+        var url = URL.createObjectURL(new Blob([texto], { type: 'text/csv;charset=utf-8' }));
+        var a = document.createElement('a');
+        a.href = url; a.download = nombre;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      }
+
+      function descargarPlantilla() {
+        descargar('plantilla_plan_estudios.csv', [
+          COLUMNAS.map(function(c) { return c.n; }),
+          ['2024', 'INGM101', 'Análisis Matemático I', '1', '1', 'cuatrimestral', 'obligatoria', '6', '96', 'INGM102:2'],
+          ['2024', 'INGM102', 'Análisis Matemático II', '1', '2', 'cuatrimestral', 'obligatoria', '5', '80', '']
+        ]);
+      }
+
+      function descargarCorregido() {
+        var nombre = estado.archivo.replace(/\.csv$/i, '') + '_corregido.csv';
+        descargar(nombre, [COLUMNAS.map(function(c) { return c.n; })].concat(estado.filas.map(function(f) {
+          return COLUMNAS.map(function(c) { return f.v[c.n]; });
+        })));
+      }
+
+      // ---------------------------------------------------------
+      // GUARDADO
+      // ---------------------------------------------------------
+      // ENTRADA DE LA BASE A PARTIR DE UNA FILA REVISADA (estado y cambio los completa la página)
+      function entradaDe(r) {
+        var d = r.d;
+        return {
+          plan: d.plan, codigo: d.codigo, nombre: d.nombre, anio: String(d.anio), cuatrimestre: String(d.cuatrimestre),
+          duracion: d.duracion, tipo: d.tipo, creditos: d.creditos, horas: d.horas,
+          desbloquea: d.desbloquea.map(function(x) { return x.codigo + ':' + x.cuat; }).join(', '),
+          estado: 'vigente', cambio: 'Carga desde ' + estado.archivo
+        };
+      }
+
+      // FORMULARIO NATIVO DE ALTA: SE UBICA CADA CONTROL POR LA ETIQUETA DE SU CAMPO
+      function leerFormularioMoodle() {
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_MATERIAS, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de la base Materias.');
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
+            });
+            var nombres = {};
+            var campos = COLUMNAS.map(function(c) { return c.n; }).concat(['estado', 'cambio']);
+            var faltan = campos.filter(function(k) {
+              var etiqueta = Object.keys(porCampo).filter(function(e) { return e === k || e.indexOf(k + ' ') === 0; })[0];
+              if (etiqueta) nombres[k] = porCampo[etiqueta];
+              return !etiqueta;
+            });
+            if (faltan.length) throw new Error('Faltan campos en la base Materias: ' + faltan.join(', '));
+            return { form: form, nombres: nombres };
+          });
+      }
+
+      function guardarEntradaMoodle(base, e) {
+        var fd = new FormData(base.form);
+        fd.set('d', String(DATAID_MATERIAS));
+        fd.set('rid', '0');
+        Object.keys(base.nombres).forEach(function(k) { fd.set(base.nombres[k], e[k]); });
+        fd.delete('saveandadd');
+        fd.set('saveandview', 'Guardar');
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
+            return r.text();
+          })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var error = doc.querySelector('.error, .alert-danger, .invalid-feedback');
+            if (error && error.textContent.trim()) throw new Error(error.textContent.trim());
+          });
+      }
+
+      // CARGA TODAS LAS FILAS, UNA POR UNA, MOSTRANDO EL AVANCE
+      function cargarPlan() {
+        var entradas = estado.revision.filas.map(entradaDe);
+        estado.guardando = true; estado.guardadas = 0; estado.resultado = null;
+        renderizarResultado();
+        var resumen = Object.keys(estado.revision.planes).map(function(p) { return 'plan ' + p; }).join(' y ');
+        if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
+          estado.guardando = false;
+          estado.guardadas = entradas.length;
+          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Vista de prueba:</b> se revisaron ' + entradas.length + ' materias del ' + escapar(resumen) + ' y quedaron listas, pero no se guardó nada porque la base Materias todavía no existe.' };
+          return renderizarResultado();
+        }
+        leerFormularioMoodle().then(function(base) {
+          return entradas.reduce(function(cadena, e) {
+            return cadena.then(function() {
+              return guardarEntradaMoodle(base, e).then(function() {
+                estado.guardadas++;
+                actualizarAvance(entradas.length);
+              }, function(err) {
+                throw new Error('Fila de ' + e.codigo + ': ' + err.message);
+              });
+            });
+          }, Promise.resolve());
+        }).then(function() {
+          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Plan cargado.</b> Se guardaron ' + entradas.length + ' materias del ' + escapar(resumen) + '.' };
+        }, function(err) {
+          estado.resultado = { ok: false, texto: '<b style="font-weight: 600 !important;">La carga se cortó.</b> Se guardaron ' + estado.guardadas + ' de ' + entradas.length + ' materias. ' + escapar(err.message) };
+        }).then(function() {
+          estado.guardando = false;
+          renderizarResultado();
+        });
+      }
+
+      function actualizarAvance(total) {
+        var el = document.getElementById('txt-avance-plan');
+        if (el) el.textContent = 'Guardando ' + estado.guardadas + ' de ' + total + '…';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      // TABLA DEL FORMATO ESPERADO
+      function renderizarFormato() {
+        document.getElementById('tabla-formato-plan').innerHTML =
+          '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 620px !important;">' +
+          '<thead><tr><th style="' + TH + '">Columna</th><th style="' + TH + '">Obligatoria</th><th style="' + TH + '">Qué va</th><th style="' + TH + '">Ejemplo</th></tr></thead><tbody>' +
+          COLUMNAS.map(function(c) {
+            return '<tr style="' + TR + '"><td style="' + TD + '"><code style="' + CODE + ' font-weight: 600 !important;">' + c.n + '</code></td>' +
+              '<td style="' + TD + (c.r ? ' font-weight: 600 !important;' : ' color: #47536b !important;') + '">' + (c.r ? 'Sí' : 'No') + '</td>' +
+              '<td style="' + TD + '">' + escapar(c.d) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + escapar(c.va) + '</div></td>' +
+              '<td style="' + TD + '"><code style="' + CODE + '">' + escapar(c.ex) + '</code></td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+
+      function tarjetaDato(titulo, valor, detalle, marca) {
+        return '<div style="flex: 1 1 150px !important; ' + TARJETA + ' display: flex !important; flex-direction: column !important; gap: 4px !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 500 !important;">' + titulo + '</div>' +
+          '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important;">' +
+          '<span style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important;">' + valor + '</span>' + (marca || '') + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + detalle + '</div></div>';
+      }
+
+      // MATERIAS DE desbloquea CON SU CUATRIMESTRE
+      function htmlDesbloquea(d) {
+        if (!d.desbloquea.length) return '<span style="color: #94a0b8 !important;">—</span>';
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 4px !important;">' + d.desbloquea.map(function(x) {
+          var titulo = x.nombre ? ' title="' + escapar(x.nombre) + '"' : '';
+          return '<span' + titulo + ' style="display: inline-flex !important; align-items: center !important; gap: 4px !important; height: 22px !important; padding: 0 7px !important; border-radius: 999px !important; border: 1px solid #dadee7 !important; background-color: #f5f6fa !important; font-size: 12px !important; white-space: nowrap !important;">' +
+            '<b style="font-weight: 600 !important;">' + escapar(x.codigo || x.texto) + '</b>' +
+            (x.cuat !== null ? '<span style="color: #47536b !important;">' + x.cuat + '.º C</span>' : '') + '</span>';
+        }).join('') + '</div>';
+      }
+
+      function htmlProblemas(rev) {
+        var lista = rev.problemas.slice().sort(function(a, b) {
+          return (a.nivel === b.nivel ? 0 : a.nivel === 'error' ? -1 : 1) || a.fila - b.fila;
+        });
+        var visibles = lista.slice(0, MAX_PROBLEMAS);
+        return '<div style="' + TARJETA + ' margin-bottom: 16px !important;">' +
+          '<h4 style="margin: 0 0 8px 0 !important; font-size: 16px !important; font-weight: 600 !important;">Qué corregir</h4>' +
+          '<ul style="list-style: none !important; margin: 0 !important; padding: 0 !important;">' + visibles.map(function(p) {
+            var c = NIVELES[p.nivel];
+            return '<li style="display: flex !important; gap: 8px !important; align-items: flex-start !important; padding: 8px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; margin: 0 !important;">' +
+              '<span style="color: ' + c.punto + ' !important; padding-top: 1px !important;">' + icono(p.nivel === 'error' ? 'error' : 'alerta', 18) + '</span>' +
+              '<span><b style="font-weight: 600 !important;">Fila ' + p.fila + '</b> · <code style="' + CODE + '">' + p.campo + '</code> ' + escapar(p.msg) + '</span></li>';
+          }).join('') + '</ul>' +
+          (lista.length > visibles.length ? '<div style="font-size: 12px !important; color: #47536b !important; padding-top: 8px !important;">Y ' + (lista.length - visibles.length) + ' más. Se ven todos en la tabla, filtrando por "Con problemas".</div>' : '') +
+          '</div>';
+      }
+
+      function htmlTabla(rev) {
+        var filas = estado.filtro === 'problemas' ? rev.filas.filter(function(r) { return r.nivel !== 'ok'; }) : rev.filas;
+        var conProblemas = rev.filas.filter(function(r) { return r.nivel !== 'ok'; }).length;
+        function pestana(id, texto) {
+          var activa = estado.filtro === id;
+          return '<button type="button" data-filtro-plan="' + id + '" aria-pressed="' + activa + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; border: 1px solid ' + (activa ? '#333c4d' : '#dadee7') + ' !important; background-color: ' + (activa ? '#0b0e14' : '#ffffff') + ' !important; color: ' + (activa ? '#ffffff' : '#0b0e14') + ' !important;">' + texto + '</button>';
+        }
+        return '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px !important; margin: 0 0 8px 0 !important;">' +
+          '<h4 style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important;">Vista previa</h4>' +
+          '<div style="display: flex !important; gap: 6px !important;">' + pestana('todas', 'Todas (' + rev.filas.length + ')') + pestana('problemas', 'Con problemas (' + conProblemas + ')') + '</div></div>' +
+          '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #ffffff !important; margin-bottom: 16px !important;">' +
+          '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
+          '<thead><tr><th style="' + TH + '">Fila</th><th style="' + TH + '">Materia</th><th style="' + TH + '">Año</th><th style="' + TH + '">Cuatr.</th><th style="' + TH + '">Tipo</th><th style="' + TH + '">Desbloquea</th><th style="' + TH + '">Estado</th></tr></thead><tbody>' +
+          (filas.length ? filas.map(function(r) {
+            var d = r.d;
+            var cuat = d.cuatrimestre === null ? '<span style="color: #910808 !important;">?</span>'
+              : d.cuatrimestre + (d.duracion === 'anual' ? '–' + d.fin + ' <span style="color: #47536b !important;">(anual)</span>' : '');
+            return '<tr style="' + TR + (r.nivel === 'error' ? ' background-color: #fffafa !important;' : '') + '">' +
+              '<td style="' + TD + ' color: #47536b !important; text-align: right !important;">' + r.n + '</td>' +
+              '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(d.nombre || '(sin nombre)') + '</div>' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(d.codigo) + ' · plan ' + escapar(d.plan) + '</div></td>' +
+              '<td style="' + TD + ' text-align: right !important;">' + (d.anio === null ? '<span style="color: #910808 !important;">?</span>' : d.anio) + '</td>' +
+              '<td style="' + TD + ' white-space: nowrap !important;">' + cuat + '</td>' +
+              '<td style="' + TD + '">' + escapar(d.tipo) + '</td>' +
+              '<td style="' + TD + ' min-width: 200px !important;">' + htmlDesbloquea(d) + '</td>' +
+              '<td style="' + TD + '">' + chipNivel(r.nivel) + '</td></tr>';
+          }).join('') : '<tr style="' + TR + '"><td colspan="7" style="' + TD + ' text-align: center !important; color: #47536b !important; padding: 24px !important;">Ninguna fila tiene problemas.</td></tr>') +
+          '</tbody></table></div>';
+      }
+
+      function htmlAcciones(rev) {
+        var total = rev.filas.length;
+        var bloqueado = rev.errores > 0 || estado.guardando || (estado.resultado && estado.resultado.ok);
+        var texto = estado.guardando ? '<span id="txt-avance-plan">Guardando ' + estado.guardadas + ' de ' + total + '…</span>' : 'Cargar ' + total + ' materias';
+        return '<div style="' + TARJETA + ' display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          '<span style="font-size: 13px !important; color: #47536b !important; max-width: 460px !important;">' +
+          (rev.errores ? 'Para cargar, el archivo no puede tener errores. Las advertencias no frenan la carga.' : 'Cada carga agrega entradas nuevas en la base Materias. Las anteriores quedan como historial y la más reciente de cada materia es la vigente.') + '</span>' +
+          '<span style="display: flex !important; gap: 8px !important; flex-wrap: wrap !important;">' +
+          (estado.corregido ? '<button type="button" id="btn-descargar-corregido-plan" style="' + BTN_SEC + '">' + icono('descargar', 18) + 'Descargar CSV corregido</button>' : '') +
+          '<button type="button" id="btn-cargar-plan"' + (bloqueado ? ' disabled aria-disabled="true"' : '') + ' style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: ' + (bloqueado ? 'not-allowed' : 'pointer') + ' !important; opacity: ' + (bloqueado ? '0.45' : '1') + ';">' +
+          icono('guardar', 18) + texto + '</button></span></div>';
+      }
+
+      // REVISIÓN COMPLETA DEL ARCHIVO
+      function renderizarResultado() {
+        var cont = document.getElementById('resultado-plan');
+        var hayArchivo = !!estado.archivo;
+        document.getElementById('zona-archivo-plan').style.setProperty('display', hayArchivo ? 'none' : 'flex', 'important');
+        document.getElementById('info-archivo-plan').style.setProperty('display', hayArchivo ? 'flex' : 'none', 'important');
+        if (!hayArchivo) { cont.innerHTML = ''; return; }
+        var rev = estado.revision;
+        var h = '<h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 600 !important;">3. Revisión</h4>';
+        if (estado.avisoLectura) h += aviso('alerta', escapar(estado.avisoLectura));
+        if (estado.fatal) {
+          h += aviso('error', '<b style="font-weight: 600 !important;">No se pudo leer el archivo.</b> ' + escapar(estado.fatal.fatal) +
+            (estado.fatal.encontradas ? '<div style="margin-top: 6px !important; font-size: 13px !important;">Columnas encontradas: ' + estado.fatal.encontradas.map(function(c) { return '<code style="' + CODE + '">' + escapar(c || '(vacía)') + '</code>'; }).join(' ') + '</div>' : '') +
+            '<div style="margin-top: 6px !important; font-size: 13px !important;">La primera fila tiene que ser: <code style="' + CODE + ' white-space: normal !important;">' + COLUMNAS.map(function(c) { return c.n; }).join(',') + '</code></div>');
+          cont.innerHTML = h;
+          return;
+        }
+        var planes = Object.keys(rev.planes);
+        h += '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
+          tarjetaDato('Materias', rev.filas.length, planes.length ? 'plan ' + planes.map(function(p) { return p + ' (' + rev.planes[p] + ')'; }).join(' · ') : 'sin plan válido') +
+          tarjetaDato('Listas', rev.filas.filter(function(r) { return r.nivel === 'ok'; }).length, 'sin observaciones') +
+          tarjetaDato('Errores', rev.errores, rev.errores ? 'frenan la carga' : 'ninguno', chipNivel(rev.errores ? 'error' : 'ok', rev.errores ? 'Corregir' : 'Sin errores')) +
+          tarjetaDato('Advertencias', rev.alertas, 'no frenan la carga', rev.alertas ? chipNivel('alerta') : '') +
+          '</div>';
+        if (estado.resultado) h += aviso(estado.resultado.ok ? 'ok' : 'error', estado.resultado.texto);
+        if (estado.desconocidas && estado.desconocidas.length) {
+          h += aviso('info', 'Se ignoran las columnas que no son del formato: ' + estado.desconocidas.map(function(c) { return '<code style="' + CODE + '">' + escapar(c) + '</code>'; }).join(' ') + '.');
+        }
+        if (rev.arreglables) {
+          h += aviso('info', '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px 16px !important;">' +
+            '<span>' + (rev.arreglables === 1 ? 'Una materia' : rev.arreglables + ' materias') + ' de <code style="' + CODE + '">desbloquea</code> ' + (rev.arreglables === 1 ? 'no tiene' : 'no tienen') + ' cuatrimestre o no coincide con su fila. Se pueden completar con el de la fila de cada materia.</span>' +
+            '<button type="button" id="btn-completar-plan" style="' + BTN_SEC + ' background-color: #ffffff !important;">Completar cuatrimestres</button></div>');
+        }
+        if (rev.problemas.length) h += htmlProblemas(rev);
+        else h += aviso('ok', '<b style="font-weight: 600 !important;">El archivo está bien.</b> Todas las filas cumplen el formato y cada materia de <code style="' + CODE + '">desbloquea</code> coincide con su fila.');
+        h += htmlTabla(rev) + htmlAcciones(rev);
+        cont.innerHTML = h;
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DEL ARCHIVO
+      // ---------------------------------------------------------
+      function procesarTexto(texto, nombre, avisoLectura) {
+        var leido = leerCsv(texto);
+        estado.archivo = nombre;
+        estado.avisoLectura = avisoLectura || '';
+        estado.filtro = 'todas';
+        estado.corregido = false;
+        estado.resultado = null;
+        estado.fatal = leido.fatal ? leido : null;
+        estado.filas = leido.filas || null;
+        estado.desconocidas = leido.desconocidas || [];
+        estado.revision = leido.filas ? validar(leido.filas) : null;
+        document.getElementById('txt-archivo-plan').textContent = nombre + (leido.filas ? ' · ' + leido.filas.length + ' filas' : '');
+        renderizarResultado();
+      }
+
+      // UTF-8 PRIMERO; SI APARECEN CARACTERES INVÁLIDOS, SE RELEE COMO WINDOWS-1252 (CSV COMÚN DE EXCEL)
+      function leerArchivo(archivo) {
+        if (!archivo) return;
+        if (!/\.csv$/i.test(archivo.name)) {
+          procesarTexto('', archivo.name);
+          estado.fatal = { fatal: '"' + archivo.name + '" no es un archivo .csv. Desde Excel: Archivo, Guardar como, CSV UTF-8.' };
+          return renderizarResultado();
+        }
+        var lector = new FileReader();
+        lector.onload = function() {
+          var texto = lector.result;
+          if (texto.indexOf('�') === -1) return procesarTexto(texto, archivo.name);
+          var otro = new FileReader();
+          otro.onload = function() {
+            procesarTexto(otro.result, archivo.name, 'El archivo no estaba en UTF-8 y se leyó como Windows-1252. Revisá que las tildes de los nombres se vean bien.');
+          };
+          otro.readAsText(archivo, 'windows-1252');
+        };
+        lector.readAsText(archivo, 'UTF-8');
+      }
+
+      function quitarArchivo() {
+        estado.archivo = ''; estado.filas = null; estado.revision = null; estado.fatal = null; estado.resultado = null;
+        document.getElementById('campo-archivo-plan').value = '';
+        renderizarResultado();
+        document.getElementById('zona-archivo-plan').focus();
+      }
+
+      // ---------------------------------------------------------
+      // ROL Y VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function aplicarRol(rol) {
+        document.getElementById('badge-rol-plan').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
+        var botones = document.querySelectorAll('[data-preview-rol]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = botones[i].getAttribute('data-preview-rol') === rol;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+      }
+
+      // BARRA PARA CAMBIAR DE ROL: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' + Object.keys(ROLES).map(function(rol) {
+          return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+        }).join('');
+        var cont = document.querySelector('#carga-plan > nolink') || document.getElementById('carga-plan');
+        cont.insertBefore(barra, cont.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#carga-plan')) return;
+        var btnRol = t.closest('[data-preview-rol]');
+        if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        var filtro = t.closest('[data-filtro-plan]');
+        if (filtro) { estado.filtro = filtro.getAttribute('data-filtro-plan'); return renderizarResultado(); }
+        if (t.closest('#btn-plantilla-plan')) return descargarPlantilla();
+        if (t.closest('#btn-ejemplo-plan')) return procesarTexto(EJEMPLO_CSV, 'PLAN_2024_CARGA.csv');
+        if (t.closest('#btn-quitar-plan')) return quitarArchivo();
+        if (t.closest('#btn-completar-plan')) { completarCuatrimestres(); return renderizarResultado(); }
+        if (t.closest('#btn-descargar-corregido-plan')) return descargarCorregido();
+        var cargar = t.closest('#btn-cargar-plan');
+        if (cargar && !cargar.disabled) return cargarPlan();
+      });
+
+      document.addEventListener('change', function(e) {
+        if (e.target.id === 'campo-archivo-plan') leerArchivo(e.target.files[0]);
+      });
+
+      // La zona de archivo se activa también con el teclado
+      document.addEventListener('keydown', function(e) {
+        if (e.target.id === 'zona-archivo-plan' && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          document.getElementById('campo-archivo-plan').click();
+        }
+      });
+
+      // ARRASTRAR Y SOLTAR SOBRE LA ZONA
+      function sobreZona(e) { return e.target.closest && e.target.closest('#zona-archivo-plan'); }
+      function marcarZona(activa) {
+        var z = document.getElementById('zona-archivo-plan');
+        z.style.setProperty('border-color', activa ? '#027af2' : '#c2c9d6', 'important');
+        z.style.setProperty('background-color', activa ? '#e5f2ff' : '#fcfcfc', 'important');
+      }
+      document.addEventListener('dragover', function(e) {
+        if (!sobreZona(e)) return;
+        e.preventDefault();
+        marcarZona(true);
+      });
+      document.addEventListener('dragleave', function(e) {
+        if (sobreZona(e)) marcarZona(false);
+      });
+      document.addEventListener('drop', function(e) {
+        if (!sobreZona(e)) return;
+        e.preventDefault();
+        marcarZona(false);
+        leerArchivo(e.dataTransfer.files[0]);
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      // Íconos declarados en el HTML con data-icono
+      var huecos = document.querySelectorAll('#carga-plan [data-icono]');
+      for (var h = 0; h < huecos.length; h++) {
+        huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      }
+      if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
+        document.getElementById('aviso-datos-prueba-plan').style.setProperty('display', 'flex', 'important');
+      }
+      if (ES_VISTA_LOCAL) {
+        crearBarraPreview();
+        document.getElementById('btn-ejemplo-plan').style.setProperty('display', 'inline-flex', 'important');
+      }
+      aplicarRol(ROL_INICIAL);
+      renderizarFormato();
+      renderizarResultado();
+    })();
+  </script>
+</nolink>
+</div>
