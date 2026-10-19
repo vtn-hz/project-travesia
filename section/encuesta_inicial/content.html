@@ -29,7 +29,7 @@
   <!-- VISTA PREVIA LOCAL: SIMULA LA PREGUNTA DE LA ENCUESTA QUE RECIBE EL TOTAL -->
   <div id="pregunta-local-creditos"
     style="display: none; margin-top: 16px !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important;">
-    <label for="feedback_item_8253" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Los créditos obtenidos actualmente son: <span style="color: #47536b !important; font-weight: 400 !important;">(pregunta de la encuesta, solo en la vista local)</span></label>
+    <label for="id_numeric_8253" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Los créditos obtenidos actualmente son: <span style="color: #47536b !important; font-weight: 400 !important;">(pregunta de la encuesta, solo en la vista local)</span></label>
   </div>
 
   <!-- PIE DE PÁGINA ZHAKYZ -->
@@ -64,7 +64,8 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Base Materias de la sección Zhakyz. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
       var DATAID_MATERIAS = 152; // @config bases.materias.dataid
-      // Ítem numérico de la encuesta que recibe el total (creditos_aprobados): su input es feedback_item_<id>
+      // Ítem numérico de la encuesta que recibe el total (creditos_aprobados). Su input se llama numeric_<id>;
+      // el id cambia según la pantalla (id_numeric_<id> al responder, feedback_item_<id> en Editar preguntas)
       var ITEM_CREDITOS = 8253;
       // Plan que se muestra primero si está en la base
       var PLAN_INICIAL = '2024';
@@ -204,7 +205,7 @@
       }
 
       function campoCreditos() {
-        return document.getElementById('feedback_item_' + ITEM_CREDITOS);
+        return document.querySelector('input[name="numeric_' + ITEM_CREDITOS + '"]');
       }
 
       // EL CAMPO SOLO SE BLOQUEA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, EL ESTUDIANTE LO COMPLETA A MANO
@@ -350,7 +351,8 @@
         var pregunta = document.getElementById('pregunta-local-creditos');
         var campo = document.createElement('input');
         campo.type = 'text';
-        campo.id = 'feedback_item_' + ITEM_CREDITOS;
+        campo.id = 'id_numeric_' + ITEM_CREDITOS;
+        campo.name = 'numeric_' + ITEM_CREDITOS;
         campo.setAttribute('style', 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; font-size: 14px !important; box-sizing: border-box !important; width: 160px !important;');
         pregunta.appendChild(campo);
         pregunta.style.setProperty('display', 'block', 'important');
