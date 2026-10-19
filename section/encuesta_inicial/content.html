@@ -1,0 +1,337 @@
+<!-- SECCIÓN: ENCUESTA INICIAL · CUADRO DE MATERIAS APROBADAS Y CRÉDITOS (ESTUDIANTE) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- VA EN EL ÍTEM "Área de texto y medios" DE LA ENCUESTA (HOY [[Cuadro]]), JUSTO ANTES DE LA PREGUNTA creditos_aprobados -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="cuadro-creditos"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- ENCABEZADO -->
+  <div style="margin-bottom: 16px !important;">
+    <div
+      style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+      Proyecto Travesía · SBIRE</div>
+    <h3
+      style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+      Materias aprobadas</h3>
+    <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+      Seleccionar las materias aprobadas en forma definitiva. El total de créditos se completa automáticamente en la pregunta siguiente.</p>
+  </div>
+
+  <!-- PLAN Y RESUMEN (LO ARMA EL SCRIPT) -->
+  <div id="resumen-creditos"></div>
+
+  <!-- LISTA DE MATERIAS POR AÑO (LO ARMA EL SCRIPT) -->
+  <div id="lista-creditos"></div>
+
+  <!-- VISTA PREVIA LOCAL: SIMULA LA PREGUNTA DE LA ENCUESTA QUE RECIBE EL TOTAL -->
+  <div id="pregunta-local-creditos"
+    style="display: none; margin-top: 16px !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important;">
+    <label for="feedback_item_8253" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Los créditos obtenidos actualmente son: <span style="color: #47536b !important; font-weight: 400 !important;">(pregunta de la encuesta, solo en la vista local)</span></label>
+  </div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-creditos-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-creditos-style';
+        styleEl.innerHTML =
+          '#cuadro-creditos > nolink { display: block; }' +
+          '#cuadro-creditos button:focus-visible, #cuadro-creditos input:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '#cuadro-creditos label.zk-materia:hover { background-color: rgba(218, 222, 231, 0.2); }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Base Materias de la sección Zhakyz. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
+      // Ítem numérico de la encuesta que recibe el total (creditos_aprobados): su input es feedback_item_<id>
+      var ITEM_CREDITOS = 8253;
+      // Plan que se muestra primero si está en la base
+      var PLAN_INICIAL = '2024';
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA LOCAL: SOLO PARA VER LA PANTALLA CON file:// O localhost.
+      // En Moodle la lista sale siempre de la base Materias (DATAID_MATERIAS): las materias vigentes de cada plan.
+      // Campos que se leen de la base: plan, codigo, nombre, cuatrimestre, duracion, creditos (y estado para descartar las bajas)
+      var MATERIAS_PRUEBA = [
+        { plan: '2024', codigo: 'INGM101', nombre: 'Análisis Matemático I', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '6' },
+        { plan: '2024', codigo: 'INGM105', nombre: 'Álgebra I- B', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '4' },
+        { plan: '2024', codigo: 'INGM102', nombre: 'Análisis Matemático II', cuatrimestre: '2', duracion: 'cuatrimestral', creditos: '5' },
+        { plan: '2024', codigo: 'ING8501', nombre: 'Proyecto de Ingeniería Industrial I', cuatrimestre: '3', duracion: 'anual', creditos: '4' },
+        { plan: '2003', codigo: '633', nombre: 'Análisis Matemático A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' },
+        { plan: '2003', codigo: '631', nombre: 'Álgebra A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' }
+      ];
+
+      // ---------------------------------------------------------
+      // ESTADO
+      // ---------------------------------------------------------
+      var estado = {
+        materias: null, // [{ plan, codigo, nombre, cuatrimestre, duracion, creditos }]
+        error: '',
+        plan: PLAN_INICIAL,
+        aprobadas: {}   // codigo → true, por plan
+      };
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function numero(s) {
+        var n = parseFloat(String(s || '').replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+      }
+
+      // 12.5 → "12,5"
+      function formatear(n) {
+        return String(Math.round(n * 10) / 10).replace('.', ',');
+      }
+
+      // ---------------------------------------------------------
+      // LECTURA DE LA BASE MATERIAS
+      // ---------------------------------------------------------
+      // ENTRADAS VIGENTES: LA MÁS NUEVA DE CADA plan + codigo, SIN LAS DADAS DE BAJA
+      function vigentes(entradas) {
+        var ultima = {};
+        entradas.forEach(function(e, i) {
+          var clave = e.plan + '|' + e.codigo;
+          var orden = /^\d+$/.test(e.rid || '') ? parseInt(e.rid, 10) : i;
+          if (!ultima[clave] || orden >= ultima[clave].orden) ultima[clave] = { orden: orden, e: e };
+        });
+        return Object.keys(ultima).map(function(k) { return ultima[k].e; })
+          .filter(function(e) { return e.estado !== 'baja'; });
+      }
+
+      // ENTRADAS DEL LISTADO: PRIMERO LA PLANTILLA PROPIA DE MATERIAS (.zk-registro CON CELDAS data-campo),
+      // SI NO LA PLANTILLA POR DEFECTO DE MOODLE (MISMO CRITERIO QUE LA SECCIÓN plan_estudios)
+      function parsearListado(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var propias = doc.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return Array.prototype.map.call(propias, function(el) {
+            var valores = {};
+            el.querySelectorAll('[data-campo]').forEach(function(c) { valores[c.getAttribute('data-campo')] = c.textContent.trim(); });
+            var enlace = el.querySelector('a[href*="rid="]');
+            valores.rid = /^\d+$/.test(el.getAttribute('data-rid') || '') ? el.getAttribute('data-rid')
+              : enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+            return valores;
+          });
+        }
+        return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
+          var valores = {};
+          entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            var celdas = fila.children;
+            if (celdas.length >= 2) valores[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
+          });
+          var enlace = entrada.querySelector('a[href*="rid="]');
+          valores.rid = enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+          return valores;
+        });
+      }
+
+      function cargarMaterias() {
+        if (ES_VISTA_LOCAL || !window.M) {
+          estado.materias = MATERIAS_PRUEBA.slice();
+          return renderizar();
+        }
+        fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_MATERIAS + '&perpage=1000', { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            estado.materias = vigentes(parsearListado(html));
+            if (!estado.materias.length) estado.error = 'No se encontraron materias en la base Materias. Completar el total de créditos en la pregunta siguiente.';
+          }, function() {
+            estado.materias = [];
+            estado.error = 'No se pudo leer la base Materias. Completar el total de créditos en la pregunta siguiente.';
+          })
+          .then(renderizar);
+      }
+
+      // ---------------------------------------------------------
+      // CÁLCULO Y PREGUNTA DE LA ENCUESTA
+      // ---------------------------------------------------------
+      function materiasDelPlan() {
+        return (estado.materias || []).filter(function(m) { return m.plan === estado.plan; })
+          .sort(function(a, b) { return (parseInt(a.cuatrimestre, 10) - parseInt(b.cuatrimestre, 10)) || (a.codigo < b.codigo ? -1 : 1); });
+      }
+
+      function totales() {
+        var lista = materiasDelPlan(), sel = estado.aprobadas[estado.plan] || {};
+        var t = { materias: lista.length, creditosPlan: 0, aprobadas: 0, creditos: 0 };
+        lista.forEach(function(m) {
+          t.creditosPlan += numero(m.creditos);
+          if (sel[m.codigo]) { t.aprobadas++; t.creditos += numero(m.creditos); }
+        });
+        return t;
+      }
+
+      function campoCreditos() {
+        return document.getElementById('feedback_item_' + ITEM_CREDITOS);
+      }
+
+      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO)
+      function escribirTotal() {
+        var campo = campoCreditos();
+        if (!campo) return;
+        campo.value = formatear(totales().creditos);
+        campo.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      function renderizarResumen() {
+        var t = totales();
+        var planes = {};
+        (estado.materias || []).forEach(function(m) { planes[m.plan] = true; });
+        var porcentaje = t.creditosPlan ? Math.round(t.creditos / t.creditosPlan * 100) : 0;
+        var botones = Object.keys(planes).sort().reverse().map(function(p) {
+          var activo = p === estado.plan;
+          return '<button type="button" data-plan-creditos="' + escapar(p) + '" aria-pressed="' + activo + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; border: 1px solid ' + (activo ? '#333c4d' : '#dadee7') + ' !important; background-color: ' + (activo ? '#0b0e14' : '#ffffff') + ' !important; color: ' + (activo ? '#ffffff' : '#0b0e14') + ' !important;">Plan ' + escapar(p) + '</button>';
+        }).join('');
+        document.getElementById('resumen-creditos').innerHTML =
+          '<div style="display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: wrap !important; margin-bottom: 12px !important;">' +
+          '<span style="font-size: 14px !important; font-weight: 500 !important;">Plan de estudios</span>' + botones + '</div>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
+          tarjeta('Créditos aprobados', formatear(t.creditos), 'de ' + formatear(t.creditosPlan) + ' del plan (' + porcentaje + ' %)') +
+          tarjeta('Materias aprobadas', t.aprobadas, 'de ' + t.materias + ' del plan') +
+          '</div>' +
+          '<div aria-hidden="true" style="height: 8px !important; border-radius: 999px !important; background-color: #ebeef4 !important; overflow: hidden !important; margin-bottom: 16px !important;">' +
+          '<div style="height: 100% !important; width: ' + porcentaje + '% !important; background-color: #027af2 !important;"></div></div>';
+      }
+
+      function tarjeta(titulo, valor, detalle) {
+        return '<div style="flex: 1 1 200px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 500 !important;">' + titulo + '</div>' +
+          '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; margin: 4px 0 !important;">' + valor + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + detalle + '</div></div>';
+      }
+
+      // UNA TARJETA POR AÑO, CON LAS MATERIAS DE SUS DOS CUATRIMESTRES
+      function renderizarLista() {
+        var cont = document.getElementById('lista-creditos');
+        if (estado.error) {
+          cont.innerHTML = '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important;">' +
+            '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span><span>' + escapar(estado.error) + '</span></div>';
+          return;
+        }
+        var sel = estado.aprobadas[estado.plan] || {};
+        var porAnio = {};
+        materiasDelPlan().forEach(function(m) {
+          var anio = Math.ceil(parseInt(m.cuatrimestre, 10) / 2);
+          (porAnio[anio] = porAnio[anio] || []).push(m);
+        });
+        cont.innerHTML = Object.keys(porAnio).sort().map(function(anio) {
+          var lista = porAnio[anio];
+          var marcadas = lista.filter(function(m) { return sel[m.codigo]; }).length;
+          var todas = marcadas === lista.length;
+          return '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 12px !important; overflow: hidden !important;">' +
+            '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; padding: 10px 16px !important; background-color: #f5f6fa !important;">' +
+            '<span style="font-size: 14px !important; font-weight: 600 !important;">' + anio + '.º año <span style="font-weight: 400 !important; color: #47536b !important;">· ' + marcadas + ' de ' + lista.length + '</span></span>' +
+            '<button type="button" data-anio-creditos="' + anio + '" data-marcar="' + (todas ? '0' : '1') + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">' + (todas ? 'Quitar todas' : 'Seleccionar todas') + '</button></div>' +
+            lista.map(function(m) {
+              var c = parseInt(m.cuatrimestre, 10);
+              var cuat = m.duracion === 'anual' ? 'Anual (' + c + '.º y ' + (c + 1) + '.º C)' : c + '.º C';
+              return '<label class="zk-materia" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 16px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; margin: 0 !important; cursor: pointer !important; font-weight: 400 !important;">' +
+                '<input type="checkbox" data-codigo-creditos="' + escapar(m.codigo) + '"' + (sel[m.codigo] ? ' checked' : '') + ' style="width: 18px !important; height: 18px !important; margin: 0 !important; flex: 0 0 auto !important; accent-color: #026bd4 !important;">' +
+                '<span style="flex: 1 1 auto !important; min-width: 0 !important;"><span style="display: block !important; font-weight: 500 !important;">' + escapar(m.nombre) + '</span>' +
+                '<span style="display: block !important; font-size: 12px !important; color: #47536b !important;">' + escapar(m.codigo) + ' · ' + cuat + '</span></span>' +
+                '<span style="flex: 0 0 auto !important; font-size: 13px !important; color: #47536b !important; white-space: nowrap !important;">' + formatear(numero(m.creditos)) + ' créd.</span></label>';
+            }).join('') + '</div>';
+        }).join('');
+      }
+
+      function renderizar() {
+        if (estado.materias === null) {
+          document.getElementById('lista-creditos').innerHTML = '<p style="margin: 0 !important; color: #47536b !important;">Leyendo las materias del plan…</p>';
+          return;
+        }
+        var planes = (estado.materias || []).map(function(m) { return m.plan; });
+        if (planes.length && planes.indexOf(estado.plan) === -1) estado.plan = planes[0];
+        renderizarResumen();
+        renderizarLista();
+        escribirTotal();
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('change', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#cuadro-creditos') || !t.hasAttribute('data-codigo-creditos')) return;
+        var sel = estado.aprobadas[estado.plan] = estado.aprobadas[estado.plan] || {};
+        sel[t.getAttribute('data-codigo-creditos')] = t.checked;
+        renderizar();
+      });
+
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#cuadro-creditos')) return;
+        var plan = t.closest('[data-plan-creditos]');
+        if (plan) { estado.plan = plan.getAttribute('data-plan-creditos'); return renderizar(); }
+        var anio = t.closest('[data-anio-creditos]');
+        if (anio) {
+          var marcar = anio.getAttribute('data-marcar') === '1';
+          var sel = estado.aprobadas[estado.plan] = estado.aprobadas[estado.plan] || {};
+          materiasDelPlan().forEach(function(m) {
+            if (Math.ceil(parseInt(m.cuatrimestre, 10) / 2) === parseInt(anio.getAttribute('data-anio-creditos'), 10)) sel[m.codigo] = marcar;
+          });
+          renderizar();
+        }
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      if (ES_VISTA_LOCAL) {
+        var pregunta = document.getElementById('pregunta-local-creditos');
+        var campo = document.createElement('input');
+        campo.type = 'text';
+        campo.id = 'feedback_item_' + ITEM_CREDITOS;
+        campo.setAttribute('style', 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; font-size: 14px !important; box-sizing: border-box !important; width: 160px !important;');
+        pregunta.appendChild(campo);
+        pregunta.style.setProperty('display', 'block', 'important');
+      }
+      renderizar();
+      cargarMaterias();
+    })();
+  </script>
+</nolink>
+</div>
