@@ -6,9 +6,22 @@
     "nombre": "Zhakyz"
   },
   "subsecciones": {
-    "Database": { "id": 15700, "cmid": 59497 },
-    "Encuestas y Preguntas": { "id": 15705, "cmid": null },
-    "Pruebas": { "id": 15701, "cmid": null }
+    "Hub": {
+      "id": 15706,
+      "cmid": 59510
+    },
+    "Encuestas y Preguntas": {
+      "id": 15705,
+      "cmid": 59505
+    },
+    "Database": {
+      "id": 15700,
+      "cmid": 59497
+    },
+    "Pruebas": {
+      "id": 15701,
+      "cmid": 59499
+    }
   },
   "paginas": {
     "hub": 59511,
@@ -16,13 +29,48 @@
     "encuestas": null,
     "responder": null,
     "tablero": null,
-    "detalle": null
+    "detalle": null,
+    "listado_criticidad_primero": 59523
   },
   "bases": {
-    "preguntas": { "cmid": 59498, "dataid": 114, "definicion": "data/moodle/BASE_ENCUESTAS.json", "subseccion": "Database", "creada": "2026-10-17" },
-    "armado": { "cmid": null, "dataid": null, "definicion": "data/moodle/BASE_ENCUESTAS_ARMADO.json" },
-    "respuestas": { "cmid": null, "dataid": null, "definicion": "data/moodle/BASE_RESPUESTAS.json" },
-    "estudiantes": { "cmid": null, "dataid": null },
-    "criticidad": { "cmid": null, "dataid": null }
+    "preguntas": {
+      "cmid": 59498,
+      "dataid": 114,
+      "definicion": "data/moodle/BASE_ENCUESTAS.json",
+      "subseccion": "Database",
+      "creada": "2026-10-17"
+    },
+    "armado": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_ENCUESTAS_ARMADO.json"
+    },
+    "respuestas": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_RESPUESTAS.json"
+    },
+    "estudiantes": {
+      "cmid": null,
+      "dataid": null
+    },
+    "criticidad": {
+      "cmid": null,
+      "dataid": null
+    },
+    "carga_parciales_primero": {
+      "cmid": 59521,
+      "dataid": 117,
+      "definicion": "data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json",
+      "subseccion": "Hub",
+      "importada": "2026-10-18"
+    },
+    "carga_materias_primero": {
+      "cmid": 59522,
+      "dataid": 118,
+      "definicion": "data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json",
+      "subseccion": "Hub",
+      "importada": "2026-10-18"
+    }
   }
 }

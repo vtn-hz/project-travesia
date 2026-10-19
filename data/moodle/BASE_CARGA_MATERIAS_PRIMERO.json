@@ -1,0 +1,13 @@
+{
+  "clave": "carga_materias_primero",
+  "nombre": "Carga_Materias_Primero",
+  "descripcion": "Materias de 1.er año con su marca de crítica y el umbral de nota que usa el listado de criticidad.",
+  "subseccion": "Hub",
+  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas).",
+  "plantillas": "data/moodle/plantillas/carga_materias_primero/",
+  "campos": [
+    { "nombre": "Materia", "tipo": "text", "requerido": true, "descripcion": "" },
+    { "nombre": "esCritica", "tipo": "menu", "requerido": true, "descripcion": "", "opciones": ["S", "N"] },
+    { "nombre": "Umbral", "tipo": "number", "requerido": false, "descripcion": "" }
+  ]
+}

@@ -1,0 +1,381 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Listado_Criticidad_Primero" (cmid 59523) · importada 2026-10-18 -->
+<!-- ORIGEN: creada directamente en Moodle por el equipo e importada sin cambios. No sigue RULES.md (clases de Bootstrap, emojis, cmids fijos en lugar de líneas // @config). -->
+<!-- DATOS: bases Carga_Parciales_Primero (cmid 59521, d=117) y Carga_Materias_Primero (cmid 59522, d=118) — data/moodle/BASE_CARGA_*_PRIMERO.json -->
+<!-- Contenedores para renderizar las 3 tablas -->
+<div id="tabla_parciales" class="my-4">
+<div class="text-muted">Cargando registros de parciales...</div>
+</div>
+<div id="tabla_materias" class="my-4">
+<div class="text-muted">Cargando registros de materias...</div>
+</div>
+<div id="tabla_indicadores" class="my-4">
+<div class="text-muted">Calculando indicadores pedagógicos...</div>
+</div>
+<p>
+<script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      const URL_BASE_DATOS_PARCIALES = window.location.origin +
+        '/mod/data/view.php?id=59521&perpage=2000';
+      const CONTENEDOR_PARCIALES_ID = 'tabla_parciales';
+
+      try {
+        // 1. Obtención de Parciales
+        const responseParciales = await fetch(URL_BASE_DATOS_PARCIALES);
+        const htmlTextoParciales = await responseParciales.text();
+
+        const parser = new DOMParser();
+        const docParciales = parser.parseFromString(htmlTextoParciales,
+          'text/html');
+
+        let filasParciales = docParciales.querySelectorAll(
+          'tr[data-tipo="entrada_parcial"]');
+
+        if (filasParciales.length === 0) {
+          filasParciales = docParciales.querySelectorAll(
+            '[data-id="tabla_parciales"] tbody tr');
+        }
+
+        const registrosParciales = [];
+
+        filasParciales.forEach((fila) => {
+          const celdas = fila.querySelectorAll('td');
+
+          if (celdas.length >= 7) {
+            const regParcial = {
+              dni: celdas[0]?.innerText.trim() || '',
+              estudiante: celdas[1]?.innerText.trim() || '',
+              materia: celdas[2]?.innerText.trim() || '',
+              instancia: celdas[3]?.innerText.trim() || '',
+              fecha: celdas[4]?.innerText.trim() || '',
+              nota: celdas[5]?.innerText.trim() || '',
+              estado: celdas[6]?.innerText.trim() ||
+                '' // "Aprobado", "Desaprobado" o "Ausente"
+            };
+
+            if (regParcial.dni || regParcial.nota || regParcial
+              .estudiante) {
+              registrosParciales.push(regParcial);
+            }
+          }
+        });
+
+        console.log("=== REGISTROS EXTRAÍDOS DE PARCIALES ===");
+        console.table(registrosParciales);
+
+        // Renderizar Tabla Parciales
+        const contenedorParciales = document.getElementById(
+          CONTENEDOR_PARCIALES_ID);
+        if (contenedorParciales) {
+          if (registrosParciales.length === 0) {
+            contenedorParciales.innerHTML =
+              '<div class="alert alert-warning">No se encontraron registros de parciales.</div>';
+          } else {
+            let htmlTablaParciales = `
+              <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>DNI</th>
+                      <th>Estudiante</th>
+                      <th>Materia</th>
+                      <th>Instancia</th>
+                      <th>Fecha</th>
+                      <th>Nota</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+
+            registrosParciales.forEach((regParcial) => {
+              const estadoTxt = regParcial.estado.toLowerCase();
+              let badgeEstado =
+                `<span class="badge bg-secondary fs-6">${regParcial.estado}</span>`;
+
+              if (estadoTxt.includes('aprobado') && !estadoTxt
+                .includes('des')) {
+                badgeEstado =
+                  `<span class="badge bg-success fs-6">${regParcial.estado}</span>`;
+              } else if (estadoTxt.includes('desaprobado')) {
+                badgeEstado =
+                  `<span class="badge bg-danger fs-6">${regParcial.estado}</span>`;
+              } else if (estadoTxt.includes('ausente')) {
+                badgeEstado =
+                  `<span class="badge bg-warning text-dark fs-6">${regParcial.estado}</span>`;
+              }
+
+              htmlTablaParciales += `
+                <tr>
+                  <td>${regParcial.dni}</td>
+                  <td class="fw-bold">${regParcial.estudiante}</td>
+                  <td>${regParcial.materia}</td>
+                  <td>${regParcial.instancia}</td>
+                  <td>${regParcial.fecha}</td>
+                  <td><span class="fw-bold">${regParcial.nota || '-'}</span></td>
+                  <td>${badgeEstado}</td>
+                </tr>
+              `;
+            });
+
+            htmlTablaParciales += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+            contenedorParciales.innerHTML = htmlTablaParciales;
+          }
+        }
+
+        // 2. Obtención de Materias
+        const URL_BASE_DATOS_MATERIAS = window.location.origin +
+          '/mod/data/view.php?id=59522&perpage=2000';
+        const CONTENEDOR_MATERIAS_ID = 'tabla_materias';
+
+        const responseMaterias = await fetch(URL_BASE_DATOS_MATERIAS);
+        const htmlTextoMaterias = await responseMaterias.text();
+
+        const docMaterias = parser.parseFromString(htmlTextoMaterias,
+          'text/html');
+
+        let filasMaterias = docMaterias.querySelectorAll(
+          'tr[data-tipo="entrada_materia"]');
+
+        if (filasMaterias.length === 0) {
+          filasMaterias = docMaterias.querySelectorAll(
+            '[data-id="tabla_materias"] tbody tr');
+        }
+
+        const registrosMaterias = [];
+
+        filasMaterias.forEach((fila) => {
+          const celdas = fila.querySelectorAll('td');
+
+          if (celdas.length >= 3) {
+            const regMateria = {
+              materia: celdas[0]?.innerText.trim() || '',
+              esCritica: celdas[1]?.innerText.trim() || '',
+              umbral: celdas[2]?.innerText.trim() || '4'
+            };
+
+            if (regMateria.materia) {
+              registrosMaterias.push(regMateria);
+            }
+          }
+        });
+
+        console.log("=== REGISTROS EXTRAÍDOS DE MATERIAS ===");
+        console.table(registrosMaterias);
+
+        // Renderizar Tabla Materias
+        const contenedorMaterias = document.getElementById(
+          CONTENEDOR_MATERIAS_ID);
+        if (contenedorMaterias) {
+          if (registrosMaterias.length === 0) {
+            contenedorMaterias.innerHTML =
+              '<div class="alert alert-warning">No se encontraron registros de materias.</div>';
+          } else {
+            let htmlTablaMaterias = `
+              <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Materia</th>
+                      <th>Es Crítica</th>
+                      <th>Umbral</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+
+            registrosMaterias.forEach((regMateria) => {
+              htmlTablaMaterias += `
+                <tr>
+                  <td class="fw-bold">${regMateria.materia}</td>
+                  <td>${regMateria.esCritica}</td>
+                  <td><span class="badge bg-secondary fs-6">${regMateria.umbral}</span></td>
+                </tr>
+              `;
+            });
+
+            htmlTablaMaterias += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+            contenedorMaterias.innerHTML = htmlTablaMaterias;
+          }
+        }
+
+        //--------------- 3. CÁLCULO DE INDICADORES CON NUEVO FORMATO -------------------
+        const CONTENEDOR_INDICADORES_ID = 'tabla_indicadores';
+        const contenedorIndicadores = document.getElementById(
+          CONTENEDOR_INDICADORES_ID);
+
+        const grupos = {};
+
+        registrosParciales.forEach(parcial => {
+          const clave =
+            `${parcial.estudiante.trim()}___${parcial.materia.trim()}`;
+
+          if (!grupos[clave]) {
+            grupos[clave] = {
+              estudiante: parcial.estudiante.trim(),
+              dni: parcial.dni.trim(),
+              materia: parcial.materia.trim(),
+              programados: 0,
+              rendidos: 0,
+              ausencias: 0,
+              aprobados: 0,
+              sumaNotas: 0,
+              evaluaciones: []
+            };
+          }
+
+          const g = grupos[clave];
+          g.programados++;
+
+          const estadoTxt = parcial.estado.toLowerCase().trim();
+          const notaLimpia = parcial.nota.replace(',', '.').trim();
+          const notaNum = parseFloat(notaLimpia);
+
+          // Evaluación directa del estado
+          if (estadoTxt.includes('ausente') || isNaN(notaNum)) {
+            g.ausencias++;
+          } else {
+            g.rendidos++;
+            g.sumaNotas += notaNum;
+            g.evaluaciones.push(notaNum);
+
+            if (estadoTxt.includes('aprobado') && !estadoTxt.includes(
+                'des')) {
+              g.aprobados++;
+            }
+          }
+        });
+
+        // Calcular indicadores
+        const indicadoresCalculados = Object.values(grupos).map(g => {
+          const promedio = g.rendidos > 0 ? (g.sumaNotas / g.rendidos)
+            .toFixed(2) : 'N/A';
+          const pctAprobados = g.rendidos > 0 ? ((g.aprobados / g
+            .rendidos) * 100).toFixed(1) + '%' : '0%';
+          const pctAusentismo = g.programados > 0 ? ((g.ausencias / g
+            .programados) * 100).toFixed(1) + '%' : '0%';
+
+          const normalizarStr = (str) => str.toLowerCase().replace(
+            /[\s\-_]/g, '');
+
+          const infoMateria = registrosMaterias.find(m =>
+            normalizarStr(m.materia) === normalizarStr(g.materia)
+          );
+
+          let alertaCritica = false;
+          let esMateriaCritica = false;
+          let umbral = 4;
+
+          if (infoMateria) {
+            const critTxt = infoMateria.esCritica.toString().trim()
+              .toUpperCase();
+            esMateriaCritica = ['S', 'SI', 'SÍ', 'TRUE', '1']
+              .includes(critTxt);
+
+            const umbralLimpio = infoMateria.umbral.toString()
+              .replace(',', '.').trim();
+            umbral = parseFloat(umbralLimpio);
+            if (isNaN(umbral)) umbral = 4;
+          }
+
+          if (esMateriaCritica && g.evaluaciones.some(nota => nota <
+              umbral)) {
+            alertaCritica = true;
+          }
+
+          return {
+            estudiante: g.estudiante,
+            dni: g.dni,
+            materia: g.materia,
+            promedio: promedio,
+            pctAprobados: pctAprobados,
+            pctAusentismo: pctAusentismo,
+            alertaCritica: alertaCritica,
+            esMateriaCritica: esMateriaCritica,
+            umbral: umbral
+          };
+        });
+
+        // 2. AGREGAR ESTA LÍNEA: Ordenar de menor a mayor por DNI
+        indicadoresCalculados.sort((a, b) => {
+          const dniA = parseInt(a.dni.replace(/\D/g, ''), 10) || 0;
+          const dniB = parseInt(b.dni.replace(/\D/g, ''), 10) || 0;
+          return dniA - dniB;
+        });
+
+        console.log("=== INDICADORES PROCESADOS Y CALCULADOS ===");
+        console.table(indicadoresCalculados);
+
+        // Renderizar la tabla de Indicadores en el DOM
+        if (contenedorIndicadores) {
+          if (indicadoresCalculados.length === 0) {
+            contenedorIndicadores.innerHTML =
+              '<div class="alert alert-warning">No se pudieron procesar los indicadores.</div>';
+          } else {
+            let htmlTablaIndicadores = `
+              <div class="table-responsive">
+                <h4 class="mb-3">📊 Tabla de Indicadores Pedagógicos (Calculados)</h4>
+                <table class="table table-striped table-hover table-bordered align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Estudiante</th>
+                      <th>Materia</th>
+                      <th>Promedio Nota</th>
+                      <th>% Aprobados</th>
+                      <th>Ausentismo</th>
+                      <th>Alerta Materia Crítica</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+
+            indicadoresCalculados.forEach((ind) => {
+              const badgeAlerta = ind.alertaCritica ?
+                `<span class="badge bg-danger fs-6">⚠️ ALERTA (< ${ind.umbral})</span>` :
+                (ind.esMateriaCritica ?
+                  `<span class="badge bg-success fs-6">OK (Materia Crítica)</span>` :
+                  `<span class="badge bg-secondary fs-6">N/A</span>`);
+
+              htmlTablaIndicadores += `
+                <tr>
+                  <td class="fw-bold">${ind.estudiante} <small class="text-muted">(${ind.dni})</small></td>
+                  <td>${ind.materia}</td>
+                  <td><span class="fw-bold">${ind.promedio}</span></td>
+                  <td>${ind.pctAprobados}</td>
+                  <td>${ind.pctAusentismo}</td>
+                  <td>${badgeAlerta}</td>
+                </tr>
+              `;
+            });
+
+            htmlTablaIndicadores += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+
+            contenedorIndicadores.innerHTML = htmlTablaIndicadores;
+          }
+        }
+
+      } catch (error) {
+        console.error(
+          "Error al obtener y procesar las entradas desde las Bases de Datos:",
+          error);
+        const contenedorParciales = document.getElementById(
+          CONTENEDOR_PARCIALES_ID);
+        if (contenedorParciales) {
+          contenedorParciales.innerHTML =
+            '<div class="alert alert-danger">Ocurrió un error al cargar los datos.</div>';
+        }
+      }
+    });
+  </script>
+</p>

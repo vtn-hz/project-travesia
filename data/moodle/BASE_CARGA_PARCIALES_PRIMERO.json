@@ -1,0 +1,17 @@
+{
+  "clave": "carga_parciales_primero",
+  "nombre": "Carga_Parciales_Primero",
+  "descripcion": "Notas de parciales de 1.er año: una entrada por evaluación de un estudiante en una materia.",
+  "subseccion": "Hub",
+  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). Moodle muestra truncada la descripción del campo Estudiante.",
+  "plantillas": "data/moodle/plantillas/carga_parciales_primero/",
+  "campos": [
+    { "nombre": "DNI", "tipo": "text", "requerido": true, "descripcion": "DNI del Estudiante" },
+    { "nombre": "Estudiante", "tipo": "text", "requerido": false, "descripcion": "Nombre y Apellido del …" },
+    { "nombre": "Materia", "tipo": "text", "requerido": true, "descripcion": "Código de la materia a agregar" },
+    { "nombre": "Instancia", "tipo": "text", "requerido": false, "descripcion": "Parcial 1 | Parcial 2 | ..." },
+    { "nombre": "Fecha", "tipo": "date", "requerido": false, "descripcion": "DD/MM/AAAA" },
+    { "nombre": "Nota", "tipo": "number", "requerido": true, "descripcion": "" },
+    { "nombre": "Estado", "tipo": "multimenu", "requerido": true, "descripcion": "", "opciones": ["Aprobado", "Desaprobado", "Ausente"] }
+  ]
+}
