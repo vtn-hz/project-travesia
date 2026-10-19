@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FEEDBACK VERSION="200701" COMMENT="XML-Importfile for mod/feedback">
+     <ITEMS>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8254]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<p>[[Cuadro]]</p>]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="numeric" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8253]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[Los créditos obtenidos actualmente son:]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[creditos_aprobados]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[0|235.5]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="numeric" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8257]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿En qué año ingresaste a la facultad?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[año_cohorte]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[2000|3000]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8258]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿En cuál cuatrimestre ingresaste?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[cuatri_cohorte]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>1|2]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8259]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿Trabaja actualmente?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[trabaja]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>Si|No]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8260]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿En qué momento de la carrera comenzaste tu actividad laboral?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>Comencé antes de ingresar a la carrera|Comencé en 1.º año]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[8259]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[Si]]>
+               </DEPENDVALUE>
+          </ITEM>
+     </ITEMS>
+</FEEDBACK>
