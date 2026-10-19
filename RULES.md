@@ -22,6 +22,7 @@ Estas reglas están por encima de todas las demás.
 |---|---|
 | Resumen de la sección Zhakyz (logo, nombre, lema y script que quita el link de los títulos de subsección) | [`section/resumen_zhakyz/content.html`](section/resumen_zhakyz/content.html) + [`assets/LOGO_ZHAKYZ_ANIMADO.gif`](assets/LOGO_ZHAKYZ_ANIMADO.gif) |
 | Subsección "Hub" (cmid 59510, sección 15706) → Área de texto y medios "Hub" (cmid 59511), visible sin entrar | [`section/menu_inicial/content.html`](section/menu_inicial/content.html) |
+| Subsección "Hub" → Encuesta "Encuesta Inicial" (cmid 59710) | [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](data/moodle/encuestas/ENCUESTA_INICIAL.xml) (importada). El ítem `[[Cuadro]]` se va a reemplazar con [`section/encuesta_inicial/content.html`](section/encuesta_inicial/content.html) (sin publicar) |
 | Subsección "Hub" → Base de datos "Carga_Parciales_Primero" (cmid 59521, d=117) | [`data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json`](data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json) + [plantillas](data/moodle/plantillas/carga_parciales_primero/) |
 | Subsección "Hub" → Base de datos "Carga_Materias_Primero" (cmid 59522, d=118) | [`data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json`](data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json) + [plantillas](data/moodle/plantillas/carga_materias_primero/) |
 | Subsección "Plan de Estudios" (cmid 59719, sección 15721) → Página "Plan de Estudios" (cmid 59718) | [`section/plan_estudios/content.html`](section/plan_estudios/content.html) |
