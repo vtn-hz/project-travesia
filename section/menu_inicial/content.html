@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-10-17 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-10-19 -->
 <!-- SECCIÓN: MENÚ DEL EQUIPO DE SEGUIMIENTO (ROLES ADM, GES, TUT, PAR) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -129,6 +129,8 @@
       };
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
+      // Bloque "Estado del sistema" de ADM (oculto por ahora)
+      var MOSTRAR_ESTADO_SISTEMA = false;
       // La barra para cambiar de rol solo existe al abrir el archivo localmente
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
@@ -233,8 +235,8 @@
         { id: 'importar-datos', grupo: 'gestion', icono: 'importar', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', roles: ['ADM', 'GES'] },
         { id: 'encuestas', grupo: 'gestion', icono: 'encuestas', titulo: 'Preguntas', texto: 'Preguntas con su tipo, sus opciones de respuesta y la criticidad de cada opción.', cta: 'Gestionar preguntas', roles: ['ADM', 'GES'] },
         { id: 'armado-encuestas', grupo: 'gestion', icono: 'lista', titulo: 'Encuestas', texto: 'Armá la encuesta inicial y la cuatrimestral con preguntas del banco, en el orden que quieras.', cta: 'Armar encuestas', roles: ['ADM', 'GES'] },
-        { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Planes 2003 y 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
-        { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores, cierre de período y roles.', cta: 'Configurar', roles: ['ADM'] }
+        { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Plan 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
+        { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores y cierre de período.', cta: 'Configurar', roles: ['ADM'] }
       ];
 
       var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important;';
@@ -328,6 +330,9 @@
         }
         if (!MOSTRAR_VISTA_ALUMNO) {
           mostrar(document.getElementById('btn-ver-como-estudiante'), false);
+        }
+        if (!MOSTRAR_ESTADO_SISTEMA) {
+          mostrar(document.getElementById('bloque-estado-sistema'), false);
         }
 
         // Ocultar grupos sin tarjetas visibles

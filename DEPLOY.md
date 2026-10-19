@@ -2,7 +2,7 @@
 
 Qué está publicado en Moodle, qué está solo en local y qué está en revisión. Curso 1732 → sección **Zhakyz** (id 15647).
 
-> **Última actualización:** 2026-10-18 (importados los cambios hechos directamente en Moodle). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
+> **Última actualización:** 2026-10-19 (Hub republicado). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
 
 ## Estados
 
@@ -40,7 +40,7 @@ Zhakyz (sección 15647)
 | Sección | Archivo | Estado | En Moodle | Qué falta |
 |---|---|---|---|---|
 | Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
-| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". Republicar: el repo agregó la marca `// @config` (mismo destino) |
+| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`). Última publicación: 2026-10-19 |
 | Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |
