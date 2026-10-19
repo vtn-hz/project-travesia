@@ -4,18 +4,104 @@
   "descripcion": "El plan de estudios: una entrada por materia de cada plan, con las materias que desbloquea. Nada se edita ni se borra: un cambio es una entrada nueva con el mismo plan + codigo, y la más reciente es la vigente.",
   "subseccion": "Database",
   "origen": "PROPUESTA (2026-10-19), todavía no creada en Moodle. Reemplaza a Carga_Materias_Primero (d=118). Se carga desde la sección plan_estudios con un CSV.",
+  "plantillas": "data/moodle/plantillas/materias/ (cargarlas a mano en Moodle: la plantilla de lista expone cada campo como data-* en .zk-registro, que es lo que lee la sección plan_estudios)",
   "campos": [
-    { "nombre": "plan", "tipo": "menu", "requerido": true, "descripcion": "Plan de estudios. Clave junto con codigo.", "opciones": ["2024", "2003"] },
-    { "nombre": "codigo", "tipo": "text", "requerido": true, "descripcion": "Código institucional. Único dentro del plan (por ejemplo INGM101)." },
-    { "nombre": "nombre", "tipo": "text", "requerido": true, "descripcion": "Nombre oficial." },
-    { "nombre": "anio", "tipo": "menu", "requerido": true, "descripcion": "Año de la carrera.", "opciones": ["1", "2", "3", "4", "5"] },
-    { "nombre": "cuatrimestre", "tipo": "number", "requerido": true, "descripcion": "Cuatrimestre del plan en el que empieza, de 1 a 10." },
-    { "nombre": "duracion", "tipo": "menu", "requerido": true, "descripcion": "Si es anual, termina en el cuatrimestre siguiente al de inicio.", "opciones": ["cuatrimestral", "anual"] },
-    { "nombre": "tipo", "tipo": "menu", "requerido": true, "descripcion": "Tipo de espacio curricular. El modelo de criticidad no cuenta ingles.", "opciones": ["obligatoria", "electiva", "optativa", "ingles"] },
-    { "nombre": "creditos", "tipo": "number", "requerido": false, "descripcion": "Créditos." },
-    { "nombre": "horas", "tipo": "number", "requerido": false, "descripcion": "Carga horaria total." },
-    { "nombre": "desbloquea", "tipo": "text", "requerido": false, "descripcion": "Materias que habilita al aprobarla, cada una como codigo:cuatrimestre y separadas por coma (por ejemplo INGM102:2, INGF101:2, ING6101:2). Solo las directas: la cadena completa se calcula. El cuatrimestre es copia del de la fila de esa materia: la página de carga controla que coincidan." },
-    { "nombre": "estado", "tipo": "menu", "requerido": true, "descripcion": "Baja = la materia ya no está en el plan.", "opciones": ["vigente", "baja"] },
-    { "nombre": "cambio", "tipo": "text", "requerido": false, "descripcion": "Qué cambió respecto de la versión anterior. La página de carga pone el nombre del archivo importado." }
+    {
+      "nombre": "plan",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Plan de estudios. Clave junto con codigo.",
+      "opciones": [
+        "2024",
+        "2003"
+      ]
+    },
+    {
+      "nombre": "codigo",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Código institucional. Único dentro del plan (por ejemplo INGM101)."
+    },
+    {
+      "nombre": "nombre",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Nombre oficial."
+    },
+    {
+      "nombre": "anio",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Año de la carrera.",
+      "opciones": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "nombre": "cuatrimestre",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "Cuatrimestre del plan en el que empieza, de 1 a 10."
+    },
+    {
+      "nombre": "duracion",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Si es anual, termina en el cuatrimestre siguiente al de inicio.",
+      "opciones": [
+        "cuatrimestral",
+        "anual"
+      ]
+    },
+    {
+      "nombre": "tipo",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Tipo de espacio curricular. El modelo de criticidad no cuenta ingles.",
+      "opciones": [
+        "obligatoria",
+        "electiva",
+        "optativa",
+        "ingles"
+      ]
+    },
+    {
+      "nombre": "creditos",
+      "tipo": "number",
+      "requerido": false,
+      "descripcion": "Créditos."
+    },
+    {
+      "nombre": "horas",
+      "tipo": "number",
+      "requerido": false,
+      "descripcion": "Carga horaria total."
+    },
+    {
+      "nombre": "desbloquea",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Materias que habilita al aprobarla, cada una como codigo:cuatrimestre y separadas por coma (por ejemplo INGM102:2, INGF101:2, ING6101:2). Solo las directas: la cadena completa se calcula. El cuatrimestre es copia del de la fila de esa materia: la página de carga controla que coincidan."
+    },
+    {
+      "nombre": "estado",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Baja = la materia ya no está en el plan.",
+      "opciones": [
+        "vigente",
+        "baja"
+      ]
+    },
+    {
+      "nombre": "cambio",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Qué cambió respecto de la versión anterior. La página de carga pone el nombre del archivo importado."
+    }
   ]
 }
