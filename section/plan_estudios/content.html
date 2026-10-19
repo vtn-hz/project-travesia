@@ -18,7 +18,7 @@
         Plan de Estudios y Correlativas</h3>
       <p
         style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
-        Cargá un plan desde un archivo CSV. Antes de guardar, la página revisa cada fila y te dice qué corregir.</p>
+        Carga de planes de estudio desde un archivo CSV. Antes de guardar, se valida cada fila y se indican los errores a corregir.</p>
     </div>
     <div id="badge-rol-plan"
       style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
@@ -37,14 +37,14 @@
         style="width: 36px !important; height: 36px !important; flex: 0 0 36px !important; border-radius: 8px !important; background-color: #e5f2ff !important; border: 1px solid #99ccff !important; color: #026bd4 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></span>
       <div>
         <h4 style="margin: 0 0 2px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">1. Formato del archivo</h4>
-        <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Un archivo .csv con una materia por fila. Puede traer uno o varios planes.</p>
+        <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Archivo .csv con una materia por fila. Puede incluir uno o varios planes.</p>
       </div>
     </div>
     <div style="font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Ejemplo</div>
     <div id="ejemplo-formato-plan"
       style="overflow-x: auto !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; margin-bottom: 6px !important;"></div>
-    <p style="margin: 0 0 16px 0 !important; font-size: 12px !important; color: #47536b !important;">La fila 1 lleva los nombres de las columnas. Desde la fila 2, una materia por fila.</p>
-    <div style="font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Qué va en cada columna</div>
+    <p style="margin: 0 0 16px 0 !important; font-size: 12px !important; color: #47536b !important;">La fila 1 contiene los nombres de las columnas. A partir de la fila 2, cada fila corresponde a una materia.</p>
+    <div style="font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Descripción de las columnas</div>
     <div id="tabla-formato-plan"
       style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 16px !important;"></div>
     <div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">
@@ -58,11 +58,11 @@
   <div id="bloque-archivo-plan"
     style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important; box-sizing: border-box !important;">
     <h4 style="margin: 0 0 12px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">2. Subir el archivo</h4>
-    <label id="zona-archivo-plan" for="campo-archivo-plan" tabindex="0" role="button" aria-label="Elegir un archivo CSV"
+    <label id="zona-archivo-plan" for="campo-archivo-plan" tabindex="0" role="button" aria-label="Seleccionar un archivo CSV"
       style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 6px !important; padding: 28px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #fcfcfc !important; color: #47536b !important; text-align: center !important; cursor: pointer !important;">
       <span data-icono="importar" style="color: #566481 !important;"></span>
-      <span style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">Arrastrá el CSV acá o hacé clic para elegirlo</span>
-      <span style="font-size: 12px !important; color: #47536b !important;">Solo archivos .csv. Nada se guarda hasta que confirmes la carga.</span>
+      <span style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">Arrastrar el archivo CSV a esta zona o hacer clic para seleccionarlo</span>
+      <span style="font-size: 12px !important; color: #47536b !important;">Solo se admiten archivos .csv. Los datos no se guardan hasta confirmar la carga.</span>
     </label>
     <input type="file" id="campo-archivo-plan" accept=".csv,text/csv" style="display: none !important;">
     <div id="info-archivo-plan"
@@ -73,7 +73,7 @@
       </span>
       <button type="button" id="btn-quitar-plan"
         style="height: 36px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-        <span data-icono="cerrar"></span>Elegir otro archivo</button>
+        <span data-icono="cerrar"></span>Seleccionar otro archivo</button>
     </div>
   </div>
 
@@ -135,11 +135,11 @@
         { n: 'nombre', r: true, va: 'Texto', d: 'Nombre oficial.', ex: 'Análisis Matemático I' },
         { n: 'anio', r: true, va: '1 a 5', d: 'Año de la carrera. También se acepta el encabezado "año".', ex: '1' },
         { n: 'cuatrimestre', r: true, va: '1 a 10', d: 'Cuatrimestre del plan en el que empieza, contado desde el ingreso.', ex: '1' },
-        { n: 'duracion', r: true, va: 'cuatrimestral · anual', d: 'La anual termina en el cuatrimestre siguiente al de inicio.', ex: 'cuatrimestral' },
+        { n: 'duracion', r: true, va: 'cuatrimestral · anual', d: 'Una materia anual finaliza en el cuatrimestre siguiente al de inicio.', ex: 'cuatrimestral' },
         { n: 'tipo', r: true, va: 'obligatoria · electiva · optativa · ingles', d: 'Tipo de espacio curricular.', ex: 'obligatoria' },
         { n: 'creditos', r: false, va: 'Número', d: 'Créditos.', ex: '6' },
         { n: 'horas', r: false, va: 'Número', d: 'Carga horaria total.', ex: '96' },
-        { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Las materias que habilita al aprobarla, solo las directas. El cuatrimestre tiene que coincidir con el de la fila de esa materia.', ex: 'ING6101:2, INGF101:2, INGM102:2' }
+        { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Materias que habilita al aprobarse (solo las correlativas directas). El cuatrimestre debe coincidir con el indicado en la fila de cada materia.', ex: 'ING6101:2, INGF101:2, INGM102:2' }
       ];
       // Encabezados alternativos que se aceptan (ya sin tildes ni mayúsculas)
       var ALIAS = { ano: 'anio', 'año': 'anio', cuatri: 'cuatrimestre', duración: 'duracion', 'código': 'codigo', 'créditos': 'creditos' };
@@ -342,7 +342,7 @@
         var encabezado = celdas[0].map(normalizarEncabezado);
         var faltan = COLUMNAS.filter(function(c) { return c.r && encabezado.indexOf(c.n) === -1; }).map(function(c) { return c.n; });
         if (faltan.length) {
-          return { fatal: 'Faltan columnas obligatorias: ' + faltan.join(', ') + '. La primera fila tiene que traer los nombres de las columnas.', encontradas: celdas[0] };
+          return { fatal: 'Faltan columnas obligatorias: ' + faltan.join(', ') + '. La primera fila debe contener los nombres de las columnas.', encontradas: celdas[0] };
         }
         var conocidas = COLUMNAS.map(function(c) { return c.n; });
         var filas = [];
@@ -355,7 +355,7 @@
           });
           filas.push({ n: i + 1, v: v });
         }
-        if (!filas.length) return { fatal: 'El archivo solo tiene la fila de encabezados: no trae materias.' };
+        if (!filas.length) return { fatal: 'El archivo solo contiene la fila de encabezados y no incluye materias.' };
         return {
           filas: filas,
           separador: sep,
@@ -398,32 +398,32 @@
 
           d.codigo = v.codigo.toUpperCase();
           if (!d.codigo) agregar('error', 'codigo', 'Está vacío.');
-          else if (!/^[A-Z0-9]+$/.test(d.codigo)) agregar('error', 'codigo', '"' + v.codigo + '" solo puede tener letras y números, sin espacios ni signos.');
+          else if (!/^[A-Z0-9]+$/.test(d.codigo)) agregar('error', 'codigo', '"' + v.codigo + '" solo puede contener letras y números, sin espacios ni signos.');
 
           d.nombre = v.nombre;
           if (!d.nombre) agregar('error', 'nombre', 'Está vacío.');
 
           d.anio = entero(v.anio, 1, 5);
-          if (d.anio === null) agregar('error', 'anio', (v.anio ? '"' + v.anio + '"' : 'Está vacío:') + ' tiene que ser un número de 1 a 5.');
+          if (d.anio === null) agregar('error', 'anio', (v.anio ? '"' + v.anio + '"' : 'Está vacío:') + ' debe ser un número de 1 a 5.');
 
           d.cuatrimestre = entero(v.cuatrimestre, 1, 10);
-          if (d.cuatrimestre === null) agregar('error', 'cuatrimestre', (v.cuatrimestre ? '"' + v.cuatrimestre + '"' : 'Está vacío:') + ' tiene que ser un número de 1 a 10, contado desde el ingreso.');
+          if (d.cuatrimestre === null) agregar('error', 'cuatrimestre', (v.cuatrimestre ? '"' + v.cuatrimestre + '"' : 'Está vacío:') + ' debe ser un número de 1 a 10, contado desde el ingreso.');
           else if (d.anio !== null && Math.ceil(d.cuatrimestre / 2) !== d.anio) {
-            agregar('alerta', 'cuatrimestre', 'El cuatrimestre ' + d.cuatrimestre + ' corresponde a ' + Math.ceil(d.cuatrimestre / 2) + '.º año, pero anio dice ' + d.anio + '.');
+            agregar('alerta', 'cuatrimestre', 'El cuatrimestre ' + d.cuatrimestre + ' corresponde a ' + Math.ceil(d.cuatrimestre / 2) + '.º año, pero anio indica ' + d.anio + '.');
           }
 
           d.duracion = v.duracion.toLowerCase();
-          if (DURACIONES.indexOf(d.duracion) === -1) agregar('error', 'duracion', (v.duracion ? '"' + v.duracion + '"' : 'Está vacío:') + ' tiene que ser cuatrimestral o anual.');
-          else if (d.duracion === 'anual' && d.cuatrimestre === 10) agregar('error', 'duracion', 'Una anual no puede empezar en el cuatrimestre 10: terminaría en el 11.');
+          if (DURACIONES.indexOf(d.duracion) === -1) agregar('error', 'duracion', (v.duracion ? '"' + v.duracion + '"' : 'Está vacío:') + ' debe ser cuatrimestral o anual.');
+          else if (d.duracion === 'anual' && d.cuatrimestre === 10) agregar('error', 'duracion', 'Una materia anual no puede comenzar en el cuatrimestre 10, porque finalizaría en el 11.');
           d.fin = d.cuatrimestre === null ? null : d.cuatrimestre + (d.duracion === 'anual' ? 1 : 0);
 
           d.tipo = v.tipo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-          if (TIPOS.indexOf(d.tipo) === -1) agregar('error', 'tipo', (v.tipo ? '"' + v.tipo + '"' : 'Está vacío:') + ' tiene que ser ' + TIPOS.join(', ') + '.');
+          if (TIPOS.indexOf(d.tipo) === -1) agregar('error', 'tipo', (v.tipo ? '"' + v.tipo + '"' : 'Está vacío:') + ' debe ser ' + TIPOS.join(', ') + '.');
 
           ['creditos', 'horas'].forEach(function(k) {
             var t = v[k].replace(',', '.');
             d[k] = t === '' ? '' : t;
-            if (t !== '' && !(/^\d+(\.\d+)?$/.test(t))) agregar('error', k, '"' + v[k] + '" tiene que ser un número.');
+            if (t !== '' && !(/^\d+(\.\d+)?$/.test(t))) agregar('error', k, '"' + v[k] + '" debe ser un número.');
           });
 
           d.desbloquea = partirDesbloquea(v.desbloquea);
@@ -454,11 +454,11 @@
             x.nombre = destino.d.nombre;
             var real = destino.d.cuatrimestre;
             if (x.cuat === null) {
-              agregar('error', x.codigo + ' no tiene cuatrimestre. En su fila dice ' + real + ': va ' + x.codigo + ':' + real + '.', real !== null);
+              agregar('error', x.codigo + ' no indica cuatrimestre. Según su fila, corresponde ' + x.codigo + ':' + real + '.', real !== null);
             } else if (real !== null && x.cuat !== real) {
-              agregar('error', x.codigo + ':' + x.cuat + ' no coincide con su fila, que dice cuatrimestre ' + real + '.', true);
+              agregar('error', x.codigo + ':' + x.cuat + ' no coincide con su fila, que indica el cuatrimestre ' + real + '.', true);
             } else if (r.d.fin !== null && real !== null && real <= r.d.fin) {
-              agregar('alerta', x.codigo + ' empieza en el cuatrimestre ' + real + ', antes de que termine esta materia (' + r.d.fin + ').');
+              agregar('alerta', x.codigo + ' comienza en el cuatrimestre ' + real + ', antes de que finalice esta materia (' + r.d.fin + ').');
             }
           });
         });
@@ -598,7 +598,7 @@
         if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
           estado.guardando = false;
           estado.guardadas = entradas.length;
-          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Vista de prueba:</b> se cargaron ' + entradas.length + ' materias del ' + escapar(resumen) + ' en esta vista. Arriba, en "Lo que está cargado hoy", ya se ven como vigentes. En Moodle no se guardó nada porque la base Materias todavía no existe.' };
+          estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Vista local:</b> se cargaron ' + entradas.length + ' materias del ' + escapar(resumen) + ' solo en esta vista y figuran como vigentes en "Materias registradas". No se guardó información en Moodle porque la base Materias todavía no existe.' };
           estado.base = vigentes(estado.base.concat(entradas));
           estado.planBase = entradas[0].plan;
           renderizarBase();
@@ -618,7 +618,7 @@
         }).then(function() {
           estado.resultado = { ok: true, texto: '<b style="font-weight: 600 !important;">Plan cargado.</b> Se guardaron ' + entradas.length + ' materias del ' + escapar(resumen) + '.' };
         }, function(err) {
-          estado.resultado = { ok: false, texto: '<b style="font-weight: 600 !important;">La carga se cortó.</b> Se guardaron ' + estado.guardadas + ' de ' + entradas.length + ' materias. ' + escapar(err.message) };
+          estado.resultado = { ok: false, texto: '<b style="font-weight: 600 !important;">La carga se interrumpió.</b> Se guardaron ' + estado.guardadas + ' de ' + entradas.length + ' materias. ' + escapar(err.message) };
         }).then(function() {
           estado.guardando = false;
           renderizarResultado();
@@ -675,8 +675,8 @@
 
       function renderizarBase() {
         var h = '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px 16px !important; margin-bottom: 12px !important;">' +
-          '<div><h4 style="margin: 0 0 2px 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">Lo que está cargado hoy</h4>' +
-          '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">La versión vigente de cada materia en la base Materias.</p></div>';
+          '<div><h4 style="margin: 0 0 2px 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">Materias registradas</h4>' +
+          '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Versión vigente de cada materia en la base Materias, por plan de estudios.</p></div>';
         if (estado.base === null) {
           document.getElementById('bloque-base-plan').innerHTML = h + '</div><p style="margin: 0 !important; color: #47536b !important;">Leyendo la base…</p>';
           return;
@@ -691,7 +691,7 @@
         }).join('') + '</div></div>';
         if (estado.errorBase) h += aviso('error', escapar(estado.errorBase));
         if (!lista.length) {
-          h += '<p style="margin: 0 !important; color: #47536b !important;">Todavía no hay materias cargadas. Subí el primer plan con los pasos de abajo.</p>';
+          h += '<p style="margin: 0 !important; color: #47536b !important;">No hay materias registradas en la base Materias.</p>';
           document.getElementById('bloque-base-plan').innerHTML = h;
           return;
         }
@@ -734,7 +734,7 @@
       function renderizarFormato() {
         document.getElementById('tabla-formato-plan').innerHTML =
           '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 620px !important;">' +
-          '<thead><tr><th style="' + TH + '">Columna</th><th style="' + TH + '">Obligatoria</th><th style="' + TH + '">Qué va</th><th style="' + TH + '">Ejemplo</th></tr></thead><tbody>' +
+          '<thead><tr><th style="' + TH + '">Columna</th><th style="' + TH + '">Obligatoria</th><th style="' + TH + '">Contenido</th><th style="' + TH + '">Ejemplo</th></tr></thead><tbody>' +
           COLUMNAS.map(function(c) {
             return '<tr style="' + TR + '"><td style="' + TD + '"><code style="' + CODE + ' font-weight: 600 !important;">' + c.n + '</code></td>' +
               '<td style="' + TD + (c.r ? ' font-weight: 600 !important;' : ' color: #47536b !important;') + '">' + (c.r ? 'Sí' : 'No') + '</td>' +
@@ -768,14 +768,14 @@
         });
         var visibles = lista.slice(0, MAX_PROBLEMAS);
         return '<div style="' + TARJETA + ' margin-bottom: 16px !important;">' +
-          '<h4 style="margin: 0 0 8px 0 !important; font-size: 16px !important; font-weight: 600 !important;">Qué corregir</h4>' +
+          '<h4 style="margin: 0 0 8px 0 !important; font-size: 16px !important; font-weight: 600 !important;">Errores y advertencias</h4>' +
           '<ul style="list-style: none !important; margin: 0 !important; padding: 0 !important;">' + visibles.map(function(p) {
             var c = NIVELES[p.nivel];
             return '<li style="display: flex !important; gap: 8px !important; align-items: flex-start !important; padding: 8px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; margin: 0 !important;">' +
               '<span style="color: ' + c.punto + ' !important; padding-top: 1px !important;">' + icono(p.nivel === 'error' ? 'error' : 'alerta', 18) + '</span>' +
               '<span><b style="font-weight: 600 !important;">Fila ' + p.fila + '</b> · <code style="' + CODE + '">' + p.campo + '</code> ' + escapar(p.msg) + '</span></li>';
           }).join('') + '</ul>' +
-          (lista.length > visibles.length ? '<div style="font-size: 12px !important; color: #47536b !important; padding-top: 8px !important;">Y ' + (lista.length - visibles.length) + ' más. Se ven todos en la tabla, filtrando por "Con problemas".</div>' : '') +
+          (lista.length > visibles.length ? '<div style="font-size: 12px !important; color: #47536b !important; padding-top: 8px !important;">Y ' + (lista.length - visibles.length) + ' más. La lista completa se muestra en la tabla con el filtro "Con problemas".</div>' : '') +
           '</div>';
       }
 
@@ -815,7 +815,7 @@
         var texto = estado.guardando ? '<span id="txt-avance-plan">Guardando ' + estado.guardadas + ' de ' + total + '…</span>' : 'Cargar ' + total + ' materias';
         return '<div style="' + TARJETA + ' display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 12px !important;">' +
           '<span style="font-size: 13px !important; color: #47536b !important; max-width: 460px !important;">' +
-          (rev.errores ? 'Para cargar, el archivo no puede tener errores. Las advertencias no frenan la carga.' : 'Cada carga agrega entradas nuevas en la base Materias. Las anteriores quedan como historial y la más reciente de cada materia es la vigente.') + '</span>' +
+          (rev.errores ? 'La carga requiere un archivo sin errores. Las advertencias no la impiden.' : 'Cada carga agrega entradas nuevas en la base Materias. Las anteriores quedan como historial y la más reciente de cada materia es la vigente.') + '</span>' +
           '<span style="display: flex !important; gap: 8px !important; flex-wrap: wrap !important;">' +
           (estado.corregido ? '<button type="button" id="btn-descargar-corregido-plan" style="' + BTN_SEC + '">' + icono('descargar', 18) + 'Descargar CSV corregido</button>' : '') +
           '<button type="button" id="btn-cargar-plan"' + (bloqueado ? ' disabled aria-disabled="true"' : '') + ' style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: ' + (bloqueado ? 'not-allowed' : 'pointer') + ' !important; opacity: ' + (bloqueado ? '0.45' : '1') + ';">' +
@@ -835,7 +835,7 @@
         if (estado.fatal) {
           h += aviso('error', '<b style="font-weight: 600 !important;">No se pudo leer el archivo.</b> ' + escapar(estado.fatal.fatal) +
             (estado.fatal.encontradas ? '<div style="margin-top: 6px !important; font-size: 13px !important;">Columnas encontradas: ' + estado.fatal.encontradas.map(function(c) { return '<code style="' + CODE + '">' + escapar(c || '(vacía)') + '</code>'; }).join(' ') + '</div>' : '') +
-            '<div style="margin-top: 6px !important; font-size: 13px !important;">La primera fila tiene que ser: <code style="' + CODE + ' white-space: normal !important;">' + COLUMNAS.map(function(c) { return c.n; }).join(',') + '</code></div>');
+            '<div style="margin-top: 6px !important; font-size: 13px !important;">La primera fila debe ser: <code style="' + CODE + ' white-space: normal !important;">' + COLUMNAS.map(function(c) { return c.n; }).join(',') + '</code></div>');
           cont.innerHTML = h;
           return;
         }
@@ -843,20 +843,20 @@
         h += '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
           tarjetaDato('Materias', rev.filas.length, planes.length ? 'plan ' + planes.map(function(p) { return p + ' (' + rev.planes[p] + ')'; }).join(' · ') : 'sin plan válido') +
           tarjetaDato('Listas', rev.filas.filter(function(r) { return r.nivel === 'ok'; }).length, 'sin observaciones') +
-          tarjetaDato('Errores', rev.errores, rev.errores ? 'frenan la carga' : 'ninguno', chipNivel(rev.errores ? 'error' : 'ok', rev.errores ? 'Corregir' : 'Sin errores')) +
-          tarjetaDato('Advertencias', rev.alertas, 'no frenan la carga', rev.alertas ? chipNivel('alerta') : '') +
+          tarjetaDato('Errores', rev.errores, rev.errores ? 'impiden la carga' : 'ninguno', chipNivel(rev.errores ? 'error' : 'ok', rev.errores ? 'Corregir' : 'Sin errores')) +
+          tarjetaDato('Advertencias', rev.alertas, 'no impiden la carga', rev.alertas ? chipNivel('alerta') : '') +
           '</div>';
         if (estado.resultado) h += aviso(estado.resultado.ok ? 'ok' : 'error', estado.resultado.texto);
         if (estado.desconocidas && estado.desconocidas.length) {
-          h += aviso('info', 'Se ignoran las columnas que no son del formato: ' + estado.desconocidas.map(function(c) { return '<code style="' + CODE + '">' + escapar(c) + '</code>'; }).join(' ') + '.');
+          h += aviso('info', 'Se ignoran las columnas que no pertenecen al formato: ' + estado.desconocidas.map(function(c) { return '<code style="' + CODE + '">' + escapar(c) + '</code>'; }).join(' ') + '.');
         }
         if (rev.arreglables) {
           h += aviso('info', '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px 16px !important;">' +
-            '<span>' + (rev.arreglables === 1 ? 'Una materia' : rev.arreglables + ' materias') + ' de <code style="' + CODE + '">desbloquea</code> ' + (rev.arreglables === 1 ? 'no tiene' : 'no tienen') + ' cuatrimestre o no coincide con su fila. Se pueden completar con el de la fila de cada materia.</span>' +
+            '<span>' + (rev.arreglables === 1 ? 'Una materia' : rev.arreglables + ' materias') + ' de <code style="' + CODE + '">desbloquea</code> ' + (rev.arreglables === 1 ? 'no indica' : 'no indican') + ' el cuatrimestre o este no coincide con su fila. ' + (rev.arreglables === 1 ? 'Puede completarse' : 'Pueden completarse') + ' con el cuatrimestre de la fila de cada materia.</span>' +
             '<button type="button" id="btn-completar-plan" style="' + BTN_SEC + ' background-color: #ffffff !important;">Completar cuatrimestres</button></div>');
         }
         if (rev.problemas.length) h += htmlProblemas(rev);
-        else h += aviso('ok', '<b style="font-weight: 600 !important;">El archivo está bien.</b> Todas las filas cumplen el formato y cada materia de <code style="' + CODE + '">desbloquea</code> coincide con su fila.');
+        else h += aviso('ok', '<b style="font-weight: 600 !important;">Archivo válido.</b> Todas las filas cumplen el formato y cada materia de <code style="' + CODE + '">desbloquea</code> coincide con su fila.');
         h += htmlTabla(rev) + htmlAcciones(rev);
         cont.innerHTML = h;
       }
@@ -884,7 +884,7 @@
         if (!archivo) return;
         if (!/\.csv$/i.test(archivo.name)) {
           procesarTexto('', archivo.name);
-          estado.fatal = { fatal: '"' + archivo.name + '" no es un archivo .csv. Desde Excel: Archivo, Guardar como, CSV UTF-8.' };
+          estado.fatal = { fatal: '"' + archivo.name + '" no es un archivo .csv. En Excel, utilizar Archivo > Guardar como > CSV UTF-8.' };
           return renderizarResultado();
         }
         var lector = new FileReader();
@@ -893,7 +893,7 @@
           if (texto.indexOf('�') === -1) return procesarTexto(texto, archivo.name);
           var otro = new FileReader();
           otro.onload = function() {
-            procesarTexto(otro.result, archivo.name, 'El archivo no estaba en UTF-8 y se leyó como Windows-1252. Revisá que las tildes de los nombres se vean bien.');
+            procesarTexto(otro.result, archivo.name, 'El archivo no está codificado en UTF-8 y se leyó como Windows-1252. Verificar que las tildes de los nombres se muestren correctamente.');
           };
           otro.readAsText(archivo, 'windows-1252');
         };
