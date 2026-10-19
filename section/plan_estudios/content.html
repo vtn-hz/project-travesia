@@ -131,10 +131,9 @@
 
       // COLUMNAS DEL CSV: MISMO NOMBRE Y ORDEN QUE LOS CAMPOS DE LA BASE (estado y cambio los pone la página)
       var COLUMNAS = [
-        { n: 'plan', r: true, va: '2024 · 2003', d: 'Plan de estudios.', ex: '2024' },
+        { n: 'plan', r: true, va: 'Año del plan, por ejemplo 2024', d: 'Plan de estudios.', ex: '2024' },
         { n: 'codigo', r: true, va: 'Letras y números, sin espacios', d: 'Código institucional. No se puede repetir dentro del mismo plan.', ex: 'INGM101' },
         { n: 'nombre', r: true, va: 'Texto', d: 'Nombre oficial.', ex: 'Análisis Matemático I' },
-        { n: 'anio', r: true, va: '1 a 5', d: 'Año de la carrera. También se acepta el encabezado "año".', ex: '1' },
         { n: 'cuatrimestre', r: true, va: '1 a 10', d: 'Cuatrimestre del plan en el que empieza, contado desde el ingreso.', ex: '1' },
         { n: 'duracion', r: true, va: 'cuatrimestral · anual', d: 'Una materia anual finaliza en el cuatrimestre siguiente al de inicio.', ex: 'cuatrimestral' },
         { n: 'tipo', r: true, va: 'obligatoria · electiva · optativa · ingles', d: 'Tipo de espacio curricular.', ex: 'obligatoria' },
@@ -143,7 +142,7 @@
         { n: 'desbloquea', r: false, va: 'codigo:cuatrimestre, …', d: 'Materias que habilita al aprobarse (solo las correlativas directas). El cuatrimestre debe coincidir con el indicado en la fila de cada materia.', ex: 'ING6101:2, INGF101:2, INGM102:2' }
       ];
       // Encabezados alternativos que se aceptan (ya sin tildes ni mayúsculas)
-      var ALIAS = { ano: 'anio', 'año': 'anio', cuatri: 'cuatrimestre', duración: 'duracion', 'código': 'codigo', 'créditos': 'creditos' };
+      var ALIAS = { cuatri: 'cuatrimestre', duración: 'duracion', 'código': 'codigo', 'créditos': 'creditos' };
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
@@ -173,59 +172,59 @@
       // EJEMPLO LOCAL: PLAN 2024 (data/plan_estudios/PLAN_2024_CARGA.csv)
       // ---------------------------------------------------------
       var EJEMPLO_CSV = [
-        'plan,codigo,nombre,anio,cuatrimestre,duracion,tipo,creditos,horas,desbloquea',
-        '2024,INGM101,Análisis Matemático I,1,1,cuatrimestral,obligatoria,6,96,"ING6101:2, INGF101:2, INGM102:2"',
-        '2024,INGM105,Álgebra I- B,1,1,cuatrimestral,obligatoria,4,64,"ING6101:2, INGF101:2, INGM106:2"',
-        '2024,ING1103,Fundamentos de Química,1,1,cuatrimestral,obligatoria,4,64,"ING2221:4, ING2219:5"',
-        '2024,INGM102,Análisis Matemático II,1,2,cuatrimestral,obligatoria,5,80,"ING8501:3, INGM103:3, INGM108:3, ING2221:4, ING8414:4, ING2217:5"',
-        '2024,INGM106,Álgebra II,1,2,cuatrimestral,obligatoria,5,80,"INGM103:3, ING2104:6"',
-        '2024,INGF101,Física A,1,2,cuatrimestral,obligatoria,6,96,"ING2218:3, INGF103:3, ING2221:4"',
-        '2024,ING6101,Fundamentos de la Programación,1,2,cuatrimestral,obligatoria,4,64,ING8417:9',
-        '2024,INGF103,Física B- II,2,3,cuatrimestral,obligatoria,6,96,"ING3209:4, INGF106:6"',
-        '2024,INGM103,Análisis Matemático III,2,3,cuatrimestral,obligatoria,6,96,"ING3209:4, ING8405:5"',
-        '2024,INGM108,Probabilidad y Estadística,2,3,cuatrimestral,obligatoria,4,64,"ING8302:4, ING8201:5"',
-        '2024,ING2218,Mecánica del Sólido,2,3,cuatrimestral,obligatoria,4,64,"ING2217:5, ING2219:5, ING2220:8"',
-        '2024,ING8408,Inglés I,2,3,cuatrimestral,ingles,3,48,ING8409:4',
-        '2024,ING8501,Proyecto de Ingeniería Industrial I,2,3,anual,obligatoria,4,64,ING8502:5',
-        '2024,ING8302,Administración Estratégica,2,4,cuatrimestral,obligatoria,4,64,"ING8301:5, ING8308:5, ING8405:5, ING8502:5"',
-        '2024,ING8414,Conceptos de Economía Industrial,2,4,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8418:9"',
-        '2024,ING3209,Máquinas y Equipos Industriales I,2,4,cuatrimestral,obligatoria,5,80,ING8303:7',
-        '2024,ING2221,Termodinámica Industrial,2,4,cuatrimestral,obligatoria,4,64,ING8303:7',
-        '2024,ING8409,Inglés II,2,4,cuatrimestral,ingles,3,48,ING8415:7',
-        '2024,ING8301,Administración de Operaciones,3,5,cuatrimestral,obligatoria,4,64,"ING8307:6, ING8310:6, ING8305:8"',
-        '2024,ING8201,Investigación Operativa A,3,5,cuatrimestral,obligatoria,4,64,"ING8202:6, ING8307:6, ING8310:6"',
-        '2024,ING8308,Gestión de la Tecnología y la Innovación,3,5,cuatrimestral,obligatoria,4,64,ING8304:10',
-        '2024,ING2219,Tecnología de los Materiales,3,5,cuatrimestral,obligatoria,4,64,ING2220:8',
-        '2024,ING8405,"Ética, Legislación y Propiedad Intelectual en el Ejercicio Profesional",3,5,cuatrimestral,obligatoria,4,64,ING8402:7',
-        '2024,ING2217,Mecánica de Fluidos,3,5,cuatrimestral,obligatoria,3,48,ING8303:7',
-        '2024,ING8502,Proyecto de Ingeniería Industrial II,3,5,anual,obligatoria,4,64,"ING8503:7, ING8417:9"',
-        '2024,ING8310,Planificación y Control de la Producción,3,6,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8311:7, ING8402:7, ING8503:7, ING8309:10"',
-        '2024,ING8202,Investigación Operativa B,3,6,cuatrimestral,obligatoria,4,64,"ING8503:7, ING8305:8"',
-        '2024,ING2104,Sistemas de Representación para Ingeniería,3,6,cuatrimestral,obligatoria,3,48,ING2222:8',
-        '2024,INGF106,Física Experimental A,3,6,cuatrimestral,obligatoria,4,64,ING2220:8',
-        '2024,ING8307,Gestión de la Logística Integral y Cadena de Suministros,3,6,cuatrimestral,obligatoria,4,64,ING8418:9',
-        '2024,ELEC1,Electiva I,3,6,cuatrimestral,electiva,4,64,',
-        '2024,ING8303,Diseño de Instalaciones y Procesos,4,7,cuatrimestral,obligatoria,4,64,"ING2222:8, ING8312:9"',
-        '2024,ING8311,Sistemas de Gestión y Mejora Continua,4,7,cuatrimestral,obligatoria,5,80,"ING8312:9, ING8504:9"',
-        '2024,ING8402,Comportamiento Organizacional y Relaciones del Trabajo,4,7,cuatrimestral,obligatoria,4,64,ING8304:10',
-        '2024,ING8306,Gestión Comercial de las Organizaciones,4,7,cuatrimestral,obligatoria,4,64,',
-        '2024,ING8415,Inglés Profesional A,4,7,cuatrimestral,ingles,4,64,ING8416:8',
-        '2024,ING8503,Proyecto de Ingeniería Industrial III,4,7,anual,obligatoria,4,64,ING8504:9',
-        '2024,ING8305,Formulación y Evaluación de Proyectos,4,8,cuatrimestral,obligatoria,5,80,ING8504:9',
-        '2024,ING2220,Introducción a los Procesos de Fabricación,4,8,cuatrimestral,obligatoria,3,48,ING8309:10',
-        '2024,ING2222,Tecnología de Control,4,8,cuatrimestral,obligatoria,4,64,ING8312:9',
-        '2024,ELEC2,Electiva II,4,8,cuatrimestral,electiva,4,64,',
-        '2024,ING8416,Inglés Profesional B,4,8,cuatrimestral,ingles,4,64,',
-        '2024,ING8312,"Sustentabilidad, Higiene y Seguridad",5,9,cuatrimestral,obligatoria,5,80,',
-        '2024,ING8418,Desarrollo Económico y Comercio Internacional,5,9,cuatrimestral,obligatoria,4,64,',
-        '2024,ING8417,Sistemas Informáticos de Gestión,5,9,cuatrimestral,obligatoria,4,64,',
-        '2024,ELEC3,Electiva III,5,9,cuatrimestral,electiva,4,64,',
-        '2024,ING8504,Proyecto de Ingeniería Industrial IV,5,9,anual,obligatoria,10,160,',
-        '2024,ING8309,Gestión Integral del Mantenimiento,5,10,cuatrimestral,obligatoria,4,64,',
-        '2024,ING8304,Empresas y Servicios Basadas en el Conocimiento,5,10,cuatrimestral,obligatoria,4,64,',
-        '2024,ELEC4,Electiva IV,5,10,cuatrimestral,electiva,4,64,',
-        '2024,OPT1,Optativa I,5,10,cuatrimestral,optativa,4,64,',
-        '2024,OPT2,Optativa II,5,10,cuatrimestral,optativa,4,64,'
+        'plan,codigo,nombre,cuatrimestre,duracion,tipo,creditos,horas,desbloquea',
+        '2024,INGM101,Análisis Matemático I,1,cuatrimestral,obligatoria,6,96,"ING6101:2, INGF101:2, INGM102:2"',
+        '2024,INGM105,Álgebra I- B,1,cuatrimestral,obligatoria,4,64,"ING6101:2, INGF101:2, INGM106:2"',
+        '2024,ING1103,Fundamentos de Química,1,cuatrimestral,obligatoria,4,64,"ING2221:4, ING2219:5"',
+        '2024,INGM102,Análisis Matemático II,2,cuatrimestral,obligatoria,5,80,"ING8501:3, INGM103:3, INGM108:3, ING2221:4, ING8414:4, ING2217:5"',
+        '2024,INGM106,Álgebra II,2,cuatrimestral,obligatoria,5,80,"INGM103:3, ING2104:6"',
+        '2024,INGF101,Física A,2,cuatrimestral,obligatoria,6,96,"ING2218:3, INGF103:3, ING2221:4"',
+        '2024,ING6101,Fundamentos de la Programación,2,cuatrimestral,obligatoria,4,64,ING8417:9',
+        '2024,INGF103,Física B- II,3,cuatrimestral,obligatoria,6,96,"ING3209:4, INGF106:6"',
+        '2024,INGM103,Análisis Matemático III,3,cuatrimestral,obligatoria,6,96,"ING3209:4, ING8405:5"',
+        '2024,INGM108,Probabilidad y Estadística,3,cuatrimestral,obligatoria,4,64,"ING8302:4, ING8201:5"',
+        '2024,ING2218,Mecánica del Sólido,3,cuatrimestral,obligatoria,4,64,"ING2217:5, ING2219:5, ING2220:8"',
+        '2024,ING8408,Inglés I,3,cuatrimestral,ingles,3,48,ING8409:4',
+        '2024,ING8501,Proyecto de Ingeniería Industrial I,3,anual,obligatoria,4,64,ING8502:5',
+        '2024,ING8302,Administración Estratégica,4,cuatrimestral,obligatoria,4,64,"ING8301:5, ING8308:5, ING8405:5, ING8502:5"',
+        '2024,ING8414,Conceptos de Economía Industrial,4,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8418:9"',
+        '2024,ING3209,Máquinas y Equipos Industriales I,4,cuatrimestral,obligatoria,5,80,ING8303:7',
+        '2024,ING2221,Termodinámica Industrial,4,cuatrimestral,obligatoria,4,64,ING8303:7',
+        '2024,ING8409,Inglés II,4,cuatrimestral,ingles,3,48,ING8415:7',
+        '2024,ING8301,Administración de Operaciones,5,cuatrimestral,obligatoria,4,64,"ING8307:6, ING8310:6, ING8305:8"',
+        '2024,ING8201,Investigación Operativa A,5,cuatrimestral,obligatoria,4,64,"ING8202:6, ING8307:6, ING8310:6"',
+        '2024,ING8308,Gestión de la Tecnología y la Innovación,5,cuatrimestral,obligatoria,4,64,ING8304:10',
+        '2024,ING2219,Tecnología de los Materiales,5,cuatrimestral,obligatoria,4,64,ING2220:8',
+        '2024,ING8405,"Ética,3,5,cuatrimestral,obligatoria,4,64,ING8402:7',
+        '2024,ING2217,Mecánica de Fluidos,5,cuatrimestral,obligatoria,3,48,ING8303:7',
+        '2024,ING8502,Proyecto de Ingeniería Industrial II,5,anual,obligatoria,4,64,"ING8503:7, ING8417:9"',
+        '2024,ING8310,Planificación y Control de la Producción,6,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8311:7, ING8402:7, ING8503:7, ING8309:10"',
+        '2024,ING8202,Investigación Operativa B,6,cuatrimestral,obligatoria,4,64,"ING8503:7, ING8305:8"',
+        '2024,ING2104,Sistemas de Representación para Ingeniería,6,cuatrimestral,obligatoria,3,48,ING2222:8',
+        '2024,INGF106,Física Experimental A,6,cuatrimestral,obligatoria,4,64,ING2220:8',
+        '2024,ING8307,Gestión de la Logística Integral y Cadena de Suministros,6,cuatrimestral,obligatoria,4,64,ING8418:9',
+        '2024,ELEC1,Electiva I,6,cuatrimestral,electiva,4,64,',
+        '2024,ING8303,Diseño de Instalaciones y Procesos,7,cuatrimestral,obligatoria,4,64,"ING2222:8, ING8312:9"',
+        '2024,ING8311,Sistemas de Gestión y Mejora Continua,7,cuatrimestral,obligatoria,5,80,"ING8312:9, ING8504:9"',
+        '2024,ING8402,Comportamiento Organizacional y Relaciones del Trabajo,7,cuatrimestral,obligatoria,4,64,ING8304:10',
+        '2024,ING8306,Gestión Comercial de las Organizaciones,7,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8415,Inglés Profesional A,7,cuatrimestral,ingles,4,64,ING8416:8',
+        '2024,ING8503,Proyecto de Ingeniería Industrial III,7,anual,obligatoria,4,64,ING8504:9',
+        '2024,ING8305,Formulación y Evaluación de Proyectos,8,cuatrimestral,obligatoria,5,80,ING8504:9',
+        '2024,ING2220,Introducción a los Procesos de Fabricación,8,cuatrimestral,obligatoria,3,48,ING8309:10',
+        '2024,ING2222,Tecnología de Control,8,cuatrimestral,obligatoria,4,64,ING8312:9',
+        '2024,ELEC2,Electiva II,8,cuatrimestral,electiva,4,64,',
+        '2024,ING8416,Inglés Profesional B,8,cuatrimestral,ingles,4,64,',
+        '2024,ING8312,"Sustentabilidad,5,9,cuatrimestral,obligatoria,5,80,',
+        '2024,ING8418,Desarrollo Económico y Comercio Internacional,9,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8417,Sistemas Informáticos de Gestión,9,cuatrimestral,obligatoria,4,64,',
+        '2024,ELEC3,Electiva III,9,cuatrimestral,electiva,4,64,',
+        '2024,ING8504,Proyecto de Ingeniería Industrial IV,9,anual,obligatoria,10,160,',
+        '2024,ING8309,Gestión Integral del Mantenimiento,10,cuatrimestral,obligatoria,4,64,',
+        '2024,ING8304,Empresas y Servicios Basadas en el Conocimiento,10,cuatrimestral,obligatoria,4,64,',
+        '2024,ELEC4,Electiva IV,10,cuatrimestral,electiva,4,64,',
+        '2024,OPT1,Optativa I,10,cuatrimestral,optativa,4,64,',
+        '2024,OPT2,Optativa II,10,cuatrimestral,optativa,4,64,'
       ].join('\n');
 
       // ---------------------------------------------------------
@@ -404,14 +403,8 @@
           d.nombre = v.nombre;
           if (!d.nombre) agregar('error', 'nombre', 'Está vacío.');
 
-          d.anio = entero(v.anio, 1, 5);
-          if (d.anio === null) agregar('error', 'anio', (v.anio ? '"' + v.anio + '"' : 'Está vacío:') + ' debe ser un número de 1 a 5.');
-
           d.cuatrimestre = entero(v.cuatrimestre, 1, 10);
           if (d.cuatrimestre === null) agregar('error', 'cuatrimestre', (v.cuatrimestre ? '"' + v.cuatrimestre + '"' : 'Está vacío:') + ' debe ser un número de 1 a 10, contado desde el ingreso.');
-          else if (d.anio !== null && Math.ceil(d.cuatrimestre / 2) !== d.anio) {
-            agregar('alerta', 'cuatrimestre', 'El cuatrimestre ' + d.cuatrimestre + ' corresponde a ' + Math.ceil(d.cuatrimestre / 2) + '.º año, pero anio indica ' + d.anio + '.');
-          }
 
           d.duracion = v.duracion.toLowerCase();
           if (DURACIONES.indexOf(d.duracion) === -1) agregar('error', 'duracion', (v.duracion ? '"' + v.duracion + '"' : 'Está vacío:') + ' debe ser cuatrimestral o anual.');
@@ -520,8 +513,8 @@
       function descargarPlantilla() {
         descargar('plantilla_plan_estudios.csv', [
           COLUMNAS.map(function(c) { return c.n; }),
-          ['2024', 'INGM101', 'Análisis Matemático I', '1', '1', 'cuatrimestral', 'obligatoria', '6', '96', 'INGM102:2'],
-          ['2024', 'INGM102', 'Análisis Matemático II', '1', '2', 'cuatrimestral', 'obligatoria', '5', '80', '']
+          ['2024', 'INGM101', 'Análisis Matemático I', '1', 'cuatrimestral', 'obligatoria', '6', '96', 'INGM102:2'],
+          ['2024', 'INGM102', 'Análisis Matemático II', '2', 'cuatrimestral', 'obligatoria', '5', '80', '']
         ]);
       }
 
@@ -539,7 +532,7 @@
       function entradaDe(r) {
         var d = r.d;
         return {
-          plan: d.plan, codigo: d.codigo, nombre: d.nombre, anio: String(d.anio), cuatrimestre: String(d.cuatrimestre),
+          plan: d.plan, codigo: d.codigo, nombre: d.nombre, cuatrimestre: String(d.cuatrimestre),
           duracion: d.duracion, tipo: d.tipo, creditos: d.creditos, horas: d.horas,
           desbloquea: d.desbloquea.map(function(x) { return x.codigo + ':' + x.cuat; }).join(', '),
           estado: 'vigente', cambio: 'Carga desde ' + estado.archivo
@@ -716,12 +709,11 @@
         var THF = TH + ' position: sticky !important; top: 0 !important; z-index: 1 !important;';
         h += '<div style="overflow: auto !important; max-height: 380px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">' +
           '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 680px !important;">' +
-          '<thead><tr><th style="' + THF + '">Materia</th><th style="' + THF + '">Año</th><th style="' + THF + '">Cuatr.</th><th style="' + THF + '">Tipo</th><th style="' + THF + '">Créd.</th><th style="' + THF + '">Desbloquea</th></tr></thead><tbody>' +
+          '<thead><tr><th style="' + THF + '">Materia</th><th style="' + THF + '">Cuatr.</th><th style="' + THF + '">Tipo</th><th style="' + THF + '">Créd.</th><th style="' + THF + '">Desbloquea</th></tr></thead><tbody>' +
           filas.map(function(e) {
             var c = parseInt(e.cuatrimestre, 10);
             return '<tr style="' + TR + '">' +
               '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(e.nombre) + '</div><div style="font-size: 12px !important; color: #47536b !important;">' + escapar(e.codigo) + '</div></td>' +
-              '<td style="' + TD + ' text-align: right !important;">' + escapar(e.anio) + '</td>' +
               '<td style="' + TD + ' white-space: nowrap !important;">' + escapar(e.cuatrimestre) + (e.duracion === 'anual' ? '–' + (c + 1) + ' <span style="color: #47536b !important;">(anual)</span>' : '') + '</td>' +
               '<td style="' + TD + '">' + escapar(e.tipo) + '</td>' +
               '<td style="' + TD + ' text-align: right !important;">' + escapar(e.creditos) + '</td>' +
@@ -808,7 +800,7 @@
           '<div style="display: flex !important; gap: 6px !important;">' + pestana('todas', 'Todas (' + rev.filas.length + ')') + pestana('problemas', 'Con observaciones (' + conProblemas + ')') + '</div></div>' +
           '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #ffffff !important; margin-bottom: 16px !important;">' +
           '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
-          '<thead><tr><th style="' + TH + '">Fila</th><th style="' + TH + '">Materia</th><th style="' + TH + '">Año</th><th style="' + TH + '">Cuatr.</th><th style="' + TH + '">Tipo</th><th style="' + TH + '">Desbloquea</th><th style="' + TH + '">Estado</th></tr></thead><tbody>' +
+          '<thead><tr><th style="' + TH + '">Fila</th><th style="' + TH + '">Materia</th><th style="' + TH + '">Cuatr.</th><th style="' + TH + '">Tipo</th><th style="' + TH + '">Desbloquea</th><th style="' + TH + '">Estado</th></tr></thead><tbody>' +
           (filas.length ? filas.map(function(r) {
             var d = r.d;
             var cuat = d.cuatrimestre === null ? '<span style="color: #910808 !important;">?</span>'
@@ -817,12 +809,11 @@
               '<td style="' + TD + ' color: #47536b !important; text-align: right !important;">' + r.n + '</td>' +
               '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(d.nombre || '(nombre vacío)') + '</div>' +
               '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(d.codigo) + ' · plan ' + escapar(d.plan) + '</div></td>' +
-              '<td style="' + TD + ' text-align: right !important;">' + (d.anio === null ? '<span style="color: #910808 !important;">?</span>' : d.anio) + '</td>' +
               '<td style="' + TD + ' white-space: nowrap !important;">' + cuat + '</td>' +
               '<td style="' + TD + '">' + escapar(d.tipo) + '</td>' +
               '<td style="' + TD + ' min-width: 200px !important;">' + htmlDesbloquea(d) + '</td>' +
               '<td style="' + TD + '">' + chipNivel(r.nivel) + '</td></tr>';
-          }).join('') : '<tr style="' + TR + '"><td colspan="7" style="' + TD + ' text-align: center !important; color: #47536b !important; padding: 24px !important;">No hay filas con observaciones.</td></tr>') +
+          }).join('') : '<tr style="' + TR + '"><td colspan="6" style="' + TD + ' text-align: center !important; color: #47536b !important; padding: 24px !important;">No hay filas con observaciones.</td></tr>') +
           '</tbody></table></div>';
       }
 
