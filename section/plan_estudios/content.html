@@ -647,7 +647,26 @@
           .filter(function(e) { return e.estado !== 'baja'; });
       }
 
-      // LEE LA BASE MATERIAS (PLANTILLA DE LISTA CON .zk-registro Y UN data-* POR CAMPO) O USA EL EJEMPLO
+      // ENTRADAS DEL LISTADO: PRIMERO LA PLANTILLA PROPIA (.zk-registro), SI NO LA PLANTILLA POR DEFECTO DE MOODLE
+      function parsearListado(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var propias = doc.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return Array.prototype.map.call(propias, function(el) { return Object.assign({}, el.dataset); });
+        }
+        return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
+          var valores = {};
+          entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            var celdas = fila.children;
+            if (celdas.length >= 2) valores[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
+          });
+          var enlace = entrada.querySelector('a[href*="rid="]');
+          valores.rid = enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+          return valores;
+        });
+      }
+
+      // LEE LA BASE MATERIAS (PLANTILLA PROPIA O LA DE MOODLE) O USA EL EJEMPLO
       function cargarBase() {
         if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
           estado.base = vigentes(leerCsv(EJEMPLO_CSV).filas.map(function(f) { return f.v; }));
@@ -658,10 +677,7 @@
         fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_MATERIAS + '&perpage=1000', { credentials: 'same-origin' })
           .then(function(r) { return r.text(); })
           .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            estado.base = vigentes(Array.prototype.map.call(doc.querySelectorAll('.zk-registro'), function(el) {
-              return Object.assign({}, el.dataset);
-            }));
+            estado.base = vigentes(parsearListado(html));
             estado.errorBase = '';
           }, function() {
             estado.base = [];
