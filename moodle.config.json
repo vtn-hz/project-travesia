@@ -71,6 +71,11 @@
       "definicion": "data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json",
       "subseccion": "Hub",
       "importada": "2026-10-18"
+    },
+    "materias": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_MATERIAS.json"
     }
   }
 }
