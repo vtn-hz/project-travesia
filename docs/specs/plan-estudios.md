@@ -30,9 +30,11 @@ Cargar uno o varios planes de estudio desde un CSV. La página explica el format
 
 ## Formato del CSV
 
-Columnas: `plan, codigo, nombre, anio, cuatrimestre, duracion, tipo, creditos, horas, desbloquea`.
+El año de la carrera no se carga: se deduce del cuatrimestre (`ceil(cuatrimestre / 2)`).
 
-- Primera fila con los encabezados. El orden es libre, se acepta `año` por `anio` y las columnas que sobran se ignoran (con aviso).
+Columnas: `plan, codigo, nombre, cuatrimestre, duracion, tipo, creditos, horas, desbloquea`.
+
+- Primera fila con los encabezados. El orden es libre y las columnas que sobran se ignoran (con aviso).
 - Separador coma, punto y coma o tabulación, detectado de la primera línea.
 - UTF-8 (con o sin BOM). Si el archivo trae caracteres inválidos, se relee como Windows-1252 y se avisa.
 - `desbloquea`: `codigo:cuatrimestre` separados por coma, por ejemplo `INGM102:2, INGF101:2`.
@@ -43,11 +45,10 @@ Columnas: `plan, codigo, nombre, anio, cuatrimestre, duracion, tipo, creditos, h
 |---|---|
 | Error | Columnas obligatorias faltantes (no se revisa nada más) |
 | Error | `plan` fuera de 2024 · 2003; `codigo` vacío o con caracteres que no sean letras y números; `nombre` vacío |
-| Error | `anio` fuera de 1–5; `cuatrimestre` fuera de 1–10; `duracion` o `tipo` fuera de sus opciones; `creditos` u `horas` no numéricos |
+| Error | `cuatrimestre` fuera de 1–10; `duracion` o `tipo` fuera de sus opciones; `creditos` u `horas` no numéricos |
 | Error | Anual que empieza en el cuatrimestre 10 |
 | Error | `plan + codigo` repetido (vale la primera fila) |
 | Error | Ítem de `desbloquea` sin el formato `codigo:cuatrimestre`, que no existe en el mismo plan del archivo, que se apunta a sí mismo, sin cuatrimestre o con un cuatrimestre distinto al de su fila |
-| Advertencia | `anio` no coincide con el cuatrimestre (`ceil(cuatrimestre / 2)`) |
 | Advertencia | Materia de `desbloquea` que empieza antes de que termine la que la desbloquea, o repetida |
 
 Los cuatrimestres faltantes o distintos en `desbloquea` se pueden **completar automáticamente** con el de la fila de cada materia. Después se puede descargar el CSV corregido.
