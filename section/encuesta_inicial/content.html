@@ -23,6 +23,14 @@
   <!-- PLAN Y RESUMEN (LO ARMA EL SCRIPT) -->
   <div id="resumen-creditos"></div>
 
+  <!-- AVISO: LA PREGUNTA NO COINCIDE CON LA SUMA -->
+  <div id="aviso-diferencia-creditos"
+    style="display: none; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px 16px !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; font-size: 14px !important; margin-bottom: 16px !important;">
+    <span id="txt-diferencia-creditos"></span>
+    <button type="button" id="btn-usar-suma-creditos"
+      style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">Usar la suma</button>
+  </div>
+
   <!-- LISTA DE MATERIAS POR AÑO (LO ARMA EL SCRIPT) -->
   <div id="lista-creditos"></div>
 
@@ -207,26 +215,26 @@
         return document.getElementById('feedback_item_' + ITEM_CREDITOS);
       }
 
-      // EL CAMPO SOLO SE BLOQUEA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, EL ESTUDIANTE LO COMPLETA A MANO
-      function calculoActivo() {
-        return estado.materias !== null && !estado.error;
-      }
-
-      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO) Y EL CAMPO QUEDA DE SOLO LECTURA
+      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO).
+      // Se escribe solo cuando cambia la selección: el estudiante puede corregir el número a mano
       function escribirTotal() {
         var campo = campoCreditos();
-        if (!campo || !calculoActivo()) return;
-        if (!campo.readOnly) {
-          campo.readOnly = true;
-          campo.setAttribute('aria-readonly', 'true');
-          campo.title = 'Se calcula con las materias seleccionadas en el cuadro Materias aprobadas.';
-          campo.style.setProperty('background-color', '#f5f6fa', 'important');
-          campo.style.setProperty('cursor', 'not-allowed', 'important');
-        }
-        var total = formatear(totales().creditos);
-        if (campo.value !== total) {
-          campo.value = total;
-          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        if (!campo || estado.materias === null || estado.error) return;
+        campo.value = formatear(totales().creditos);
+        campo.dispatchEvent(new Event('change', { bubbles: true }));
+        revisarDiferencia();
+      }
+
+      // AVISO SI EL NÚMERO DE LA PREGUNTA NO COINCIDE CON LA SUMA DE LAS MATERIAS SELECCIONADAS
+      function revisarDiferencia() {
+        var campo = campoCreditos(), aviso = document.getElementById('aviso-diferencia-creditos');
+        if (!campo || !aviso) return;
+        var suma = totales().creditos;
+        var distinto = campo.value.trim() !== '' && Math.abs(numero(campo.value) - suma) > 0.001;
+        aviso.style.setProperty('display', distinto ? 'flex' : 'none', 'important');
+        if (distinto) {
+          document.getElementById('txt-diferencia-creditos').textContent =
+            'El valor ingresado en la pregunta (' + campo.value.trim() + ') no coincide con la suma de las materias seleccionadas (' + formatear(suma) + ').';
         }
       }
 
@@ -320,6 +328,7 @@
       document.addEventListener('click', function(e) {
         var t = e.target;
         if (!t.closest || !t.closest('#cuadro-creditos')) return;
+        if (t.closest('#btn-usar-suma-creditos')) return escribirTotal();
         var plan = t.closest('[data-plan-creditos]');
         if (plan) { estado.plan = plan.getAttribute('data-plan-creditos'); return renderizar(); }
         var anio = t.closest('[data-anio-creditos]');
@@ -333,15 +342,10 @@
         }
       });
 
-      // Si el valor del campo cambia por cualquier otra vía, vuelve a ser la suma
+      // Si el estudiante corrige el número a mano, se avisa la diferencia sin cambiar lo que escribió
       document.addEventListener('input', function(e) {
-        if (e.target === campoCreditos()) escribirTotal();
+        if (e.target === campoCreditos()) revisarDiferencia();
       });
-
-      // Antes de enviar la encuesta se escribe la suma una vez más
-      document.addEventListener('submit', function(e) {
-        if (campoCreditos() && e.target.contains(campoCreditos())) escribirTotal();
-      }, true);
 
       // ---------------------------------------------------------
       // INICIO
