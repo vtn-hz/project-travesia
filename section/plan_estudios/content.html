@@ -263,8 +263,8 @@
       // COLORES DE CADA NIVEL (SEMÁFORO DE LA SKILL diseno-ui)
       var NIVELES = {
         error: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808', etiqueta: 'Error' },
-        alerta: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', etiqueta: 'Revisar' },
-        ok: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', etiqueta: 'Lista' }
+        alerta: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', etiqueta: 'Con advertencias' },
+        ok: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', etiqueta: 'Válida' }
       };
 
       function chipNivel(nivel, texto) {
@@ -678,7 +678,7 @@
           '<div><h4 style="margin: 0 0 2px 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">Materias registradas</h4>' +
           '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important;">Versión vigente de cada materia en la base Materias, por plan de estudios.</p></div>';
         if (estado.base === null) {
-          document.getElementById('bloque-base-plan').innerHTML = h + '</div><p style="margin: 0 !important; color: #47536b !important;">Leyendo la base…</p>';
+          document.getElementById('bloque-base-plan').innerHTML = h + '</div><p style="margin: 0 !important; color: #47536b !important;">Leyendo la base Materias…</p>';
           return;
         }
         var planes = {};
@@ -775,7 +775,7 @@
               '<span style="color: ' + c.punto + ' !important; padding-top: 1px !important;">' + icono(p.nivel === 'error' ? 'error' : 'alerta', 18) + '</span>' +
               '<span><b style="font-weight: 600 !important;">Fila ' + p.fila + '</b> · <code style="' + CODE + '">' + p.campo + '</code> ' + escapar(p.msg) + '</span></li>';
           }).join('') + '</ul>' +
-          (lista.length > visibles.length ? '<div style="font-size: 12px !important; color: #47536b !important; padding-top: 8px !important;">Y ' + (lista.length - visibles.length) + ' más. La lista completa se muestra en la tabla con el filtro "Con problemas".</div>' : '') +
+          (lista.length > visibles.length ? '<div style="font-size: 12px !important; color: #47536b !important; padding-top: 8px !important;">Y ' + (lista.length - visibles.length) + ' más. La lista completa se muestra en la tabla con el filtro "Con observaciones".</div>' : '') +
           '</div>';
       }
 
@@ -788,7 +788,7 @@
         }
         return '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px !important; margin: 0 0 8px 0 !important;">' +
           '<h4 style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important;">Vista previa</h4>' +
-          '<div style="display: flex !important; gap: 6px !important;">' + pestana('todas', 'Todas (' + rev.filas.length + ')') + pestana('problemas', 'Con problemas (' + conProblemas + ')') + '</div></div>' +
+          '<div style="display: flex !important; gap: 6px !important;">' + pestana('todas', 'Todas (' + rev.filas.length + ')') + pestana('problemas', 'Con observaciones (' + conProblemas + ')') + '</div></div>' +
           '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; background-color: #ffffff !important; margin-bottom: 16px !important;">' +
           '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
           '<thead><tr><th style="' + TH + '">Fila</th><th style="' + TH + '">Materia</th><th style="' + TH + '">Año</th><th style="' + TH + '">Cuatr.</th><th style="' + TH + '">Tipo</th><th style="' + TH + '">Desbloquea</th><th style="' + TH + '">Estado</th></tr></thead><tbody>' +
@@ -798,14 +798,14 @@
               : d.cuatrimestre + (d.duracion === 'anual' ? '–' + d.fin + ' <span style="color: #47536b !important;">(anual)</span>' : '');
             return '<tr style="' + TR + (r.nivel === 'error' ? ' background-color: #fffafa !important;' : '') + '">' +
               '<td style="' + TD + ' color: #47536b !important; text-align: right !important;">' + r.n + '</td>' +
-              '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(d.nombre || '(sin nombre)') + '</div>' +
+              '<td style="' + TD + ' min-width: 180px !important;"><div style="font-weight: 500 !important;">' + escapar(d.nombre || '(nombre vacío)') + '</div>' +
               '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(d.codigo) + ' · plan ' + escapar(d.plan) + '</div></td>' +
               '<td style="' + TD + ' text-align: right !important;">' + (d.anio === null ? '<span style="color: #910808 !important;">?</span>' : d.anio) + '</td>' +
               '<td style="' + TD + ' white-space: nowrap !important;">' + cuat + '</td>' +
               '<td style="' + TD + '">' + escapar(d.tipo) + '</td>' +
               '<td style="' + TD + ' min-width: 200px !important;">' + htmlDesbloquea(d) + '</td>' +
               '<td style="' + TD + '">' + chipNivel(r.nivel) + '</td></tr>';
-          }).join('') : '<tr style="' + TR + '"><td colspan="7" style="' + TD + ' text-align: center !important; color: #47536b !important; padding: 24px !important;">Ninguna fila tiene problemas.</td></tr>') +
+          }).join('') : '<tr style="' + TR + '"><td colspan="7" style="' + TD + ' text-align: center !important; color: #47536b !important; padding: 24px !important;">No hay filas con observaciones.</td></tr>') +
           '</tbody></table></div>';
       }
 
@@ -842,8 +842,8 @@
         var planes = Object.keys(rev.planes);
         h += '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
           tarjetaDato('Materias', rev.filas.length, planes.length ? 'plan ' + planes.map(function(p) { return p + ' (' + rev.planes[p] + ')'; }).join(' · ') : 'sin plan válido') +
-          tarjetaDato('Listas', rev.filas.filter(function(r) { return r.nivel === 'ok'; }).length, 'sin observaciones') +
-          tarjetaDato('Errores', rev.errores, rev.errores ? 'impiden la carga' : 'ninguno', chipNivel(rev.errores ? 'error' : 'ok', rev.errores ? 'Corregir' : 'Sin errores')) +
+          tarjetaDato('Válidas', rev.filas.filter(function(r) { return r.nivel === 'ok'; }).length, 'sin observaciones') +
+          tarjetaDato('Errores', rev.errores, rev.errores ? 'impiden la carga' : 'ninguno', chipNivel(rev.errores ? 'error' : 'ok', rev.errores ? 'Con errores' : 'Sin errores')) +
           tarjetaDato('Advertencias', rev.alertas, 'no impiden la carga', rev.alertas ? chipNivel('alerta') : '') +
           '</div>';
         if (estado.resultado) h += aviso(estado.resultado.ok ? 'ok' : 'error', estado.resultado.texto);
