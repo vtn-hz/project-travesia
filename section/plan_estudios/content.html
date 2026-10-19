@@ -25,13 +25,6 @@
     </div>
   </div>
 
-  <!-- AVISO: BASE TODAVÍA NO CREADA -->
-  <div id="aviso-datos-prueba-plan"
-    style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
-    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
-    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> La base Materias de la sección Zhakyz todavía no está creada: lo que se ve como cargado es el Plan 2024 de ejemplo, y una carga nueva se guarda solo en esta vista.</span>
-  </div>
-
   <!-- BASE ACTUAL: MATERIAS VIGENTES (LO ARMA EL SCRIPT) -->
   <div id="bloque-base-plan"
     style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important; box-sizing: border-box !important;"></div>
@@ -1006,9 +999,6 @@
       var huecos = document.querySelectorAll('#carga-plan [data-icono]');
       for (var h = 0; h < huecos.length; h++) {
         huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
-      }
-      if (ES_VISTA_LOCAL || !DATAID_MATERIAS || !window.M) {
-        document.getElementById('aviso-datos-prueba-plan').style.setProperty('display', 'flex', 'important');
       }
       if (ES_VISTA_LOCAL) {
         crearBarraPreview();
