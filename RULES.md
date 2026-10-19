@@ -96,6 +96,24 @@ Sistema de diseño oficial: **skill [`diseno-ui`](.skills/diseno-ui/SKILL.md)**,
 - **Tipografía:** título 24/600, subtítulo de bloque 18/600, título de tarjeta 16/600 o 14/500, texto 14/400 y ayudas 12/400.
 - **Max-width contenedor:** `850px`, centrado con `margin: 20px auto`.
 
+## Redacción
+
+Vale para **todo texto visible** de la interfaz: títulos, subtítulos, botones, etiquetas, avisos, mensajes de error, ayudas y textos de las tablas. No aplica a los comentarios del código ni a la barra de vista previa local.
+
+- **Registro formal.** Sin voseo ni tuteo ("Cargá", "Revisá", "te dice", "podés") y sin expresiones coloquiales ("acá", "frenar", "traer").
+  - Acciones e instrucciones en **infinitivo**: "Seleccionar un archivo", "Descargar plantilla", "Verificar que las tildes se muestren correctamente".
+  - Descripciones en forma **impersonal**: "Se valida cada fila", "Los datos no se guardan hasta confirmar la carga".
+- **Sin metáforas ni giros.** Cada cosa se nombra por lo que es, con los términos del dominio (materia, plan, cuatrimestre, base, entrada vigente).
+  - "Materias registradas", no "Lo que está cargado hoy".
+  - "Errores y advertencias", no "Qué corregir".
+  - "Las advertencias no impiden la carga", no "no frenan la carga".
+- **Títulos como sustantivos o frases nominales:** "Formato del archivo", "Descripción de las columnas", "Revisión".
+- **Verbos precisos:** "debe", no "tiene que"; "contiene" o "indica", no "lleva" o "dice".
+- **Mensajes de error completos:** dónde está el problema (fila y campo), el valor recibido y lo que se esperaba. Por ejemplo: `Fila 5 · cuatrimestre: "11" debe ser un número de 1 a 10.`
+- **Referencias explícitas:** nombrar el bloque o la sección ("en Materias registradas"), no "arriba", "abajo" ni "acá".
+
+Referencia ya adaptada: `section/plan_estudios/content.html`. El resto de las secciones todavía usa voseo y se adapta cuando se modifique.
+
 ## Naming (IDs)
 
 - Patrón: `{tipo}-{seccion}[-{variante}]`
