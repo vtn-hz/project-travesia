@@ -30,7 +30,8 @@
     "responder": null,
     "tablero": null,
     "detalle": null,
-    "listado_criticidad_primero": 59523
+    "listado_criticidad_primero": 59523,
+    "entrevistas": null
   },
   "bases": {
     "preguntas": {
@@ -76,6 +77,16 @@
       "cmid": null,
       "dataid": null,
       "definicion": "data/moodle/BASE_MATERIAS.json"
+    },
+    "acompanamientos": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_ACOMPANAMIENTOS.json"
+    },
+    "entrevistas": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_ENTREVISTAS.json"
     }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "clave": "acompanamientos",
+  "nombre": "Acompañamientos",
+  "descripcion": "Qué tutor o asesor par acompaña a cada estudiante (base 11 del modelo simplificado). En el modelo reducido de entrevistas es la única base de personas: guarda copia del nombre y la cuenta del campus del estudiante y del acompañante, para no depender de la base Estudiantes.",
+  "subseccion": "Database",
+  "origen": "PROPUESTA (2026-10-19), todavía no creada en Moodle. Editable: la carga un ADM. Configuración requerida en Moodle: visible solo para el equipo (grupos ADM, TUT, PAR) y solo por URL. La plantilla de lista expone cada campo como data-* en un elemento .zk-registro, más data-rid.",
+  "campos": [
+    { "nombre": "dni", "tipo": "text", "descripcion": "DNI del estudiante: clave del estudiante en todo el modelo" },
+    { "nombre": "id_usuario_estudiante", "tipo": "number", "descripcion": "Cuenta del campus del estudiante (opcional: en 1.er año a veces solo se conoce el DNI). Se usa para abrir su detalle" },
+    { "nombre": "nombre_estudiante", "tipo": "text", "descripcion": "Copia del nombre y apellido del estudiante (reemplaza la lectura de la base Estudiantes)" },
+    { "nombre": "tipo", "tipo": "menu", "descripcion": "Un docente o un asesor par, nunca ambos", "opciones": ["tutor", "asesor_par"] },
+    { "nombre": "id_usuario_acompanante", "tipo": "number", "descripcion": "Cuenta del campus del tutor o del asesor par. Con ella se decide qué entrevistas ve cada uno" },
+    { "nombre": "nombre_acompanante", "tipo": "text", "descripcion": "Copia del nombre del acompañante (los nombres de otros usuarios no se pueden mostrar desde una base de Moodle)" },
+    { "nombre": "materia", "tipo": "text", "descripcion": "Materia en la que ayuda (solo asesor par)" },
+    { "nombre": "fecha_desde", "tipo": "text", "descripcion": "Inicio del acompañamiento (AAAA-MM-DD)" },
+    { "nombre": "fecha_hasta", "tipo": "text", "descripcion": "Fin del acompañamiento (opcional). Con un acompañamiento finalizado se ven sus entrevistas, pero no se piden nuevas" }
+  ]
+}
