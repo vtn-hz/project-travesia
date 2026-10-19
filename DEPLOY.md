@@ -25,7 +25,7 @@ Zhakyz (sección 15647)
 │   ├── Carga_Parciales_Primero: base (cmid 59521, d=117)   Importado
 │   ├── Carga_Materias_Primero: base (cmid 59522, d=118)    Importado
 │   ├── Listado_Criticidad_Primero: página (cmid 59523)     Importado
-│   ├── Encuesta Inicial: encuesta (cmid 59710)      Importado (el cuadro de créditos, local)
+│   ├── Encuesta Inicial: encuesta (cmid 59710)      Importado; cuadro de créditos Publicado
 │   ├── Encuesta Cuatrimestral: encuesta (cmid 59712) Solo en Moodle
 │   └── Carga_Materias_Plan (cmid 59716)             Solo en Moodle
 ├── Plan de Estudios (subsección 15721)
@@ -48,7 +48,7 @@ Zhakyz (sección 15647)
 | Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
 | Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. La tarjeta Plan de Estudios enlaza a su página (cmid 59718). Última publicación: 2026-10-19 |
 | Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Plan de Estudios, conectada a la base Materias (d=152). La tarjeta del Hub enlaza a esta página | Ninguno. Cargados los dos planes (95 materias desde `PLANES_CARGA.csv`). Última publicación: 2026-10-19 |
-| Encuesta Inicial · cuadro de créditos | [`section/encuesta_inicial`](section/encuesta_inicial/content.html) | **Local** | Encuesta "Encuesta Inicial" (cmid 59710), importada en [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](data/moodle/encuestas/ENCUESTA_INICIAL.xml) | Publicar en el ítem `[[Cuadro]]` (8254) y verificar que el editor conserve el script; revisar que el estudiante pueda ver la base Materias |
+| Encuesta Inicial · cuadro de créditos | [`section/encuesta_inicial`](section/encuesta_inicial/content.html) | **Publicado** | Ítem "Área de texto y medios" (id 8254) de la Encuesta "Encuesta Inicial" (cmid 59710), importada en [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](data/moodle/encuestas/ENCUESTA_INICIAL.xml) | Revisar que el estudiante pueda ver la base Materias. No editar el ítem desde Moodle: el editor no muestra el script y al guardar lo borra. Última publicación: 2026-10-19 |
 | Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |

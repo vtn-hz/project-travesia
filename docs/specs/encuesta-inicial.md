@@ -35,7 +35,7 @@ Que el estudiante seleccione las materias que tiene aprobadas y que el total de 
 
 ## Pendientes
 
-- Publicar: reemplazar el contenido del ítem 8254 con este HTML. Hay que verificar que el editor de la encuesta conserve el `<script>`.
+- Publicado el 2026-10-19 en el ítem 8254 con un POST directo al formulario del ítem: Moodle guarda el `<script>` y lo ejecuta, pero el editor del ítem muestra una versión limpia, sin script. **No editar el ítem desde Moodle**: al guardar, el script se pierde. Los cambios se hacen en el repo y se vuelven a publicar.
 - El estudiante necesita poder ver la base Materias: revisar las restricciones de la subsección Database.
 - La encuesta no guarda qué materias se marcaron, solo el total. Si hace falta el detalle, agregar una pregunta de texto oculta con los códigos.
 - El plan del estudiante no se pregunta: lo elige en el cuadro.
