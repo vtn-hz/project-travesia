@@ -36,7 +36,8 @@ docs/
 │   ├── preguntas.md
 │   ├── encuestas.md
 │   ├── plan-estudios.md
-│   └── responder-encuesta.md
+│   ├── responder-encuesta.md
+│   └── entrevistas.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 
