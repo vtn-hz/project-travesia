@@ -131,6 +131,8 @@
       var MOSTRAR_VISTA_ALUMNO = false;
       // Bloque "Estado del sistema" de ADM (oculto por ahora)
       var MOSTRAR_ESTADO_SISTEMA = false;
+      // Tarjetas "Preguntas" y "Encuestas" (ocultas por ahora: las preguntas son fijas)
+      var MOSTRAR_ENCUESTAS = false;
       // La barra para cambiar de rol solo existe al abrir el archivo localmente
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
@@ -238,6 +240,10 @@
         { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Plan 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
         { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores y cierre de período.', cta: 'Configurar', roles: ['ADM'] }
       ];
+
+      if (!MOSTRAR_ENCUESTAS) {
+        TARJETAS = TARJETAS.filter(function(t) { return t.id !== 'encuestas' && t.id !== 'armado-encuestas'; });
+      }
 
       var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important;';
 
