@@ -22,7 +22,8 @@ Cargar uno o varios planes de estudio desde un CSV. La página explica el format
 
 ## Pasos de la pantalla
 
-1. **Formato:** tabla con cada columna, si es obligatoria, qué valores acepta y un ejemplo. Botón para descargar una plantilla CSV. En local, botón "Probar con el Plan 2024".
+0. **Lo que está cargado hoy:** la versión vigente de cada materia (la entrada más nueva de cada `plan + codigo`, sin las dadas de baja), con un selector por plan. En Moodle se lee de la plantilla de lista de la base ([`plantillas/materias`](../../data/moodle/plantillas/materias/)); en local se muestra el Plan 2024 de ejemplo y se actualiza al cargar.
+1. **Formato:** un ejemplo del archivo (fila 1 con los encabezados y fila 2 con una materia) y una tabla con cada columna, si es obligatoria, qué valores acepta y un ejemplo. Botón para descargar una plantilla CSV. En local, botón "Probar con el Plan 2024".
 2. **Subir el archivo:** zona para arrastrar o elegir un `.csv`. Nada se guarda todavía.
 3. **Revisión:** totales (materias, listas, errores, advertencias), lista de problemas por fila y vista previa con el estado de cada materia. Filtro "Con problemas".
 4. **Carga:** el botón principal se habilita solo sin errores. Cada fila es una entrada nueva en Materias con `estado = vigente` y `cambio = Carga desde <archivo>`.
@@ -57,6 +58,6 @@ Usa el formulario nativo de `mod/data/edit.php?d=<dataid>` (igual que Preguntas)
 
 ## Pendientes
 
-- Crear la base Materias en Moodle con `crear_base.js` y sincronizar `bases.materias.dataid`. Mientras sea `null`, la carga solo se simula.
+- Crear la base Materias en Moodle con `crear_base.js`, cargarle las plantillas de `data/moodle/plantillas/materias/` y sincronizar `bases.materias.dataid`. Mientras sea `null`, la carga solo se simula.
 - Reemplazar `Carga_Materias_Primero` (d=118): decidir dónde va su `Umbral` y la marca `esCritica`.
 - Plan 2003: falta el documento oficial.
