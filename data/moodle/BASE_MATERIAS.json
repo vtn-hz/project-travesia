@@ -3,7 +3,7 @@
   "nombre": "Materias",
   "descripcion": "El plan de estudios: una entrada por materia de cada plan, con las materias que desbloquea. Nada se edita ni se borra: un cambio es una entrada nueva con el mismo plan + codigo, y la más reciente es la vigente.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-10-19), todavía no creada en Moodle. Reemplaza a Carga_Materias_Primero (d=118). Se carga desde la sección plan_estudios con un CSV.",
+  "origen": "Creada en Moodle el 2026-10-19 con crear_base.js (cmid 59717, d=152), sin entradas. Reemplaza a Carga_Materias_Primero (d=118). Se carga desde la sección plan_estudios con un CSV.",
   "plantillas": "data/moodle/plantillas/materias/ (cargarlas a mano en Moodle: la plantilla de lista expone cada campo como data-* en .zk-registro, que es lo que lee la sección plan_estudios)",
   "campos": [
     {

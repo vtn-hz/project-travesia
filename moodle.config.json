@@ -31,7 +31,8 @@
     "tablero": null,
     "detalle": null,
     "listado_criticidad_primero": 59523,
-    "entrevistas": null
+    "entrevistas": null,
+    "plan_estudios": 59718
   },
   "bases": {
     "preguntas": {
@@ -74,9 +75,11 @@
       "importada": "2026-10-18"
     },
     "materias": {
-      "cmid": null,
-      "dataid": null,
-      "definicion": "data/moodle/BASE_MATERIAS.json"
+      "cmid": 59717,
+      "dataid": 152,
+      "definicion": "data/moodle/BASE_MATERIAS.json",
+      "subseccion": "Database",
+      "creada": "2026-10-19"
     },
     "acompanamientos": {
       "cmid": null,

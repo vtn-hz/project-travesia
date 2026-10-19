@@ -24,8 +24,10 @@ Estas reglas están por encima de todas las demás.
 | Subsección "Hub" (cmid 59510, sección 15706) → Área de texto y medios "Hub" (cmid 59511), visible sin entrar | [`section/menu_inicial/content.html`](section/menu_inicial/content.html) |
 | Subsección "Hub" → Base de datos "Carga_Parciales_Primero" (cmid 59521, d=117) | [`data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json`](data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json) + [plantillas](data/moodle/plantillas/carga_parciales_primero/) |
 | Subsección "Hub" → Base de datos "Carga_Materias_Primero" (cmid 59522, d=118) | [`data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json`](data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json) + [plantillas](data/moodle/plantillas/carga_materias_primero/) |
+| Subsección "Hub" → Página "Plan de Estudios" (cmid 59718) | [`section/plan_estudios/content.html`](section/plan_estudios/content.html) |
 | Subsección "Hub" → Página "Listado_Criticidad_Primero" (cmid 59523) | [`section/listado_criticidad_primero/content.html`](section/listado_criticidad_primero/content.html) |
 | Subsección "Database" (cmid 59497, sección 15700) → Base de datos "Preguntas" (cmid 59498, d=114) | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) |
+| Subsección "Database" → Base de datos "Materias" (cmid 59717, d=152) | [`data/moodle/BASE_MATERIAS.json`](data/moodle/BASE_MATERIAS.json) + [plantillas](data/moodle/plantillas/materias/) (sin cargar) |
 | Subsección "Encuestas y Preguntas" (cmid 59505, sección 15705) → Página "Preguntas" (cmid 59506) | [`section/encuestas_preguntas/preguntas/content.html`](section/encuestas_preguntas/preguntas/content.html) (grupo: [`seccion.json`](section/encuestas_preguntas/seccion.json)) |
 | Subsección "Pruebas" (cmid 59499, sección 15701): BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing | — (pruebas creadas por el equipo directamente en Moodle) |
 | Encuesta "asdsad" (cmid 59541), en Zhakyz fuera de las subsecciones | — (parece una prueba creada directamente en Moodle) |
