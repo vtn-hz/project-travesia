@@ -9,6 +9,8 @@ Datos de los planes listos para importar en una **Base de datos** (`mod_data`) d
 | `PLAN_2003_MATERIAS.csv` | 43 espacios del Plan 2003 (una fila por materia) |
 | `PLAN_2003_CORRELATIVAS.csv` | 66 correlatividades (una fila por par materia → requerida) |
 | `PLAN_2024_CARGA.csv` | Los dos archivos del Plan 2024 en el formato de la base **Materias** ([`BASE_MATERIAS.json`](../moodle/BASE_MATERIAS.json)): una fila por materia con `desbloquea` como `codigo:cuatrimestre`. Es el archivo que se sube en la sección [`plan_estudios`](../../section/plan_estudios/content.html) |
+| `PLAN_2003_CARGA.csv` | Lo mismo para el Plan 2003 |
+| `PLANES_CARGA.csv` | Los dos planes juntos (95 materias), para cargarlos en una sola subida |
 
 Los dos planes usan las mismas columnas, así que se pueden cargar en la misma base y separarlos por la columna `plan`.
 

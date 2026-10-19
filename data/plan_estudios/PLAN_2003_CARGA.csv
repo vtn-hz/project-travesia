@@ -1,0 +1,44 @@
+plan,codigo,nombre,cuatrimestre,duracion,tipo,creditos,horas,desbloquea
+2003,633,Análisis Matemático A,1,cuatrimestral,obligatoria,8,128,"615:2, 634:2, 722:2"
+2003,631,Álgebra A,1,cuatrimestral,obligatoria,8,128,"615:2, 632:2, 722:2, 290:3"
+2003,1BA,Química General I,1,cuatrimestral,obligatoria,8,128,"2B5:4, 579:5"
+2003,634,Análisis Matemático B,2,cuatrimestral,obligatoria,6,96,"228:3, 628:3, 635:3, 723:3"
+2003,632,Álgebra B,2,cuatrimestral,obligatoria,6,96,"635:3, 723:3"
+2003,615,Computación,2,cuatrimestral,obligatoria,6,96,"639:4, 834:6"
+2003,722,Física 1,2,cuatrimestral,obligatoria,8,128,"228:3, 723:3"
+2003,635,Análisis Matemático C,3,cuatrimestral,obligatoria,8,128,"2B5:4, 3E4:4, 638:4, 639:4"
+2003,290,Dibujo I,3,cuatrimestral,obligatoria,4,64,2B7:7
+2003,628,Estadística Básica,3,cuatrimestral,obligatoria,4,64,"848:5, 857:5, 877:5, 834:6"
+2003,228,Estática y Resistencia de Materiales,3,cuatrimestral,obligatoria,4,64,"579:5, 2C2:6"
+2003,723,Física 2,3,cuatrimestral,obligatoria,8,128,"2B5:4, 3E4:4, 638:4, 724:4"
+2003,3E4,Electrotecnia General,4,cuatrimestral,obligatoria,5,80,"3M4:6, 4E3:7"
+2003,724,Física 3,4,cuatrimestral,obligatoria,7,112,727:6
+2003,638,Matemática Avanzada,4,cuatrimestral,obligatoria,5,80,4E3:7
+2003,639,Métodos Numéricos,4,cuatrimestral,obligatoria,3,48,
+2003,2B5,Termodinámica y Máquinas Térmicas,4,cuatrimestral,obligatoria,6,96,1OF:5
+2003,857,Economía Industrial,5,cuatrimestral,obligatoria,5,80,"847:7, 840:9"
+2003,877,Investigación Operativa I,5,cuatrimestral,obligatoria,5,80,"849:6, 860:7"
+2003,579,Materiales Industriales,5,cuatrimestral,obligatoria,5,80,2B7:7
+2003,848,Organización y Dirección Industrial I,5,cuatrimestral,obligatoria,6,96,"849:6, 839:7"
+2003,1OF,Procesos Industriales I,5,cuatrimestral,obligatoria,5,80,2C2:6
+2003,727,Física Experimental,6,cuatrimestral,obligatoria,2,32,4E3:7
+2003,834,Informática en la Empresa,6,cuatrimestral,obligatoria,5,80,860:7
+2003,3M4,Máquinas y Accionamientos Eléctricos,6,cuatrimestral,obligatoria,6,96,864:8
+2003,2C2,Mecánica de los Fluidos,6,cuatrimestral,obligatoria,3,48,864:8
+2003,849,Organización y Dirección Industrial II,6,cuatrimestral,obligatoria,5,80,"847:7, 828:9, 858:10, 866:10"
+2003,839,Administración de Recursos Humanos,7,cuatrimestral,obligatoria,5,80,"816:9, 866:10"
+2003,4E3,Introducción a la Electrónica Industrial,7,cuatrimestral,obligatoria,3,48,864:8
+2003,860,Investigación Operativa II,7,cuatrimestral,obligatoria,4,64,875:8
+2003,847,Marketing Industrial,7,cuatrimestral,obligatoria,5,80,875:8
+2003,2B7,Mecanismos y Elementos de Máquinas,7,cuatrimestral,obligatoria,4,64,2C5:8
+2003,875,Ingeniería Económica para Empresas Industriales y de Servicios,8,cuatrimestral,obligatoria,6,96,
+2003,864,Instalaciones Industriales,8,cuatrimestral,obligatoria,7,112,
+2003,2C5,Tecnología de la Fabricación,8,cuatrimestral,obligatoria,3,48,
+2003,816,Derecho en Ingeniería,9,cuatrimestral,obligatoria,3,48,
+2003,828,Gestión de la Calidad,9,cuatrimestral,obligatoria,6,96,"867:10, 876:10"
+2003,840,Mecanismos de Integración Económica,9,cuatrimestral,obligatoria,3,48,
+2003,858,Gestión del Mantenimiento,10,cuatrimestral,obligatoria,4,64,
+2003,866,Organización y Dirección Industrial III,10,cuatrimestral,obligatoria,5,80,
+2003,867,Gestión de la Innovación Tecnológica e Industrial,10,cuatrimestral,obligatoria,4,64,
+2003,876,"Seguridad, Higiene y Medio Ambiente",10,cuatrimestral,obligatoria,6,96,
+2003,863,Trabajo Final,10,cuatrimestral,obligatoria,10,160,

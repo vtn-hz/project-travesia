@@ -1,0 +1,96 @@
+plan,codigo,nombre,cuatrimestre,duracion,tipo,creditos,horas,desbloquea
+2024,INGM101,Análisis Matemático I,1,cuatrimestral,obligatoria,6,96,"ING6101:2, INGF101:2, INGM102:2"
+2024,INGM105,Álgebra I- B,1,cuatrimestral,obligatoria,4,64,"ING6101:2, INGF101:2, INGM106:2"
+2024,ING1103,Fundamentos de Química,1,cuatrimestral,obligatoria,4,64,"ING2221:4, ING2219:5"
+2024,INGM102,Análisis Matemático II,2,cuatrimestral,obligatoria,5,80,"ING8501:3, INGM103:3, INGM108:3, ING2221:4, ING8414:4, ING2217:5"
+2024,INGM106,Álgebra II,2,cuatrimestral,obligatoria,5,80,"INGM103:3, ING2104:6"
+2024,INGF101,Física A,2,cuatrimestral,obligatoria,6,96,"ING2218:3, INGF103:3, ING2221:4"
+2024,ING6101,Fundamentos de la Programación,2,cuatrimestral,obligatoria,4,64,ING8417:9
+2024,INGF103,Física B- II,3,cuatrimestral,obligatoria,6,96,"ING3209:4, INGF106:6"
+2024,INGM103,Análisis Matemático III,3,cuatrimestral,obligatoria,6,96,"ING3209:4, ING8405:5"
+2024,INGM108,Probabilidad y Estadística,3,cuatrimestral,obligatoria,4,64,"ING8302:4, ING8201:5"
+2024,ING2218,Mecánica del Sólido,3,cuatrimestral,obligatoria,4,64,"ING2217:5, ING2219:5, ING2220:8"
+2024,ING8408,Inglés I,3,cuatrimestral,ingles,3,48,ING8409:4
+2024,ING8501,Proyecto de Ingeniería Industrial I,3,anual,obligatoria,4,64,ING8502:5
+2024,ING8302,Administración Estratégica,4,cuatrimestral,obligatoria,4,64,"ING8301:5, ING8308:5, ING8405:5, ING8502:5"
+2024,ING8414,Conceptos de Economía Industrial,4,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8418:9"
+2024,ING3209,Máquinas y Equipos Industriales I,4,cuatrimestral,obligatoria,5,80,ING8303:7
+2024,ING2221,Termodinámica Industrial,4,cuatrimestral,obligatoria,4,64,ING8303:7
+2024,ING8409,Inglés II,4,cuatrimestral,ingles,3,48,ING8415:7
+2024,ING8301,Administración de Operaciones,5,cuatrimestral,obligatoria,4,64,"ING8307:6, ING8310:6, ING8305:8"
+2024,ING8201,Investigación Operativa A,5,cuatrimestral,obligatoria,4,64,"ING8202:6, ING8307:6, ING8310:6"
+2024,ING8308,Gestión de la Tecnología y la Innovación,5,cuatrimestral,obligatoria,4,64,ING8304:10
+2024,ING2219,Tecnología de los Materiales,5,cuatrimestral,obligatoria,4,64,ING2220:8
+2024,ING8405,"Ética, Legislación y Propiedad Intelectual en el Ejercicio Profesional",5,cuatrimestral,obligatoria,4,64,ING8402:7
+2024,ING2217,Mecánica de Fluidos,5,cuatrimestral,obligatoria,3,48,ING8303:7
+2024,ING8502,Proyecto de Ingeniería Industrial II,5,anual,obligatoria,4,64,"ING8503:7, ING8417:9"
+2024,ING8310,Planificación y Control de la Producción,6,cuatrimestral,obligatoria,4,64,"ING8306:7, ING8311:7, ING8402:7, ING8503:7, ING8309:10"
+2024,ING8202,Investigación Operativa B,6,cuatrimestral,obligatoria,4,64,"ING8503:7, ING8305:8"
+2024,ING2104,Sistemas de Representación para Ingeniería,6,cuatrimestral,obligatoria,3,48,ING2222:8
+2024,INGF106,Física Experimental A,6,cuatrimestral,obligatoria,4,64,ING2220:8
+2024,ING8307,Gestión de la Logística Integral y Cadena de Suministros,6,cuatrimestral,obligatoria,4,64,ING8418:9
+2024,ELEC1,Electiva I,6,cuatrimestral,electiva,4,64,
+2024,ING8303,Diseño de Instalaciones y Procesos,7,cuatrimestral,obligatoria,4,64,"ING2222:8, ING8312:9"
+2024,ING8311,Sistemas de Gestión y Mejora Continua,7,cuatrimestral,obligatoria,5,80,"ING8312:9, ING8504:9"
+2024,ING8402,Comportamiento Organizacional y Relaciones del Trabajo,7,cuatrimestral,obligatoria,4,64,ING8304:10
+2024,ING8306,Gestión Comercial de las Organizaciones,7,cuatrimestral,obligatoria,4,64,
+2024,ING8415,Inglés Profesional A,7,cuatrimestral,ingles,4,64,ING8416:8
+2024,ING8503,Proyecto de Ingeniería Industrial III,7,anual,obligatoria,4,64,ING8504:9
+2024,ING8305,Formulación y Evaluación de Proyectos,8,cuatrimestral,obligatoria,5,80,ING8504:9
+2024,ING2220,Introducción a los Procesos de Fabricación,8,cuatrimestral,obligatoria,3,48,ING8309:10
+2024,ING2222,Tecnología de Control,8,cuatrimestral,obligatoria,4,64,ING8312:9
+2024,ELEC2,Electiva II,8,cuatrimestral,electiva,4,64,
+2024,ING8416,Inglés Profesional B,8,cuatrimestral,ingles,4,64,
+2024,ING8312,"Sustentabilidad, Higiene y Seguridad",9,cuatrimestral,obligatoria,5,80,
+2024,ING8418,Desarrollo Económico y Comercio Internacional,9,cuatrimestral,obligatoria,4,64,
+2024,ING8417,Sistemas Informáticos de Gestión,9,cuatrimestral,obligatoria,4,64,
+2024,ELEC3,Electiva III,9,cuatrimestral,electiva,4,64,
+2024,ING8504,Proyecto de Ingeniería Industrial IV,9,anual,obligatoria,10,160,
+2024,ING8309,Gestión Integral del Mantenimiento,10,cuatrimestral,obligatoria,4,64,
+2024,ING8304,Empresas y Servicios Basadas en el Conocimiento,10,cuatrimestral,obligatoria,4,64,
+2024,ELEC4,Electiva IV,10,cuatrimestral,electiva,4,64,
+2024,OPT1,Optativa I,10,cuatrimestral,optativa,4,64,
+2024,OPT2,Optativa II,10,cuatrimestral,optativa,4,64,
+2003,633,Análisis Matemático A,1,cuatrimestral,obligatoria,8,128,"615:2, 634:2, 722:2"
+2003,631,Álgebra A,1,cuatrimestral,obligatoria,8,128,"615:2, 632:2, 722:2, 290:3"
+2003,1BA,Química General I,1,cuatrimestral,obligatoria,8,128,"2B5:4, 579:5"
+2003,634,Análisis Matemático B,2,cuatrimestral,obligatoria,6,96,"228:3, 628:3, 635:3, 723:3"
+2003,632,Álgebra B,2,cuatrimestral,obligatoria,6,96,"635:3, 723:3"
+2003,615,Computación,2,cuatrimestral,obligatoria,6,96,"639:4, 834:6"
+2003,722,Física 1,2,cuatrimestral,obligatoria,8,128,"228:3, 723:3"
+2003,635,Análisis Matemático C,3,cuatrimestral,obligatoria,8,128,"2B5:4, 3E4:4, 638:4, 639:4"
+2003,290,Dibujo I,3,cuatrimestral,obligatoria,4,64,2B7:7
+2003,628,Estadística Básica,3,cuatrimestral,obligatoria,4,64,"848:5, 857:5, 877:5, 834:6"
+2003,228,Estática y Resistencia de Materiales,3,cuatrimestral,obligatoria,4,64,"579:5, 2C2:6"
+2003,723,Física 2,3,cuatrimestral,obligatoria,8,128,"2B5:4, 3E4:4, 638:4, 724:4"
+2003,3E4,Electrotecnia General,4,cuatrimestral,obligatoria,5,80,"3M4:6, 4E3:7"
+2003,724,Física 3,4,cuatrimestral,obligatoria,7,112,727:6
+2003,638,Matemática Avanzada,4,cuatrimestral,obligatoria,5,80,4E3:7
+2003,639,Métodos Numéricos,4,cuatrimestral,obligatoria,3,48,
+2003,2B5,Termodinámica y Máquinas Térmicas,4,cuatrimestral,obligatoria,6,96,1OF:5
+2003,857,Economía Industrial,5,cuatrimestral,obligatoria,5,80,"847:7, 840:9"
+2003,877,Investigación Operativa I,5,cuatrimestral,obligatoria,5,80,"849:6, 860:7"
+2003,579,Materiales Industriales,5,cuatrimestral,obligatoria,5,80,2B7:7
+2003,848,Organización y Dirección Industrial I,5,cuatrimestral,obligatoria,6,96,"849:6, 839:7"
+2003,1OF,Procesos Industriales I,5,cuatrimestral,obligatoria,5,80,2C2:6
+2003,727,Física Experimental,6,cuatrimestral,obligatoria,2,32,4E3:7
+2003,834,Informática en la Empresa,6,cuatrimestral,obligatoria,5,80,860:7
+2003,3M4,Máquinas y Accionamientos Eléctricos,6,cuatrimestral,obligatoria,6,96,864:8
+2003,2C2,Mecánica de los Fluidos,6,cuatrimestral,obligatoria,3,48,864:8
+2003,849,Organización y Dirección Industrial II,6,cuatrimestral,obligatoria,5,80,"847:7, 828:9, 858:10, 866:10"
+2003,839,Administración de Recursos Humanos,7,cuatrimestral,obligatoria,5,80,"816:9, 866:10"
+2003,4E3,Introducción a la Electrónica Industrial,7,cuatrimestral,obligatoria,3,48,864:8
+2003,860,Investigación Operativa II,7,cuatrimestral,obligatoria,4,64,875:8
+2003,847,Marketing Industrial,7,cuatrimestral,obligatoria,5,80,875:8
+2003,2B7,Mecanismos y Elementos de Máquinas,7,cuatrimestral,obligatoria,4,64,2C5:8
+2003,875,Ingeniería Económica para Empresas Industriales y de Servicios,8,cuatrimestral,obligatoria,6,96,
+2003,864,Instalaciones Industriales,8,cuatrimestral,obligatoria,7,112,
+2003,2C5,Tecnología de la Fabricación,8,cuatrimestral,obligatoria,3,48,
+2003,816,Derecho en Ingeniería,9,cuatrimestral,obligatoria,3,48,
+2003,828,Gestión de la Calidad,9,cuatrimestral,obligatoria,6,96,"867:10, 876:10"
+2003,840,Mecanismos de Integración Económica,9,cuatrimestral,obligatoria,3,48,
+2003,858,Gestión del Mantenimiento,10,cuatrimestral,obligatoria,4,64,
+2003,866,Organización y Dirección Industrial III,10,cuatrimestral,obligatoria,5,80,
+2003,867,Gestión de la Innovación Tecnológica e Industrial,10,cuatrimestral,obligatoria,4,64,
+2003,876,"Seguridad, Higiene y Medio Ambiente",10,cuatrimestral,obligatoria,6,96,
+2003,863,Trabajo Final,10,cuatrimestral,obligatoria,10,160,
