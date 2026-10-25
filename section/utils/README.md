@@ -25,7 +25,7 @@ Un `<script type="text/plain" data-zk-biblioteca="widgets">` dentro de un `div` 
 | `cargarMaterias()` | Materias vigentes, una sola lectura por página: `{ lista, fuente }`. `fuente` es `'base'` (Moodle), `'csv'` (local con Live Server) o `'ejemplo'` (local con `file://`) |
 | `OTROS_CREDITOS` | Créditos y requisitos de cada plan que no son materias |
 
-**Agregar un widget:** escribir su constructor dentro del script muerto, exportarlo en `window.ZhakyzUtils` y subir `VERSION`. Dentro del script muerto valen las mismas reglas que en cualquier sección: `'<\/svg>'` y no `'</svg>'`, entidades como `'\x26amp;'`, y nunca un `</script>` literal, porque cerraría el script muerto antes de tiempo.
+**Agregar un widget:** escribir su constructor dentro del script muerto, exportarlo en `window.ZhakyzUtils` y subir `VERSION`. Dentro del script muerto valen las mismas reglas que en cualquier sección: `'<\/svg>'` y no `'</svg>'`, entidades como `'\x26amp;'`, y nunca un `</script>` literal, porque cerraría el script muerto antes de tiempo. Tampoco `\[`, `\(` ni `$$`, ni siquiera dentro de una expresión regular (usar `\x5B` y `\x5D`): el filtro de fórmulas de Moodle los toma como TeX y, al mostrar la página, escapa los `<` y `>` de todo el script, que deja de funcionar. Pasó con la Página Tools el 2026-10-25.
 
 **Publicar** (con confirmación, como cualquier sección): `publicar.js --archivo section/utils/widgets/content.html --tipo pagina --nombre "Widgets"`. El script crea la subsección "Utils" al final de Zhakyz: después hay que moverla antes de "Pruebas". Anotar el cmid en `paginas.utils_widgets` y correr `sincronizar_config.js`, que lo copia al `CMID_UTILS` de los cargadores.
 

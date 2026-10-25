@@ -178,7 +178,8 @@
       // ---------------------------------------------------------
       // LECTURA DE UNA PÁGINA DE LA ENCUESTA (LA PÁGINA ACTUAL O EL HTML DE OTRA PÁGINA LEÍDO CON fetch)
       // ---------------------------------------------------------
-      var NOMBRE_CAMPO = /^(numeric|multichoice|textfield|textarea)_(\d+)(?:\[(\d+)\])?$/;
+      // Los corchetes van como \x5B y \x5D: el filtro de fórmulas de Moodle toma barra + corchete como TeX y altera toda la página
+      var NOMBRE_CAMPO = /^(numeric|multichoice|textfield|textarea)_(\d+)(?:\x5B(\d+)\x5D)?$/;
 
       function formularioEncuesta(doc) {
         var f = doc.querySelector('form#feedback_complete_form');
