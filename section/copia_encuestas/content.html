@@ -1,17 +1,22 @@
-<!-- ÍTEM: COPIA DE RESPUESTAS DE LAS ENCUESTAS · VA EN CADA PÁGINA DE LAS ENCUESTAS INICIAL Y CUATRIMESTRAL (ÁREA DE TEXTO Y MEDIOS) -->
-<!-- QUÉ HACE: al enviar la Encuesta de Moodle, agrega una versión con su criticidad a la base Respuestas (docs/decisions/006-versionado-de-encuestas.md, docs/specs/copia-encuestas.md) -->
-<!-- SIN PIE ZHAKYZ: es un ítem sin interfaz que se repite en cada página de la encuesta. Solo muestra un aviso si hace falta -->
-<!-- NO EDITAR DESDE MOODLE: el editor del ítem no muestra el script y al guardar lo borra -->
+<!-- ÍTEM: ENCUESTAS INICIAL Y CUATRIMESTRAL · COPIA DE RESPUESTAS (ÁREA DE TEXTO Y MEDIOS AL FINAL DE CADA PÁGINA) -->
+<!-- VA EN: Encuesta Inicial (cmid 59710), un ítem al final de cada una de sus 4 páginas (el de la página 4 depende de trabaja = Si), y Encuesta Cuatrimestral (cmid 59712), un ítem al final. Los 5 ítems tienen este mismo archivo -->
+<!-- QUÉ ES: copia de section/utils/cargador_tools/content.html con TOOL = 'CopiaRespuestas'. Lee la Página Tools de Utils y arranca la herramienta, que copia cada envío a la base Respuestas (docs/specs/copia-encuestas.md) -->
+<!-- SI CAMBIA LA COPIA: se cambia la herramienta en section/utils/tools y se publica la Página Tools. Este ítem solo cambia si cambia el cargador -->
+<!-- NO EDITAR LOS ÍTEMS DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. La herramienta muestra el simulador de las dos encuestas y los registros que copiaría -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
 <!-- CONTENEDOR PRINCIPAL -->
-<div id="copia-encuestas" style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+<div data-zk-cargador-tools style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
   <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
   <nolink>
 
-  <!-- AVISO (SOLO CUANDO HAY ALGO QUE INFORMAR) -->
-  <div id="aviso-copia-encuestas" style="display: none;"></div>
+  <!-- LUGAR DE LA HERRAMIENTA -->
+  <div data-cargador="tool"></div>
 
-  <!-- VISTA PREVIA LOCAL: SIMULADOR DE LA ENCUESTA DE MOODLE (NO SE DIBUJA EN MOODLE) -->
-  <div id="simulador-copia-encuestas" style="display: none;"></div>
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR, Y NUNCA EN LA ENCUESTA QUE RESPONDE EL ESTUDIANTE) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
 
   <!-- SCRIPT DE MANEJO DE EVENTOS -->
   <script>
@@ -19,14 +24,10 @@
       // ---------------------------------------------------------
       // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
       // ---------------------------------------------------------
-      if (!document.getElementById('zhakyz-copia-encuestas-style')) {
+      if (!document.getElementById('zhakyz-cargador-tools-style')) {
         var styleEl = document.createElement('style');
-        styleEl.id = 'zhakyz-copia-encuestas-style';
-        styleEl.innerHTML =
-          '#copia-encuestas > nolink { display: block; }' +
-          '#copia-encuestas button:focus-visible, #copia-encuestas input:focus-visible, #copia-encuestas summary:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
-          // En el simulador local no está el tema de Moodle: el texto para lectores de pantalla queda oculto como en el campus
-          '#copia-encuestas .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }';
+        styleEl.id = 'zhakyz-cargador-tools-style';
+        styleEl.innerHTML = '[data-zk-cargador-tools] > nolink { display: block; }';
         document.head.appendChild(styleEl);
       }
 
@@ -35,68 +36,32 @@
       // ---------------------------------------------------------
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-      var PERIODO_ACTUAL = '2026-2';
-      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
-      var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
-      var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
-      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
-      var ESPERA_MAXIMA = 8000; // milisegundos que se espera la copia antes de dejar seguir el envío a Moodle
-      var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
-      var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
+      // Página "Tools" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = null; // @config paginas.utils_tools
+      // En local (Live Server): ruta de la Página Tools desde esta vista
+      var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
+      // Herramienta que arranca este cargador (section/utils/README.md):
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      var TOOL = 'CopiaRespuestas';
+      // Opciones de la herramienta. El contenedor lo pone el cargador
+      var OPCIONES = {};
+      // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
+      var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
 
-      // ---------------------------------------------------------
-      // ÍTEMS DE CADA ENCUESTA Y PUNTOS DE CRITICIDAD (docs/models/MODELO_CRITICIDAD_ENCUESTAS.md, VALORES PROVISORIOS)
-      // ---------------------------------------------------------
-      // id: ítem de la Encuesta de Moodle (data/moodle/encuestas/*.xml). variable: su etiqueta en Moodle.
-      // puntos: por número de opción (Moodle envía 1, 2…, no el texto). avance: créditos que se comparan con los esperados.
-      // depende: el ítem solo cuenta si otro tiene ese número de opción (en Moodle, inicio_laboral depende de trabaja = Si).
-      // Un ítem que no está en la lista se copia igual, como "pregunta_<id>" y sin puntos.
-      // paginas: ids de todos los ítems de cada página, incluidos los de texto (sin los saltos de página). Moodle muestra
-      // "Página siguiente" aunque las páginas que siguen queden vacías por una dependencia, y en ese caso guarda al pasar de página:
-      // con esta lista el script reconoce ese envío final. Si la encuesta cambia en Moodle, actualizar la lista (Editar preguntas avisa).
-      var ENCUESTAS = {};
-      ENCUESTAS[CMID_INICIAL] = {
-        clave: 'inicial', titulo: 'Encuesta inicial', version: 1, porPeriodo: false, maximoAvance: 70,
-        paginas: [[8254, 8253], [8257, 8258], [8259], [8260]],
-        items: [
-          { id: 8253, variable: 'creditos_aprobados', avance: true },
-          { id: 8257, variable: 'año_cohorte', cohorte: 'anio' },
-          { id: 8258, variable: 'cuatri_cohorte', cohorte: 'cuatrimestre' },
-          { id: 8259, variable: 'trabaja', puntos: { 1: 10, 2: 0 } },
-          { id: 8260, variable: 'inicio_laboral', depende: { id: 8259, opcion: 1 }, puntos: { 1: 20, 2: 20 } }
-        ]
-      };
-      // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
-      ENCUESTAS[CMID_CUATRIMESTRAL] = {
-        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true, maximoAvance: 30,
-        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8768, 8273, 8271]],
-        items: [
-          { id: 8262, variable: 'creditos_aprobados', avance: true },
-          { id: 8264, variable: 'progreso_proyecto_final', puntos: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 } },
-          { id: 8265, variable: 'trabaja', puntos: { 1: 5, 2: 0 } },
-          { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 }, puntos: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 } },
-          // Selector de materias: no cursar es inactividad, salvo con el PFG en desarrollo (4) o finalizado (5)
-          { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true, inactividadSalvo: { id: 8264, opciones: [4, 5] } },
-          { id: 8273, ignorar: true }, // respuesta corta anterior al selector: se va a borrar de la encuesta
-          { id: 8271, variable: 'avance_percibido', puntos: { 1: 0, 2: 5, 3: 10 } }
-        ]
-      };
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador-tools]')) ||
+        document.querySelector('[data-zk-cargador-tools]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
 
-      // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
-      var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
-      // Cociente aprobados / esperados → parte del máximo de avance (0,3897: umbral crítico del ICE)
-      var TRAMOS_AVANCE = [
-        { desde: 1, parte: 0 }, { desde: 0.75, parte: 0.25 }, { desde: 0.5, parte: 0.5 }, { desde: 0.3897, parte: 0.75 }, { desde: -Infinity, parte: 1 }
-      ];
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
       // ---------------------------------------------------------
       var ICONOS = {
-        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
-        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
-        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>',
-        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
       };
 
       function icono(nombre, tamano) {
@@ -106,765 +71,76 @@
           ICONOS[nombre] + '<\/svg>';
       }
 
-      // ---------------------------------------------------------
-      // UTILIDADES
-      // ---------------------------------------------------------
       function escapar(s) {
         return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
           return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
         });
       }
 
-      function mostrar(el, visible, modo) {
-        if (el) el.style.setProperty('display', visible ? (modo || 'block') : 'none', 'important');
-      }
-
-      // NÚMERO COMO LO ACEPTA MOODLE ("12,5" o "12.5"); null SI NO ES UN NÚMERO
-      function numeroMoodle(s) {
-        var t = String(s === null || s === undefined ? '' : s).trim().replace(',', '.');
-        return t !== '' && !isNaN(Number(t)) ? Number(t) : null;
-      }
-
-      // TEXTO VISIBLE DE UN ELEMENTO, SIN EL RANGO NI LA MARCA DE OBLIGATORIO
-      function textoLimpio(el) {
-        if (!el) return '';
-        var c = el.cloneNode(true);
-        c.querySelectorAll('.boundaries, .visually-hidden, .sr-only, i, svg, script').forEach(function(x) { x.remove(); });
-        return c.textContent.replace(/\s+/g, ' ').trim();
-      }
-
-      // ISO 8601 CON LA ZONA HORARIA LOCAL (POR EJEMPLO 2026-12-05T18:42:10-03:00)
-      function ahoraIso() {
-        var d = new Date();
-        var off = -d.getTimezoneOffset();
-        var dos = function(n) { return String(Math.floor(Math.abs(n))).padStart(2, '0'); };
-        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes()) + ':' + dos(d.getSeconds()) +
-          (off >= 0 ? '+' : '-') + dos(off / 60) + ':' + dos(off % 60);
-      }
-
-      function leerAlmacen(almacen, clave, defecto) {
-        try { var v = almacen.getItem(clave); return v ? JSON.parse(v) : defecto; } catch (e) { return defecto; }
-      }
-
-      function escribirAlmacen(almacen, clave, valor) {
-        try {
-          if (valor === null) almacen.removeItem(clave);
-          else almacen.setItem(clave, JSON.stringify(valor));
-        } catch (e) { /* almacenamiento bloqueado: la copia sigue con lo que hay en la página */ }
-      }
-
       // ---------------------------------------------------------
-      // LECTURA DE UNA PÁGINA DE LA ENCUESTA (LA PÁGINA ACTUAL O EL HTML DE OTRA PÁGINA LEÍDO CON fetch)
+      // CARGA DE LA BIBLIOTECA DE TOOLS
       // ---------------------------------------------------------
-      var NOMBRE_CAMPO = /^(numeric|multichoice|textfield|textarea)_(\d+)(?:\[(\d+)\])?$/;
-
-      function formularioEncuesta(doc) {
-        var f = doc.querySelector('form#feedback_complete_form');
-        if (f) return f;
-        return Array.prototype.filter.call(doc.querySelectorAll('form'), function(x) {
-          return x.querySelector('input[name="gopage"]') && x.querySelector('[name^="numeric_"], [name^="multichoice_"], [name^="textfield_"], [name^="textarea_"]');
-        })[0] || null;
-      }
-
-      // ENUNCIADO, OBLIGATORIEDAD Y RANGO DE UN ÍTEM, DESDE SU ETIQUETA EN EL FORMULARIO DE MOODLE
-      // Primero la etiqueta propia de Moodle (id_<tipo>_<id>_label): el cuadro de créditos tiene otra con el mismo "for" en su vista previa
-      function etiquetaItem(form, tipo, id) {
-        var el = form.querySelector('#id_' + tipo + '_' + id + '_label') || form.querySelector('#fgroup_id_group_' + tipo + '_' + id + '_label') ||
-          form.querySelector('label[for="id_' + tipo + '_' + id + '"]');
-        var info = { pregunta: textoLimpio(el), requerido: false, rango: null };
-        if (!el) return info;
-        info.requerido = !!el.querySelector('[title="Campo obligatorio"]') || /obligatorio/i.test((el.querySelector('.visually-hidden') || {}).textContent || '');
-        var b = el.querySelector('.boundaries');
-        var m = b ? b.textContent.match(/(-?[\d.,]+)\s*-\s*(-?[\d.,]+)/) : null;
-        if (m) info.rango = [numeroMoodle(m[1]), numeroMoodle(m[2])];
-        return info;
-      }
-
-      // { pagina, items: { id: { tipo, pregunta, requerido, rango, valor, opcion, texto } }, cuadro }
-      function leerPagina(form, conCuadro) {
-        var items = {};
-        Array.prototype.forEach.call(form.querySelectorAll('input, select, textarea'), function(c) {
-          var m = (c.name || '').match(NOMBRE_CAMPO);
-          if (!m) return;
-          var tipo = m[1], id = m[2];
-          var it = items[id];
-          if (!it) {
-            it = items[id] = etiquetaItem(form, tipo, id);
-            it.tipo = tipo;
-            it.valor = null;
-            it.opcion = tipo === 'multichoice' ? 0 : null;
-            it.texto = null;
-          }
-          if (tipo !== 'multichoice') {
-            it.valor = c.value;
-            return;
-          }
-          // Opción elegida: radio marcado, casillas marcadas (multichoice_<id>[n]) o lista desplegable
-          var textoOpcion = function(input) {
-            var l = input.closest('label') || form.querySelector('label[for="' + input.id + '"]');
-            return textoLimpio(l);
-          };
-          if (c.type === 'radio' && c.checked && c.value !== '0') {
-            it.opcion = Number(c.value);
-            it.texto = textoOpcion(c);
-          } else if (c.type === 'checkbox' && c.checked && m[3] && m[3] !== '0') {
-            it.opcion = (Array.isArray(it.opcion) ? it.opcion : []).concat(Number(m[3]));
-            it.texto = (Array.isArray(it.texto) ? it.texto : []).concat(textoOpcion(c));
-          } else if (c.tagName === 'SELECT' && c.value !== '0') {
-            it.opcion = Number(c.value);
-            it.texto = c.options[c.selectedIndex].text.trim();
-          }
-        });
-        var pagina = { pagina: Number((form.querySelector('input[name="gopage"]') || {}).value || 0), items: items, cuadro: null };
-        // Cuadro de créditos (widget CuadroCreditos de section/utils, o el cuadro propio anterior): plan elegido y casillas marcadas.
-        // Solo existe en la página en vivo
-        var cuadro = conCuadro ? document.querySelector('.zk-cuadro-creditos, #cuadro-creditos') : null;
-        if (cuadro) {
-          var plan = cuadro.querySelector('[data-plan-creditos][aria-pressed="true"]');
-          pagina.cuadro = {
-            plan: plan ? plan.getAttribute('data-plan-creditos') : null,
-            materias: Array.prototype.map.call(cuadro.querySelectorAll('[data-codigo-creditos]:checked'), function(x) { return x.getAttribute('data-codigo-creditos'); })
-          };
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzToolsCarga
+      // y la biblioteca en window.ZhakyzTools.
+      function urlTools() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_TOOLS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS : null;
         }
-        return pagina;
+        return new URL(RUTA_LOCAL_TOOLS, window.location.href).href;
       }
 
-      // LOS MISMOS CONTROLES QUE HACE MOODLE AL GUARDAR: OBLIGATORIOS Y RANGO DE LOS NUMÉRICOS
-      function faltantes(pagina) {
-        return Object.keys(pagina.items).filter(function(id) {
-          var it = pagina.items[id];
-          var vacio = it.tipo === 'multichoice' ? !it.opcion || (Array.isArray(it.opcion) && !it.opcion.length) : String(it.valor || '').trim() === '';
-          if (vacio) return it.requerido;
-          if (it.tipo === 'numeric') {
-            var n = numeroMoodle(it.valor);
-            return n === null || (it.rango && ((it.rango[0] !== null && n < it.rango[0]) || (it.rango[1] !== null && n > it.rango[1])));
-          }
-          return false;
-        });
-      }
-
-      // ---------------------------------------------------------
-      // ESTRUCTURA DE PÁGINAS: ¿EL BOTÓN "PÁGINA SIGUIENTE" ES EL ENVÍO FINAL?
-      // ---------------------------------------------------------
-      function definicionItem(enc, id) {
-        return enc.items.filter(function(d) { return d.id === Number(id); })[0] || null;
-      }
-
-      // RESPUESTAS DE TODAS LAS PÁGINAS GUARDADAS, LAS MÁS NUEVAS PRIMERO: { id: item leído }
-      function itemsRespondidos(paginas) {
-        var items = {};
-        Object.keys(paginas).sort(function(a, b) { return a - b; }).forEach(function(k) {
-          Object.keys(paginas[k].items).forEach(function(id) { items[id] = paginas[k].items[id]; });
-        });
-        return items;
-      }
-
-      // ¿LA PÁGINA ACTUAL COINCIDE CON LA ESTRUCTURA CONOCIDA? (SI NO, NO SE ADIVINA EL ENVÍO FINAL)
-      function estructuraCoincide(enc, pagina) {
-        var esperados = (enc.paginas || [])[pagina.pagina];
-        return !!esperados && Object.keys(pagina.items).every(function(id) { return esperados.indexOf(Number(id)) !== -1; });
-      }
-
-      // ¿QUEDA ALGUNA PÁGINA POSTERIOR CON UN ÍTEM VISIBLE? (UN ÍTEM DEPENDIENTE SE VE SOLO SI SE CUMPLE SU CONDICIÓN)
-      function quedanPaginasVisibles(enc, desde, items) {
-        for (var k = desde + 1; k < enc.paginas.length; k++) {
-          var visible = enc.paginas[k].some(function(id) {
-            var d = definicionItem(enc, id);
-            return !d || !d.depende || (items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion);
-          });
-          if (visible) return true;
-        }
-        return false;
-      }
-
-      // ÍTEMS Y SALTOS DE PÁGINA TAL COMO LOS MUESTRA "EDITAR PREGUNTAS" O LA VISTA PREVIA: [[ids de la página 1], …]
-      // Los ítems con este script no cuentan: van en todas las páginas y su id no está en la lista
-      function estructuraEnPantalla() {
-        var paginas = [[]];
-        Array.prototype.forEach.call(document.querySelectorAll('[id^="fitem_id_"], [id^="fgroup_id_group_"]'), function(el) {
-          var m = el.id.match(/^(?:fitem_id|fgroup_id_group)_([a-z]+)_(\d+)$/);
-          if (!m || el.querySelector('#copia-encuestas')) return;
-          if (m[1] === 'pagebreak') paginas.push([]);
-          else paginas[paginas.length - 1].push(Number(m[2]));
-        });
-        return paginas.filter(function(p) { return p.length; });
-      }
-
-      // ---------------------------------------------------------
-      // ARMADO DEL REGISTRO Y CRITICIDAD
-      // ---------------------------------------------------------
-      // CUATRIMESTRES COMPLETOS DESDE EL INGRESO HASTA EL ANTERIOR AL PERÍODO ACTUAL
-      function cuatrimestresTranscurridos(anio, cuatrimestre) {
-        var p = PERIODO_ACTUAL.split('-');
-        return (Number(p[0]) * 2 + Number(p[1])) - (Number(anio) * 2 + Number(cuatrimestre));
-      }
-
-      // PUNTOS DE AVANCE CURRICULAR: null SI NO SE PUEDE CALCULAR (INGRESANTE, INGRESO DESCONOCIDO U OTRO PLAN)
-      function puntosAvance(creditos, cohorte, plan, maximo) {
-        if (creditos === null || !cohorte || !cohorte.anio || !cohorte.cuatrimestre || (plan && plan !== '2024')) return null;
-        var t = cuatrimestresTranscurridos(cohorte.anio, cohorte.cuatrimestre);
-        if (!(t > 0)) return null;
-        var r = creditos / ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)];
-        var tramo = TRAMOS_AVANCE.filter(function(x) { return r >= x.desde; })[0];
-        return Math.round(maximo * tramo.parte);
-      }
-
-      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): UNA ENTRADA POR MATERIA Y LOS PUNTOS DEL BLOQUE DE CURSADA (MÁXIMO 35)
-      // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
-      // Dificultad: cada materia aporta (dificultad − 1) × 2,5 ÷ cantidad de materias (el promedio de 1 a 5 da de 0 a 10)
-      var PUNTOS_CANTIDAD = [35, 10, 5];
-      var PUNTOS_RECURSADA = [8, 7];
-      function entradasMaterias(d, it, items) {
-        var sel = null;
-        try { sel = JSON.parse(it.valor); } catch (e) { sel = null; }
-        if (!sel || !Array.isArray(sel.materias)) {
-          // Sin el selector (no se pudo cargar): se guarda lo que se escribió a mano, sin puntos
-          var texto = String(it.valor || '').trim();
-          return texto ? [{ variable: d.variable, pregunta: it.pregunta, respuesta: texto, criticidad: null }] : [];
-        }
-        var n = sel.materias.length;
-        var pfg = items[d.inactividadSalvo.id];
-        var exceptuado = !!pfg && d.inactividadSalvo.opciones.indexOf(pfg.opcion) !== -1;
-        var lista = [{ variable: 'materias_cursadas', pregunta: it.pregunta, respuesta: sel.materias.map(function(m) { return m.codigo; }),
-          criticidad: n === 0 ? (exceptuado ? 0 : PUNTOS_CANTIDAD[0]) : (PUNTOS_CANTIDAD[n] || 0) }];
-        var recursadas = 0;
-        sel.materias.forEach(function(m) {
-          var puntos = m.primera_vez === false ? (PUNTOS_RECURSADA[recursadas++] || 0) : m.primera_vez === true ? 0 : null;
-          lista.push({ variable: 'primera_vez', pregunta: '¿Es la primera vez que la cursaste?', materia: m.codigo,
-            respuesta: m.primera_vez === true ? 'Sí' : m.primera_vez === false ? 'No' : null, criticidad: puntos });
-        });
-        sel.materias.forEach(function(m) {
-          var dif = typeof m.dificultad === 'number' ? m.dificultad : null;
-          lista.push({ variable: 'dificultad', pregunta: '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', materia: m.codigo,
-            respuesta: dif, criticidad: dif === null ? null : Math.round((dif - 1) * 2.5 / n * 10) / 10 });
-        });
-        return lista;
-      }
-
-      // REGISTRO DE LA BASE RESPUESTAS A PARTIR DE LAS PÁGINAS RESPONDIDAS
-      // cohorteInicial: año y cuatrimestre de ingreso de la Encuesta inicial (la cuatrimestral no los pregunta)
-      function armarRegistro(cmid, paginas, usuario, cohorteInicial) {
-        var enc = ENCUESTAS[cmid];
-        var items = itemsRespondidos(paginas), cuadro = null;
-        Object.keys(paginas).forEach(function(k) { if (paginas[k].cuadro) cuadro = paginas[k].cuadro; });
-        var cohorte = cohorteInicial || {};
-        enc.items.forEach(function(d) {
-          var it = items[d.id];
-          if (d.cohorte && it) cohorte[d.cohorte] = d.cohorte === 'anio' ? numeroMoodle(it.valor) : it.texto;
-        });
-        var plan = cuadro ? cuadro.plan : null;
-        var lista = [];
-        if (cuadro) {
-          lista.push({ variable: 'plan', pregunta: 'Plan de estudios (cuadro de créditos)', respuesta: plan, criticidad: null });
-          lista.push({ variable: 'materias_aprobadas', pregunta: 'Materias aprobadas (cuadro de créditos)', respuesta: cuadro.materias, criticidad: null });
-        }
-        var conocidos = {};
-        enc.items.forEach(function(d) {
-          conocidos[d.id] = true;
-          var it = items[d.id];
-          if (!it || d.ignorar) return; // no se mostró, no se respondió o se ignora
-          if (d.depende && !(items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion)) return;
-          if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it, items)); return; }
-          var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);
-          var criticidad = null;
-          if (d.avance) criticidad = puntosAvance(respuesta, cohorte, plan, enc.maximoAvance);
-          else if (d.puntos && it.opcion) criticidad = d.puntos[it.opcion] !== undefined ? d.puntos[it.opcion] : 0;
-          lista.push({ variable: d.variable, pregunta: it.pregunta || d.texto || '', respuesta: respuesta, criticidad: criticidad });
-        });
-        Object.keys(items).forEach(function(id) {
-          if (conocidos[id]) return;
-          var it = items[id];
-          lista.push({ variable: 'pregunta_' + id, pregunta: it.pregunta, respuesta: it.tipo === 'multichoice' ? it.texto : it.valor, criticidad: null });
-        });
-        var total = 0;
-        lista.forEach(function(x) { if (typeof x.criticidad === 'number') total += x.criticidad; });
-        return {
-          id_usuario: usuario.id,
-          dni: usuario.dni,
-          encuesta: enc.clave,
-          version_encuesta: enc.version,
-          periodo: enc.porPeriodo ? PERIODO_ACTUAL : '',
-          json_pregunta_respuesta: lista,
-          puntaje_criticidad: Math.round(total),
-          created_at: ahoraIso()
-        };
-      }
-
-      // ---------------------------------------------------------
-      // ACCESO A LA BASE RESPUESTAS (MOODLE)
-      // ---------------------------------------------------------
-      var CAMPOS_RESPUESTA = ['id_usuario', 'dni', 'encuesta', 'version_encuesta', 'periodo', 'json_pregunta_respuesta', 'puntaje_criticidad', 'created_at'];
-
-      // USUARIO DE LA SESIÓN: id (M.cfg.userId) y DNI (nombre de usuario del campus, en /login/change_password.php)
-      var usuarioMoodle = null;
-      function leerUsuarioMoodle() {
-        if (usuarioMoodle) return Promise.resolve(usuarioMoodle);
-        var u = { id: Number(M.cfg.userId), dni: '' };
-        return fetch(M.cfg.wwwroot + '/login/change_password.php', { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            var el = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-name="username"]');
-            var dni = el ? el.textContent.trim() : '';
-            if (/^\d{7,9}$/.test(dni)) u.dni = dni;
-            return (usuarioMoodle = u);
-          }, function() { return (usuarioMoodle = u); });
-      }
-
-      // ENTRADAS PROPIAS DE LA BASE (CON "REQUIERE APROBACIÓN", EL ESTUDIANTE SOLO VE LAS SUYAS)
-      // Lee la plantilla de lista propia (data/moodle/plantillas/respuestas); si falta, la de Moodle por defecto (filas "campo | valor")
-      function leerRespuestasMoodle(idUsuario) {
-        return fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_RESPUESTAS + '&perpage=1000', { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var propias = doc.querySelectorAll('.zk-registro[data-tipo="entrada_respuesta"]');
-            var filas = propias.length ? Array.prototype.map.call(propias, function(el) {
-              var v = {};
-              el.querySelectorAll('[data-campo]').forEach(function(c) { v[c.getAttribute('data-campo')] = c.textContent.trim(); });
-              return v;
-            }) : Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
-              var v = {};
-              entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
-                var celdas = fila.children;
-                if (celdas.length >= 2) v[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
-              });
-              return v;
-            });
-            return filas.map(function(v) {
-              try { v.json_pregunta_respuesta = JSON.parse(v.json_pregunta_respuesta); } catch (e) { v.json_pregunta_respuesta = []; }
-              v.id_usuario = Number(v.id_usuario);
-              return v;
-            }).filter(function(r) { return r.id_usuario === idUsuario; });
-          });
-      }
-
-      // AÑO Y CUATRIMESTRE DE INGRESO SEGÚN LA ENCUESTA INICIAL MÁS RECIENTE
-      function cohorteDe(registros) {
-        var inicial = registros.filter(function(r) { return r.encuesta === 'inicial'; })
-          .sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); }).pop();
-        if (!inicial) return null;
-        var c = {};
-        (inicial.json_pregunta_respuesta || []).forEach(function(x) {
-          if (x.variable === 'año_cohorte') c.anio = x.respuesta;
-          if (x.variable === 'cuatri_cohorte') c.cuatrimestre = x.respuesta;
-        });
-        return c.anio && c.cuatrimestre ? c : null;
-      }
-
-      // AGREGAR UNA ENTRADA (rid=0: NUNCA SE EDITA NI SE BORRA). LOS CAMPOS SE UBICAN POR SU ETIQUETA EN EL FORMULARIO DE ALTA
-      function guardarRespuestaMoodle(registro) {
-        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_RESPUESTAS, { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
-            if (!form) throw new Error('No se encontró el formulario de alta de la base Respuestas.');
-            var porCampo = {};
-            form.querySelectorAll('label[for]').forEach(function(l) {
-              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
-              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
-            });
-            var fd = new FormData(form);
-            fd.set('d', String(DATAID_RESPUESTAS));
-            fd.set('rid', '0');
-            CAMPOS_RESPUESTA.forEach(function(k) {
-              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base Respuestas.');
-              var v = registro[k];
-              fd.set(porCampo[k], typeof v === 'string' || typeof v === 'number' ? String(v) : JSON.stringify(v));
-            });
-            fd.delete('saveandadd');
-            fd.set('saveandview', 'Guardar');
-            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
-          })
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = urlTools();
+        if (!url) return Promise.reject(new Error('La Página Tools de Utils todavía no está publicada.'));
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
           .then(function(r) {
-            if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
-            return r.text().then(function(html) {
-              var doc = new DOMParser().parseFromString(html, 'text/html');
-              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
-              if (errores.length) throw new Error(errores.join(' '));
-            });
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools) throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
           });
-      }
-
-      // COPIAS PENDIENTES: SE REINTENTAN AL VOLVER A ABRIR LA ENCUESTA, SIN DUPLICAR LAS QUE SÍ LLEGARON (MISMO created_at)
-      function reintentarPendientes() {
-        var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES, []);
-        if (!pendientes.length) return Promise.resolve();
-        return leerUsuarioMoodle().then(function(u) { return leerRespuestasMoodle(u.id); }).then(function(guardadas) {
-          var ya = guardadas.map(function(r) { return r.created_at; });
-          var quedan = [];
-          return pendientes.reduce(function(p, reg) {
-            return p.then(function() {
-              if (ya.indexOf(reg.created_at) !== -1) return;
-              return guardarRespuestaMoodle(reg).catch(function() { quedan.push(reg); });
-            });
-          }, Promise.resolve()).then(function() { escribirAlmacen(window.localStorage, CLAVE_PENDIENTES, quedan.length ? quedan : null); });
-        }).catch(function() { /* sin conexión con la base: se reintenta en la próxima visita */ });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
       }
 
       // ---------------------------------------------------------
-      // COPIA AL ENVIAR LA ENCUESTA
+      // AVISO (PARA EL EQUIPO: EDITAR PREGUNTAS, VISTA PREVIA Y LOCAL)
       // ---------------------------------------------------------
-      // Moodle guarda una página por vez: cada página respondida queda en sessionStorage hasta el envío final.
-      // Si falta alguna (por ejemplo, la encuesta se empezó en otra pestaña), se lee su HTML: Moodle la muestra con lo ya respondido.
-      var adaptador = null; // en Moodle: acceso real; en la vista previa local: simulación
-      var reanudando = false;
-
-      function paginasDeSesion(cmid) {
-        return leerAlmacen(window.sessionStorage, CLAVE_SESION + cmid, {});
-      }
-
-      function guardarPaginaEnSesion(cmid, pagina) {
-        var paginas = paginasDeSesion(cmid);
-        // Al pasar por una página se descartan las posteriores: pueden cambiar con las dependencias
-        Object.keys(paginas).forEach(function(k) { if (Number(k) > pagina.pagina) delete paginas[k]; });
-        paginas[pagina.pagina] = pagina;
-        escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, paginas);
-        return paginas;
-      }
-
-      function copiar(cmid, paginas, actual) {
-        var faltan = [];
-        for (var k = 0; k < actual.pagina; k++) if (!paginas[k]) faltan.push(k);
-        var enc = ENCUESTAS[cmid];
-        return Promise.all(faltan.map(function(k) {
-          return adaptador.leerPagina(cmid, k).then(function(p) { paginas[k] = p; });
-        })).then(function() {
-          return adaptador.usuario();
-        }).then(function(usuario) {
-          return (enc.porPeriodo ? adaptador.respuestasPropias(usuario.id).then(cohorteDe) : Promise.resolve(null)).then(function(cohorte) {
-            return armarRegistro(cmid, paginas, usuario, cohorte);
-          });
-        }).then(function(registro) {
-          ultimoRegistro = registro;
-          return adaptador.guardar(registro).then(function() { return registro; }, function(e) {
-            adaptador.pendiente(registro);
-            throw e;
-          });
-        });
-      }
-
-      // ESPERA LA COPIA COMO MUCHO ESPERA_MAXIMA: EL ENVÍO A MOODLE NUNCA QUEDA BLOQUEADO
-      var ultimoRegistro = null;
-      function conLimite(promesa) {
-        return Promise.race([promesa, new Promise(function(r, rechazar) {
-          setTimeout(function() { rechazar(new Error('La copia tardó más de ' + (ESPERA_MAXIMA / 1000) + ' segundos.')); }, ESPERA_MAXIMA);
-        })]);
-      }
-
-      function avisar(texto, tono) {
-        var aviso = document.getElementById('aviso-copia-encuestas');
-        var t = tono === 'ok' ? { f: '#f6fef6', b: '#c5f7c5', c: '#1f7a1f', i: 'ok' } : tono === 'info' ? { f: '#e5f2ff', b: 'rgba(77, 166, 255, 0.4)', c: '#026bd4', i: 'info' } : { f: '#fdf1ce', b: 'rgba(246, 206, 85, 0.5)', c: '#aa8109', i: 'alerta' };
-        aviso.innerHTML = '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: ' + t.f + ' !important; border: 1px solid ' + t.b + ' !important;">' +
-          '<span style="color: ' + t.c + ' !important; padding-top: 1px !important;">' + icono(t.i, 18) + '</span><span>' + escapar(texto) + '</span></div>';
-        mostrar(aviso, true);
-      }
-
-      document.addEventListener('submit', function(e) {
-        var form = e.target;
-        if (reanudando || !adaptador || form !== formularioEncuesta(document)) return;
-        if (e.defaultPrevented) return; // la validación de Moodle frenó el envío
-        var cmid = Number((form.querySelector('input[name="id"]') || {}).value);
-        if (!ENCUESTAS[cmid]) return;
-        var boton = e.submitter || form.querySelector('[type="submit"]');
-        var accion = boton ? boton.name : '';
-        if (accion === 'cancel') return escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
-        var actual = leerPagina(form, true);
-        var paginas = guardarPaginaEnSesion(cmid, actual);
-        var enc = ENCUESTAS[cmid];
-        // Envío final: "Enviar respuestas", o "Página siguiente" cuando las páginas que siguen quedan vacías por una dependencia
-        var final = accion === 'savevalues' ||
-          (accion === 'gonextpage' && estructuraCoincide(enc, actual) && !quedanPaginasVisibles(enc, actual.pagina, itemsRespondidos(paginas)));
-        if (!final) return; // página siguiente o anterior: Moodle sigue solo
-        if (faltantes(actual).length) return; // Moodle va a rechazar el envío: no se copia
-        e.preventDefault();
-        copiar(cmid, paginas, actual).then(function() {
-          escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
-        }, function() {
-          escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
-          avisar('La respuesta se guarda en Moodle, pero su copia en el historial quedó pendiente. Se reintenta al volver a abrir la encuesta.', 'alerta');
-        }).then(function() {
-          adaptador.continuar(form, boton);
-        });
-      });
-
-      // ---------------------------------------------------------
-      // ADAPTADOR MOODLE
-      // ---------------------------------------------------------
-      function adaptadorMoodle() {
-        return {
-          leerPagina: function(cmid, k) {
-            return fetch(M.cfg.wwwroot + '/mod/feedback/complete.php?id=' + cmid + '&gopage=' + k, { credentials: 'same-origin' })
-              .then(function(r) { return r.text(); })
-              .then(function(html) {
-                var f = formularioEncuesta(new DOMParser().parseFromString(html, 'text/html'));
-                if (!f) throw new Error('No se pudo leer la página ' + (k + 1) + ' de la encuesta.');
-                var p = leerPagina(f, false);
-                p.pagina = k;
-                return p;
-              });
-          },
-          usuario: leerUsuarioMoodle,
-          respuestasPropias: leerRespuestasMoodle,
-          guardar: function(registro) { return conLimite(guardarRespuestaMoodle(registro)); },
-          pendiente: function(registro) {
-            var p = leerAlmacen(window.localStorage, CLAVE_PENDIENTES, []);
-            p.push(registro);
-            escribirAlmacen(window.localStorage, CLAVE_PENDIENTES, p);
-          },
-          // Sigue el envío original: el botón presionado viaja como campo oculto para que Moodle sepa que es el envío final
-          continuar: function(form, boton) {
-            if (boton && boton.name) {
-              var h = document.createElement('input');
-              h.type = 'hidden';
-              h.name = boton.name;
-              h.value = boton.value;
-              form.appendChild(h);
-            }
-            reanudando = true;
-            form.dataset.formSubmitted = 'true'; // el detector de cambios de Moodle no pregunta "salir sin guardar"
-            HTMLFormElement.prototype.submit.call(form);
-          }
-        };
+      function mostrarError(error) {
+        if (SILENCIOSO) return;
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Tools.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Tools no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        var aviso = parte('aviso');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
       }
 
       // ---------------------------------------------------------
-      // VISTA PREVIA LOCAL: SIMULADOR DE LA ENCUESTA DE MOODLE
+      // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
       // ---------------------------------------------------------
-      // Reproduce el HTML que genera el campus (fitem, etiquetas con rango y marca de obligatorio, radios con su número de opción)
-      // y su navegación: Moodle valida las obligatorias antes de cambiar de página y el rango al guardar.
-      var USUARIO_PRUEBA = { id: 3773, nombre: 'Nicolás Gabriel Zuviria', dni: '00000004' }; // integrante de Zhakyz, DNI ficticio
-      var REQ = '<i class="icon fa fa-circle-exclamation text-danger ms-2 fa-fw" aria-hidden="true" title="Campo obligatorio"><\/i><span class="visually-hidden">(Campo obligatorio)</span>';
-      var SIMULACION = {};
-      SIMULACION[CMID_INICIAL] = {
-        // Páginas de la Encuesta Inicial tal como están en Moodle (tres saltos de página)
-        paginas: [
-          [{ tipo: 'cuadro' }, { id: 8253, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 223', req: true }],
-          [{ id: 8257, tipo: 'numeric', texto: '¿En qué año ingresaste a la facultad?', rango: '2000 - 3000', req: true },
-            { id: 8258, tipo: 'multichoice', texto: '¿En cuál cuatrimestre ingresaste?', opciones: ['1', '2'], req: true }],
-          [{ id: 8259, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true }],
-          [{ id: 8260, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año'], depende: [8259, 1] }]
-        ]
-      };
-      SIMULACION[CMID_CUATRIMESTRAL] = {
-        // Cuadro de créditos (8261), selector de materias (8270) que escribe su JSON en la 8768, y la 8273 anterior
-        paginas: [[
-          { tipo: 'cuadro' },
-          { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true },
-          { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true },
-          { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true },
-          { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'], req: true },
-          { id: 8768, tipo: 'textarea', texto: '¿Qué materias cursaste el anterior cuatrimestre?', ejemplo: JSON.stringify({ plan: '2024', ninguna: false, materias: [
-            { codigo: 'INGM102', nombre: 'Análisis Matemático II', primera_vez: false, dificultad: 4 },
-            { codigo: 'INGF101', nombre: 'Física A', primera_vez: true, dificultad: 2 }] }) },
-          { id: 8273, tipo: 'textfield', texto: '' },
-          { id: 8271, tipo: 'multichoice', texto: 'Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?', opciones: ['Al día (cursando las materias del año que me corresponde)', 'Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)', 'Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)'], req: true }
-        ]]
-      };
-      // Materias del cuadro de créditos simulado (Plan 2024, 1.er año)
-      var MATERIAS_CUADRO = [{ codigo: 'INGM101', nombre: 'Análisis Matemático I', creditos: 6 }, { codigo: 'INGM105', nombre: 'Álgebra I- B', creditos: 4 }, { codigo: 'ING1103', nombre: 'Fundamentos de Química', creditos: 4 }];
-
-      var sim = { cmid: CMID_INICIAL, pagina: 0, valores: {}, base: [], error: '', guardado: '' };
-
-      function itemsVisibles(cmid, k) {
-        return SIMULACION[cmid].paginas[k].filter(function(d) { return !d.depende || sim.valores['multichoice_' + d.depende[0]] === String(d.depende[1]); });
-      }
-
-      // HTML DE UN ÍTEM CON EL MISMO MARCADO QUE MOODLE 5
-      function htmlItem(d) {
-        if (d.tipo === 'cuadro') {
-          var sel = sim.valores.cuadro || [];
-          return '<div class="zk-cuadro-creditos" style="border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 12px !important; margin-bottom: 12px !important; background-color: #ffffff !important;">' +
-            '<div style="font-weight: 600 !important; margin-bottom: 6px !important;">Cuadro de créditos (simulado) <button type="button" data-plan-creditos="2024" aria-pressed="true" style="margin-left: 8px !important;">Plan 2024</button></div>' +
-            MATERIAS_CUADRO.map(function(m) {
-              return '<label style="display: block !important;"><input type="checkbox" data-codigo-creditos="' + m.codigo + '"' + (sel.indexOf(m.codigo) !== -1 ? ' checked' : '') + '> ' + escapar(m.nombre) + ' (' + m.creditos + ' créd.)</label>';
-            }).join('') + '</div>';
-        }
-        var nombre = d.tipo + '_' + d.id;
-        var v = sim.valores[nombre];
-        if (d.tipo === 'multichoice') {
-          return '<div id="fgroup_id_group_' + nombre + '" class="mb-3 row fitem feedback_itemlist feedback-item-multichoice multichoice-r" style="margin-bottom: 12px !important;">' +
-            '<div class="col-md-3 col-form-label"><p id="fgroup_id_group_' + nombre + '_label" style="margin: 0 0 4px 0 !important; font-weight: 500 !important;">' + escapar(d.texto) + (d.req ? REQ : '') + '</p></div>' +
-            '<div class="col-md-9 felement"><fieldset style="border: 0 !important; margin: 0 !important; padding: 0 !important;"><legend class="visually-hidden" style="display: none;">' + escapar(d.texto) + '</legend>' +
-            '<input type="hidden" name="' + nombre + '" value="0">' +
-            d.opciones.map(function(o, i) {
-              return '<label style="display: block !important;"><input type="radio" class="form-check-input" name="' + nombre + '" id="id_' + nombre + '_' + (i + 1) + '" value="' + (i + 1) + '"' + (v === String(i + 1) ? ' checked' : '') + '> ' + escapar(o) + '</label>';
-            }).join('') + '</fieldset></div></div>';
-        }
-        return '<div id="fitem_id_' + nombre + '" class="mb-3 row fitem feedback_itemlist feedback-item-' + d.tipo + '" style="margin-bottom: 12px !important;">' +
-          '<div class="col-md-3 col-form-label">' + (d.texto ? '<label id="id_' + nombre + '_label" for="id_' + nombre + '" style="font-weight: 500 !important;">' + escapar(d.texto) + (d.rango ? '<span class="boundaries"> (' + d.rango + ')</span>' : '') + (d.req ? REQ : '') + '</label>' : '') + '</div>' +
-          '<div class="col-md-9 felement">' + (d.tipo === 'textarea'
-            ? '<textarea class="form-control" name="' + nombre + '" id="id_' + nombre + '" rows="4" style="width: 100% !important; padding: 6px 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; font-family: monospace !important; font-size: 12px !important; box-sizing: border-box !important;">' + escapar(v === undefined ? d.ejemplo : v) + '</textarea>' +
-              '<div style="font-size: 12px !important; color: #47536b !important;">En la encuesta este JSON lo escribe el selector de materias (ítem 8270).</div></div></div>'
-            : '<input type="text" class="form-control" name="' + nombre + '" id="id_' + nombre + '" value="' + escapar(v || '') + '" style="height: 36px !important; padding: 4px 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; width: ' + (d.tipo === 'textfield' ? '100%' : '160px') + ' !important; box-sizing: border-box !important;"></div></div>');
-      }
-
-      function renderizarSimulador() {
-        var paginas = SIMULACION[sim.cmid].paginas;
-        // Como Moodle: "Página siguiente" mientras no sea la última página, aunque las siguientes queden vacías por una dependencia
-        var hayMas = sim.pagina < paginas.length - 1;
-        var btn = 'height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; cursor: pointer !important;';
-        var principal = 'height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; cursor: pointer !important;';
-        document.getElementById('formulario-simulado').innerHTML =
-          '<div style="font-size: 16px !important; font-weight: 600 !important; margin-bottom: 4px !important;">' + escapar(ENCUESTAS[sim.cmid].titulo) + ' · página ' + (sim.pagina + 1) + ' de ' + paginas.length + '</div>' +
-          (sim.error ? '<div style="color: #910808 !important; margin-bottom: 8px !important;">' + escapar(sim.error) + '</div>' : '') +
-          '<form id="feedback_complete_form" class="mform" action="#" novalidate>' +
-          '<input type="hidden" name="id" value="' + sim.cmid + '"><input type="hidden" name="gopage" value="' + sim.pagina + '">' +
-          itemsVisibles(sim.cmid, sim.pagina).map(htmlItem).join('') +
-          '<div style="display: flex !important; gap: 8px !important; flex-wrap: wrap !important; margin-top: 8px !important;">' +
-          (sim.pagina > 0 ? '<button type="submit" name="gopreviouspage" value="Página anterior" style="' + btn + '">Página anterior</button>' : '') +
-          (hayMas ? '<button type="submit" name="gonextpage" value="Página siguiente" style="' + btn + '">Página siguiente</button>'
-            : '<button type="submit" name="savevalues" value="Enviar respuestas" style="' + principal + '">Enviar respuestas</button>') +
-          '<button type="submit" name="cancel" value="Cancelar" style="' + btn + '">Cancelar</button></div></form>';
-      }
-
-      // VALORES DE LA PÁGINA EN EL "SERVIDOR" SIMULADO (MOODLE LOS GUARDA AL CAMBIAR DE PÁGINA Y LOS PRECARGA)
-      function guardarValoresSimulados(form) {
-        Array.prototype.forEach.call(form.querySelectorAll('input, textarea'), function(c) {
-          if (c.hasAttribute('data-codigo-creditos')) return;
-          if (c.type === 'radio') { if (c.checked) sim.valores[c.name] = c.value; }
-          else if (c.type !== 'hidden' && c.name) sim.valores[c.name] = c.value;
-        });
-        if (form.querySelector('.zk-cuadro-creditos')) {
-          sim.valores.cuadro = Array.prototype.map.call(form.querySelectorAll('[data-codigo-creditos]:checked'), function(x) { return x.getAttribute('data-codigo-creditos'); });
-        }
-      }
-
-      function renderizarRegistros() {
-        var cont = document.getElementById('registros-simulados');
-        cont.innerHTML = '<div style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0 !important;">Registros copiados a la base Respuestas</div>' +
-          '<div style="font-size: 12px !important; color: #47536b !important; margin-bottom: 8px !important;">Simulación en memoria: un registro por envío, del más nuevo al más viejo. El estudiante no ve esta información.</div>' +
-          (sim.base.length ? sim.base.slice().reverse().map(function(r, i) {
-            return '<details' + (i === 0 ? ' open' : '') + ' style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 10px 14px !important; margin-bottom: 8px !important;">' +
-              '<summary style="cursor: pointer !important; font-weight: 600 !important;">' + escapar(r.encuesta + (r.periodo ? ' ' + r.periodo : '') + ' · puntaje de criticidad ' + r.puntaje_criticidad + ' · ' + r.created_at) + '</summary>' +
-              '<pre style="margin: 8px 0 0 0 !important; padding: 10px 12px !important; background-color: #0b0e14 !important; color: #ebeef4 !important; border-radius: 8px !important; font-size: 12px !important; line-height: 1.45 !important; overflow-x: auto !important; white-space: pre !important;">' + escapar(JSON.stringify(r, null, 2)) + '</pre></details>';
-          }).join('') : '<p style="margin: 0 !important; color: #47536b !important;">Sin registros. Responder la encuesta simulada y enviarla.</p>');
-      }
-
-      function adaptadorLocal() {
-        return {
-          // En la simulación todas las páginas pasan por esta pestaña; si faltara una, se arma con los valores del "servidor"
-          leerPagina: function(cmid, k) {
-            var div = document.createElement('div');
-            div.innerHTML = '<form><input type="hidden" name="gopage" value="' + k + '">' + itemsVisibles(cmid, k).filter(function(d) { return d.tipo !== 'cuadro'; }).map(htmlItem).join('') + '</form>';
-            var p = leerPagina(div.querySelector('form'), false);
-            p.pagina = k;
-            return Promise.resolve(p);
-          },
-          usuario: function() { return Promise.resolve(USUARIO_PRUEBA); },
-          respuestasPropias: function(id) { return Promise.resolve(sim.base.filter(function(r) { return r.id_usuario === id; })); },
-          guardar: function(registro) { sim.base.push(registro); return Promise.resolve(); },
-          pendiente: function() {},
-          // Equivale a que Moodle reciba el envío final: valida el rango en el servidor, guarda y vuelve a la primera página
-          continuar: function() {
-            sim.error = '';
-            sim.valores = {};
-            sim.pagina = 0;
-            sim.guardado = 'Moodle guardó la respuesta y se copió a la base Respuestas.';
-            renderizarSimulador();
-            renderizarRegistros();
-            avisar(sim.guardado, 'ok');
-          }
-        };
-      }
-
-      function crearSimulador() {
-        var raiz = document.getElementById('copia-encuestas');
-        ['background-color: #fcfcfc', 'border: 1px solid rgba(194, 201, 214, 0.4)', 'border-radius: 10px', 'padding: 24px', 'max-width: 850px', 'margin: 20px auto', 'box-sizing: border-box'].forEach(function(r) {
-          var p = r.split(': ');
-          raiz.style.setProperty(p[0], p[1], 'important');
-        });
-        var cont = document.getElementById('simulador-copia-encuestas');
-        cont.innerHTML =
-          '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;">' +
-          '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' + icono('ver', 18) + 'Vista previa local · encuesta</span>' +
-          '<button type="button" data-sim-encuesta="' + CMID_INICIAL + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">Inicial</button>' +
-          '<button type="button" data-sim-encuesta="' + CMID_CUATRIMESTRAL + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">Cuatrimestral</button></div>' +
-          '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
-          '<h3 style="margin: 0 0 4px 0 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Copia de respuestas de las encuestas</h3>' +
-          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro con su criticidad a la base Respuestas (simulada). Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
-          '<div id="formulario-simulado" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important;"></div>' +
-          '<div id="registros-simulados"></div>' +
-          '<div id="footer-zhakyz" style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important;">' +
-          '<span style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">Zhakyz \x26amp; Asociados</span>' +
-          '<span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span></div>';
-        mostrar(cont, true);
-        // En la vista previa, el aviso va debajo del encabezado, junto al formulario simulado
-        cont.insertBefore(document.getElementById('aviso-copia-encuestas'), document.getElementById('formulario-simulado'));
-        renderizarSimulador();
-        renderizarRegistros();
-        // Navegación simulada de Moodle (se registra después del listener de la copia, como pasa en el campus)
-        document.addEventListener('submit', function(e) {
-          var form = e.target;
-          // getAttribute: el formulario de Moodle tiene un campo llamado "id", que tapa la propiedad form.id
-          if (form.getAttribute('id') !== 'feedback_complete_form' || !form.closest('#copia-encuestas')) return;
-          if (e.defaultPrevented) return; // la copia tomó el envío final
-          e.preventDefault();
-          var accion = (e.submitter || {}).name;
-          guardarValoresSimulados(form);
-          sim.error = '';
-          if (accion === 'cancel') { sim.valores = {}; sim.pagina = 0; }
-          else if (accion === 'gopreviouspage') {
-            do { sim.pagina--; } while (sim.pagina > 0 && !itemsVisibles(sim.cmid, sim.pagina).length);
-          } else {
-            var pagina = leerPagina(form, false);
-            var mal = faltantes(pagina);
-            if (mal.length) sim.error = 'Moodle no deja continuar: ' + mal.map(function(id) { return pagina.items[id].pregunta || 'ítem ' + id; }).join(' · ') + ' (obligatoria o fuera de rango).';
-            else {
-              // Siguiente página con ítems visibles; si no queda ninguna, Moodle guarda la respuesta (acá, sin que la copia la haya tomado)
-              var siguiente = sim.pagina + 1;
-              while (siguiente < SIMULACION[sim.cmid].paginas.length && !itemsVisibles(sim.cmid, siguiente).length) siguiente++;
-              if (accion === 'gonextpage' && siguiente < SIMULACION[sim.cmid].paginas.length) sim.pagina = siguiente;
-              else {
-                sim.valores = {};
-                sim.pagina = 0;
-                avisar('Moodle guardó la respuesta, pero la copia no la tomó: no se agregó ninguna versión a la base Respuestas.', 'alerta');
-              }
-            }
-          }
-          renderizarSimulador();
-        });
-        document.addEventListener('click', function(e) {
-          var b = e.target.closest && e.target.closest('[data-sim-encuesta]');
-          if (!b) return;
-          sim.cmid = Number(b.getAttribute('data-sim-encuesta'));
-          sim.pagina = 0;
-          sim.valores = {};
-          sim.error = '';
-          mostrar(document.getElementById('aviso-copia-encuestas'), false);
-          renderizarSimulador();
-        });
-      }
-
-      // ---------------------------------------------------------
-      // INICIO (CUANDO TERMINA DE CARGAR LA PÁGINA: EL ÍTEM PUEDE ESTAR ANTES QUE OTRAS PREGUNTAS)
-      // ---------------------------------------------------------
-      function iniciar() {
-        if (ES_VISTA_LOCAL) {
-          adaptador = adaptadorLocal();
-          crearSimulador();
-        } else if (window.M && /\/mod\/feedback\/(edit|print)\.php/.test(window.location.pathname)) {
-          // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas.
-          // Ahí se ven todas las páginas juntas: el aviso lo muestra solo el primer ítem
-          if (window.zkCopiaEncuestasAviso) return;
-          window.zkCopiaEncuestasAviso = true;
-          var enc = ENCUESTAS[M.cfg.contextInstanceId];
-          var igual = enc && JSON.stringify(estructuraEnPantalla()) === JSON.stringify(enc.paginas);
-          avisar('Ítem con script: copia cada envío de esta encuesta a la base Respuestas. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/copia_encuestas). ' +
-            (!enc ? 'Esta encuesta no está en la lista del script.' : igual ? 'La estructura de páginas coincide con la del script.'
-              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(estructuraEnPantalla()) + '; en el script: ' + JSON.stringify(enc.paginas) + '). Actualizar la lista "paginas" del script.'),
-            !enc || igual ? 'info' : 'alerta');
-        } else if (window.M && DATAID_RESPUESTAS && formularioEncuesta(document)) {
-          // Si por error hay dos ítems de copia en la misma página, solo el primero copia
-          if (window.zkCopiaEncuestasActiva) return;
-          window.zkCopiaEncuestasActiva = true;
-          adaptador = adaptadorMoodle();
-          reintentarPendientes();
-        }
-      }
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
-      else iniciar();
+      cargarTools().then(function(Tools) {
+        if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
+        var opciones = { contenedor: parte('tool') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        Tools[TOOL](opciones);
+      }).catch(mostrarError);
     })();
   </script>
-  </nolink>
+</nolink>
 </div>

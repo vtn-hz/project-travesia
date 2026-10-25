@@ -2,8 +2,9 @@
 
 > Documento vivo: se actualiza a medida que se refinan los requerimientos.
 
-- **Archivo:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html)
-- **Dónde va en Moodle:** un ítem "Área de texto y medios" con este archivo **en cada página** de cada encuesta (ver [Publicación](#publicación)):
+- **Código:** la herramienta `CopiaRespuestas` de la biblioteca de Tools ([`section/utils/tools/content.html`](../../section/utils/tools/content.html), Página "Tools" de Utils). Desde el 2026-10-25 ya no es un script autocontenido ([guía de Utils](../../section/utils/README.md#3-tools-toolscontenthtml)).
+- **Ítem:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html), una copia del cargador de tools con `TOOL = 'CopiaRespuestas'`. Un cambio en la copia se publica solo en la Página Tools; los ítems cambian solo si cambia el cargador.
+- **Dónde va en Moodle:** un ítem "Área de texto y medios" con el cargador **al final de cada página** de cada encuesta (ver [Publicación](#publicación)):
   - Encuesta Inicial (cmid 59710): 4 páginas, 4 ítems;
   - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
@@ -129,26 +130,27 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
 
    El campus **no permite "disponible pero no mostrada"** (solo mostrar u ocultar), y si se oculta, los estudiantes no pueden escribir en ella. Por eso la base queda visible dentro de Zhakyz, y con la aprobación cada estudiante ve solo sus entradas.
 3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. Hecho el 2026-10-25: lista (cabecera, entrada repetida y pie) e individual, releídas después de guardar. La de añadir entrada queda la de Moodle, porque la copia ubica cada campo por su etiqueta. Si la plantilla de lista falta, la copia la reemplaza leyendo la de Moodle por defecto (filas "campo | valor", igual que Preguntas). Con la propia, el estudiante que abre la base no ve los botones de editar y borrar.
-4. **Agregar los ítems de copia**, cada uno con este archivo:
+4. **Publicar la Página Tools** en la subsección Utils, después de Widgets, con `publicar.js`. Queda visible por la misma razón que Widgets: el cargador la lee con la sesión del estudiante.
+5. **Agregar los ítems de copia**, cada uno con el cargador ([`section/copia_encuestas`](../../section/copia_encuestas/content.html)):
    - **Inicial:** uno al final de cada una de las 4 páginas. El de la página 4 tiene que **depender de `trabaja` = Si**, igual que la 8260. Si no, la página 4 nunca queda vacía y el estudiante que no trabaja ve una página en blanco.
    - **Cuatrimestral:** uno al final de la página.
 
    El editor de ítems de Moodle borra los scripts: hay que guardarlos con un POST directo al formulario del ítem, como el cuadro de créditos. Los ids nuevos no hace falta cargarlos en el script.
-5. **Probar un envío.** Con la cuenta del equipo (rol Profesor), la encuesta no se puede responder. Hay dos caminos:
+6. **Probar un envío.** Con la cuenta del equipo (rol Profesor), la encuesta no se puede responder. Hay dos caminos:
    - una cuenta con rol Estudiante (Nicolás Zuviria es el único del equipo);
    - **"Cambiar rol a… Estudiante"** con la cuenta del equipo. Moodle no guarda la respuesta cuando el rol está cambiado (`feedback_check_is_switchrole()`), pero la copia sí se agrega a la base. Sirve para probar la copia sin ensuciar las respuestas de la encuesta.
 
-**Alternativa a evaluar:** en lugar de 5 copias del script en los ítems, sumarlo a la biblioteca de Utils como un widget más y usar el cargador. Así un cambio se publica una sola vez. Depende de que los estudiantes puedan abrir la Página Widgets.
-
 ## Vista previa local
 
-Al abrir el archivo en local aparece un **simulador de la Encuesta de Moodle**:
+Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/content.html)) en local con Live Server, el cargador lee la Página Tools del repo y la herramienta muestra un **simulador de la Encuesta de Moodle**:
 - usa el mismo HTML que genera el campus y la misma navegación: valida obligatorias y rango al cambiar de página, y "Página siguiente" aparece aunque las páginas que siguen queden vacías;
 - tiene un cuadro de créditos simplificado y, en la Cuatrimestral, el JSON del selector en un campo editable;
 - usa el usuario de prueba Nicolás Zuviria, con DNI ficticio;
 - muestra los registros que se copiarían, con su puntaje. Si Moodle guardara sin que la copia lo tomara, avisa.
 
 ## Pruebas hechas
+
+**Con la Página Tools (2026-10-25).** El ítem (cargador de tools) y la Página Tools del repo, servidos en local, contra el script autocontenido anterior, con los mismos envíos en el simulador: Inicial que trabaja (65), Inicial que no trabaja, con el envío en "Página siguiente" (70), y Cuatrimestral con el cohorte de la Inicial (63). Los tres registros son **idénticos** (sin `created_at`) y no hay errores de JavaScript.
 
 **Con los widgets reales (2026-10-25).** Se usaron la vista previa de las dos encuestas, la Página Widgets y la base Materias del campus, descargadas en modo lectura y servidas sin conexión, con la base Respuestas simulada:
 

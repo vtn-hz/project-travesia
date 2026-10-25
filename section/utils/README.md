@@ -1,11 +1,13 @@
-# Utils · widgets compartidos
+# Utils · widgets y herramientas compartidos
 
-Cómo usar la biblioteca de widgets y el cargador. En Moodle, la Página "Widgets" muestra un menú con los widgets: cada uno se abre con `#widget=<nombre>` en la dirección. Esta guía vive solo en el repo.
+Cómo usar las bibliotecas de Utils y sus cargadores. **Widgets** son componentes con interfaz que completan un campo de una encuesta; **Tools** son herramientas sin interfaz, como la copia de respuestas. En Moodle, cada Página muestra el índice de su biblioteca, y en Widgets cada widget se abre con `#widget=<nombre>` en la dirección. Esta guía vive solo en el repo.
 
 | Archivo | Qué es | En Moodle |
 |---|---|---|
-| [`widgets/content.html`](widgets/content.html) | La biblioteca (`window.ZhakyzUtils`) como script muerto | Página "Widgets" de la subsección "Utils", justo antes de "Pruebas" (`moodle.config.json` → `paginas.utils_widgets`). Muestra el índice de widgets y cada widget con `#widget=<nombre>` |
+| [`widgets/content.html`](widgets/content.html) | La biblioteca de widgets (`window.ZhakyzUtils`) como script muerto | Página "Widgets" de la subsección "Utils", justo antes de "Pruebas" (`moodle.config.json` → `paginas.utils_widgets`). Muestra el índice de widgets y cada widget con `#widget=<nombre>` |
 | [`cargador/content.html`](cargador/content.html) | El script que lee la biblioteca y crea un widget (`WIDGET`) para un campo de la encuesta (`CAMPO`) | No se publica solo: se copia en cada vista que usa un widget |
+| [`tools/content.html`](tools/content.html) | La biblioteca de herramientas (`window.ZhakyzTools`) como script muerto | Página "Tools" de la subsección "Utils", después de "Widgets" (`paginas.utils_tools`). Muestra el índice de herramientas |
+| [`cargador_tools/content.html`](cargador_tools/content.html) | El script que lee la biblioteca de herramientas y arranca una (`TOOL`) | No se publica solo: su copia es [`section/copia_encuestas`](../copia_encuestas/content.html), en los 5 ítems de copia de las encuestas |
 
 Estado: **publicado el 2026-10-25** ([`DEPLOY.md`](../../DEPLOY.md)). Subsección "Utils" (sección 15749), antes de Pruebas → Página "Widgets" (cmid 59932). Copias del cargador publicadas en la Encuesta Inicial (ítem 8254: [`section/encuesta_inicial`](../encuesta_inicial/content.html)) y en la Cuatrimestral (ítems 8261 y 8270: [`section/encuesta_cuatrimestral`](../encuesta_cuatrimestral)).
 
@@ -50,6 +52,34 @@ El cargador no usa ids propios: se ubica con `document.currentScript`, así que 
 | Encuesta Cuatrimestral (cmid 59712) | 8270 (`[Select de todas las materias]`) | `SelectorMaterias` | `textarea[name="textarea_8768"]`: la respuesta larga `materias_cuatrimestre`, creada el 2026-10-25 en lugar del 8273 |
 
 Si la biblioteca no se puede cargar (Página sin publicar, sin acceso o sin red), el cargador muestra un aviso y la pregunta queda editable para completarla a mano. En local, la pregunta se simula con el mismo nombre que en Moodle.
+
+## 3. Tools (`tools/content.html`)
+
+Igual que la de widgets: un `<script type="text/plain" data-zk-biblioteca="tools">` dentro de un `div` oculto. Al ejecutarse define `window.ZhakyzTools`:
+
+| Miembro | Qué es |
+|---|---|
+| `version` | Número de versión. Si la página ya tiene esa versión o una más nueva, la biblioteca no se vuelve a definir |
+| `CopiaRespuestas({ contenedor })` | Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, con su criticidad ([spec](../../docs/specs/copia-encuestas.md)). Una sola instancia por página: si hay varias copias del cargador, arranca la primera. En Editar preguntas y en la vista previa muestra un aviso para el equipo con el control de la estructura de páginas; en local, el simulador de las dos encuestas |
+
+La Página muestra solo el índice **Tool Documentation**: las herramientas no tienen interfaz. Las mismas reglas del script muerto de widgets valen acá.
+
+**Agregar una herramienta:** escribir su función dentro del script muerto, exportarla en `window.ZhakyzTools`, sumar su texto a la tabla `TOOLS` del índice y subir `VERSION`.
+
+**Publicar** (con confirmación): `publicar.js --archivo section/utils/tools/content.html --tipo pagina --nombre "Tools"`. Anotar el cmid en `paginas.utils_tools` y correr `sincronizar_config.js`, que lo copia al `CMID_TOOLS` de los cargadores de tools. Un cambio en una herramienta se publica solo acá: los ítems de las encuestas no cambian.
+
+## 4. Cargador de tools (`cargador_tools/content.html`)
+
+Como el de widgets: pide la Página Tools con `fetch`, ejecuta su biblioteca una sola vez por página (`window.ZhakyzToolsCarga`) y llama a `ZhakyzTools[TOOL]({ contenedor })`. Configuración: `TOOL`, `OPCIONES` y `RUTA_LOCAL_TOOLS` (solo para la vista local); `CMID_TOOLS` lo completa `sincronizar_config.js`.
+
+Si la biblioteca no se puede cargar, en la encuesta que responde el estudiante **no muestra nada**: la encuesta se envía igual, solo que sin copia. En Editar preguntas, en la vista previa y en local sí muestra el aviso.
+
+| Vista | Ítems donde va el cargador | `TOOL` |
+|---|---|---|
+| Encuesta Inicial (cmid 59710) | Uno al final de cada una de las 4 páginas. El de la página 4 depende de `trabaja` = Si, igual que la 8260 | `CopiaRespuestas` |
+| Encuesta Cuatrimestral (cmid 59712) | Uno al final de la página | `CopiaRespuestas` |
+
+Los 5 ítems tienen el mismo contenido: [`section/copia_encuestas/content.html`](../copia_encuestas/content.html).
 
 ## Widget: `CuadroCreditos`
 
@@ -160,12 +190,10 @@ En local, las dos se abren con Live Server, que lee el plan completo de `data/pl
 
 ## Pendientes
 
-- **ADR:** el cargador cambia la regla "un único archivo autocontenido" de `RULES.md`. Registrar la decisión y actualizar `RULES.md` y la skill `crear-seccion`.
+- **ADR:** los cargadores (de widgets y de tools) cambian la regla "un único archivo autocontenido" de `RULES.md`. Registrar la decisión y actualizar `RULES.md` y la skill `crear-seccion`.
 - **Máximos de `creditos_aprobados`:** la Encuesta Inicial acepta hasta 223 y la Cuatrimestral hasta 235,5. Con las optativas del Plan 2003 el total llega a 245, así que los dos máximos deberían ser 245. Es un cambio en Moodle y requiere confirmación.
 - **Optativas del Plan 2003:** la casilla suma los 16 CG completos. Un estudiante con parte de las optativas no lo puede indicar.
-- **Acceso a la Página Widgets:** los estudiantes necesitan poder abrirla para que el cargador la lea. Hoy es visible en la página del curso; revisar si se puede dejar disponible sin mostrarla.
+- **Acceso a las Páginas Widgets y Tools:** los estudiantes necesitan poder abrirlas para que los cargadores las lean. Quedan visibles en la página del curso: el campus no permite "disponible pero no mostrada".
 - **Borrar el ítem 8273:** la respuesta corta vieja sigue en la Encuesta Cuatrimestral, visible y vacía, con la misma etiqueta `materias_cuatrimestre` que el 8768. La encuesta tiene 0 respuestas.
-- **Copia de respuestas:** busca `#cuadro-creditos` y el ítem 8273. Tiene que buscar `.zk-cuadro-creditos` (o escuchar `zk-creditos`) y leer el JSON del 8768.
 - **Probar con una cuenta de estudiante:** con rol Profesor no se puede responder la encuesta, así que el envío real de los widgets no está probado.
-- **Bloque de cursada de la criticidad:** con el selector, la Cuatrimestral ya tiene las respuestas por materia. Falta que la copia de respuestas lea el JSON de `materias_cuatrimestre` (con `SelectorMaterias.parsear` o `JSON.parse`) y calcule los 35 puntos ([spec](../../docs/specs/copia-encuestas.md), [modelo](../../docs/models/MODELO_CRITICIDAD_ENCUESTAS.md)).
 - **El cuadro de créditos no recupera la selección:** al volver a su página, empieza vacío y vuelve a escribir 0 en el total. El selector de materias sí la recupera. El cuadro guarda un número, así que para recuperarlo haría falta guardar también los códigos en algún campo.
