@@ -66,15 +66,18 @@
           { id: 8260, variable: 'inicio_laboral', depende: { id: 8259, opcion: 1 }, puntos: { 1: 20, 2: 20 } }
         ]
       };
+      // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
       ENCUESTAS[CMID_CUATRIMESTRAL] = {
-        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 1, porPeriodo: true, maximoAvance: 30,
-        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8273, 8271]],
+        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true, maximoAvance: 30,
+        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8768, 8273, 8271]],
         items: [
           { id: 8262, variable: 'creditos_aprobados', avance: true },
           { id: 8264, variable: 'progreso_proyecto_final', puntos: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 } },
           { id: 8265, variable: 'trabaja', puntos: { 1: 5, 2: 0 } },
           { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 }, puntos: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 } },
-          { id: 8273, variable: 'materias_cuatrimestre', texto: '¿Qué materias cursaste el anterior cuatrimestre?' },
+          // Selector de materias: no cursar es inactividad, salvo con el PFG en desarrollo (4) o finalizado (5)
+          { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true, inactividadSalvo: { id: 8264, opciones: [4, 5] } },
+          { id: 8273, ignorar: true }, // respuesta corta anterior al selector: se va a borrar de la encuesta
           { id: 8271, variable: 'avance_percibido', puntos: { 1: 0, 2: 5, 3: 10 } }
         ]
       };
@@ -213,8 +216,9 @@
           }
         });
         var pagina = { pagina: Number((form.querySelector('input[name="gopage"]') || {}).value || 0), items: items, cuadro: null };
-        // Cuadro de créditos (section/encuesta_inicial): plan elegido y materias marcadas. Solo existe en la página en vivo
-        var cuadro = conCuadro ? document.getElementById('cuadro-creditos') : null;
+        // Cuadro de créditos (widget CuadroCreditos de section/utils, o el cuadro propio anterior): plan elegido y casillas marcadas.
+        // Solo existe en la página en vivo
+        var cuadro = conCuadro ? document.querySelector('.zk-cuadro-creditos, #cuadro-creditos') : null;
         if (cuadro) {
           var plan = cuadro.querySelector('[data-plan-creditos][aria-pressed="true"]');
           pagina.cuadro = {
@@ -274,11 +278,12 @@
       }
 
       // ÍTEMS Y SALTOS DE PÁGINA TAL COMO LOS MUESTRA "EDITAR PREGUNTAS" O LA VISTA PREVIA: [[ids de la página 1], …]
+      // Los ítems con este script no cuentan: van en todas las páginas y su id no está en la lista
       function estructuraEnPantalla() {
         var paginas = [[]];
         Array.prototype.forEach.call(document.querySelectorAll('[id^="fitem_id_"], [id^="fgroup_id_group_"]'), function(el) {
           var m = el.id.match(/^(?:fitem_id|fgroup_id_group)_([a-z]+)_(\d+)$/);
-          if (!m) return;
+          if (!m || el.querySelector('#copia-encuestas')) return;
           if (m[1] === 'pagebreak') paginas.push([]);
           else paginas[paginas.length - 1].push(Number(m[2]));
         });
@@ -304,6 +309,38 @@
         return Math.round(maximo * tramo.parte);
       }
 
+      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): UNA ENTRADA POR MATERIA Y LOS PUNTOS DEL BLOQUE DE CURSADA (MÁXIMO 35)
+      // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
+      // Dificultad: cada materia aporta (dificultad − 1) × 2,5 ÷ cantidad de materias (el promedio de 1 a 5 da de 0 a 10)
+      var PUNTOS_CANTIDAD = [35, 10, 5];
+      var PUNTOS_RECURSADA = [8, 7];
+      function entradasMaterias(d, it, items) {
+        var sel = null;
+        try { sel = JSON.parse(it.valor); } catch (e) { sel = null; }
+        if (!sel || !Array.isArray(sel.materias)) {
+          // Sin el selector (no se pudo cargar): se guarda lo que se escribió a mano, sin puntos
+          var texto = String(it.valor || '').trim();
+          return texto ? [{ variable: d.variable, pregunta: it.pregunta, respuesta: texto, criticidad: null }] : [];
+        }
+        var n = sel.materias.length;
+        var pfg = items[d.inactividadSalvo.id];
+        var exceptuado = !!pfg && d.inactividadSalvo.opciones.indexOf(pfg.opcion) !== -1;
+        var lista = [{ variable: 'materias_cursadas', pregunta: it.pregunta, respuesta: sel.materias.map(function(m) { return m.codigo; }),
+          criticidad: n === 0 ? (exceptuado ? 0 : PUNTOS_CANTIDAD[0]) : (PUNTOS_CANTIDAD[n] || 0) }];
+        var recursadas = 0;
+        sel.materias.forEach(function(m) {
+          var puntos = m.primera_vez === false ? (PUNTOS_RECURSADA[recursadas++] || 0) : m.primera_vez === true ? 0 : null;
+          lista.push({ variable: 'primera_vez', pregunta: '¿Es la primera vez que la cursaste?', materia: m.codigo,
+            respuesta: m.primera_vez === true ? 'Sí' : m.primera_vez === false ? 'No' : null, criticidad: puntos });
+        });
+        sel.materias.forEach(function(m) {
+          var dif = typeof m.dificultad === 'number' ? m.dificultad : null;
+          lista.push({ variable: 'dificultad', pregunta: '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', materia: m.codigo,
+            respuesta: dif, criticidad: dif === null ? null : Math.round((dif - 1) * 2.5 / n * 10) / 10 });
+        });
+        return lista;
+      }
+
       // REGISTRO DE LA BASE RESPUESTAS A PARTIR DE LAS PÁGINAS RESPONDIDAS
       // cohorteInicial: año y cuatrimestre de ingreso de la Encuesta inicial (la cuatrimestral no los pregunta)
       function armarRegistro(cmid, paginas, usuario, cohorteInicial) {
@@ -325,8 +362,9 @@
         enc.items.forEach(function(d) {
           conocidos[d.id] = true;
           var it = items[d.id];
-          if (!it) return; // no se mostró o no se respondió
+          if (!it || d.ignorar) return; // no se mostró, no se respondió o se ignora
           if (d.depende && !(items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion)) return;
+          if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it, items)); return; }
           var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);
           var criticidad = null;
           if (d.avance) criticidad = puntosAvance(respuesta, cohorte, plan, enc.maximoAvance);
@@ -597,11 +635,16 @@
         ]
       };
       SIMULACION[CMID_CUATRIMESTRAL] = {
+        // Cuadro de créditos (8261), selector de materias (8270) que escribe su JSON en la 8768, y la 8273 anterior
         paginas: [[
+          { tipo: 'cuadro' },
           { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true },
           { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true },
           { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true },
           { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'], req: true },
+          { id: 8768, tipo: 'textarea', texto: '¿Qué materias cursaste el anterior cuatrimestre?', ejemplo: JSON.stringify({ plan: '2024', ninguna: false, materias: [
+            { codigo: 'INGM102', nombre: 'Análisis Matemático II', primera_vez: false, dificultad: 4 },
+            { codigo: 'INGF101', nombre: 'Física A', primera_vez: true, dificultad: 2 }] }) },
           { id: 8273, tipo: 'textfield', texto: '' },
           { id: 8271, tipo: 'multichoice', texto: 'Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?', opciones: ['Al día (cursando las materias del año que me corresponde)', 'Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)', 'Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)'], req: true }
         ]]
@@ -619,7 +662,7 @@
       function htmlItem(d) {
         if (d.tipo === 'cuadro') {
           var sel = sim.valores.cuadro || [];
-          return '<div id="cuadro-creditos" style="border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 12px !important; margin-bottom: 12px !important; background-color: #ffffff !important;">' +
+          return '<div class="zk-cuadro-creditos" style="border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 12px !important; margin-bottom: 12px !important; background-color: #ffffff !important;">' +
             '<div style="font-weight: 600 !important; margin-bottom: 6px !important;">Cuadro de créditos (simulado) <button type="button" data-plan-creditos="2024" aria-pressed="true" style="margin-left: 8px !important;">Plan 2024</button></div>' +
             MATERIAS_CUADRO.map(function(m) {
               return '<label style="display: block !important;"><input type="checkbox" data-codigo-creditos="' + m.codigo + '"' + (sel.indexOf(m.codigo) !== -1 ? ' checked' : '') + '> ' + escapar(m.nombre) + ' (' + m.creditos + ' créd.)</label>';
@@ -638,7 +681,10 @@
         }
         return '<div id="fitem_id_' + nombre + '" class="mb-3 row fitem feedback_itemlist feedback-item-' + d.tipo + '" style="margin-bottom: 12px !important;">' +
           '<div class="col-md-3 col-form-label">' + (d.texto ? '<label id="id_' + nombre + '_label" for="id_' + nombre + '" style="font-weight: 500 !important;">' + escapar(d.texto) + (d.rango ? '<span class="boundaries"> (' + d.rango + ')</span>' : '') + (d.req ? REQ : '') + '</label>' : '') + '</div>' +
-          '<div class="col-md-9 felement"><input type="text" class="form-control" name="' + nombre + '" id="id_' + nombre + '" value="' + escapar(v || '') + '" style="height: 36px !important; padding: 4px 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; width: ' + (d.tipo === 'textfield' ? '100%' : '160px') + ' !important; box-sizing: border-box !important;"></div></div>';
+          '<div class="col-md-9 felement">' + (d.tipo === 'textarea'
+            ? '<textarea class="form-control" name="' + nombre + '" id="id_' + nombre + '" rows="4" style="width: 100% !important; padding: 6px 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; font-family: monospace !important; font-size: 12px !important; box-sizing: border-box !important;">' + escapar(v === undefined ? d.ejemplo : v) + '</textarea>' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">En la encuesta este JSON lo escribe el selector de materias (ítem 8270).</div></div></div>'
+            : '<input type="text" class="form-control" name="' + nombre + '" id="id_' + nombre + '" value="' + escapar(v || '') + '" style="height: 36px !important; padding: 4px 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; width: ' + (d.tipo === 'textfield' ? '100%' : '160px') + ' !important; box-sizing: border-box !important;"></div></div>');
       }
 
       function renderizarSimulador() {
@@ -662,12 +708,12 @@
 
       // VALORES DE LA PÁGINA EN EL "SERVIDOR" SIMULADO (MOODLE LOS GUARDA AL CAMBIAR DE PÁGINA Y LOS PRECARGA)
       function guardarValoresSimulados(form) {
-        Array.prototype.forEach.call(form.querySelectorAll('input'), function(c) {
+        Array.prototype.forEach.call(form.querySelectorAll('input, textarea'), function(c) {
           if (c.hasAttribute('data-codigo-creditos')) return;
           if (c.type === 'radio') { if (c.checked) sim.valores[c.name] = c.value; }
           else if (c.type !== 'hidden' && c.name) sim.valores[c.name] = c.value;
         });
-        if (form.querySelector('#cuadro-creditos')) {
+        if (form.querySelector('.zk-cuadro-creditos')) {
           sim.valores.cuadro = Array.prototype.map.call(form.querySelectorAll('[data-codigo-creditos]:checked'), function(x) { return x.getAttribute('data-codigo-creditos'); });
         }
       }
@@ -786,7 +832,10 @@
           adaptador = adaptadorLocal();
           crearSimulador();
         } else if (window.M && /\/mod\/feedback\/(edit|print)\.php/.test(window.location.pathname)) {
-          // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas
+          // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas.
+          // Ahí se ven todas las páginas juntas: el aviso lo muestra solo el primer ítem
+          if (window.zkCopiaEncuestasAviso) return;
+          window.zkCopiaEncuestasAviso = true;
           var enc = ENCUESTAS[M.cfg.contextInstanceId];
           var igual = enc && JSON.stringify(estructuraEnPantalla()) === JSON.stringify(enc.paginas);
           avisar('Ítem con script: copia cada envío de esta encuesta a la base Respuestas. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/copia_encuestas). ' +
@@ -794,6 +843,9 @@
               : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(estructuraEnPantalla()) + '; en el script: ' + JSON.stringify(enc.paginas) + '). Actualizar la lista "paginas" del script.'),
             !enc || igual ? 'info' : 'alerta');
         } else if (window.M && DATAID_RESPUESTAS && formularioEncuesta(document)) {
+          // Si por error hay dos ítems de copia en la misma página, solo el primero copia
+          if (window.zkCopiaEncuestasActiva) return;
+          window.zkCopiaEncuestasActiva = true;
           adaptador = adaptadorMoodle();
           reintentarPendientes();
         }

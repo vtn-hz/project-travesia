@@ -50,7 +50,7 @@
       "nombre": "json_pregunta_respuesta",
       "tipo": "text",
       "requerido": true,
-      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }: una entrada por pregunta respondida"
+      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }, más \"materia\" en las preguntas por materia: una entrada por pregunta respondida"
     },
     {
       "nombre": "puntaje_criticidad",
@@ -66,7 +66,7 @@
     }
   ],
   "formato_json": {
-    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. criticidad: puntos que aporta (null si no puntúa). Las preguntas dependientes que no corresponden no se guardan.",
+    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. Las preguntas por materia de la Cuatrimestral (primera_vez y dificultad, del selector de materias) llevan además \"materia\" con el código. criticidad: puntos que aporta (null si no puntúa). Las preguntas dependientes que no corresponden no se guardan.",
     "ejemplo": [
       {
         "variable": "plan",

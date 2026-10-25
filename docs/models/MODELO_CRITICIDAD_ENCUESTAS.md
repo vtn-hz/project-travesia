@@ -138,7 +138,7 @@ En el recursado, los puntos se reparten entre las respuestas *No* para que la su
 Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el texto en registro formal. El script de copia asigna los puntos **por número de opción, en el orden de Moodle** (por ejemplo, en el Proyecto Final: *No aplico por nivel* = 1.ª opción → 0; *No iniciado* = 2.ª → 10).
 
 - **Inicial:** se aplica completa.
-- **Cuatrimestral:** el bloque *Cursada del cuatrimestre anterior* (35 puntos) todavía no se puede calcular, porque la Encuesta de Moodle no tiene preguntas por materia: solo un campo de texto libre. Hasta que se agreguen, la cuatrimestral llega como mucho a **65**.
+- **Cuatrimestral:** el bloque *Cursada del cuatrimestre anterior* (35 puntos) sale del selector de materias (ítem 8270), que guarda en la respuesta 8768 las materias cursadas con su primera vez y su dificultad. Desde el 2026-10-25 se aplica completa.
 
 ## Pendientes
 
