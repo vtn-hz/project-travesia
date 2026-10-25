@@ -9,7 +9,7 @@
   - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
-- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Falta probar un envío** con rol Estudiante.
+- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Probado con un envío real de la Cuatrimestral** el 2026-10-25 (dos versiones en la base, con DNI). Falta probar la Inicial.
 - **Última actualización:** 2026-10-25
 
 ## Qué hace
@@ -171,7 +171,7 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 ## Pendientes
 
 1. **Publicar**, con los pasos de [Publicación](#publicación). Cada paso requiere confirmación.
-2. **Probar un envío real**, con una cuenta de estudiante o con "Cambiar rol a… Estudiante".
+2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
 4. **Encuesta Cuatrimestral (para el equipo):**
    - borrar el ítem 8273;
