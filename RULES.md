@@ -33,6 +33,11 @@ Estas reglas están por encima de todas las demás.
 | Subsección "Pruebas" (cmid 59499, sección 15701): BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing | — (pruebas creadas por el equipo directamente en Moodle) |
 | Encuesta "asdsad" (cmid 59541), en Zhakyz fuera de las subsecciones | — (parece una prueba creada directamente en Moodle) |
 
+## Alcance
+
+- **Solo el Plan 2024.** El Plan 2003 (el plan viejo) está fuera del alcance del proyecto. Las secciones, bases, encuestas, datos de prueba y modelos de cálculo trabajan solo con el Plan 2024.
+- Lo que ya tiene datos del Plan 2003 (la base Materias, la página Plan de Estudios y el cuadro de créditos de la Encuesta Inicial) queda como está hasta que el equipo decida quitarlo: no se borra sin un pedido explícito.
+
 ## Arquitectura
 
 - Todo el código de cada sección se entrega en un **único archivo `.html` autocontenido** (HTML + estilos inline + JS en un solo `<div>` raíz).
