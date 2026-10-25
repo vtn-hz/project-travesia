@@ -33,7 +33,7 @@
       // ---------------------------------------------------------
       // Es la única variable global de la biblioteca: la comparten las vistas que la cargan.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 2;
+      var VERSION = 3;
       if (window.ZhakyzUtils && window.ZhakyzUtils.version >= VERSION) return;
 
       // ---------------------------------------------------------
@@ -298,6 +298,8 @@
       //   opciones.materias    lista fija de materias, en lugar de la base Materias
       //   opciones.otrosCreditos  reemplaza OTROS_CREDITOS: { '<plan>': [{ codigo, nombre, detalle, creditos }] }
       //   opciones.pie         false para no dibujar el pie Zhakyz
+      //   opciones.campoSeleccion  selector de una respuesta de texto larga donde el cuadro guarda su selección como JSON { plan, codigos }.
+      //                        Su pregunta se oculta. Al volver a la página (o al editar la respuesta) Moodle la trae y el cuadro la vuelve a marcar
       function CuadroCreditos(selectorCampo, opciones) {
         if (!(this instanceof CuadroCreditos)) return new CuadroCreditos(selectorCampo, opciones);
         if (typeof selectorCampo !== 'string' || !selectorCampo) {
@@ -312,6 +314,7 @@
         inyectarEstilos();
         this.raiz = this.ubicar();
         this.dibujarEstructura();
+        this.ocultarSeleccion();
 
         // DELEGACIÓN DE EVENTOS, LIMITADA AL CUADRO
         this.raiz.addEventListener('change', function(e) {
@@ -343,16 +346,17 @@
         document.addEventListener('input', function(e) {
           if (e.target === self.campo()) self.escribirTotal();
         });
-        // Antes de enviar el formulario que contiene el campo se escribe la suma una vez más
+        // Antes de enviar el formulario que contiene el campo se escriben la suma y la selección una vez más
         document.addEventListener('submit', function(e) {
           var campo = self.campo();
-          if (campo && e.target.contains(campo)) self.escribirTotal();
+          if (campo && e.target.contains(campo)) { self.escribirTotal(); self.escribirSeleccion(); }
         }, true);
 
         var fuente = op.materias ? Promise.resolve({ lista: op.materias, fuente: 'opciones' }) : cargarMaterias();
         fuente.then(function(r) {
           self.estado.materias = r.lista;
           if (!r.lista.length) self.estado.error = 'No se encontraron materias en la base Materias. El total de créditos se completa a mano.';
+          else self.restaurar();
         }, function() {
           self.estado.materias = [];
           self.estado.error = 'No se pudo leer la base Materias. El total de créditos se completa a mano.';
@@ -456,6 +460,49 @@
       };
 
       // ---------------------------------------------------------
+      // SELECCIÓN GUARDADA EN LA ENCUESTA (opciones.campoSeleccion)
+      // ---------------------------------------------------------
+      CuadroCreditos.prototype.campoSeleccion = function() {
+        return this.opciones.campoSeleccion ? document.querySelector(this.opciones.campoSeleccion) : null;
+      };
+
+      // LA PREGUNTA DEL CAMPO DE SELECCIÓN NO SE MUESTRA: LA COMPLETA EL CUADRO
+      CuadroCreditos.prototype.ocultarSeleccion = function() {
+        var campo = this.campoSeleccion();
+        var fila = campo && campo.closest('.fitem');
+        if (fila) fila.style.setProperty('display', 'none', 'important');
+      };
+
+      // AL VOLVER A LA PÁGINA (O AL EDITAR LA RESPUESTA), MOODLE TRAE LA SELECCIÓN GUARDADA: SE VUELVE A MARCAR.
+      // Solo los códigos que siguen en el plan (materias de la base u otros créditos)
+      CuadroCreditos.prototype.restaurar = function() {
+        var campo = this.campoSeleccion();
+        var previo = null;
+        try { previo = campo && campo.value ? JSON.parse(campo.value) : null; } catch (e) { previo = null; }
+        if (!previo || !previo.plan || !Array.isArray(previo.codigos)) return;
+        var plan = String(previo.plan);
+        var validos = materiasDe(this.estado.materias, plan).map(function(m) { return m.codigo; })
+          .concat((this.otros[plan] || []).map(function(o) { return o.codigo; }));
+        if (!validos.length) return;
+        this.estado.plan = plan;
+        var sel = this.marcadasDelPlan();
+        previo.codigos.forEach(function(c) { if (validos.indexOf(c) !== -1) sel[c] = true; });
+      };
+
+      // LA SELECCIÓN VA AL CAMPO COMO JSON { plan, codigos }, SOLO CUANDO LA LISTA DE MATERIAS SE PUDO LEER
+      CuadroCreditos.prototype.escribirSeleccion = function() {
+        var campo = this.campoSeleccion();
+        if (!campo || !this.calculoActivo()) return;
+        this.ocultarSeleccion();
+        var s = this.seleccion();
+        var valor = JSON.stringify({ plan: s.plan, codigos: s.codigos });
+        if (campo.value !== valor) {
+          campo.value = valor;
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
+
+      // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
       CuadroCreditos.prototype.renderizar = function() {
@@ -468,6 +515,7 @@
         this.renderizarResumen();
         this.renderizarLista();
         this.escribirTotal();
+        this.escribirSeleccion();
         // Aviso para otras vistas (por ejemplo, la copia de respuestas): la selección viaja en detail
         this.raiz.dispatchEvent(new CustomEvent('zk-creditos', { bubbles: true, detail: this.seleccion() }));
       };

@@ -164,6 +164,7 @@ cuadro.seleccion(); // { plan: '2024', codigos: [...], creditos: 235.5 }
 | `materias` | Lista fija de materias, en lugar de la base Materias | Base Materias (d=152) |
 | `otrosCreditos` | Créditos y requisitos que no son materias: `{ '<plan>': [{ codigo, nombre, detalle, creditos }] }`. Con `creditos: 0` la casilla registra el requisito sin sumar | `OTROS_CREDITOS` |
 | `pie` | Dibujar el pie Zhakyz | `true` |
+| `campoSeleccion` | Selector de una respuesta de texto larga donde el cuadro guarda su selección como JSON `{ plan, codigos }`. Su pregunta se oculta. Al abrir la página, si ese campo trae una selección (Moodle la trae al volver a la página o al editar la respuesta), el cuadro la vuelve a marcar: solo los códigos que siguen en el plan. Sin esta opción, el cuadro empieza vacío | — |
 
 Con cada cambio emite el evento `zk-creditos` en el cuadro, con la selección en `detail`. Las casillas llevan `data-codigo-creditos` con el código de la materia o del requisito.
 
