@@ -2,7 +2,7 @@
 
 > Documento vivo — se actualiza a medida que se refinan los requerimientos.
 
-- **Encuesta en Moodle:** Encuesta (`mod_feedback`) "Encuesta Inicial" (cmid 59710), subsección Hub. Creada por el equipo en Moodle e importada al repo: [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml) (exportación de preguntas, se puede volver a importar).
+- **Encuesta en Moodle:** Encuesta (`mod_feedback`) "Encuesta Inicial" (cmid 59710), subsección Encuestas y Preguntas (hasta el 2026-10-25 estuvo en Hub). Creada por el equipo en Moodle e importada al repo: [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml) (exportación de preguntas, se puede volver a importar).
 - **Cuadro:** [`section/encuesta_inicial/content.html`](../../section/encuesta_inicial/content.html). Reemplaza el texto `[[Cuadro]]` del ítem "Área de texto y medios" (ítem 8254), el primero de la encuesta. Desde el 2026-10-25 es una copia del cargador de Utils que crea el widget `CuadroCreditos` ([`section/utils/README.md`](../../section/utils/README.md)), con la casilla de la PPS.
 - **Base:** Materias (d=152).
 - **Última actualización:** 2026-10-24 (casilla de la PPS en el cuadro, en local; antes, el equipo agregó en Moodle tres saltos de página y bajó el máximo de `creditos_aprobados` de 235,5 a 223)

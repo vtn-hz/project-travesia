@@ -33,7 +33,7 @@
   },
   "paginas": {
     "hub": 59511,
-    "preguntas": 59506,
+    "preguntas": null,
     "encuestas": null,
     "tablero": null,
     "detalle": null,
@@ -46,20 +46,21 @@
   "encuestas": {
     "inicial": {
       "cmid": 59710,
-      "subseccion": "Hub"
+      "subseccion": "Encuestas y Preguntas"
     },
     "cuatrimestral": {
       "cmid": 59712,
-      "subseccion": "Hub"
+      "subseccion": "Encuestas y Preguntas"
     }
   },
   "bases": {
     "preguntas": {
-      "cmid": 59498,
-      "dataid": 114,
+      "cmid": null,
+      "dataid": null,
       "definicion": "data/moodle/BASE_ENCUESTAS.json",
       "subseccion": "Database",
-      "creada": "2026-10-17"
+      "creada": "2026-10-17",
+      "borrada": "2026-10-25"
     },
     "armado": {
       "cmid": null,

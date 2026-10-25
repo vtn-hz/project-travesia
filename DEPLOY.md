@@ -2,7 +2,7 @@
 
 Qué está publicado en Moodle, qué está solo en local y qué está en revisión. Curso 1732 → sección **Zhakyz** (id 15647).
 
-> **Última actualización:** 2026-10-25 (publicados la subsección Utils con las Páginas Widgets, con su índice, y Tools, los widgets de las Encuestas Inicial y Cuatrimestral, la base Respuestas configurada con sus plantillas y los 5 ítems de copia de respuestas; falta probar un envío). Antes, 2026-10-24 (revisión de Moodle: el equipo borró Carga_Materias_Plan y cambió la Encuesta Inicial, ya traída al repo; se importó la Encuesta Cuatrimestral; copia de respuestas en local con el ADR-006 y se borró la página propia de encuestas). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
+> **Última actualización:** 2026-10-25 (se borraron de Moodle la Página Preguntas, la Encuesta 1 y la base Preguntas, y las Encuestas Inicial y Cuatrimestral pasaron a la subsección Encuestas y Preguntas; antes, publicados la subsección Utils con las Páginas Widgets, con su índice, y Tools, los widgets de las Encuestas Inicial y Cuatrimestral, la base Respuestas configurada con sus plantillas y los 5 ítems de copia de respuestas; falta probar un envío). Antes, 2026-10-24 (revisión de Moodle: el equipo borró Carga_Materias_Plan y cambió la Encuesta Inicial, ya traída al repo; se importó la Encuesta Cuatrimestral; copia de respuestas en local con el ADR-006 y se borró la página propia de encuestas). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
 
 ## Estados
 
@@ -14,6 +14,7 @@ Qué está publicado en Moodle, qué está solo en local y qué está en revisi�
 | **Propuesta** | Definido en el repo, todavía sin desarrollar ni crear en Moodle |
 | **Solo en Moodle** | Lo creó el equipo directamente en Moodle y no tiene archivo en el repo |
 | **Importado** | Lo creó el equipo directamente en Moodle y se trajo al repo sin cambios |
+| **Retirado** | Estuvo publicado y se borró de Moodle. Queda en el repo |
 
 ## Cómo está Zhakyz hoy en Moodle
 
@@ -24,16 +25,13 @@ Zhakyz (sección 15647)
 │   ├── Hub: menú inicial (cmid 59511)               Publicado
 │   ├── Carga_Parciales_Primero: base (cmid 59521, d=117)   Importado
 │   ├── Carga_Materias_Primero: base (cmid 59522, d=118)    Importado
-│   ├── Listado_Criticidad_Primero: página (cmid 59523)     Importado
-│   ├── Encuesta Inicial: encuesta (cmid 59710)      Importado; ítem 8254 con el Cuadro de créditos (Utils) y copia de respuestas al final de cada página (8772, 8771, 8770, 8769) Publicados
-│   └── Encuesta Cuatrimestral: encuesta (cmid 59712) Importado; ítems 8261 (Cuadro de créditos), 8270 (Selector de materias → 8768) y 8773 (copia de respuestas) Publicados
+│   └── Listado_Criticidad_Primero: página (cmid 59523)     Importado
 ├── Plan de Estudios (subsección 15721)
 │   └── Plan de Estudios: página (cmid 59718)       Publicado
 ├── Encuestas y Preguntas (subsección 15705)
-│   ├── Preguntas: página (cmid 59506)               Publicado
-│   └── Encuesta 1: encuesta (cmid 59508)            Solo en Moodle
+│   ├── Encuesta Inicial: encuesta (cmid 59710)      Importado; ítem 8254 con el Cuadro de créditos (Utils) y copia de respuestas al final de cada página (8772, 8771, 8770, 8769) Publicados
+│   └── Encuesta Cuatrimestral: encuesta (cmid 59712) Importado; ítems 8261 (Cuadro de créditos), 8270 (Selector de materias → 8768) y 8773 (copia de respuestas) Publicados
 ├── Database (subsección 15700)
-│   ├── Preguntas: base de datos (cmid 59498, d=114) Publicado
 │   ├── Materias: base de datos (cmid 59717, d=152)  Publicado (95 materias)
 │   └── Respuestas: base de datos (cmid 59940, d=166) Publicado (configurada; la escriben los ítems de copia)
 ├── Utils (subsección 15749, cm 59931)
@@ -49,12 +47,12 @@ Zhakyz (sección 15647)
 | Sección | Archivo | Estado | En Moodle | Qué falta |
 |---|---|---|---|---|
 | Resumen de Zhakyz | [`section/resumen_zhakyz`](section/resumen_zhakyz/content.html) | **Publicado** | Resumen de la sección (2026-10-17) | Republicar: el repo agregó la marca `// @config` (mismos valores, sin cambio de comportamiento) |
-| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. La tarjeta Plan de Estudios enlaza a su página (cmid 59718). Última publicación: 2026-10-19 |
+| Menú inicial (Hub) | [`section/menu_inicial`](section/menu_inicial/content.html) | **Publicado** | Área de texto y medios "Hub" (cmid 59511) | Muestra datos de prueba y la vista ADM a cualquiera que entre, incluidos estudiantes, hasta detectar los roles. Las tarjetas sin sección publicada dicen "todavía no disponible". El bloque "Estado del sistema" está oculto (`MOSTRAR_ESTADO_SISTEMA = false`), y las tarjetas Preguntas y Encuestas también (`MOSTRAR_ENCUESTAS = false`), porque por ahora las preguntas son fijas. La tarjeta Plan de Estudios enlaza a su página (cmid 59718). Última publicación: 2026-10-19. Republicar: en el repo la tarjeta Preguntas (oculta) ya no tiene página, porque la Página Preguntas se borró el 2026-10-25; la versión de Moodle todavía apunta a la cmid 59506 |
 | Plan de Estudios | [`section/plan_estudios`](section/plan_estudios/content.html) | **Publicado** | Página "Plan de Estudios" (cmid 59718), subsección Plan de Estudios, conectada a la base Materias (d=152). La tarjeta del Hub enlaza a esta página | Ninguno. Cargados los dos planes (95 materias desde `PLANES_CARGA.csv`). Última publicación: 2026-10-19 |
 | Encuesta Inicial · cuadro de créditos | [`section/encuesta_inicial`](section/encuesta_inicial/content.html) | **Publicado** | Ítem "Área de texto y medios" (id 8254) de la Encuesta "Encuesta Inicial" (cmid 59710), exportada en [`data/moodle/encuestas/ENCUESTA_INICIAL.xml`](data/moodle/encuestas/ENCUESTA_INICIAL.xml) | Desde 2026-10-25 es una copia del cargador de Utils (`CuadroCreditos` → pregunta 8253) y reemplaza al cuadro propio, con la casilla de la PPS. El máximo de `creditos_aprobados` sigue en 223 (lo puso el equipo): un estudiante con más créditos (PPS, Plan 2003) no puede enviar; subirlo a 245 requiere confirmación. Revisar que el estudiante pueda ver la base Materias y la Página Widgets. No editar el ítem desde Moodle: el editor no muestra el script y al guardar lo borra |
 | Encuesta Cuatrimestral · widgets | [`section/encuesta_cuatrimestral`](section/encuesta_cuatrimestral) | **Publicado** | Ítems 8261 ([`creditos`](section/encuesta_cuatrimestral/creditos/content.html): `CuadroCreditos` → pregunta 8262) y 8270 ([`materias`](section/encuesta_cuatrimestral/materias/content.html): `SelectorMaterias` → respuesta larga nueva 8768 `materias_cuatrimestre`) de la Encuesta "Encuesta Cuatrimestral" (cmid 59712), exportada en [`data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml`](data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml). Publicado el 2026-10-25 | **Borrar el ítem 8273** (respuesta corta vieja, también `materias_cuatrimestre`): sigue visible y vacío; la encuesta tiene 0 respuestas. Máximo de 8262: 235,5 (el Plan 2003 llega a 245). La copia de respuestas tiene que leer el 8768 (JSON) en lugar del 8273. No editar los ítems desde Moodle |
-| Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
-| Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
+| Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Retirado** | — (la Página cmid 59506 y su base Preguntas, cmid 59498, se borraron el 2026-10-25; están en la papelera del curso hasta el 2026-11-01) | Las preguntas son fijas en las Encuestas de Moodle. Decidir si se borra también del repo |
+| Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Usaba la base Preguntas, que se borró el 2026-10-25. Decidir si se borra también del repo |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |
 | Copia de respuestas de las encuestas | [`section/copia_encuestas`](section/copia_encuestas/content.html) | **Publicado** | 5 ítems "Área de texto y medios", uno al final de cada página: Encuesta Inicial 8772, 8771, 8770 y 8769 (este depende de trabaja = Si) y Encuesta Cuatrimestral 8773. Publicado el 2026-10-25 | Los 5 ítems son copias del cargador de tools: el código es la herramienta `CopiaRespuestas` de la Página Tools ([spec](docs/specs/copia-encuestas.md), [ADR-006](docs/decisions/006-versionado-de-encuestas.md)). Un cambio en la copia se publica solo en la Página Tools. Verificado en la vista previa: carga la herramienta y la estructura de páginas coincide. **Falta probar un envío** con rol Estudiante. No editar los ítems desde Moodle |
 | Utils · Widgets (biblioteca) | [`section/utils/widgets`](section/utils/widgets/content.html) | **Publicado** | Subsección "Utils" (sección 15749, cm 59931), justo antes de Pruebas → Página "Widgets" (cmid 59932). Publicado el 2026-10-25 | Biblioteca de widgets compartidos como script muerto, con el índice de widgets (el del cargador en local) y cada widget con `#widget=<nombre>` en la dirección (índice publicado el 2026-10-25). La guía completa está en [`section/utils/README.md`](section/utils/README.md). Dos widgets: Cuadro de créditos, con las casillas de PPS (12,5 CG en 2024, sin créditos en 2003) y optativas (2003), y Selector de materias (materias cursadas el cuatrimestre anterior, con primera vez y dificultad, para el ítem 8270; guarda un JSON, así que el ítem 8273 tiene que pasar a respuesta de texto larga). Falta el ADR (cambia la regla de archivo autocontenido). La Página es visible en el curso: los estudiantes la necesitan para que el cargador la lea |
@@ -72,7 +70,7 @@ Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.j
 
 | # | Base | Definición | Estado |
 |---|---|---|---|
-| 6 | Preguntas | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) | **Publicado** (cmid 59498, d=114). Al modelo le faltan los campos `variable`, `por_materia` y el tipo `likert` |
+| 6 | Preguntas | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) | **Retirado**: la base (cmid 59498, d=114) se borró de Moodle el 2026-10-25 con sus 2 entradas de prueba. Las preguntas son fijas en las Encuestas de Moodle |
 | — | Carga_Parciales_Primero | [`data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json`](data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json) | **Importado** (cmid 59521, d=117). Una entrada por evaluación; en el modelo equivale a Situación académica |
 | — | Carga_Materias_Primero | [`data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json`](data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json) | **Importado** (cmid 59522, d=118). Materia, `esCritica` y `Umbral`; en el modelo equivale a Materias |
 | 1 | Materias | [`data/moodle/BASE_MATERIAS.json`](data/moodle/BASE_MATERIAS.json) | **Publicado** (cmid 59717, d=152), con los planes 2024 y 2003 (95 materias) y plantillas con el estilo de Carga_Parciales_Primero. Reemplaza a Carga_Materias_Primero |

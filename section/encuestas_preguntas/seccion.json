@@ -1,6 +1,6 @@
 {
   "nombre": "Encuestas y Preguntas",
-  "descripcion": "Grupo de ítems de la sección Zhakyz: banco de preguntas y armado de las encuestas inicial y cuatrimestral.",
+  "descripcion": "Grupo de ítems de la sección Zhakyz. En Moodle, la subsección tiene las Encuestas Inicial y Cuatrimestral (de Moodle). Los ítems del repo (banco de preguntas y armado de encuestas) no están publicados.",
   "moodle": {
     "tipo": "subseccion",
     "config": "subsecciones.Encuestas y Preguntas"
@@ -13,7 +13,7 @@
       "moodle": {
         "config": "paginas.preguntas"
       },
-      "nota": "Publicada. Última publicación: 2026-10-17 (rangos para el tipo Número y arreglo de clics en celular)."
+      "nota": "Retirado de Moodle el 2026-10-25 (Página cmid 59506 y base Preguntas, cmid 59498, borradas). Estuvo publicado desde el 2026-10-17."
     },
     {
       "carpeta": "encuestas",
@@ -22,7 +22,7 @@
       "moodle": {
         "config": "paginas.encuestas"
       },
-      "nota": "Sin publicar. Necesita la base de composición (data/moodle/BASE_ENCUESTAS_ARMADO.json)."
+      "nota": "Sin publicar. Usaba la base Preguntas, borrada el 2026-10-25, y necesita la base de composición (data/moodle/BASE_ENCUESTAS_ARMADO.json)."
     }
   ]
 }

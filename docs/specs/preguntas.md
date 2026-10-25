@@ -6,7 +6,7 @@
 - **Acceso:** tarjeta "Preguntas" del [menú inicial](../../section/menu_inicial/content.html)
 - **Roles:** **ADM** crea, edita y elimina (Req 3). **GES** solo consulta.
 - **Datos:** base **"Encuestas"** de la sección Zhakyz → subsección Database (cmid 59498, d=114), definida en [`data/moodle/BASE_ENCUESTAS.json`](../../data/moodle/BASE_ENCUESTAS.json)
-- **Estado:** **publicado** en Zhakyz → subsección "Encuestas y Preguntas" → Página (cmid 59506) el 2026-10-17, con el nombre anterior "Encuestas y Preguntas". El repo ya usa el título "Preguntas": falta republicar y renombrar la actividad.
+- **Estado:** **retirado de Moodle** el 2026-10-25: se borraron la Página (cmid 59506) y la base (cmid 59498, d=114), porque las preguntas quedaron fijas en las Encuestas de Moodle. Estuvo publicado desde el 2026-10-17. El archivo queda en el repo.
 
 ## Qué hace
 
