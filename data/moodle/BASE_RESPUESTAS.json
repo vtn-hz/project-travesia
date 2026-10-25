@@ -12,7 +12,7 @@
     "Permitir comentarios": "No.",
     "Disponibilidad": "Disponible pero no mostrada en la página del curso: los estudiantes no entran a la base, el script escribe en ella al enviar la encuesta."
   },
-  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25: lista e individual). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
+  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25: lista e individual). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. Si falta, el script lee la plantilla de lista de Moodle por defecto (filas \"campo | valor\"). No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [
     {
       "nombre": "id_usuario",

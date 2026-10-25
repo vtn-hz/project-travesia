@@ -128,7 +128,7 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
    - sin máximo de entradas.
 
    El campus **no permite "disponible pero no mostrada"** (solo mostrar u ocultar), y si se oculta, los estudiantes no pueden escribir en ella. Por eso la base queda visible dentro de Zhakyz, y con la aprobación cada estudiante ve solo sus entradas.
-3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. Hecho el 2026-10-25: lista (cabecera, entrada repetida y pie) e individual, releídas después de guardar. La de añadir entrada queda la de Moodle, porque la copia ubica cada campo por su etiqueta.
+3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. Hecho el 2026-10-25: lista (cabecera, entrada repetida y pie) e individual, releídas después de guardar. La de añadir entrada queda la de Moodle, porque la copia ubica cada campo por su etiqueta. Si la plantilla de lista falta, la copia la reemplaza leyendo la de Moodle por defecto (filas "campo | valor", igual que Preguntas). Con la propia, el estudiante que abre la base no ve los botones de editar y borrar.
 4. **Agregar los ítems de copia**, cada uno con este archivo:
    - **Inicial:** uno al final de cada una de las 4 páginas. El de la página 4 tiene que **depender de `trabaja` = Si**, igual que la 8260. Si no, la página 4 nunca queda vacía y el estudiante que no trabaja ve una página en blanco.
    - **Cuatrimestral:** uno al final de la página.

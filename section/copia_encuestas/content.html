@@ -411,14 +411,26 @@
       }
 
       // ENTRADAS PROPIAS DE LA BASE (CON "REQUIERE APROBACIÓN", EL ESTUDIANTE SOLO VE LAS SUYAS)
+      // Lee la plantilla de lista propia (data/moodle/plantillas/respuestas); si falta, la de Moodle por defecto (filas "campo | valor")
       function leerRespuestasMoodle(idUsuario) {
         return fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_RESPUESTAS + '&perpage=1000', { credentials: 'same-origin' })
           .then(function(r) { return r.text(); })
           .then(function(html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
-            return Array.prototype.map.call(doc.querySelectorAll('.zk-registro[data-tipo="entrada_respuesta"]'), function(el) {
+            var propias = doc.querySelectorAll('.zk-registro[data-tipo="entrada_respuesta"]');
+            var filas = propias.length ? Array.prototype.map.call(propias, function(el) {
               var v = {};
               el.querySelectorAll('[data-campo]').forEach(function(c) { v[c.getAttribute('data-campo')] = c.textContent.trim(); });
+              return v;
+            }) : Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
+              var v = {};
+              entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+                var celdas = fila.children;
+                if (celdas.length >= 2) v[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
+              });
+              return v;
+            });
+            return filas.map(function(v) {
               try { v.json_pregunta_respuesta = JSON.parse(v.json_pregunta_respuesta); } catch (e) { v.json_pregunta_respuesta = []; }
               v.id_usuario = Number(v.id_usuario);
               return v;
