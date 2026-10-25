@@ -1,24 +1,118 @@
 {
   "clave": "respuestas",
   "nombre": "Respuestas",
-  "descripcion": "Respuestas de los estudiantes a las encuestas. Solo se agregan entradas: editar una respuesta crea una entrada nueva y la anterior se conserva.",
+  "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-10-17), todavía no creada en Moodle. Configuración requerida en Moodle: 'Requiere aprobación' = Sí y no aprobar entradas (así cada estudiante ve solo las suyas y los docentes ven todas); visible solo por URL.",
+  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006), todavía no creada en Moodle. La escribe el script de copia (section/copia_encuestas), que va en cada página de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
+  "configuracion": {
+    "descripcion": "crear_base.js no la aplica: se configura a mano en Moodle después de crear la base.",
+    "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",
+    "Permitir la edición de entradas aprobadas": "No.",
+    "Número máximo de entradas": "0 (sin límite): cada versión es una entrada.",
+    "Permitir comentarios": "No.",
+    "Disponibilidad": "Disponible pero no mostrada en la página del curso: los estudiantes no entran a la base, el script escribe en ella al enviar la encuesta."
+  },
+  "plantillas": "data/moodle/plantillas/respuestas/ (propuesta). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [
-    { "nombre": "id_usuario", "tipo": "number", "descripcion": "id de Moodle del estudiante" },
-    { "nombre": "dni", "tipo": "text", "descripcion": "DNI del estudiante" },
-    { "nombre": "encuesta", "tipo": "menu", "descripcion": "Qué encuesta respondió", "opciones": ["inicial", "cuatrimestral"] },
-    { "nombre": "periodo", "tipo": "text", "descripcion": "Período de la respuesta (AAAA-n) en la cuatrimestral; vacío en la inicial" },
-    { "nombre": "json_pregunta_respuesta", "tipo": "text", "descripcion": "Lista JSON de objetos { id, pregunta, respuesta, criticidad }" },
-    { "nombre": "created_at", "tipo": "text", "descripcion": "Fecha y hora de esta respuesta (ISO 8601)" }
+    {
+      "nombre": "id_usuario",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "id de Moodle del estudiante (M.cfg.userId)"
+    },
+    {
+      "nombre": "dni",
+      "tipo": "text",
+      "descripcion": "DNI del estudiante: el nombre de usuario del campus. Vacío si no se pudo leer"
+    },
+    {
+      "nombre": "encuesta",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Qué encuesta respondió",
+      "opciones": [
+        "inicial",
+        "cuatrimestral"
+      ]
+    },
+    {
+      "nombre": "version_encuesta",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "Versión de la lista de ítems del script con la que se copió (no es el número de versión de la respuesta, que sale del orden de created_at)"
+    },
+    {
+      "nombre": "periodo",
+      "tipo": "text",
+      "descripcion": "Período de la respuesta (AAAA-n) en la cuatrimestral; vacío en la inicial"
+    },
+    {
+      "nombre": "json_pregunta_respuesta",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }: una entrada por pregunta respondida"
+    },
+    {
+      "nombre": "puntaje_criticidad",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "Suma de la criticidad de las respuestas (0 a 100), calculada al enviar con los valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md. El estudiante no la ve"
+    },
+    {
+      "nombre": "created_at",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora de esta versión (ISO 8601)"
+    }
   ],
   "formato_json": {
-    "descripcion": "La criticidad tiene la misma forma que la respuesta: número para una opción, lista alineada para selección múltiple, null para texto libre.",
+    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. criticidad: puntos que aporta (null si no puntúa). Las preguntas dependientes que no corresponden no se guardan.",
     "ejemplo": [
-      { "id": 1, "pregunta": "¿Trabajás actualmente?", "respuesta": "Sí, hasta 20 horas semanales", "criticidad": 4 },
-      { "id": 2, "pregunta": "¿Cuántas materias estás cursando este cuatrimestre?", "respuesta": 2, "criticidad": 5 },
-      { "id": 3, "pregunta": "¿Qué dificultades tuviste este cuatrimestre?", "respuesta": ["Horarios", "Económicas"], "criticidad": [3, 6] },
-      { "id": 4, "pregunta": "¿Querés contarnos algo más?", "respuesta": "Me cuesta organizar los horarios.", "criticidad": null }
+      {
+        "variable": "plan",
+        "pregunta": "Plan de estudios (cuadro de créditos)",
+        "respuesta": "2024",
+        "criticidad": null
+      },
+      {
+        "variable": "materias_aprobadas",
+        "pregunta": "Materias aprobadas (cuadro de créditos)",
+        "respuesta": [
+          "INGM101",
+          "INGM105"
+        ],
+        "criticidad": null
+      },
+      {
+        "variable": "creditos_aprobados",
+        "pregunta": "Los créditos obtenidos actualmente son:",
+        "respuesta": 10,
+        "criticidad": 35
+      },
+      {
+        "variable": "año_cohorte",
+        "pregunta": "¿En qué año ingresaste a la facultad?",
+        "respuesta": 2026,
+        "criticidad": null
+      },
+      {
+        "variable": "cuatri_cohorte",
+        "pregunta": "¿En cuál cuatrimestre ingresaste?",
+        "respuesta": "1",
+        "criticidad": null
+      },
+      {
+        "variable": "trabaja",
+        "pregunta": "¿Trabaja actualmente?",
+        "respuesta": "Si",
+        "criticidad": 10
+      },
+      {
+        "variable": "inicio_laboral",
+        "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?",
+        "respuesta": "Comencé en 1.º año",
+        "criticidad": 20
+      }
     ]
   }
 }

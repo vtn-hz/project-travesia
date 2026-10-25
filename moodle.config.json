@@ -37,6 +37,16 @@
     "entrevistas": null,
     "plan_estudios": 59718
   },
+  "encuestas": {
+    "inicial": {
+      "cmid": 59710,
+      "subseccion": "Hub"
+    },
+    "cuatrimestral": {
+      "cmid": 59712,
+      "subseccion": "Hub"
+    }
+  },
   "bases": {
     "preguntas": {
       "cmid": 59498,
