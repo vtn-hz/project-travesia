@@ -870,11 +870,14 @@
           // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas.
           // Ahí se ven todas las páginas juntas: el aviso lo muestra solo el primer ítem (la primera instancia)
           var enc = ENCUESTAS[M.cfg.contextInstanceId];
-          var igual = enc && JSON.stringify(estructuraEnPantalla()) === JSON.stringify(enc.paginas);
+          // Editar preguntas dibuja los ítems sin los fitem de la encuesta: la estructura solo se puede leer en la vista previa
+          var enPantalla = estructuraEnPantalla();
+          var igual = enc && JSON.stringify(enPantalla) === JSON.stringify(enc.paginas);
           avisar('Ítem con script: copia cada envío de esta encuesta a la base Respuestas. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/utils/tools, herramienta CopiaRespuestas). ' +
-            (!enc ? 'Esta encuesta no está en la lista del script.' : igual ? 'La estructura de páginas coincide con la del script.'
-              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(estructuraEnPantalla()) + '; en el script: ' + JSON.stringify(enc.paginas) + '). Actualizar la lista "paginas" del script.'),
-            !enc || igual ? 'info' : 'alerta');
+            (!enc ? 'Esta encuesta no está en la lista del script.' : !enPantalla.length ? 'La estructura de páginas se controla en la vista previa.'
+              : igual ? 'La estructura de páginas coincide con la del script.'
+              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(enPantalla) + '; en el script: ' + JSON.stringify(enc.paginas) + '). Actualizar la lista "paginas" del script.'),
+            !enc || igual || !enPantalla.length ? 'info' : 'alerta');
         } else if (window.M && DATAID_RESPUESTAS && formularioEncuesta(document)) {
           adaptador = adaptadorMoodle();
           reintentarPendientes();
