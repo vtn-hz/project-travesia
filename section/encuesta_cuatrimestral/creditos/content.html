@@ -52,7 +52,8 @@
       var WIDGET = 'CuadroCreditos';
       var CAMPO = 'input[name="numeric_8262"]';
       // Opciones del constructor (section/utils/README.md). El contenedor lo pone el cargador
-      var OPCIONES = {};
+      // campoSeleccion: respuesta larga oculta (seleccion_creditos, ítem 8775) donde el cuadro guarda su selección para recuperarla al volver
+      var OPCIONES = { campoSeleccion: 'textarea[name="textarea_8775"]' };
 
       // TEXTOS DE CADA WIDGET: AVISO SI NO SE PUEDE CARGAR; EN LOCAL, PREGUNTA SIMULADA E ÍNDICE (descripcion y uso)
       var WIDGETS = {

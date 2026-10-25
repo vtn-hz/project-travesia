@@ -74,15 +74,18 @@
       // puntos: por número de opción (Moodle envía 1, 2…, no el texto). avance: créditos que se comparan con los esperados.
       // depende: el ítem solo cuenta si otro tiene ese número de opción (en Moodle, inicio_laboral depende de trabaja = Si).
       // Un ítem que no está en la lista se copia igual, como "pregunta_<id>" y sin puntos.
+      // seleccionCreditos: respuesta oculta donde el cuadro de créditos guarda { plan, codigos }. No se copia como pregunta: si el cuadro
+      // no está en pantalla (página leída de nuevo, por ejemplo al terminar en otro dispositivo), de ahí salen el plan y las materias aprobadas.
       // paginas: ids de todos los ítems de cada página, incluidos los de texto (sin los saltos de página). Moodle muestra
       // "Página siguiente" aunque las páginas que siguen queden vacías por una dependencia, y en ese caso guarda al pasar de página:
       // con esta lista el script reconoce ese envío final. Si la encuesta cambia en Moodle, actualizar la lista (Editar preguntas avisa).
       var ENCUESTAS = {};
       ENCUESTAS[CMID_INICIAL] = {
         clave: 'inicial', titulo: 'Encuesta inicial', version: 1, porPeriodo: false, maximoAvance: 70,
-        paginas: [[8254, 8253], [8257, 8258], [8259], [8260]],
+        paginas: [[8254, 8253, 8774], [8257, 8258], [8259], [8260]],
         items: [
           { id: 8253, variable: 'creditos_aprobados', avance: true },
+          { id: 8774, seleccionCreditos: true },
           { id: 8257, variable: 'año_cohorte', cohorte: 'anio' },
           { id: 8258, variable: 'cuatri_cohorte', cohorte: 'cuatrimestre' },
           { id: 8259, variable: 'trabaja', puntos: { 1: 10, 2: 0 } },
@@ -92,9 +95,10 @@
       // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
       ENCUESTAS[CMID_CUATRIMESTRAL] = {
         clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true, maximoAvance: 30,
-        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8768, 8271]],
+        paginas: [[8261, 8262, 8775, 8264, 8265, 8266, 8270, 8768, 8271]],
         items: [
           { id: 8262, variable: 'creditos_aprobados', avance: true },
+          { id: 8775, seleccionCreditos: true },
           { id: 8264, variable: 'progreso_proyecto_final', puntos: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 } },
           { id: 8265, variable: 'trabaja', puntos: { 1: 5, 2: 0 } },
           { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 }, puntos: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 } },
@@ -370,6 +374,15 @@
         var enc = ENCUESTAS[cmid];
         var items = itemsRespondidos(paginas), cuadro = null;
         Object.keys(paginas).forEach(function(k) { if (paginas[k].cuadro) cuadro = paginas[k].cuadro; });
+        // Sin el cuadro en pantalla: la selección que el cuadro guardó en su respuesta oculta
+        enc.items.forEach(function(d) {
+          var it = d.seleccionCreditos && !cuadro ? items[d.id] : null;
+          if (!it) return;
+          try {
+            var s = JSON.parse(it.valor);
+            if (s && s.plan) cuadro = { plan: String(s.plan), materias: Array.isArray(s.codigos) ? s.codigos : [] };
+          } catch (e) { /* sin selección guardada */ }
+        });
         var cohorte = cohorteInicial || {};
         enc.items.forEach(function(d) {
           var it = items[d.id];
@@ -385,7 +398,7 @@
         enc.items.forEach(function(d) {
           conocidos[d.id] = true;
           var it = items[d.id];
-          if (!it || d.ignorar) return; // no se mostró, no se respondió o se ignora
+          if (!it || d.ignorar || d.seleccionCreditos) return; // no se mostró, no se respondió, se ignora o no es una pregunta
           if (d.depende && !(items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion)) return;
           if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it, items)); return; }
           var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);

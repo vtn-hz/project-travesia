@@ -47,12 +47,14 @@ Copiados de [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIA
 |---|---|---|---|---|
 | Inicial (versión 1) | 1 | 8254 (cuadro de créditos) | `plan`, `materias_aprobadas` | — |
 | | 1 | 8253 | `creditos_aprobados` | Avance curricular (máx. 70) |
+| | 1 | 8774 (oculta, la completa el cuadro) | — | No se copia como pregunta. Si el cuadro no está en pantalla, de ahí salen `plan` y `materias_aprobadas` |
 | | 2 | 8257 | `año_cohorte` | — (se usa para el avance) |
 | | 2 | 8258 | `cuatri_cohorte` | — (se usa para el avance) |
 | | 3 | 8259 | `trabaja` | Sí → 10 |
 | | 4 | 8260 (depende de `trabaja` = Si) | `inicio_laboral` | 20 |
 | Cuatrimestral (versión 2) | 1 | 8261 (cuadro de créditos) | `plan`, `materias_aprobadas` | — |
 | | 1 | 8262 | `creditos_aprobados` | Avance curricular (máx. 30). El ingreso sale de la Encuesta inicial vigente en la base |
+| | 1 | 8775 (oculta, la completa el cuadro) | — | Igual que la 8774 |
 | | 1 | 8264 | `progreso_proyecto_final` | 0 · 10 · 7 · 3 · 0 |
 | | 1 | 8265 | `trabaja` | Sí → 5 |
 | | 1 | 8266 (depende de `trabaja` = Si) | `inicio_laboral` | 10 · 10 · 10 · 7 · 7 · 4 · 4 |
@@ -173,7 +175,7 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
 4. **Encuesta Cuatrimestral (para el equipo):** `inicio_laboral` depende de `trabaja`, pero están en la misma página, así que Moodle la muestra y la pide siempre. Hace falta un salto de página entre las dos. (El ítem 8273 se borró el 2026-10-25.)
-5. **Cuadro de créditos:** todavía ofrece el Plan 2003, que quedó fuera del alcance. Si el estudiante lo elige, el avance no se puntúa. Además, al volver a su página el cuadro empieza vacío (ver `section/utils/README.md`).
+5. **Cuadro de créditos:** todavía ofrece el Plan 2003, que quedó fuera del alcance. Si el estudiante lo elige, el avance no se puntúa. Desde el 2026-10-25 el cuadro guarda su selección en las respuestas ocultas 8774 y 8775 y la recupera al volver a su página; la copia usa esas respuestas cuando el cuadro no está en pantalla (por ejemplo, si el estudiante termina la encuesta en otro dispositivo).
 6. **Control para el equipo:** comparar la última respuesta de Moodle con la última versión de la base, para detectar copias que no llegaron.
 7. **`avance_percibido`:** "Demorado" y "Muy demorado" tienen el mismo umbral (50 %) en Moodle.
 8. **Período:** `PERIODO_ACTUAL` está fijo en el script (`2026-2`). Hay que cambiarlo cada cuatrimestre o definir la ventana del período.
