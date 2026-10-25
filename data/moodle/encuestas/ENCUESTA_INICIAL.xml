@@ -35,7 +35,30 @@
                     <![CDATA[creditos_aprobados]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[0|235.5]]>
+                    <![CDATA[0|223]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="pagebreak" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8506]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[]]>
@@ -93,6 +116,29 @@
                     <![CDATA[]]>
                </DEPENDVALUE>
           </ITEM>
+          <ITEM TYPE="pagebreak" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8507]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
           <ITEM TYPE="multichoice" REQUIRED="1">
                <ITEMID>
                     <![CDATA[8259]]>
@@ -108,6 +154,29 @@
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="pagebreak" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8508]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
                </OPTIONS>
                <DEPENDITEM>
                     <![CDATA[0]]>
