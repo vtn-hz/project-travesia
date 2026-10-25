@@ -34,8 +34,6 @@ docs/
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
 │   ├── detalle-estudiante.md
-│   ├── preguntas.md
-│   ├── encuestas.md
 │   ├── plan-estudios.md
 │   ├── encuesta-inicial.md
 │   ├── copia-encuestas.md

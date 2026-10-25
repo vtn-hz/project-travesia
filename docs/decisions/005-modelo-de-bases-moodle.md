@@ -39,10 +39,10 @@ Para eso hacen falta datos guardados en Moodle. Las restricciones son las del pr
 | 4 | **Asignaciones** | cambio manual de estado | `id_usuario`, `nivel` (rojo, amarillo, verde o `auto` para quitarlo), `motivo` | Solo agrega |
 | 5 | **Entrevistas** | entrevista o tutoría | `id_usuario`, `fecha`, `tipo`, `resultado`, `estado` (pedida, aceptada, realizada) | Solo agrega |
 | 6 | **Configuración** | parámetro | `clave`, `valor` (umbrales, bandas, períodos abiertos, versión del criterio) | Editable |
-| 7 | **Preguntas** | pregunta | La que ya existe (cmid 59498, d=114) | Editable |
+| 7 | **Preguntas** | pregunta | La que existía (cmid 59498, d=114). Descartada el 2026-10-25: las preguntas son fijas en las Encuestas de Moodle | Editable |
 | 8 | **Respuestas** | respuesta a una encuesta | [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json) (propuesta) | Solo agrega |
 
-A estas se suma **Armado de encuestas** ([`BASE_ENCUESTAS_ARMADO.json`](../../data/moodle/BASE_ENCUESTAS_ARMADO.json), propuesta). El plan de estudios y las correlativas pueden quedar en `data/` porque cambian muy poco.
+A estas se sumaba **Armado de encuestas** (propuesta, descartada el 2026-10-25 junto con Preguntas). El plan de estudios y las correlativas pueden quedar en `data/` porque cambian muy poco.
 
 ### De dónde sale cada parte de la visualización
 

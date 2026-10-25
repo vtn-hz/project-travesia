@@ -42,10 +42,10 @@ Las reglas de estilo están en **`RULES.md`** (raíz del repo), que es la fuente
 ## ¿Sección simple o ítem de un grupo?
 
 - **Sección simple:** una pantalla sola → `section/<nombre>/content.html`.
-- **Ítem de un grupo:** varias pantallas que van juntas en una **subsección de Moodle** (por ejemplo "Encuestas y Preguntas" → `preguntas` y `encuestas`) → `section/<grupo>/<item>/content.html`.
-  - El grupo tiene un `section/<grupo>/seccion.json` con el nombre de la subsección en Moodle y la lista de ítems (carpeta, nombre, tipo y la clave de `moodle.config.json` → `paginas` donde va su `cmid`). Si el grupo es nuevo, crearlo. Si ya existe, agregar el ítem a `items`. Ejemplo: `section/encuestas_preguntas/seccion.json`.
+- **Ítem de un grupo:** varias pantallas que van juntas en una **subsección de Moodle** (por ejemplo "Utils" → `widgets` y `tools`) → `section/<grupo>/<item>/content.html`.
+  - El grupo tiene un `section/<grupo>/seccion.json` con el nombre de la subsección en Moodle y la lista de ítems (carpeta, nombre, tipo y la clave de `moodle.config.json` → `paginas` donde va su `cmid`). Si el grupo es nuevo, crearlo. Si ya existe, agregar el ítem a `items`. Ejemplo: `section/utils/seccion.json`.
   - Los links relativos desde un ítem suben dos niveles: `../../<otra>/content.html`. Desde una sección simple hacia un ítem: `../<grupo>/<item>/content.html`.
-  - El contenedor raíz de cada ítem tiene un id propio y único (por ejemplo `banco-preguntas`, `armado-encuestas`), porque en Moodle varios ítems pueden convivir en la misma página del curso.
+  - El contenedor raíz de cada ítem tiene un id propio y único (por ejemplo `vitrina-widgets`, `vitrina-tools`), porque en Moodle varios ítems pueden convivir en la misma página del curso.
 
 ## Pasos
 

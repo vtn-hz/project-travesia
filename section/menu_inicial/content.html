@@ -118,25 +118,19 @@
       // Destino de cada tarjeta en local (archivos del repo)
       var DESTINOS_LOCAL = {
         'btn-tablero-criticidad': '../tablero_estudiantes/content.html',
-        'btn-encuestas': '../encuestas_preguntas/preguntas/content.html',
-        'btn-armado-encuestas': '../encuestas_preguntas/encuestas/content.html',
         'btn-plan-estudios': '../plan_estudios/content.html',
         'btn-entrevistas': '../entrevistas/content.html'
       };
       // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
-      var CMID_PAGINA_PREGUNTAS = null; // @config paginas.preguntas
       var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var DESTINOS_MOODLE = {
-        'btn-encuestas': '/mod/page/view.php?id=' + CMID_PAGINA_PREGUNTAS,
         'btn-plan-estudios': '/mod/page/view.php?id=' + CMID_PAGINA_PLAN
       };
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
       // Bloque "Estado del sistema" de ADM (oculto por ahora)
       var MOSTRAR_ESTADO_SISTEMA = false;
-      // Tarjetas "Preguntas" y "Encuestas" (ocultas por ahora: las preguntas son fijas)
-      var MOSTRAR_ENCUESTAS = false;
       // La barra para cambiar de rol solo existe al abrir el archivo localmente
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
@@ -177,7 +171,6 @@
         ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
         estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
         info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
-        lista: '<path d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.54 11 2 7.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 11zm0 8L2 15.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 19z"/>'
       };
 
       // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
@@ -239,15 +232,9 @@
         { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas.', cta: 'Ver indicadores', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'reportes', grupo: 'seguimiento', icono: 'reportes', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'importar-datos', grupo: 'gestion', icono: 'importar', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', roles: ['ADM', 'GES'] },
-        { id: 'encuestas', grupo: 'gestion', icono: 'encuestas', titulo: 'Preguntas', texto: 'Preguntas con su tipo, sus opciones de respuesta y la criticidad de cada opción.', cta: 'Gestionar preguntas', roles: ['ADM', 'GES'] },
-        { id: 'armado-encuestas', grupo: 'gestion', icono: 'lista', titulo: 'Encuestas', texto: 'Armá la encuesta inicial y la cuatrimestral con preguntas del banco, en el orden que quieras.', cta: 'Armar encuestas', roles: ['ADM', 'GES'] },
         { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Plan 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
         { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores y cierre de período.', cta: 'Configurar', roles: ['ADM'] }
       ];
-
-      if (!MOSTRAR_ENCUESTAS) {
-        TARJETAS = TARJETAS.filter(function(t) { return t.id !== 'encuestas' && t.id !== 'armado-encuestas'; });
-      }
 
       var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important;';
 

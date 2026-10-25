@@ -52,10 +52,10 @@ Estas reglas están por encima de todas las demás.
   - **Sección simple:** `section/<nombre>/content.html` (por ejemplo `menu_inicial`).
   - **Sección con ítems (grupo):** `section/<grupo>/<item>/content.html`, más un `section/<grupo>/seccion.json`. El grupo representa una **subsección de Moodle** dentro de Zhakyz, y cada ítem es una actividad (Página o Área de texto) de esa subsección.
     ```
-    section/encuestas_preguntas/
+    section/utils/
     ├── seccion.json            ← nombre del grupo y de sus ítems (los ids están en moodle.config.json)
-    ├── preguntas/content.html
-    └── encuestas/content.html
+    ├── widgets/content.html
+    └── tools/content.html
     ```
 - Nombres de carpeta en `snake_case`, sin tildes. Cada `content.html` (simple o ítem) sigue todas las reglas de esta guía.
 - Los links locales entre secciones son relativos al archivo: desde un ítem, `../../<otra>/content.html`.
@@ -137,7 +137,7 @@ Referencia ya adaptada: `section/plan_estudios/content.html`. El resto de las se
 ## JavaScript
 
 - Todo dentro de un **IIFE** `(function() { ... })()` — sin contaminación global.
-- **Constantes de configuración Moodle** (CMIDs, IDs de campo) como `var` al inicio del IIFE. Cada id que está en `moodle.config.json` se marca con `// @config <ruta>` al final de la línea (por ejemplo `var CMID_PREGUNTAS = 59498; // @config bases.preguntas.cmid`). `sincronizar_config.js` copia el valor y `publicar.js` no publica un archivo desactualizado.
+- **Constantes de configuración Moodle** (CMIDs, IDs de campo) como `var` al inicio del IIFE. Cada id que está en `moodle.config.json` se marca con `// @config <ruta>` al final de la línea (por ejemplo `var DATAID_MATERIAS = 152; // @config bases.materias.dataid`). `sincronizar_config.js` copia el valor y `publicar.js` no publica un archivo desactualizado.
 - **Delegación de eventos**: un solo listener `click` en `document` con `e.target.closest()`, un solo listener `submit`.
 - **Vanilla JS puro** — sin jQuery, sin frameworks, sin librerías externas.
 - **Async/await** para operaciones con `fetch`.

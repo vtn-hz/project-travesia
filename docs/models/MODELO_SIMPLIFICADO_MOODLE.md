@@ -151,7 +151,9 @@ Formato de `cursadas_json`:
 
 Con unos 300 estudiantes, una carga son unas 300 entradas, en lugar de una entrada por evaluación (miles).
 
-### 6. Preguntas (ya existe: cmid 59498, d=114)
+### 6. Preguntas (descartada el 2026-10-25)
+
+> Se borró de Moodle (era la cmid 59498, d=114) y del repo: las preguntas quedaron fijas en las Encuestas de Moodle. Lo que sigue queda como referencia del diseño.
 
 Campos actuales: `id`, `pregunta`, `tipo`, `respuestas`, `criticidad`. Para cubrir el DER hay que agregar:
 
@@ -164,9 +166,9 @@ Y sumar `likert` a las opciones de `tipo`.
 
 **Diferencia con el DER:** en el DER cada pregunta pertenece a una encuesta (`id_encuesta`). Nosotros tenemos un banco de preguntas reutilizables y el orden de cada encuesta se arma aparte, en la base 7. Ver *Decisiones pendientes*.
 
-### 7. Armado de encuestas
+### 7. Armado de encuestas (descartada el 2026-10-25)
 
-Propuesta en [`BASE_ENCUESTAS_ARMADO.json`](../../data/moodle/BASE_ENCUESTAS_ARMADO.json). Para cubrir el DER:
+Era una propuesta, sin crear; se descartó junto con la base Preguntas. Para cubrir el DER:
 
 | Campo | Tipo | Origen en el DER |
 |---|---|---|

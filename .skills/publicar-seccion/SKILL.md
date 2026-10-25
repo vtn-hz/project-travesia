@@ -66,7 +66,7 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
 
 Para las bases (`mod_data`) que usan las secciones, el flujo es el mismo (simular → confirmar → verificar) con `crear_base.js`:
 
-1. Definir la base en `data/moodle/BASE_<NOMBRE>.json`: `clave` (la entrada de `bases` en `moodle.config.json`), nombre, descripción, subsección de Zhakyz y campos (`text`, `menu` con `opciones`, `textarea`, `number`, etc.). Ver `BASE_ENCUESTAS.json`.
+1. Definir la base en `data/moodle/BASE_<NOMBRE>.json`: `clave` (la entrada de `bases` en `moodle.config.json`), nombre, descripción, subsección de Zhakyz y campos (`text`, `menu` con `opciones`, `textarea`, `number`, etc.). Ver `BASE_MATERIAS.json`.
 2. Simular:
    ```bash
    MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) node .skills/publicar-seccion/crear_base.js --definicion data/moodle/BASE_<NOMBRE>.json

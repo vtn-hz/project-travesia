@@ -33,8 +33,6 @@
   },
   "paginas": {
     "hub": 59511,
-    "preguntas": null,
-    "encuestas": null,
     "tablero": null,
     "detalle": null,
     "listado_criticidad_primero": 59523,
@@ -54,19 +52,6 @@
     }
   },
   "bases": {
-    "preguntas": {
-      "cmid": null,
-      "dataid": null,
-      "definicion": "data/moodle/BASE_ENCUESTAS.json",
-      "subseccion": "Database",
-      "creada": "2026-10-17",
-      "borrada": "2026-10-25"
-    },
-    "armado": {
-      "cmid": null,
-      "dataid": null,
-      "definicion": "data/moodle/BASE_ENCUESTAS_ARMADO.json"
-    },
     "respuestas": {
       "cmid": 59940,
       "dataid": 166,
