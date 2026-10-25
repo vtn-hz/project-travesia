@@ -1,44 +1,26 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuesta "Encuesta Inicial" (cmid 59710) → ítem Área de texto y medios (id 8254) · 2026-10-19 -->
-<!-- SECCIÓN: ENCUESTA INICIAL · CUADRO DE MATERIAS APROBADAS Y CRÉDITOS (ESTUDIANTE) -->
-<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- VA EN EL ÍTEM "Área de texto y medios" DE LA ENCUESTA (HOY [[Cuadro]]), JUSTO ANTES DE LA PREGUNTA creditos_aprobados -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuesta "Encuesta Inicial" (cmid 59710) → ítem Área de texto y medios (id 8254) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTA INICIAL · CUADRO DE CRÉDITOS (ítem 8254, antes de la pregunta creditos_aprobados) -->
+<!-- QUÉ ES: copia de section/utils/cargador/content.html con WIDGET = 'CuadroCreditos' y CAMPO = pregunta creditos_aprobados (8253). Lee la Página Widgets de Utils (moodle.config.json → paginas.utils_widgets) y crea el widget -->
+<!-- SI CAMBIA EL CARGADOR: volver a copiarlo acá, cambiar solo RUTA_LOCAL_UTILS, WIDGET y CAMPO, y volver a publicar el ítem -->
+<!-- NO EDITAR EL ÍTEM DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. Sin #widget muestra el índice de widgets; con #widget=<nombre>, ese widget -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia; el pie lo dibuja el widget -->
 <!-- CONTENEDOR PRINCIPAL -->
-<div id="cuadro-creditos"
-  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+<div data-zk-cargador style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
   <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
   <nolink>
 
-  <!-- ENCABEZADO -->
-  <div style="margin-bottom: 16px !important;">
-    <div
-      style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
-      Proyecto Travesía · SBIRE</div>
-    <h3
-      style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
-      Materias aprobadas</h3>
-    <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
-      Seleccionar las materias aprobadas en forma definitiva. El total de créditos se completa automáticamente en la pregunta siguiente.</p>
+  <!-- LUGAR DEL WIDGET -->
+  <div data-cargador="widget"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; max-width: 850px !important; margin: 20px auto !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
   </div>
 
-  <!-- PLAN Y RESUMEN (LO ARMA EL SCRIPT) -->
-  <div id="resumen-creditos"></div>
-
-  <!-- LISTA DE MATERIAS POR AÑO (LO ARMA EL SCRIPT) -->
-  <div id="lista-creditos"></div>
-
-  <!-- VISTA PREVIA LOCAL: SIMULA LA PREGUNTA DE LA ENCUESTA QUE RECIBE EL TOTAL -->
-  <div id="pregunta-local-creditos"
-    style="display: none; margin-top: 16px !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important;">
-    <label for="id_numeric_8253" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">Los créditos obtenidos actualmente son: <span style="color: #47536b !important; font-weight: 400 !important;">(pregunta de la encuesta, solo en la vista local)</span></label>
-  </div>
-
-  <!-- PIE DE PÁGINA ZHAKYZ -->
-  <div id="footer-zhakyz"
-    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
-    <span
-      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
-      Zhakyz &amp; Asociados</span>
-    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  <!-- VISTA PREVIA LOCAL: SIMULA LA PREGUNTA DE LA ENCUESTA QUE RECIBE EL VALOR DEL WIDGET -->
+  <div data-cargador="pregunta"
+    style="display: none; max-width: 850px !important; margin: 16px auto !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important; box-sizing: border-box !important;">
   </div>
 
   <!-- SCRIPT DE MANEJO DE EVENTOS -->
@@ -47,13 +29,11 @@
       // ---------------------------------------------------------
       // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
       // ---------------------------------------------------------
-      if (!document.getElementById('zhakyz-creditos-style')) {
+      if (!document.getElementById('zhakyz-cargador-utils-style')) {
         var styleEl = document.createElement('style');
-        styleEl.id = 'zhakyz-creditos-style';
-        styleEl.innerHTML =
-          '#cuadro-creditos > nolink { display: block; }' +
-          '#cuadro-creditos button:focus-visible, #cuadro-creditos input:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
-          '#cuadro-creditos label.zk-materia:hover { background-color: rgba(218, 222, 231, 0.2); }';
+        styleEl.id = 'zhakyz-cargador-utils-style';
+        styleEl.innerHTML = '[data-zk-cargador] > nolink { display: block; }' +
+          '[data-zk-cargador] a:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
         document.head.appendChild(styleEl);
       }
 
@@ -62,20 +42,61 @@
       // ---------------------------------------------------------
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-      // Base Materias de la sección Zhakyz. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
-      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
-      // Ítem numérico de la encuesta que recibe el total (creditos_aprobados). Su input se llama numeric_<id>;
-      // el id cambia según la pantalla (id_numeric_<id> al responder, feedback_item_<id> en Editar preguntas)
-      var ITEM_CREDITOS = 8253;
-      // Plan que se muestra primero si está en la base
-      var PLAN_INICIAL = '2024';
+      // Página "Widgets" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_UTILS = 59932; // @config paginas.utils_widgets
+      // En local (Live Server): ruta de la Página Widgets desde esta vista
+      var RUTA_LOCAL_UTILS = '../utils/widgets/content.html';
+      // Widget que crea este cargador y campo de la encuesta que recibe su valor (los campos se llaman <tipo>_<id del ítem>):
+      //   'CuadroCreditos'   → total de créditos, en un campo numeric_<id>
+      //   'SelectorMaterias' → materias cursadas en JSON, en una "Respuesta de texto larga" (textarea_<id>)
+      var WIDGET = 'CuadroCreditos';
+      var CAMPO = 'input[name="numeric_8253"]';
+      // Opciones del constructor (section/utils/README.md). El contenedor lo pone el cargador
+      var OPCIONES = {};
+
+      // TEXTOS DE CADA WIDGET: AVISO SI NO SE PUEDE CARGAR; EN LOCAL, PREGUNTA SIMULADA E ÍNDICE (descripcion y uso)
+      var WIDGETS = {
+        CuadroCreditos: {
+          nombre: 'el cuadro de créditos', aMano: 'El total de créditos se completa a mano.',
+          ejemplo: 'input[name="numeric_8262"]', pregunta: 'Los créditos obtenidos actualmente son:',
+          descripcion: 'Cuadro con todas las materias del plan, por año, y los otros créditos (PPS y optativas). Suma los créditos de lo seleccionado y escribe el total en una pregunta numérica, que queda de solo lectura.',
+          uso: 'Encuesta Inicial (ítem 8254 → pregunta 8253) y Encuesta Cuatrimestral (ítem 8261 → pregunta 8262)'
+        },
+        // El ítem 8273 es hoy una respuesta corta (255 caracteres) y tiene que pasar a ser larga: Moodle le va a dar otro id
+        SelectorMaterias: {
+          nombre: 'el selector de materias', aMano: 'Las materias se escriben a mano en el campo de texto.',
+          ejemplo: 'textarea[name="textarea_8273"]', pregunta: 'JSON que se guarda en la respuesta (en Moodle la pregunta queda oculta):',
+          descripcion: 'Lista desplegable con las materias del plan. Por cada materia elegida pregunta si fue la primera vez que se cursó y qué tan difícil resultó, y guarda todo como JSON en una respuesta de texto larga, que queda oculta.',
+          uso: 'Encuesta Cuatrimestral (ítem 8270 → respuesta larga que reemplaza al 8273)'
+        }
+      };
+
+      // En local, #widget=<nombre> muestra ese widget con la pregunta de su ejemplo de la Encuesta Cuatrimestral.
+      // Sin #widget no se crea ninguno: solo el menú con los widgets de la biblioteca
+      var PEDIDO = null;
+      if (ES_VISTA_LOCAL) {
+        PEDIDO = (window.location.hash.match(/widget=(\w+)/) || [])[1] || null;
+        if (PEDIDO) {
+          WIDGET = PEDIDO;
+          CAMPO = WIDGETS[PEDIDO] ? WIDGETS[PEDIDO].ejemplo : 'input[name="campo_local"]';
+        }
+      }
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador]')) ||
+        document.querySelector('[data-zk-cargador]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
       // ---------------------------------------------------------
       var ICONOS = {
-        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
-        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
       };
 
       function icono(nombre, tamano) {
@@ -85,280 +106,155 @@
           ICONOS[nombre] + '<\/svg>';
       }
 
-      // ---------------------------------------------------------
-      // DATOS DE PRUEBA LOCAL: SOLO PARA VER LA PANTALLA CON file:// O localhost.
-      // En Moodle la lista sale siempre de la base Materias (DATAID_MATERIAS): las materias vigentes de cada plan.
-      // Campos que se leen de la base: plan, codigo, nombre, cuatrimestre, duracion, creditos (y estado para descartar las bajas)
-      var MATERIAS_PRUEBA = [
-        { plan: '2024', codigo: 'INGM101', nombre: 'Análisis Matemático I', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '6' },
-        { plan: '2024', codigo: 'INGM105', nombre: 'Álgebra I- B', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '4' },
-        { plan: '2024', codigo: 'INGM102', nombre: 'Análisis Matemático II', cuatrimestre: '2', duracion: 'cuatrimestral', creditos: '5' },
-        { plan: '2024', codigo: 'ING8501', nombre: 'Proyecto de Ingeniería Industrial I', cuatrimestre: '3', duracion: 'anual', creditos: '4' },
-        { plan: '2003', codigo: '633', nombre: 'Análisis Matemático A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' },
-        { plan: '2003', codigo: '631', nombre: 'Álgebra A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' }
-      ];
-
-      // ---------------------------------------------------------
-      // ESTADO
-      // ---------------------------------------------------------
-      var estado = {
-        materias: null, // [{ plan, codigo, nombre, cuatrimestre, duracion, creditos }]
-        error: '',
-        plan: PLAN_INICIAL,
-        aprobadas: {}   // codigo → true, por plan
-      };
-
-      // ---------------------------------------------------------
-      // UTILIDADES
-      // ---------------------------------------------------------
       function escapar(s) {
         return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
           return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
         });
       }
 
-      function numero(s) {
-        var n = parseFloat(String(s || '').replace(',', '.'));
-        return isNaN(n) ? 0 : n;
-      }
-
-      // 12.5 → "12,5"
-      function formatear(n) {
-        return String(Math.round(n * 10) / 10).replace('.', ',');
-      }
-
       // ---------------------------------------------------------
-      // LECTURA DE LA BASE MATERIAS
+      // CARGA DE LA BIBLIOTECA DE UTILS
       // ---------------------------------------------------------
-      // ENTRADAS VIGENTES: LA MÁS NUEVA DE CADA plan + codigo, SIN LAS DADAS DE BAJA
-      function vigentes(entradas) {
-        var ultima = {};
-        entradas.forEach(function(e, i) {
-          var clave = e.plan + '|' + e.codigo;
-          var orden = /^\d+$/.test(e.rid || '') ? parseInt(e.rid, 10) : i;
-          if (!ultima[clave] || orden >= ultima[clave].orden) ultima[clave] = { orden: orden, e: e };
-        });
-        return Object.keys(ultima).map(function(k) { return ultima[k].e; })
-          .filter(function(e) { return e.estado !== 'baja'; });
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzUtilsCarga
+      // y la biblioteca en window.ZhakyzUtils.
+      function urlUtils() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_UTILS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_UTILS : null;
+        }
+        return new URL(RUTA_LOCAL_UTILS, window.location.href).href;
       }
 
-      // ENTRADAS DEL LISTADO: PRIMERO LA PLANTILLA PROPIA DE MATERIAS (.zk-registro CON CELDAS data-campo),
-      // SI NO LA PLANTILLA POR DEFECTO DE MOODLE (MISMO CRITERIO QUE LA SECCIÓN plan_estudios)
-      function parsearListado(html) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
-        var propias = doc.querySelectorAll('.zk-registro');
-        if (propias.length) {
-          return Array.prototype.map.call(propias, function(el) {
-            var valores = {};
-            el.querySelectorAll('[data-campo]').forEach(function(c) { valores[c.getAttribute('data-campo')] = c.textContent.trim(); });
-            var enlace = el.querySelector('a[href*="rid="]');
-            valores.rid = /^\d+$/.test(el.getAttribute('data-rid') || '') ? el.getAttribute('data-rid')
-              : enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
-            return valores;
-          });
-        }
-        return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
-          var valores = {};
-          entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
-            var celdas = fila.children;
-            if (celdas.length >= 2) valores[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
-          });
-          var enlace = entrada.querySelector('a[href*="rid="]');
-          valores.rid = enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
-          return valores;
-        });
-      }
-
-      function cargarMaterias() {
-        if (ES_VISTA_LOCAL || !window.M) {
-          estado.materias = MATERIAS_PRUEBA.slice();
-          return renderizar();
-        }
-        fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_MATERIAS + '&perpage=1000', { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            estado.materias = vigentes(parsearListado(html));
-            if (!estado.materias.length) estado.error = 'No se encontraron materias en la base Materias. Completar el total de créditos en la pregunta siguiente.';
-          }, function() {
-            estado.materias = [];
-            estado.error = 'No se pudo leer la base Materias. Completar el total de créditos en la pregunta siguiente.';
+      function cargarUtils() {
+        if (window.ZhakyzUtils) return Promise.resolve(window.ZhakyzUtils);
+        if (window.ZhakyzUtilsCarga) return window.ZhakyzUtilsCarga;
+        var url = urlUtils();
+        if (!url) return Promise.reject(new Error('La Página Widgets de Utils todavía no está publicada.'));
+        window.ZhakyzUtilsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Widgets respondió HTTP ' + r.status + '.');
+            return r.text();
           })
-          .then(renderizar);
-      }
-
-      // ---------------------------------------------------------
-      // CÁLCULO Y PREGUNTA DE LA ENCUESTA
-      // ---------------------------------------------------------
-      function materiasDelPlan() {
-        return (estado.materias || []).filter(function(m) { return m.plan === estado.plan; })
-          .sort(function(a, b) { return (parseInt(a.cuatrimestre, 10) - parseInt(b.cuatrimestre, 10)) || (a.codigo < b.codigo ? -1 : 1); });
-      }
-
-      function totales() {
-        var lista = materiasDelPlan(), sel = estado.aprobadas[estado.plan] || {};
-        var t = { materias: lista.length, creditosPlan: 0, aprobadas: 0, creditos: 0 };
-        lista.forEach(function(m) {
-          t.creditosPlan += numero(m.creditos);
-          if (sel[m.codigo]) { t.aprobadas++; t.creditos += numero(m.creditos); }
-        });
-        return t;
-      }
-
-      function campoCreditos() {
-        return document.querySelector('input[name="numeric_' + ITEM_CREDITOS + '"]');
-      }
-
-      // EL CAMPO SOLO SE BLOQUEA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, EL ESTUDIANTE LO COMPLETA A MANO
-      function calculoActivo() {
-        return estado.materias !== null && !estado.error;
-      }
-
-      // EL TOTAL VA A LA PREGUNTA NUMÉRICA DE LA ENCUESTA (MOODLE ACEPTA COMA O PUNTO) Y EL CAMPO QUEDA DE SOLO LECTURA
-      function escribirTotal() {
-        var campo = campoCreditos();
-        if (!campo || !calculoActivo()) return;
-        if (!campo.readOnly) {
-          campo.readOnly = true;
-          campo.setAttribute('aria-readonly', 'true');
-          campo.title = 'Se calcula con las materias seleccionadas en el cuadro Materias aprobadas.';
-          campo.style.setProperty('background-color', '#f5f6fa', 'important');
-          campo.style.setProperty('cursor', 'not-allowed', 'important');
-        }
-        var total = formatear(totales().creditos);
-        if (campo.value !== total) {
-          campo.value = total;
-          campo.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      }
-
-      // ---------------------------------------------------------
-      // RENDERIZADO
-      // ---------------------------------------------------------
-      function renderizarResumen() {
-        var t = totales();
-        var planes = {};
-        (estado.materias || []).forEach(function(m) { planes[m.plan] = true; });
-        var porcentaje = t.creditosPlan ? Math.round(t.creditos / t.creditosPlan * 100) : 0;
-        var botones = Object.keys(planes).sort().reverse().map(function(p) {
-          var activo = p === estado.plan;
-          return '<button type="button" data-plan-creditos="' + escapar(p) + '" aria-pressed="' + activo + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; border: 1px solid ' + (activo ? '#333c4d' : '#dadee7') + ' !important; background-color: ' + (activo ? '#0b0e14' : '#ffffff') + ' !important; color: ' + (activo ? '#ffffff' : '#0b0e14') + ' !important;">Plan ' + escapar(p) + '</button>';
-        }).join('');
-        document.getElementById('resumen-creditos').innerHTML =
-          '<div style="display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: wrap !important; margin-bottom: 12px !important;">' +
-          '<span style="font-size: 14px !important; font-weight: 500 !important;">Plan de estudios</span>' + botones + '</div>' +
-          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
-          tarjeta('Créditos aprobados', formatear(t.creditos), 'de ' + formatear(t.creditosPlan) + ' del plan (' + porcentaje + ' %)') +
-          tarjeta('Materias aprobadas', t.aprobadas, 'de ' + t.materias + ' del plan') +
-          '</div>' +
-          '<div aria-hidden="true" style="height: 8px !important; border-radius: 999px !important; background-color: #ebeef4 !important; overflow: hidden !important; margin-bottom: 16px !important;">' +
-          '<div style="height: 100% !important; width: ' + porcentaje + '% !important; background-color: #027af2 !important;"></div></div>';
-      }
-
-      function tarjeta(titulo, valor, detalle) {
-        return '<div style="flex: 1 1 200px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">' +
-          '<div style="font-size: 14px !important; font-weight: 500 !important;">' + titulo + '</div>' +
-          '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; margin: 4px 0 !important;">' + valor + '</div>' +
-          '<div style="font-size: 12px !important; color: #47536b !important;">' + detalle + '</div></div>';
-      }
-
-      // UNA TARJETA POR AÑO, CON LAS MATERIAS DE SUS DOS CUATRIMESTRES
-      function renderizarLista() {
-        var cont = document.getElementById('lista-creditos');
-        if (estado.error) {
-          cont.innerHTML = '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important;">' +
-            '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span><span>' + escapar(estado.error) + '</span></div>';
-          return;
-        }
-        var sel = estado.aprobadas[estado.plan] || {};
-        var porAnio = {};
-        materiasDelPlan().forEach(function(m) {
-          var anio = Math.ceil(parseInt(m.cuatrimestre, 10) / 2);
-          (porAnio[anio] = porAnio[anio] || []).push(m);
-        });
-        cont.innerHTML = Object.keys(porAnio).sort().map(function(anio) {
-          var lista = porAnio[anio];
-          var marcadas = lista.filter(function(m) { return sel[m.codigo]; }).length;
-          var todas = marcadas === lista.length;
-          return '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 12px !important; overflow: hidden !important;">' +
-            '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; padding: 10px 16px !important; background-color: #f5f6fa !important;">' +
-            '<span style="font-size: 14px !important; font-weight: 600 !important;">' + anio + '.º año <span style="font-weight: 400 !important; color: #47536b !important;">· ' + marcadas + ' de ' + lista.length + '</span></span>' +
-            '<button type="button" data-anio-creditos="' + anio + '" data-marcar="' + (todas ? '0' : '1') + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">' + (todas ? 'Quitar todas' : 'Seleccionar todas') + '</button></div>' +
-            lista.map(function(m) {
-              var c = parseInt(m.cuatrimestre, 10);
-              var cuat = m.duracion === 'anual' ? 'Anual (' + c + '.º y ' + (c + 1) + '.º C)' : c + '.º C';
-              return '<label class="zk-materia" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 16px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; margin: 0 !important; cursor: pointer !important; font-weight: 400 !important;">' +
-                '<input type="checkbox" data-codigo-creditos="' + escapar(m.codigo) + '"' + (sel[m.codigo] ? ' checked' : '') + ' style="width: 18px !important; height: 18px !important; margin: 0 !important; flex: 0 0 auto !important; accent-color: #026bd4 !important;">' +
-                '<span style="flex: 1 1 auto !important; min-width: 0 !important;"><span style="display: block !important; font-weight: 500 !important;">' + escapar(m.nombre) + '</span>' +
-                '<span style="display: block !important; font-size: 12px !important; color: #47536b !important;">' + escapar(m.codigo) + ' · ' + cuat + '</span></span>' +
-                '<span style="flex: 0 0 auto !important; font-size: 13px !important; color: #47536b !important; white-space: nowrap !important;">' + formatear(numero(m.creditos)) + ' créd.</span></label>';
-            }).join('') + '</div>';
-        }).join('');
-      }
-
-      function renderizar() {
-        if (estado.materias === null) {
-          document.getElementById('lista-creditos').innerHTML = '<p style="margin: 0 !important; color: #47536b !important;">Leyendo las materias del plan…</p>';
-          return;
-        }
-        var planes = (estado.materias || []).map(function(m) { return m.plan; });
-        if (planes.length && planes.indexOf(estado.plan) === -1) estado.plan = planes[0];
-        renderizarResumen();
-        renderizarLista();
-        escribirTotal();
-      }
-
-      // ---------------------------------------------------------
-      // DELEGACIÓN DE EVENTOS
-      // ---------------------------------------------------------
-      document.addEventListener('change', function(e) {
-        var t = e.target;
-        if (!t.closest || !t.closest('#cuadro-creditos') || !t.hasAttribute('data-codigo-creditos')) return;
-        var sel = estado.aprobadas[estado.plan] = estado.aprobadas[estado.plan] || {};
-        sel[t.getAttribute('data-codigo-creditos')] = t.checked;
-        renderizar();
-      });
-
-      document.addEventListener('click', function(e) {
-        var t = e.target;
-        if (!t.closest || !t.closest('#cuadro-creditos')) return;
-        var plan = t.closest('[data-plan-creditos]');
-        if (plan) { estado.plan = plan.getAttribute('data-plan-creditos'); return renderizar(); }
-        var anio = t.closest('[data-anio-creditos]');
-        if (anio) {
-          var marcar = anio.getAttribute('data-marcar') === '1';
-          var sel = estado.aprobadas[estado.plan] = estado.aprobadas[estado.plan] || {};
-          materiasDelPlan().forEach(function(m) {
-            if (Math.ceil(parseInt(m.cuatrimestre, 10) / 2) === parseInt(anio.getAttribute('data-anio-creditos'), 10)) sel[m.codigo] = marcar;
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="widgets"]');
+            if (!biblioteca) throw new Error('La Página Widgets no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzUtils) throw new Error('La biblioteca de Utils no se pudo ejecutar.');
+            return window.ZhakyzUtils;
           });
-          renderizar();
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzUtilsCarga.catch(function() { window.ZhakyzUtilsCarga = null; });
+        return window.ZhakyzUtilsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISOS
+      // ---------------------------------------------------------
+      // SI NO HAY WIDGET, LA PREGUNTA QUEDA EDITABLE Y SE COMPLETA A MANO
+      function mostrarError(error) {
+        var aviso = parte('aviso');
+        // Si la biblioteca se leyó, el error es del widget y el menú queda para elegir otro
+        var menu = parte('menu');
+        if (menu && !window.ZhakyzUtils) menu.textContent = 'No se pudo leer la biblioteca.';
+        var textos = ES_VISTA_LOCAL && !PEDIDO ? { nombre: 'la biblioteca de widgets', aMano: '' }
+          : WIDGETS[WIDGET] || { nombre: 'el widget ' + WIDGET, aMano: 'La pregunta se completa a mano.' };
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Widgets.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Widgets no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar ' + escapar(textos.nombre) + ': ' + escapar(motivo) + ' ' + escapar(textos.aMano) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // BARRA DE VISTA PREVIA LOCAL: QUÉ CARGA, QUÉ CAMPO RECIBE EL VALOR Y EL MENÚ DE WIDGETS (SE LLENA AL LEER LA BIBLIOTECA)
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; max-width: 850px !important; box-sizing: border-box !important; padding: 8px 12px !important; margin: 20px auto 0 auto !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important;">' +
+          icono('ver', 18) + 'Vista previa local · cargador de Utils</span>' +
+          (PEDIDO ? '<span style="color: #c2c9d6 !important;">Lee ' + escapar(RUTA_LOCAL_UTILS) + ' y escribe en ' + escapar(CAMPO) + '</span>' : '') +
+          '<span data-cargador="menu" style="color: #c2c9d6 !important;">Leyendo la biblioteca…</span>';
+        raiz.insertBefore(barra, raiz.firstChild);
+      }
+
+      // MENÚ: LOS WIDGETS QUE TIENE LA BIBLIOTECA (SUS CONSTRUCTORES EMPIEZAN CON MAYÚSCULA).
+      // Con un widget elegido, enlaces en la barra; sin #widget, el índice en el lugar del widget
+      function renderizarMenu(Utils) {
+        var vigentes = Object.keys(Utils).filter(function(k) {
+          return typeof Utils[k] === 'function' && /^[A-Z]/.test(k);
+        });
+        if (!PEDIDO) {
+          parte('menu').innerHTML = '';
+          parte('widget').innerHTML = indice(vigentes);
+          return;
         }
-      });
+        parte('menu').innerHTML = '<a href="#" style="color: #99ccff !important; text-decoration: underline !important;">Índice</a> · ' + vigentes.map(function(w) {
+          return w === PEDIDO ? '<span aria-current="page" style="color: #ffffff !important; font-weight: 600 !important;">' + escapar(w) + '</span>'
+            : '<a href="#widget=' + escapar(w) + '" style="color: #99ccff !important; text-decoration: underline !important;">' + escapar(w) + '</a>';
+        }).join(' · ');
+      }
 
-      // Si el valor del campo cambia por cualquier otra vía, vuelve a ser la suma
-      document.addEventListener('input', function(e) {
-        if (e.target === campoCreditos()) escribirTotal();
-      });
+      // ÍNDICE: UN BLOQUE POR WIDGET, EN VERTICAL, CON SU ENLACE (#widget=<nombre>), DESCRIPCIÓN, USO Y CAMPO DE EJEMPLO
+      function indice(vigentes) {
+        return '<div style="max-width: 850px !important; margin: 20px auto !important; padding: 24px !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-sizing: border-box !important;">' +
+          '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
+          '<h3 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Widget Documentation</h3>' +
+          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Widgets de la biblioteca de Utils (' + vigentes.length + '). Elegir uno para verlo con la pregunta de la encuesta que recibe su valor.</p>' +
+          '<nav aria-label="Widgets" style="display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
+          vigentes.map(function(w) {
+            var d = WIDGETS[w] || {};
+            return '<a href="#widget=' + escapar(w) + '" style="display: block !important; padding: 16px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; color: #0b0e14 !important; text-decoration: none !important;">' +
+              '<span style="display: block !important; font-size: 16px !important; font-weight: 600 !important; color: #026bd4 !important; text-decoration: underline !important;">' + escapar(w) + '</span>' +
+              '<span style="display: block !important; margin-top: 4px !important; font-size: 14px !important; color: #0b0e14 !important;">' + escapar(d.descripcion || 'Sin descripción en el cargador.') + '</span>' +
+              (d.uso ? '<span style="display: block !important; margin-top: 6px !important; font-size: 13px !important; color: #47536b !important;">Se usa en: ' + escapar(d.uso) + '</span>' : '') +
+              '<code style="display: block !important; margin-top: 6px !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 12px !important; color: #47536b !important; background: none !important; padding: 0 !important; word-break: break-all !important;">#widget=' + escapar(w) + (d.ejemplo ? ' · ' + escapar(d.ejemplo) : '') + '</code></a>';
+          }).join('') + '</nav></div>';
+      }
 
-      // Antes de enviar la encuesta se escribe la suma una vez más
-      document.addEventListener('submit', function(e) {
-        if (campoCreditos() && e.target.contains(campoCreditos())) escribirTotal();
-      }, true);
-
-      // ---------------------------------------------------------
-      // INICIO
-      // ---------------------------------------------------------
-      if (ES_VISTA_LOCAL) {
-        var pregunta = document.getElementById('pregunta-local-creditos');
-        var campo = document.createElement('input');
-        campo.type = 'text';
-        campo.id = 'id_numeric_' + ITEM_CREDITOS;
-        campo.name = 'numeric_' + ITEM_CREDITOS;
-        campo.setAttribute('style', 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; font-size: 14px !important; box-sizing: border-box !important; width: 160px !important;');
+      // EN LOCAL SE SIMULA LA PREGUNTA DE LA ENCUESTA, CON EL MISMO NOMBRE QUE EN MOODLE (<tipo>_<id>)
+      function simularPregunta() {
+        var pregunta = parte('pregunta');
+        var nombre = (CAMPO.match(/name="([^"]+)"/) || [])[1] || 'campo_local';
+        var numerico = /^numeric_/.test(nombre);
+        var largo = /^textarea/.test(CAMPO);
+        var textos = WIDGETS[WIDGET] || { pregunta: 'Campo que recibe el valor:' };
+        pregunta.innerHTML = '<label for="id_' + escapar(nombre) + '" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">' +
+          escapar(textos.pregunta) + ' <span style="color: #47536b !important; font-weight: 400 !important;">(' + escapar(nombre) + ', solo en la vista local)</span></label>';
+        // Como en Moodle: respuesta numérica o corta (input, la corta con 255 caracteres) o respuesta larga (textarea, sin límite)
+        var campo = document.createElement(largo ? 'textarea' : 'input');
+        if (largo) campo.rows = 10;
+        else campo.type = 'text';
+        campo.id = 'id_' + nombre;
+        campo.name = nombre;
+        if (!numerico && !largo) campo.maxLength = 255;
+        campo.setAttribute('style', (largo ? 'height: auto !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; resize: vertical !important;' : 'height: 40px !important; font-size: 14px !important;') +
+          ' padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; box-sizing: border-box !important; width: ' + (numerico ? '160px' : '100%') + ' !important;');
         pregunta.appendChild(campo);
         pregunta.style.setProperty('display', 'block', 'important');
       }
-      renderizar();
-      cargarMaterias();
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y CREAR EL WIDGET
+      // ---------------------------------------------------------
+      if (ES_VISTA_LOCAL) {
+        crearBarraPreview();
+        if (PEDIDO) simularPregunta();
+        // El widget se crea una sola vez: al elegir otro en el menú, la vista se recarga
+        window.addEventListener('hashchange', function() { window.location.reload(); });
+      }
+      cargarUtils().then(function(Utils) {
+        if (ES_VISTA_LOCAL) renderizarMenu(Utils);
+        if (ES_VISTA_LOCAL && !PEDIDO) return; // sin #widget: solo el menú
+        if (typeof Utils[WIDGET] !== 'function') throw new Error('La biblioteca de Utils no tiene el widget ' + WIDGET + '.');
+        var opciones = { contenedor: parte('widget') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        new Utils[WIDGET](CAMPO, opciones);
+      }).catch(mostrarError);
     })();
   </script>
 </nolink>
