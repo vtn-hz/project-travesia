@@ -3,7 +3,7 @@
   "nombre": "Respuestas",
   "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006), todavía no creada en Moodle. La escribe el script de copia (section/copia_encuestas), que va en cada página de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
+  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js. La escribe el script de copia (section/copia_encuestas), que va en cada página de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
   "configuracion": {
     "descripcion": "crear_base.js no la aplica: se configura a mano en Moodle después de crear la base.",
     "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",
@@ -12,7 +12,7 @@
     "Permitir comentarios": "No.",
     "Disponibilidad": "Disponible pero no mostrada en la página del curso: los estudiantes no entran a la base, el script escribe en ella al enviar la encuesta."
   },
-  "plantillas": "data/moodle/plantillas/respuestas/ (propuesta). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
+  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25: lista e individual). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [
     {
       "nombre": "id_usuario",

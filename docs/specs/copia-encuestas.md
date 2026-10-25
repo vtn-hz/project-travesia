@@ -8,7 +8,7 @@
   - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
-- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **No publicado.** Hace falta crear antes la base Respuestas.
+- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **No publicado.** La base Respuestas ya existe (cmid 59940, d=166, creada el 2026-10-25 con sus plantillas); falta configurarla.
 - **Última actualización:** 2026-10-25
 
 ## Qué hace
@@ -120,7 +120,7 @@ Definida en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json) (pr
 
 Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
 
-1. **Crear la base Respuestas** con `crear_base.js --confirmar`. La simulación del 2026-10-25 quedó bien: subsección Database, 8 campos, sin escribir nada. El script anota `bases.respuestas` en `moodle.config.json` y lo copia a esta sección.
+1. **Crear la base Respuestas.** Hecho el 2026-10-25 con `crear_base.js --confirmar`: cmid 59940, d=166, en la subsección Database, con los 8 campos. El script anotó `bases.respuestas` en `moodle.config.json` y lo copió a esta sección.
 2. **Configurar la base** en Moodle:
    - "Requiere aprobación" = Sí, sin aprobar entradas;
    - edición de entradas aprobadas = No;
@@ -128,7 +128,7 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
    - sin máximo de entradas.
 
    El campus **no permite "disponible pero no mostrada"** (solo mostrar u ocultar), y si se oculta, los estudiantes no pueden escribir en ella. Por eso la base queda visible dentro de Zhakyz, y con la aprobación cada estudiante ve solo sus entradas.
-3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. No hay un script para esto: se cargan a mano o con uno nuevo. Sin la plantilla de lista, la copia guarda igual, pero no puede leer el ingreso (avance de la Cuatrimestral) ni evitar duplicar copias pendientes.
+3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. Hecho el 2026-10-25: lista (cabecera, entrada repetida y pie) e individual, releídas después de guardar. La de añadir entrada queda la de Moodle, porque la copia ubica cada campo por su etiqueta.
 4. **Agregar los ítems de copia**, cada uno con este archivo:
    - **Inicial:** uno al final de cada una de las 4 páginas. El de la página 4 tiene que **depender de `trabaja` = Si**, igual que la 8260. Si no, la página 4 nunca queda vacía y el estudiante que no trabaja ve una página en blanco.
    - **Cuatrimestral:** uno al final de la página.

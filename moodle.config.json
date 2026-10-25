@@ -66,9 +66,11 @@
       "definicion": "data/moodle/BASE_ENCUESTAS_ARMADO.json"
     },
     "respuestas": {
-      "cmid": null,
-      "dataid": null,
-      "definicion": "data/moodle/BASE_RESPUESTAS.json"
+      "cmid": 59940,
+      "dataid": 166,
+      "definicion": "data/moodle/BASE_RESPUESTAS.json",
+      "subseccion": "Database",
+      "creada": "2026-10-25"
     },
     "estudiantes": {
       "cmid": null,
