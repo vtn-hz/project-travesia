@@ -12,7 +12,268 @@
                     <![CDATA[]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[<p>[[Cuadro]]</p>]]>
+                    <![CDATA[<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuesta "Encuesta Inicial" (cmid 59710) → ítem Área de texto y medios (id 8254) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTA INICIAL · CUADRO DE CRÉDITOS (ítem 8254, antes de la pregunta creditos_aprobados) -->
+<!-- QUÉ ES: copia de section/utils/cargador/content.html con WIDGET = 'CuadroCreditos' y CAMPO = pregunta creditos_aprobados (8253). Lee la Página Widgets de Utils (moodle.config.json → paginas.utils_widgets) y crea el widget -->
+<!-- SI CAMBIA EL CARGADOR: volver a copiarlo acá, cambiar solo RUTA_LOCAL_UTILS, WIDGET y CAMPO, y volver a publicar el ítem -->
+<!-- NO EDITAR EL ÍTEM DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. Sin #widget muestra el índice de widgets; con #widget=<nombre>, ese widget -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia; el pie lo dibuja el widget -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div data-zk-cargador style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- LUGAR DEL WIDGET -->
+  <div data-cargador="widget"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; max-width: 850px !important; margin: 20px auto !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- VISTA PREVIA LOCAL: SIMULA LA PREGUNTA DE LA ENCUESTA QUE RECIBE EL VALOR DEL WIDGET -->
+  <div data-cargador="pregunta"
+    style="display: none; max-width: 850px !important; margin: 16px auto !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-cargador-utils-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-cargador-utils-style';
+        styleEl.innerHTML = '[data-zk-cargador] > nolink { display: block; }' +
+          '[data-zk-cargador] a:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Página "Widgets" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_UTILS = 59932; // @config paginas.utils_widgets
+      // En local (Live Server): ruta de la Página Widgets desde esta vista
+      var RUTA_LOCAL_UTILS = '../utils/widgets/content.html';
+      // Widget que crea este cargador y campo de la encuesta que recibe su valor (los campos se llaman <tipo>_<id del ítem>):
+      //   'CuadroCreditos'   → total de créditos, en un campo numeric_<id>
+      //   'SelectorMaterias' → materias cursadas en JSON, en una "Respuesta de texto larga" (textarea_<id>)
+      var WIDGET = 'CuadroCreditos';
+      var CAMPO = 'input[name="numeric_8253"]';
+      // Opciones del constructor (section/utils/README.md). El contenedor lo pone el cargador
+      var OPCIONES = {};
+
+      // TEXTOS DE CADA WIDGET: AVISO SI NO SE PUEDE CARGAR; EN LOCAL, PREGUNTA SIMULADA E ÍNDICE (descripcion y uso)
+      var WIDGETS = {
+        CuadroCreditos: {
+          nombre: 'el cuadro de créditos', aMano: 'El total de créditos se completa a mano.',
+          ejemplo: 'input[name="numeric_8262"]', pregunta: 'Los créditos obtenidos actualmente son:',
+          descripcion: 'Cuadro con todas las materias del plan, por año, y los otros créditos (PPS y optativas). Suma los créditos de lo seleccionado y escribe el total en una pregunta numérica, que queda de solo lectura.',
+          uso: 'Encuesta Inicial (ítem 8254 → pregunta 8253) y Encuesta Cuatrimestral (ítem 8261 → pregunta 8262)'
+        },
+        // El ítem 8273 es hoy una respuesta corta (255 caracteres) y tiene que pasar a ser larga: Moodle le va a dar otro id
+        SelectorMaterias: {
+          nombre: 'el selector de materias', aMano: 'Las materias se escriben a mano en el campo de texto.',
+          ejemplo: 'textarea[name="textarea_8273"]', pregunta: 'JSON que se guarda en la respuesta (en Moodle la pregunta queda oculta):',
+          descripcion: 'Lista desplegable con las materias del plan. Por cada materia elegida pregunta si fue la primera vez que se cursó y qué tan difícil resultó, y guarda todo como JSON en una respuesta de texto larga, que queda oculta.',
+          uso: 'Encuesta Cuatrimestral (ítem 8270 → respuesta larga que reemplaza al 8273)'
+        }
+      };
+
+      // En local, #widget=<nombre> muestra ese widget con la pregunta de su ejemplo de la Encuesta Cuatrimestral.
+      // Sin #widget no se crea ninguno: solo el menú con los widgets de la biblioteca
+      var PEDIDO = null;
+      if (ES_VISTA_LOCAL) {
+        PEDIDO = (window.location.hash.match(/widget=(\w+)/) || [])[1] || null;
+        if (PEDIDO) {
+          WIDGET = PEDIDO;
+          CAMPO = WIDGETS[PEDIDO] ? WIDGETS[PEDIDO].ejemplo : 'input[name="campo_local"]';
+        }
+      }
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador]')) ||
+        document.querySelector('[data-zk-cargador]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE LA BIBLIOTECA DE UTILS
+      // ---------------------------------------------------------
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzUtilsCarga
+      // y la biblioteca en window.ZhakyzUtils.
+      function urlUtils() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_UTILS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_UTILS : null;
+        }
+        return new URL(RUTA_LOCAL_UTILS, window.location.href).href;
+      }
+
+      function cargarUtils() {
+        if (window.ZhakyzUtils) return Promise.resolve(window.ZhakyzUtils);
+        if (window.ZhakyzUtilsCarga) return window.ZhakyzUtilsCarga;
+        var url = urlUtils();
+        if (!url) return Promise.reject(new Error('La Página Widgets de Utils todavía no está publicada.'));
+        window.ZhakyzUtilsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Widgets respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="widgets"]');
+            if (!biblioteca) throw new Error('La Página Widgets no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzUtils) throw new Error('La biblioteca de Utils no se pudo ejecutar.');
+            return window.ZhakyzUtils;
+          });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzUtilsCarga.catch(function() { window.ZhakyzUtilsCarga = null; });
+        return window.ZhakyzUtilsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISOS
+      // ---------------------------------------------------------
+      // SI NO HAY WIDGET, LA PREGUNTA QUEDA EDITABLE Y SE COMPLETA A MANO
+      function mostrarError(error) {
+        var aviso = parte('aviso');
+        // Si la biblioteca se leyó, el error es del widget y el menú queda para elegir otro
+        var menu = parte('menu');
+        if (menu && !window.ZhakyzUtils) menu.textContent = 'No se pudo leer la biblioteca.';
+        var textos = ES_VISTA_LOCAL && !PEDIDO ? { nombre: 'la biblioteca de widgets', aMano: '' }
+          : WIDGETS[WIDGET] || { nombre: 'el widget ' + WIDGET, aMano: 'La pregunta se completa a mano.' };
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Widgets.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Widgets no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar ' + escapar(textos.nombre) + ': ' + escapar(motivo) + ' ' + escapar(textos.aMano) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // BARRA DE VISTA PREVIA LOCAL: QUÉ CARGA, QUÉ CAMPO RECIBE EL VALOR Y EL MENÚ DE WIDGETS (SE LLENA AL LEER LA BIBLIOTECA)
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; max-width: 850px !important; box-sizing: border-box !important; padding: 8px 12px !important; margin: 20px auto 0 auto !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important;">' +
+          icono('ver', 18) + 'Vista previa local · cargador de Utils</span>' +
+          (PEDIDO ? '<span style="color: #c2c9d6 !important;">Lee ' + escapar(RUTA_LOCAL_UTILS) + ' y escribe en ' + escapar(CAMPO) + '</span>' : '') +
+          '<span data-cargador="menu" style="color: #c2c9d6 !important;">Leyendo la biblioteca…</span>';
+        raiz.insertBefore(barra, raiz.firstChild);
+      }
+
+      // MENÚ: LOS WIDGETS QUE TIENE LA BIBLIOTECA (SUS CONSTRUCTORES EMPIEZAN CON MAYÚSCULA).
+      // Con un widget elegido, enlaces en la barra; sin #widget, el índice en el lugar del widget
+      function renderizarMenu(Utils) {
+        var vigentes = Object.keys(Utils).filter(function(k) {
+          return typeof Utils[k] === 'function' && /^[A-Z]/.test(k);
+        });
+        if (!PEDIDO) {
+          parte('menu').innerHTML = '';
+          parte('widget').innerHTML = indice(vigentes);
+          return;
+        }
+        parte('menu').innerHTML = '<a href="#" style="color: #99ccff !important; text-decoration: underline !important;">Índice</a> · ' + vigentes.map(function(w) {
+          return w === PEDIDO ? '<span aria-current="page" style="color: #ffffff !important; font-weight: 600 !important;">' + escapar(w) + '</span>'
+            : '<a href="#widget=' + escapar(w) + '" style="color: #99ccff !important; text-decoration: underline !important;">' + escapar(w) + '</a>';
+        }).join(' · ');
+      }
+
+      // ÍNDICE: UN BLOQUE POR WIDGET, EN VERTICAL, CON SU ENLACE (#widget=<nombre>), DESCRIPCIÓN, USO Y CAMPO DE EJEMPLO
+      function indice(vigentes) {
+        return '<div style="max-width: 850px !important; margin: 20px auto !important; padding: 24px !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-sizing: border-box !important;">' +
+          '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
+          '<h3 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Widget Documentation</h3>' +
+          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Widgets de la biblioteca de Utils (' + vigentes.length + '). Elegir uno para verlo con la pregunta de la encuesta que recibe su valor.</p>' +
+          '<nav aria-label="Widgets" style="display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
+          vigentes.map(function(w) {
+            var d = WIDGETS[w] || {};
+            return '<a href="#widget=' + escapar(w) + '" style="display: block !important; padding: 16px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; color: #0b0e14 !important; text-decoration: none !important;">' +
+              '<span style="display: block !important; font-size: 16px !important; font-weight: 600 !important; color: #026bd4 !important; text-decoration: underline !important;">' + escapar(w) + '</span>' +
+              '<span style="display: block !important; margin-top: 4px !important; font-size: 14px !important; color: #0b0e14 !important;">' + escapar(d.descripcion || 'Sin descripción en el cargador.') + '</span>' +
+              (d.uso ? '<span style="display: block !important; margin-top: 6px !important; font-size: 13px !important; color: #47536b !important;">Se usa en: ' + escapar(d.uso) + '</span>' : '') +
+              '<code style="display: block !important; margin-top: 6px !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 12px !important; color: #47536b !important; background: none !important; padding: 0 !important; word-break: break-all !important;">#widget=' + escapar(w) + (d.ejemplo ? ' · ' + escapar(d.ejemplo) : '') + '</code></a>';
+          }).join('') + '</nav></div>';
+      }
+
+      // EN LOCAL SE SIMULA LA PREGUNTA DE LA ENCUESTA, CON EL MISMO NOMBRE QUE EN MOODLE (<tipo>_<id>)
+      function simularPregunta() {
+        var pregunta = parte('pregunta');
+        var nombre = (CAMPO.match(/name="([^"]+)"/) || [])[1] || 'campo_local';
+        var numerico = /^numeric_/.test(nombre);
+        var largo = /^textarea/.test(CAMPO);
+        var textos = WIDGETS[WIDGET] || { pregunta: 'Campo que recibe el valor:' };
+        pregunta.innerHTML = '<label for="id_' + escapar(nombre) + '" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">' +
+          escapar(textos.pregunta) + ' <span style="color: #47536b !important; font-weight: 400 !important;">(' + escapar(nombre) + ', solo en la vista local)</span></label>';
+        // Como en Moodle: respuesta numérica o corta (input, la corta con 255 caracteres) o respuesta larga (textarea, sin límite)
+        var campo = document.createElement(largo ? 'textarea' : 'input');
+        if (largo) campo.rows = 10;
+        else campo.type = 'text';
+        campo.id = 'id_' + nombre;
+        campo.name = nombre;
+        if (!numerico && !largo) campo.maxLength = 255;
+        campo.setAttribute('style', (largo ? 'height: auto !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; resize: vertical !important;' : 'height: 40px !important; font-size: 14px !important;') +
+          ' padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; box-sizing: border-box !important; width: ' + (numerico ? '160px' : '100%') + ' !important;');
+        pregunta.appendChild(campo);
+        pregunta.style.setProperty('display', 'block', 'important');
+      }
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y CREAR EL WIDGET
+      // ---------------------------------------------------------
+      if (ES_VISTA_LOCAL) {
+        crearBarraPreview();
+        if (PEDIDO) simularPregunta();
+        // El widget se crea una sola vez: al elegir otro en el menú, la vista se recarga
+        window.addEventListener('hashchange', function() { window.location.reload(); });
+      }
+      cargarUtils().then(function(Utils) {
+        if (ES_VISTA_LOCAL) renderizarMenu(Utils);
+        if (ES_VISTA_LOCAL && !PEDIDO) return; // sin #widget: solo el menú
+        if (typeof Utils[WIDGET] !== 'function') throw new Error('La biblioteca de Utils no tiene el widget ' + WIDGET + '.');
+        var opciones = { contenedor: parte('widget') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        new Utils[WIDGET](CAMPO, opciones);
+      }).catch(mostrarError);
+    })();
+  </script>
+</nolink>
+</div>
+]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[]]>
