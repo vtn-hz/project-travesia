@@ -23,7 +23,7 @@
       "moodle": {
         "config": "paginas.utils_tools"
       },
-      "nota": "La biblioteca de herramientas sin interfaz (script muerto) y su índice. Herramienta: CopiaRespuestas. Cómo se usa: section/utils/README.md."
+      "nota": "La biblioteca de herramientas sin interfaz (script muerto) y su índice. Herramientas: CopiaRespuestas y LeerBase (esta última, sin uso por ahora). Cómo se usa: section/utils/README.md."
     },
     {
       "carpeta": "cargador",
@@ -35,7 +35,7 @@
       "carpeta": "cargador_tools",
       "nombre": "Cargador de tools",
       "tipo": "fragmento",
-      "nota": "No se publica como actividad: se copia en cada vista que usa una herramienta, con su TOOL. Su copia publicada es section/copia_encuestas/content.html (los 5 ítems de copia de las encuestas)."
+      "nota": "No se publica como actividad: se copia en cada vista que usa una herramienta, con su TOOL (o TOOL = null para usar las herramientas desde el código de la vista). Su copia publicada es section/copia_encuestas/content.html (los 5 ítems de copia de las encuestas)."
     }
   ]
 }

@@ -61,6 +61,9 @@ Igual que la de widgets: un `<script type="text/plain" data-zk-biblioteca="tools
 |---|---|
 | `version` | Número de versión. Si la página ya tiene esa versión o una más nueva, la biblioteca no se vuelve a definir |
 | `CopiaRespuestas({ contenedor })` | Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, con su criticidad ([spec](../../docs/specs/copia-encuestas.md)). Una sola instancia por página: si hay varias copias del cargador, arranca la primera. En Editar preguntas y en la vista previa muestra un aviso para el equipo con el control de la estructura de páginas; en local, el simulador de las dos encuestas |
+| `LeerBase(opciones)` | Lee todas las entradas de una base de datos, página por página (ver más abajo). **Ninguna vista la usa por ahora** |
+
+Al ejecutarse, la biblioteca avisa con el evento `zk-tools` en `document`, con las herramientas en `detail`.
 
 La Página muestra solo el índice **Tool Documentation**: las herramientas no tienen interfaz. Las mismas reglas del script muerto de widgets valen acá.
 
@@ -72,6 +75,8 @@ La Página muestra solo el índice **Tool Documentation**: las herramientas no t
 
 Como el de widgets: pide la Página Tools con `fetch`, ejecuta su biblioteca una sola vez por página (`window.ZhakyzToolsCarga`) y llama a `ZhakyzTools[TOOL]({ contenedor })`. Configuración: `TOOL`, `OPCIONES` y `RUTA_LOCAL_TOOLS` (solo para la vista local); `CMID_TOOLS` lo completa `sincronizar_config.js`.
 
+**Solo la biblioteca (`TOOL = null`):** no arranca ninguna herramienta. La vista usa las herramientas desde su propio código, como `LeerBase` (ver el ejemplo más abajo). Las copias publicadas en las encuestas son anteriores a este modo y no lo necesitan: se actualizan la próxima vez que cambie el cargador.
+
 Si la biblioteca no se puede cargar, en la encuesta que responde el estudiante **no muestra nada**: la encuesta se envía igual, solo que sin copia. En Editar preguntas, en la vista previa y en local sí muestra el aviso.
 
 | Vista | Ítems donde va el cargador | `TOOL` |
@@ -80,6 +85,65 @@ Si la biblioteca no se puede cargar, en la encuesta que responde el estudiante *
 | Encuesta Cuatrimestral (cmid 59712) | Uno al final de la página | `CopiaRespuestas` |
 
 Los 5 ítems tienen el mismo contenido: [`section/copia_encuestas/content.html`](../copia_encuestas/content.html).
+
+## Herramienta: `LeerBase`
+
+Lee **todas** las entradas de una base de datos (`mod_data`) y las devuelve juntas. Moodle muestra las entradas de a `perpage` por página y no informa el total, así que la herramienta pide `view.php?d=…&perpage=…&page=N` desde la página 0 hasta que una trae menos entradas que `porPagina`, o la barra de páginas no tiene una siguiente. Reemplaza el `perpage=1000` (o `2000`) de un solo pedido, que corta sin aviso las entradas que sobran. **Ninguna vista la usa todavía.**
+
+```js
+ZhakyzTools.LeerBase({
+  dataid: 117,               // id de la base (d=…). O cmid: 59521. Uno de los dos
+  porPagina: 500,            // entradas por pedido. Por defecto 500
+  paralelo: 2,               // pedidos a la vez después del primero. Por defecto 1
+  maximo: 20000,             // tope de entradas, por seguridad. Por defecto 20000
+  // Solo para plantillas sin data-campo: qué filas leer y el nombre de cada celda (td), en orden
+  filas: 'tr[data-tipo="entrada_parcial"]',
+  columnas: ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Fecha', 'Nota', 'Estado'],
+  filtro: function (e) { return e.campos.Materia === 'INGM101'; },  // opcional, mientras lee
+  alAvanzar: function (leidas, pagina) { /* opcional: progreso */ }
+}).then(function (r) {
+  r.entradas;  // [{ rid: '19498', campos: { DNI: '…', … } }]; con plantilla propia, además alta y modificada (data-alta, data-modificada)
+  r.formato;   // 'propio' (data-campo), 'columnas' (filas + columnas), 'defecto' (plantilla de Moodle) o null (base vacía)
+  r.paginas;   // páginas leídas
+  r.completa;  // false si cortó por "maximo"
+});
+```
+
+| Formato | Cómo lo reconoce | `campos` |
+|---|---|---|
+| `propio` | Filas `.zk-registro` (plantillas del repo) | Una clave por celda `data-campo` |
+| `columnas` | Se pasan `filas` y `columnas` (plantillas del equipo, como Carga_Parciales_Primero) | Una clave por celda, con el nombre de `columnas` en el mismo orden |
+| `defecto` | Filas `.defaulttemplate-listentry` (plantilla de Moodle) | Una clave por campo, con su nombre en Moodle |
+
+- **Rechaza la promesa** si Moodle responde con error HTTP, si la sesión venció (página de login) o si el usuario no puede ver la base (página de error). Sin `dataid` ni `cmid`, o con `filas` sin `columnas`, rechaza sin pedir nada.
+- **Lee solo el contenido de la actividad** (`#region-main`): no toma filas de otros bloques de la página.
+- **Sin duplicados:** si la base cambia mientras se lee y una entrada pasa de una página a otra, se cuenta una sola vez (por su `rid`).
+- **En paralelo**, no pide páginas más allá de la última que muestra la barra.
+- **Costo:** cada pedido trae unos 255 KB de la plantilla del campus, más las entradas.
+- **Preferencia:** Moodle guarda `perpage` como preferencia del usuario para esa base. Después de una lectura, quien abra la base en Moodle ve `porPagina` entradas por página.
+- Solo funciona dentro de Moodle (`M.cfg.wwwroot`). Para las pruebas se puede pasar `urlBase`.
+
+**Cómo se usa desde una vista:** la vista lleva una copia del cargador de tools con `TOOL = null`, y en su código:
+
+```js
+function conTools(fn) {
+  if (window.ZhakyzTools) return fn(window.ZhakyzTools);
+  document.addEventListener('zk-tools', function (e) { fn(e.detail); }, { once: true });
+}
+
+conTools(function (Tools) {
+  Tools.LeerBase({ dataid: 152 }).then(function (r) { /* r.entradas */ }, function (e) { /* aviso con e.message */ });
+});
+```
+
+Desde otra herramienta de la biblioteca (por ejemplo `CopiaRespuestas`), se llama directo: `LeerBase({ … })`.
+
+**Probado en local (2026-10-25)** con páginas de `view.php` simuladas:
+- los tres formatos;
+- varias páginas, múltiplos exactos con y sin barra, y sin barra de páginas;
+- en paralelo, con tope, con una base que cambia mientras se lee, con filtro y progreso;
+- base vacía, sesión vencida, página de error y HTTP 500;
+- el cargador con `TOOL = null`.
 
 ## Widget: `CuadroCreditos`
 

@@ -1,6 +1,6 @@
 <!-- FRAGMENTO: UTILS · CARGADOR DE TOOLS -->
 <!-- QUÉ ES: el script que se copia en cada vista que usa una herramienta de Utils. Lee la Página "Tools" de Utils, ejecuta su biblioteca una sola vez por página y arranca la herramienta de TOOL -->
-<!-- NO SE PUBLICA SOLO: cada vista tiene su copia con su herramienta (TOOL). Este archivo es el ejemplo de CopiaRespuestas; su copia publicada es section/copia_encuestas/content.html -->
+<!-- NO SE PUBLICA SOLO: cada vista tiene su copia con su herramienta (TOOL), o con TOOL = null para usar las herramientas desde su código. Este archivo es el ejemplo de CopiaRespuestas; su copia publicada es section/copia_encuestas/content.html -->
 <!-- VARIOS EN UNA PÁGINA: no usa ids propios. Si hay varias copias de la misma herramienta en una página, arranca solo la primera -->
 <!-- EN LOCAL: abrir con Live Server (con file:// el navegador no permite leer la Página Tools). La herramienta muestra su vista previa local -->
 <!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
@@ -41,6 +41,8 @@
       var RUTA_LOCAL_TOOLS = '../tools/content.html';
       // Herramienta que arranca este cargador (section/utils/README.md):
       //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      //   null              → no arranca ninguna: solo carga la biblioteca, para usar sus herramientas desde el código de la vista
+      //                       (por ejemplo LeerBase). La biblioteca avisa con el evento "zk-tools" en document (las herramientas en detail)
       var TOOL = 'CopiaRespuestas';
       // Opciones de la herramienta. El contenedor lo pone el cargador
       var OPCIONES = {};
@@ -126,7 +128,7 @@
           : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
         var aviso = parte('aviso');
         aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
-          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+          '<span>No se pudo cargar ' + escapar(TOOL ? 'la herramienta ' + TOOL : 'la biblioteca de Tools') + ': ' + escapar(motivo) + escapar(local) + '</span>';
         aviso.style.setProperty('display', 'flex', 'important');
       }
 
@@ -134,6 +136,7 @@
       // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
       // ---------------------------------------------------------
       cargarTools().then(function(Tools) {
+        if (!TOOL) return; // solo la biblioteca: la vista la usa con el evento zk-tools o con window.ZhakyzTools
         if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
         var opciones = { contenedor: parte('tool') };
         Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });

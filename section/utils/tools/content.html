@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 1;
+      var VERSION = 2;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -902,13 +902,163 @@
         return elRaiz;
       }
 
+      // =========================================================
+      // HERRAMIENTA LeerBase: TODAS LAS ENTRADAS DE UNA BASE DE DATOS DE MOODLE, PÁGINA POR PÁGINA
+      // =========================================================
+      // Moodle lista las entradas de a "perpage" por página ("page" empieza en 0) y no informa el total: se pide página por página
+      // hasta que una trae menos entradas que porPagina (o la barra de páginas no tiene una siguiente). Formatos de la plantilla de lista:
+      //   'propio'   → filas .zk-registro con una celda data-campo por campo (plantillas del repo)
+      //   'columnas' → filas de otra plantilla (opciones.filas) con una celda por campo, en el orden de opciones.columnas
+      //   'defecto'  → la plantilla de Moodle por defecto (filas "campo | valor")
+      // Moodle guarda "perpage" como preferencia del usuario para esa base. Guía: section/utils/README.md
+      var LEER_BASE_OPCIONES = { porPagina: 500, paralelo: 1, maximo: 20000 };
+
+      // TEXTO DE UNA CELDA, CON LOS SALTOS DE LÍNEA DE LOS <br> Y DE LOS PÁRRAFOS
+      function textoCelda(el) {
+        var c = el.cloneNode(true);
+        c.querySelectorAll('br').forEach(function(br) { br.replaceWith('\n'); });
+        c.querySelectorAll('p, div').forEach(function(x) { x.append('\n'); });
+        return c.textContent.replace(/ +\n/g, '\n').trim();
+      }
+
+      // rid DE UNA ENTRADA: data-rid, o el de un enlace de la entrada (Mostrar más, Editar o Borrar)
+      function ridDe(el) {
+        if (el.getAttribute('data-rid')) return el.getAttribute('data-rid');
+        var a = el.querySelector('a[href*="rid="], a[href*="delete="]');
+        var m = a ? (a.getAttribute('href') || '').match(/[?&](?:rid|delete)=(\d+)/) : null;
+        return m ? m[1] : null;
+      }
+
+      // ENTRADAS DE UNA PÁGINA DEL LISTADO: { formato, entradas: [{ rid, campos }] }
+      function entradasDePagina(doc, o) {
+        var zona = doc.querySelector('#region-main') || doc.querySelector('[role="main"]') || doc.body;
+        var lista = function(nodos, leer) { return Array.prototype.map.call(nodos, leer); };
+        if (o.filas) {
+          return { formato: 'columnas', entradas: lista(zona.querySelectorAll(o.filas), function(f) {
+            var campos = {};
+            var celdas = f.querySelectorAll(':scope > td');
+            o.columnas.forEach(function(nombre, i) { if (nombre && celdas[i]) campos[nombre] = textoCelda(celdas[i]); });
+            return { rid: ridDe(f), campos: campos };
+          }) };
+        }
+        var propias = zona.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return { formato: 'propio', entradas: lista(propias, function(f) {
+            var campos = {};
+            f.querySelectorAll('[data-campo]').forEach(function(c) { campos[c.getAttribute('data-campo')] = textoCelda(c); });
+            var e = { rid: ridDe(f), campos: campos };
+            if (f.hasAttribute('data-alta')) e.alta = Number(f.getAttribute('data-alta')) || f.getAttribute('data-alta');
+            if (f.hasAttribute('data-modificada')) e.modificada = Number(f.getAttribute('data-modificada')) || f.getAttribute('data-modificada');
+            return e;
+          }) };
+        }
+        var defecto = zona.querySelectorAll('.defaulttemplate-listentry');
+        return { formato: defecto.length ? 'defecto' : null, entradas: lista(defecto, function(e) {
+          var campos = {};
+          e.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            if (fila.children.length >= 2) campos[fila.children[0].textContent.trim()] = textoCelda(fila.children[1]);
+          });
+          return { rid: ridDe(e), campos: campos };
+        }) };
+      }
+
+      // ÚLTIMA PÁGINA ENLAZADA EN LA BARRA DE PÁGINAS (null SI NO HAY BARRA)
+      function ultimaEnlazada(doc) {
+        var nums = [];
+        doc.querySelectorAll('.pagination a[href], .paging a[href]').forEach(function(a) {
+          var m = (a.getAttribute('href') || '').match(/[?&]page=(\d+)/);
+          if (m) nums.push(Number(m[1]));
+        });
+        return nums.length ? Math.max.apply(null, nums) : null;
+      }
+
+      // ERROR DE LA PÁGINA: SESIÓN VENCIDA O SIN PERMISO PARA VER LA BASE (null SI LA PÁGINA ES EL LISTADO)
+      function errorDePagina(r, doc) {
+        if (/\/login\/index\.php/.test(r.url || '') || doc.querySelector('form#login')) return 'La sesión de Moodle venció: hay que volver a entrar.';
+        var e = doc.querySelector('.errorbox .errormessage, .errormessage');
+        return e ? 'Moodle no muestra la base: ' + e.textContent.trim() : null;
+      }
+
+      // ---------------------------------------------------------
+      // FUNCIÓN: LeerBase({ dataid | cmid, porPagina, paralelo, maximo, filas, columnas, filtro, alAvanzar })
+      //   → Promise de { entradas: [{ rid, campos }], formato, paginas, completa }
+      // ---------------------------------------------------------
+      function LeerBase(opciones) {
+        var o = {};
+        Object.keys(LEER_BASE_OPCIONES).forEach(function(k) { o[k] = LEER_BASE_OPCIONES[k]; });
+        Object.keys(opciones || {}).forEach(function(k) { if (opciones[k] !== undefined && opciones[k] !== null) o[k] = opciones[k]; });
+        var raizMoodle = o.urlBase || (window.M && M.cfg && M.cfg.wwwroot);
+        if (!raizMoodle) return Promise.reject(new Error('LeerBase solo funciona dentro de Moodle.'));
+        if (!o.dataid && !o.cmid) return Promise.reject(new Error('LeerBase necesita dataid o cmid.'));
+        if (o.filas && !(Array.isArray(o.columnas) && o.columnas.length)) return Promise.reject(new Error('Con "filas" hay que pasar "columnas".'));
+        var porPagina = Math.max(1, Math.floor(o.porPagina));
+        var paralelo = Math.max(1, Math.floor(o.paralelo));
+        var tope = Math.ceil(o.maximo / porPagina) + 1; // páginas como mucho, aunque Moodle siga devolviendo páginas llenas
+        var resultado = { entradas: [], formato: null, paginas: 0, completa: true };
+        var vistos = {};
+        var leidas = 0;
+        var ultimaVista = null; // la última página que mostró la barra: no se piden páginas más allá
+
+        function pedir(n) {
+          var url = raizMoodle + '/mod/data/view.php?' + (o.dataid ? 'd=' + o.dataid : 'id=' + o.cmid) + '&perpage=' + porPagina + '&page=' + n;
+          return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió HTTP ' + r.status + ' en la página ' + (n + 1) + ' de la base.');
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var error = errorDePagina(r, doc);
+              if (error) throw new Error(error);
+              var p = entradasDePagina(doc, o);
+              p.ultima = ultimaEnlazada(doc);
+              return p;
+            });
+          });
+        }
+
+        // Si la base cambia mientras se lee, una entrada puede pasar de una página a otra: se cuenta una sola vez
+        function procesar(n, p) {
+          resultado.paginas++;
+          if (p.formato && !resultado.formato) resultado.formato = p.formato;
+          if (p.ultima !== null) ultimaVista = Math.max(ultimaVista === null ? -1 : ultimaVista, p.ultima);
+          p.entradas.forEach(function(e) {
+            if (e.rid && vistos[e.rid]) return;
+            if (e.rid) vistos[e.rid] = true;
+            leidas++;
+            if (leidas <= o.maximo && (!o.filtro || o.filtro(e))) resultado.entradas.push(e);
+          });
+          if (o.alAvanzar) { try { o.alAvanzar(leidas, n + 1); } catch (e) { /* el aviso de progreso no corta la lectura */ } }
+        }
+
+        // La primera página se pide sola (formato y errores); las siguientes, de a "paralelo", sin pasar de la última que mostró la barra
+        function desde(n) {
+          var hasta = n + (n === 0 ? 1 : paralelo);
+          if (ultimaVista !== null) hasta = Math.max(n + 1, Math.min(hasta, ultimaVista + 1));
+          var lote = [];
+          for (var k = n; k < hasta && k < tope; k++) lote.push(k);
+          return Promise.all(lote.map(pedir)).then(function(paginas) {
+            for (var i = 0; i < paginas.length; i++) {
+              procesar(lote[i], paginas[i]);
+              var hayMas = paginas[i].entradas.length === porPagina && (paginas[i].ultima === null || paginas[i].ultima > lote[i]);
+              if (!hayMas) return resultado;
+              if (leidas >= o.maximo) { resultado.completa = false; return resultado; }
+            }
+            var proxima = lote[lote.length - 1] + 1;
+            if (proxima >= tope) { resultado.completa = false; return resultado; }
+            return desde(proxima);
+          });
+        }
+        return desde(0);
+      }
+
       // ---------------------------------------------------------
       // EXPORTACIÓN
       // ---------------------------------------------------------
       window.ZhakyzTools = {
         version: VERSION,
-        CopiaRespuestas: CopiaRespuestas
+        CopiaRespuestas: CopiaRespuestas,
+        LeerBase: LeerBase
       };
+      // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
+      try { document.dispatchEvent(new CustomEvent('zk-tools', { detail: window.ZhakyzTools })); } catch (e) { /* sin CustomEvent: la vista usa window.ZhakyzTools */ }
     })();
   </script>
 </div>
@@ -934,6 +1084,11 @@
           descripcion: 'Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, como una versión nueva: las anteriores se conservan. No tiene interfaz: solo muestra un aviso si la copia no se pudo guardar.',
           uso: 'Encuesta Inicial (un ítem al final de cada una de sus 4 páginas) y Encuesta Cuatrimestral (un ítem al final)',
           carga: 'TOOL = \'CopiaRespuestas\''
+        },
+        LeerBase: {
+          descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
+          uso: 'Ninguna vista por ahora',
+          carga: 'Tools.LeerBase({ dataid: … }) desde el código de la vista, con el cargador de tools en TOOL = null'
         }
       };
 
