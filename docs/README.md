@@ -28,7 +28,8 @@ docs/
 │   ├── 002-main-menu-contenido.md
 │   ├── 003-paleta-colores.md
 │   ├── 004-sistema-de-diseno-mui.md
-│   └── 005-modelo-de-bases-moodle.md
+│   ├── 005-modelo-de-bases-moodle.md
+│   └── 006-versionado-de-encuestas.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
@@ -37,7 +38,7 @@ docs/
 │   ├── encuestas.md
 │   ├── plan-estudios.md
 │   ├── encuesta-inicial.md
-│   ├── responder-encuesta.md
+│   ├── copia-encuestas.md
 │   └── entrevistas.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```

@@ -180,16 +180,17 @@ Propuesta en [`BASE_ENCUESTAS_ARMADO.json`](../../data/moodle/BASE_ENCUESTAS_ARM
 
 ### 8. Respuestas
 
-Propuesta en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json). Una entrada por envío respondido. Editar agrega un envío nuevo; el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
+Propuesta en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
 
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
-| `dni` | text | `Envio_Encuesta.id_estudiante` | |
-| `id_usuario` | number | (cuenta del campus) | Quien responde siempre tiene cuenta |
+| `id_usuario` | number | (cuenta del campus) | Quien responde siempre tiene cuenta (`M.cfg.userId`) |
+| `dni` | text | `Envio_Encuesta.id_estudiante` | El nombre de usuario del campus |
 | `encuesta` | menu (`inicial`, `cuatrimestral`) | `Envio_Encuesta.id_encuesta` | |
-| `version` | number | `Encuesta.version` | Versión de la encuesta que respondió |
+| `version_encuesta` | number | `Encuesta.version` | Versión de la encuesta que respondió |
 | `periodo` | text | `Envio_Encuesta.id_periodo` | Vacío en la inicial |
-| `json_pregunta_respuesta` | text (JSON) | `Respuesta` | `[{ id, pregunta, respuesta, criticidad, id_materia? }]`; `id_materia` solo si la pregunta es por materia |
+| `json_pregunta_respuesta` | text (JSON) | `Respuesta` | `[{ variable, pregunta, respuesta, criticidad }]`: `variable` es la etiqueta de la pregunta en Moodle y `criticidad`, los puntos que aporta |
+| `puntaje_criticidad` | number | (nuevo) | Suma de la criticidad de 0 a 100 ([modelo](MODELO_CRITICIDAD_ENCUESTAS.md)) |
 | `created_at` | text (fecha y hora) | `Envio_Encuesta.fecha_completado` | |
 
 No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período, y está **vencido** si además pasaron los `dias_plazo`. Así no hay que crear una entrada por estudiante al abrir el período.

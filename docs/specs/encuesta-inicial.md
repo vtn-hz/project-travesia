@@ -42,6 +42,6 @@ Que el estudiante seleccione las materias que tiene aprobadas y que el total de 
 
 - Publicado el 2026-10-19 en el ítem 8254 con un POST directo al formulario del ítem: Moodle guarda el `<script>` y lo ejecuta, pero el editor del ítem muestra una versión limpia, sin script. **No editar el ítem desde Moodle**: al guardar, el script se pierde. Los cambios se hacen en el repo y se vuelven a publicar.
 - El estudiante necesita poder ver la base Materias: revisar las restricciones de la subsección Database.
-- La encuesta no guarda qué materias se marcaron, solo el total. Si hace falta el detalle, agregar una pregunta de texto oculta con los códigos.
+- La encuesta de Moodle no guarda qué materias se marcaron, solo el total. La [copia de respuestas](copia-encuestas.md) (en local) guarda el plan y los códigos en la base Respuestas, con cada versión.
 - El plan del estudiante no se pregunta: lo elige en el cuadro.
 - El máximo de `creditos_aprobados` (223) es el total del Plan 2024. El Plan 2003 suma 229 créditos: un estudiante de ese plan con más de 223 no puede enviar la encuesta. Decidir si el máximo vuelve a 229 o más.

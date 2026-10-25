@@ -2,7 +2,7 @@
 
 Qué está publicado en Moodle, qué está solo en local y qué está en revisión. Curso 1732 → sección **Zhakyz** (id 15647).
 
-> **Última actualización:** 2026-10-24 (revisión de Moodle: el equipo borró Carga_Materias_Plan y cambió la Encuesta Inicial, ya traída al repo; el resto coincide). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
+> **Última actualización:** 2026-10-24 (revisión de Moodle: el equipo borró Carga_Materias_Plan y cambió la Encuesta Inicial, ya traída al repo; se importó la Encuesta Cuatrimestral; copia de respuestas en local con el ADR-006 y se borró la página propia de encuestas). Cada vez que se publica, se crea algo en Moodle o cambia el estado de una sección, se actualiza este archivo junto con la tabla 1 a 1 de [`RULES.md`](RULES.md).
 
 ## Estados
 
@@ -51,7 +51,7 @@ Zhakyz (sección 15647)
 | Preguntas | [`section/encuestas_preguntas/preguntas`](section/encuestas_preguntas/preguntas/content.html) | **Publicado** | Página "Preguntas" (cmid 59506), conectada a la base 59498 | Republicar: el repo agregó la marca `// @config` (mismos valores) |
 | Encuestas (armado) | [`section/encuestas_preguntas/encuestas`](section/encuestas_preguntas/encuestas/content.html) | **Local** | — | Crear la base Armado de encuestas y publicar |
 | Listado de criticidad de 1.er año | [`section/listado_criticidad_primero`](section/listado_criticidad_primero/content.html) | **Importado** | Página "Listado_Criticidad_Primero" (cmid 59523), subsección Hub | No sigue RULES.md (Bootstrap, emojis, cmids fijos sin `// @config`). Se superpone con el Tablero de Criticidad: decidir si se unifica |
-| Mis encuestas (responder) | [`section/encuestas_preguntas/responder`](section/encuestas_preguntas/responder/content.html) | **Local** | — | Crear las bases Armado de encuestas y Respuestas; definir el origen del DNI |
+| Copia de respuestas de las encuestas | [`section/copia_encuestas`](section/copia_encuestas/content.html) | **Local** | — | Script que va en un ítem "Área de texto y medios" en cada página de las Encuestas Inicial y Cuatrimestral: copia cada envío, con su puntaje de criticidad, a la base Respuestas ([ADR-006](docs/decisions/006-versionado-de-encuestas.md), [spec](docs/specs/copia-encuestas.md)). Probado en local con el HTML real de la vista previa. Falta crear la base Respuestas, probar con una cuenta de estudiante y publicarlo en las 5 páginas |
 | Tablero de Criticidad | [`section/tablero_estudiantes`](section/tablero_estudiantes/content.html) | **Local** | — | Crear las bases (Estudiantes, Situación académica, Criticidad); detectar roles. Depende del ADR-005 |
 | Detalle del estudiante | [`section/detalle_estudiante`](section/detalle_estudiante/content.html) | **En revisión** | — | Cargar en el navegador los datos de todos los estudiantes puede ser muy pesado ([ADR-005](docs/decisions/005-modelo-de-bases-moodle.md)). El índice de criticidad de 0 a 100 es provisorio |
 | Entrevistas y Tutorías | [`section/entrevistas`](section/entrevistas/content.html) | **En revisión** | — (no publicar: ver [`README`](section/entrevistas/README.md)) | Modelo reducido: solo necesita las bases Acompañamientos y Entrevistas ([spec](docs/specs/entrevistas.md#datos-modelo-reducido-2-bases)), así que no depende del ADR-005. Falta crearlas y detectar roles y usuario de la sesión |
@@ -68,7 +68,7 @@ Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.j
 | — | Carga_Materias_Primero | [`data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json`](data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json) | **Importado** (cmid 59522, d=118). Materia, `esCritica` y `Umbral`; en el modelo equivale a Materias |
 | 1 | Materias | [`data/moodle/BASE_MATERIAS.json`](data/moodle/BASE_MATERIAS.json) | **Publicado** (cmid 59717, d=152), con los planes 2024 y 2003 (95 materias) y plantillas con el estilo de Carga_Parciales_Primero. Reemplaza a Carga_Materias_Primero |
 | 7 | Armado de encuestas | [`data/moodle/BASE_ENCUESTAS_ARMADO.json`](data/moodle/BASE_ENCUESTAS_ARMADO.json) | **Propuesta** |
-| 8 | Respuestas | [`data/moodle/BASE_RESPUESTAS.json`](data/moodle/BASE_RESPUESTAS.json) | **Propuesta** |
+| 8 | Respuestas | [`data/moodle/BASE_RESPUESTAS.json`](data/moodle/BASE_RESPUESTAS.json) | **Propuesta**, actualizada el 2026-10-24 con el [ADR-006](docs/decisions/006-versionado-de-encuestas.md): la escribe el script de copia; suma `version_encuesta` y `puntaje_criticidad`, y cada respuesta lleva su `criticidad`. Plantillas en [`plantillas/respuestas`](data/moodle/plantillas/respuestas/). La aprobación se configura a mano |
 | 2–5, 9–10 | Períodos, Indicadores, Estudiantes, Situación académica, Criticidad, Alertas | Solo en el modelo | **En revisión** ([ADR-005](docs/decisions/005-modelo-de-bases-moodle.md)) |
 | 11 | Acompañamientos | [`data/moodle/BASE_ACOMPANAMIENTOS.json`](data/moodle/BASE_ACOMPANAMIENTOS.json) | **Propuesta** (modelo reducido de entrevistas: copia nombres y cuenta del estudiante) |
 | 12 | Entrevistas | [`data/moodle/BASE_ENTREVISTAS.json`](data/moodle/BASE_ENTREVISTAS.json) | **Propuesta**. Suma `propuestas_json` (contraofertas del Req 11) y quita `rid_alerta` |
@@ -77,7 +77,7 @@ Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.j
 
 1. **Carga de datos en el navegador** ([ADR-005](docs/decisions/005-modelo-de-bases-moodle.md)): bloquea el tablero, el detalle y la creación de las bases 1 a 5, 9 y 10. Acompañamientos y Entrevistas no dependen de esta decisión (modelo reducido).
 2. **Detección de roles en Moodle** (grupos ADM, GES, TUT, PAR): mientras no esté, el Hub y el tablero muestran la vista de administrador.
-3. **Origen del DNI** del estudiante en Moodle: bloquea Mis encuestas.
+3. **Origen del DNI** del estudiante en Moodle. Propuesta del ADR-006: el nombre de usuario del campus (es el DNI), leído de `/login/change_password.php`; verificado con una cuenta del equipo, falta una de estudiante. Lo usa la copia de respuestas.
 4. **Banco de preguntas o preguntas por encuesta** (diferencia con el DER): puede cambiar Preguntas y Encuestas.
 5. **Índice de criticidad de 0 a 100** y escala de las notas: afecta al detalle y a la base Criticidad.
 6. **Modelo reducido de entrevistas** (solo Acompañamientos y Entrevistas, con copias de nombres y `propuestas_json` para las contraofertas) y **usuario de la sesión** en las páginas (`M.cfg.userId`, a verificar en el campus): afectan a Entrevistas y Tutorías.
