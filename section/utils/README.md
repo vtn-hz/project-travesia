@@ -9,7 +9,7 @@ Cómo usar las bibliotecas de Utils y sus cargadores. **Widgets** son componente
 | [`tools/content.html`](tools/content.html) | La biblioteca de herramientas (`window.ZhakyzTools`) como script muerto | Página "Tools" de la subsección "Utils", después de "Widgets" (`paginas.utils_tools`). Muestra el índice de herramientas |
 | [`cargador_tools/content.html`](cargador_tools/content.html) | El script que lee la biblioteca de herramientas y arranca una (`TOOL`) | No se publica solo: su copia es [`section/copia_encuestas`](../copia_encuestas/content.html), en los 5 ítems de copia de las encuestas |
 
-Estado: **publicado el 2026-10-25** ([`DEPLOY.md`](../../DEPLOY.md)). Subsección "Utils" (sección 15749), antes de Pruebas → Página "Widgets" (cmid 59932). Copias del cargador publicadas en la Encuesta Inicial (ítem 8254: [`section/encuesta_inicial`](../encuesta_inicial/content.html)) y en la Cuatrimestral (ítems 8261 y 8270: [`section/encuesta_cuatrimestral`](../encuesta_cuatrimestral)).
+Estado: **publicado el 2026-10-25** ([`DEPLOY.md`](../../DEPLOY.md)). Subsección "Utils" (sección 15749), antes de Pruebas → Página "Widgets" (cmid 59932). Copias del cargador publicadas en la Encuesta Inicial (ítem 8254: [`section/encuesta_inicial`](../encuesta_inicial/content.html)) y en la Cuatrimestral (ítems 8261 y 8270: [`section/encuesta_cuatrimestral`](../encuesta_cuatrimestral)). Página "Tools" (cmid 59941), publicada el mismo día, y sus 5 copias del cargador de tools (ítems 8772, 8771, 8770 y 8769 de la Inicial y 8773 de la Cuatrimestral: [`section/copia_encuestas`](../copia_encuestas/content.html)).
 
 ---
 

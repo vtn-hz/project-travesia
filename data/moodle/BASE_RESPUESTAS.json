@@ -5,12 +5,12 @@
   "subseccion": "Database",
   "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js. La escribe el script de copia (section/copia_encuestas), que va en cada página de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
   "configuracion": {
-    "descripcion": "crear_base.js no la aplica: se configura a mano en Moodle después de crear la base.",
+    "descripcion": "crear_base.js no la aplica: se configuró el 2026-10-25 con un POST al formulario de ajustes de la base.",
     "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",
     "Permitir la edición de entradas aprobadas": "No.",
     "Número máximo de entradas": "0 (sin límite): cada versión es una entrada.",
     "Permitir comentarios": "No.",
-    "Disponibilidad": "Disponible pero no mostrada en la página del curso: los estudiantes no entran a la base, el script escribe en ella al enviar la encuesta."
+    "Disponibilidad": "Visible en Zhakyz: el campus no permite \"disponible pero no mostrada\", y si se oculta los estudiantes no pueden escribir en ella. Con la aprobación, cada estudiante ve solo sus entradas."
   },
   "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25: lista e individual). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. Si falta, el script lee la plantilla de lista de Moodle por defecto (filas \"campo | valor\"). No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [

@@ -9,7 +9,7 @@
   - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
-- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **No publicado.** La base Respuestas ya existe (cmid 59940, d=166, creada el 2026-10-25 con sus plantillas); falta configurarla.
+- **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Falta probar un envío** con rol Estudiante.
 - **Última actualización:** 2026-10-25
 
 ## Qué hace
@@ -122,7 +122,7 @@ Definida en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json) (pr
 Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
 
 1. **Crear la base Respuestas.** Hecho el 2026-10-25 con `crear_base.js --confirmar`: cmid 59940, d=166, en la subsección Database, con los 8 campos. El script anotó `bases.respuestas` en `moodle.config.json` y lo copió a esta sección.
-2. **Configurar la base** en Moodle:
+2. **Configurar la base** en Moodle. Hecho el 2026-10-25 con un POST al formulario de ajustes:
    - "Requiere aprobación" = Sí, sin aprobar entradas;
    - edición de entradas aprobadas = No;
    - sin comentarios;
@@ -130,8 +130,8 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
 
    El campus **no permite "disponible pero no mostrada"** (solo mostrar u ocultar), y si se oculta, los estudiantes no pueden escribir en ella. Por eso la base queda visible dentro de Zhakyz, y con la aprobación cada estudiante ve solo sus entradas.
 3. **Cargar las plantillas** de `data/moodle/plantillas/respuestas/`. Hecho el 2026-10-25: lista (cabecera, entrada repetida y pie) e individual, releídas después de guardar. La de añadir entrada queda la de Moodle, porque la copia ubica cada campo por su etiqueta. Si la plantilla de lista falta, la copia la reemplaza leyendo la de Moodle por defecto (filas "campo | valor", igual que Preguntas). Con la propia, el estudiante que abre la base no ve los botones de editar y borrar.
-4. **Publicar la Página Tools** en la subsección Utils, después de Widgets, con `publicar.js`. Queda visible por la misma razón que Widgets: el cargador la lee con la sesión del estudiante.
-5. **Agregar los ítems de copia**, cada uno con el cargador ([`section/copia_encuestas`](../../section/copia_encuestas/content.html)):
+4. **Publicar la Página Tools** en la subsección Utils, después de Widgets, con `publicar.js`. Hecho el 2026-10-25 (cmid 59941). Queda visible por la misma razón que Widgets: el cargador la lee con la sesión del estudiante.
+5. **Agregar los ítems de copia**, cada uno con el cargador ([`section/copia_encuestas`](../../section/copia_encuestas/content.html)). Hecho el 2026-10-25: Inicial 8772 (página 1), 8771 (página 2), 8770 (página 3) y 8769 (página 4, depende de trabaja = Si); Cuatrimestral 8773. Los cinco guardaron el archivo del repo sin cambios (exportación de las encuestas):
    - **Inicial:** uno al final de cada una de las 4 páginas. El de la página 4 tiene que **depender de `trabaja` = Si**, igual que la 8260. Si no, la página 4 nunca queda vacía y el estudiante que no trabaja ve una página en blanco.
    - **Cuatrimestral:** uno al final de la página.
 
