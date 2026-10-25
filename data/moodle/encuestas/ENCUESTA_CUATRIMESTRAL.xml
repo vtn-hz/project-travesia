@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FEEDBACK VERSION="200701" COMMENT="XML-Importfile for mod/feedback">
+     <ITEMS>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8261]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<p>Seleccione las materias aprobadas:</p>
+<p>[[Cuadro]]</p>]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="numeric" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8262]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[Los créditos obtenidos actualmente son:]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[creditos_aprobados]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[0|235.5]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8264]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[progreso_proyecto_final]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>No aplico por nivel|No iniciado|Tema propuesto sin avance|En desarrollo activo|Finalizado pendiente de defensa]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8265]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿Trabaja actualmente?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[trabaja]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>Si|No]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8266]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[¿En qué momento de la carrera comenzaste tu actividad laboral?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>Comencé antes de ingresar a la carrera  |Comencé en 1.º año  |Comencé en 2.º año  |Comencé en 3.º año  |Comencé en 4.º año  |Comencé en 5.º año  |Comencé solo adeudando trabajo final<<<<<1]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[8265]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[Si]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8270]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<p dir="ltr">¿Qué materias cursaste el anterior cuatrimestre?</p>
+<p><strong> </strong>[Select de todas las materias]<br><br>Por cada una, preguntar:</p>
+<p dir="ltr">¿Es la primera vez que cursaste esa materia?</p>
+<ul>
+<li dir="ltr">
+<p dir="ltr">Si</p>
+</li>
+<li dir="ltr">
+<p dir="ltr">No</p>
+</li>
+</ul>
+<p dir="ltr">¿Qué tan difícil te resultó la materia? 1 más fácil, 5 más difícil</p>
+<ul>
+<li dir="ltr">
+<p dir="ltr">1  al 5</p>
+</li>
+</ul>
+<p></p>]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="textfield" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8273]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[materias_cuatrimestre]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[100|255]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="multichoice" REQUIRED="1">
+               <ITEMID>
+                    <![CDATA[8271]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[r>>>>>Al día (cursando las materias del año que me corresponde)|Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)|Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
+     </ITEMS>
+</FEEDBACK>

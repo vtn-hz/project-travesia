@@ -26,7 +26,7 @@ Zhakyz (sección 15647)
 │   ├── Carga_Materias_Primero: base (cmid 59522, d=118)    Importado
 │   ├── Listado_Criticidad_Primero: página (cmid 59523)     Importado
 │   ├── Encuesta Inicial: encuesta (cmid 59710)      Importado; cuadro de créditos Publicado
-│   └── Encuesta Cuatrimestral: encuesta (cmid 59712) Solo en Moodle
+│   └── Encuesta Cuatrimestral: encuesta (cmid 59712) Importado
 ├── Plan de Estudios (subsección 15721)
 │   └── Plan de Estudios: página (cmid 59718)       Publicado
 ├── Encuestas y Preguntas (subsección 15705)
