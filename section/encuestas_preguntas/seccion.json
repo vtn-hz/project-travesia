@@ -1,6 +1,6 @@
 {
   "nombre": "Encuestas y Preguntas",
-  "descripcion": "Grupo de ítems de la sección Zhakyz: banco de preguntas, armado de las encuestas inicial y cuatrimestral, y respuesta de los estudiantes.",
+  "descripcion": "Grupo de ítems de la sección Zhakyz: banco de preguntas y armado de las encuestas inicial y cuatrimestral.",
   "moodle": {
     "tipo": "subseccion",
     "config": "subsecciones.Encuestas y Preguntas"
@@ -23,16 +23,6 @@
         "config": "paginas.encuestas"
       },
       "nota": "Sin publicar. Necesita la base de composición (data/moodle/BASE_ENCUESTAS_ARMADO.json)."
-    },
-    {
-      "carpeta": "responder",
-      "nombre": "Mis encuestas",
-      "tipo": "pagina",
-      "rol": "EST",
-      "moodle": {
-        "config": "paginas.responder"
-      },
-      "nota": "Sin publicar. Necesita las bases BASE_ENCUESTAS_ARMADO.json y BASE_RESPUESTAS.json (propuestas) y que el DNI venga de la base de estudiantes."
     }
   ]
 }
