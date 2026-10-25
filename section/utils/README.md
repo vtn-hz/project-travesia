@@ -4,7 +4,7 @@ Cómo usar la biblioteca de widgets y el cargador. En Moodle, la Página "Widget
 
 | Archivo | Qué es | En Moodle |
 |---|---|---|
-| [`widgets/content.html`](widgets/content.html) | La biblioteca (`window.ZhakyzUtils`) como script muerto | Página "Widgets" de la subsección "Utils", justo antes de "Pruebas" (`moodle.config.json` → `paginas.utils_widgets`). Muestra el menú de widgets (`#widget=<nombre>`) |
+| [`widgets/content.html`](widgets/content.html) | La biblioteca (`window.ZhakyzUtils`) como script muerto | Página "Widgets" de la subsección "Utils", justo antes de "Pruebas" (`moodle.config.json` → `paginas.utils_widgets`). Muestra el índice de widgets y cada widget con `#widget=<nombre>` |
 | [`cargador/content.html`](cargador/content.html) | El script que lee la biblioteca y crea un widget (`WIDGET`) para un campo de la encuesta (`CAMPO`) | No se publica solo: se copia en cada vista que usa un widget |
 
 Estado: **publicado el 2026-10-25** ([`DEPLOY.md`](../../DEPLOY.md)). Subsección "Utils" (sección 15749), antes de Pruebas → Página "Widgets" (cmid 59932). Copias del cargador publicadas en la Encuesta Inicial (ítem 8254: [`section/encuesta_inicial`](../encuesta_inicial/content.html)) y en la Cuatrimestral (ítems 8261 y 8270: [`section/encuesta_cuatrimestral`](../encuesta_cuatrimestral)).
@@ -141,12 +141,12 @@ Una respuesta de texto **corta** de Moodle admite como máximo 255 caracteres, y
 
 ## Ver los widgets
 
-**Página Widgets** ([`widgets/content.html`](widgets/content.html)): una barra con el menú de widgets, el widget elegido y debajo la pregunta de la Encuesta Cuatrimestral que recibe su valor, simulada. El widget sale de la dirección:
+**Página Widgets** ([`widgets/content.html`](widgets/content.html)): una barra con enlaces al índice y a cada widget. Sin `#widget` muestra el índice **Widget Documentation**, el mismo del cargador en local: un bloque por widget, con su enlace, descripción, dónde se usa y el campo de la encuesta. Con `#widget=<nombre>` muestra ese widget y debajo la pregunta de la Encuesta Cuatrimestral que recibe su valor, simulada:
 
 | Widget | En Moodle | En local (Live Server) |
 |---|---|---|
-| `CuadroCreditos` (pregunta 8262) | `mod/page/view.php?id=<cmid>#widget=CuadroCreditos` (o sin `#widget`) | http://localhost:5517/section/utils/widgets/content.html#widget=CuadroCreditos |
-| `SelectorMaterias` (pregunta 8273) | `mod/page/view.php?id=<cmid>#widget=SelectorMaterias` | http://localhost:5517/section/utils/widgets/content.html#widget=SelectorMaterias |
+| `CuadroCreditos` (pregunta 8262) | `mod/page/view.php?id=<cmid>#widget=CuadroCreditos` | http://localhost:5517/section/utils/widgets/content.html#widget=CuadroCreditos |
+| `SelectorMaterias` (respuesta 8768) | `mod/page/view.php?id=<cmid>#widget=SelectorMaterias` | http://localhost:5517/section/utils/widgets/content.html#widget=SelectorMaterias |
 
 **Cargador** ([`cargador/content.html`](cargador/content.html)): lee la biblioteca de `widgets/content.html` como lo hace en una encuesta. En local, sin `#widget` muestra el índice **Widget Documentation**: un bloque por widget de la biblioteca, en vertical, con su enlace, descripción, dónde se usa y el campo de ejemplo (`descripcion` y `uso` de la tabla `WIDGETS` del cargador). Al elegir uno (`#widget=<nombre>`) lo crea con la pregunta de su ejemplo de la Encuesta Cuatrimestral, y la barra tiene enlaces al índice y a los otros widgets: http://localhost:5517/section/utils/cargador/content.html. En Moodle no hay menú: cada copia crea el widget de su `WIDGET`.
 
