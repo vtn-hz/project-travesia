@@ -49,7 +49,7 @@ El cargador no usa ids propios: se ubica con `document.currentScript`, así que 
 |---|---|---|---|
 | Encuesta Inicial (cmid 59710) | 8254 | `CuadroCreditos` | `input[name="numeric_8253"]` |
 | Encuesta Cuatrimestral (cmid 59712) | 8261 (`[[Cuadro]]`) | `CuadroCreditos` | `input[name="numeric_8262"]` |
-| Encuesta Cuatrimestral (cmid 59712) | 8270 (`[Select de todas las materias]`) | `SelectorMaterias` | `textarea[name="textarea_8768"]`: la respuesta larga `materias_cuatrimestre`, creada el 2026-10-25 en lugar del 8273 |
+| Encuesta Cuatrimestral (cmid 59712) | 8270 (`[Select de todas las materias]`) | `SelectorMaterias` | `textarea[name="textarea_8768"]`: la respuesta larga `materias_cuatrimestre`, creada el 2026-10-25 en lugar del 8273, que se borró ese día |
 
 Si la biblioteca no se puede cargar (Página sin publicar, sin acceso o sin red), el cargador muestra un aviso y la pregunta queda editable para completarla a mano. En local, la pregunta se simula con el mismo nombre que en Moodle.
 
@@ -259,6 +259,5 @@ En local, las dos se abren con Live Server, que lee el plan completo de `data/pl
 - **Máximos de `creditos_aprobados`:** la Encuesta Inicial acepta hasta 223 y la Cuatrimestral hasta 235,5. Con las optativas del Plan 2003 el total llega a 245, así que los dos máximos deberían ser 245. Es un cambio en Moodle y requiere confirmación.
 - **Optativas del Plan 2003:** la casilla suma los 16 CG completos. Un estudiante con parte de las optativas no lo puede indicar.
 - **Acceso a las Páginas Widgets y Tools:** los estudiantes necesitan poder abrirlas para que los cargadores las lean. Quedan visibles en la página del curso: el campus no permite "disponible pero no mostrada".
-- **Borrar el ítem 8273:** la respuesta corta vieja sigue en la Encuesta Cuatrimestral, visible y vacía, con la misma etiqueta `materias_cuatrimestre` que el 8768. La encuesta tiene 0 respuestas.
 - **Probar con una cuenta de estudiante:** con rol Profesor no se puede responder la encuesta, así que el envío real de los widgets no está probado.
 - **El cuadro de créditos no recupera la selección:** al volver a su página, empieza vacío y vuelve a escribir 0 en el total. El selector de materias sí la recupera. El cuadro guarda un número, así que para recuperarlo haría falta guardar también los códigos en algún campo.

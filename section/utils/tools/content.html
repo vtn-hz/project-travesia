@@ -92,7 +92,7 @@
       // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
       ENCUESTAS[CMID_CUATRIMESTRAL] = {
         clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true, maximoAvance: 30,
-        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8768, 8273, 8271]],
+        paginas: [[8261, 8262, 8264, 8265, 8266, 8270, 8768, 8271]],
         items: [
           { id: 8262, variable: 'creditos_aprobados', avance: true },
           { id: 8264, variable: 'progreso_proyecto_final', puntos: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 } },
@@ -100,7 +100,6 @@
           { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 }, puntos: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 } },
           // Selector de materias: no cursar es inactividad, salvo con el PFG en desarrollo (4) o finalizado (5)
           { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true, inactividadSalvo: { id: 8264, opciones: [4, 5] } },
-          { id: 8273, ignorar: true }, // respuesta corta anterior al selector: se va a borrar de la encuesta
           { id: 8271, variable: 'avance_percibido', puntos: { 1: 0, 2: 5, 3: 10 } }
         ]
       };
@@ -671,7 +670,7 @@
         ]
       };
       SIMULACION[CMID_CUATRIMESTRAL] = {
-        // Cuadro de créditos (8261), selector de materias (8270) que escribe su JSON en la 8768, y la 8273 anterior
+        // Cuadro de créditos (8261) y selector de materias (8270), que escribe su JSON en la 8768
         paginas: [[
           { tipo: 'cuadro' },
           { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true },
@@ -681,7 +680,6 @@
           { id: 8768, tipo: 'textarea', texto: '¿Qué materias cursaste el anterior cuatrimestre?', ejemplo: JSON.stringify({ plan: '2024', ninguna: false, materias: [
             { codigo: 'INGM102', nombre: 'Análisis Matemático II', primera_vez: false, dificultad: 4 },
             { codigo: 'INGF101', nombre: 'Física A', primera_vez: true, dificultad: 2 }] }) },
-          { id: 8273, tipo: 'textfield', texto: '' },
           { id: 8271, tipo: 'multichoice', texto: 'Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?', opciones: ['Al día (cursando las materias del año que me corresponde)', 'Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)', 'Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)'], req: true }
         ]]
       };

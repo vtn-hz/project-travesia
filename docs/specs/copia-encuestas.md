@@ -57,7 +57,6 @@ Copiados de [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIA
 | | 1 | 8265 | `trabaja` | Sí → 5 |
 | | 1 | 8266 (depende de `trabaja` = Si) | `inicio_laboral` | 10 · 10 · 10 · 7 · 7 · 4 · 4 |
 | | 1 | 8270 (selector de materias) → 8768 | `materias_cursadas`, `primera_vez` y `dificultad` por materia | Bloque de cursada (máx. 35) |
-| | 1 | 8273 | — | Se ignora: es la respuesta corta anterior al selector y se va a borrar |
 | | 1 | 8271 | `avance_percibido` | 0 · 5 · 10 |
 
 - **Puntos:** van por número de opción, en el orden de Moodle. Los valores son los provisorios de [`MODELO_CRITICIDAD_ENCUESTAS.md`](../models/MODELO_CRITICIDAD_ENCUESTAS.md).
@@ -173,9 +172,7 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 1. **Publicar**, con los pasos de [Publicación](#publicación). Cada paso requiere confirmación.
 2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
-4. **Encuesta Cuatrimestral (para el equipo):**
-   - borrar el ítem 8273;
-   - `inicio_laboral` depende de `trabaja`, pero están en la misma página, así que Moodle la muestra y la pide siempre. Hace falta un salto de página entre las dos.
+4. **Encuesta Cuatrimestral (para el equipo):** `inicio_laboral` depende de `trabaja`, pero están en la misma página, así que Moodle la muestra y la pide siempre. Hace falta un salto de página entre las dos. (El ítem 8273 se borró el 2026-10-25.)
 5. **Cuadro de créditos:** todavía ofrece el Plan 2003, que quedó fuera del alcance. Si el estudiante lo elige, el avance no se puntúa. Además, al volver a su página el cuadro empieza vacío (ver `section/utils/README.md`).
 6. **Control para el equipo:** comparar la última respuesta de Moodle con la última versión de la base, para detectar copias que no llegaron.
 7. **`avance_percibido`:** "Demorado" y "Muy demorado" tienen el mismo umbral (50 %) en Moodle.
