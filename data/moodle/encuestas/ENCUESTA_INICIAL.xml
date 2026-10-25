@@ -308,6 +308,176 @@
                     <![CDATA[]]>
                </DEPENDVALUE>
           </ITEM>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8772]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuestas "Encuesta Inicial" (cmid 59710) y "Encuesta Cuatrimestral" (cmid 59712) → 5 ítems Área de texto y medios, uno al final de cada página (ids en RULES.md) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTAS INICIAL Y CUATRIMESTRAL · COPIA DE RESPUESTAS (ÁREA DE TEXTO Y MEDIOS AL FINAL DE CADA PÁGINA) -->
+<!-- VA EN: Encuesta Inicial (cmid 59710), un ítem al final de cada una de sus 4 páginas (el de la página 4 depende de trabaja = Si), y Encuesta Cuatrimestral (cmid 59712), un ítem al final. Los 5 ítems tienen este mismo archivo -->
+<!-- QUÉ ES: copia de section/utils/cargador_tools/content.html con TOOL = 'CopiaRespuestas'. Lee la Página Tools de Utils y arranca la herramienta, que copia cada envío a la base Respuestas (docs/specs/copia-encuestas.md) -->
+<!-- SI CAMBIA LA COPIA: se cambia la herramienta en section/utils/tools y se publica la Página Tools. Este ítem solo cambia si cambia el cargador -->
+<!-- NO EDITAR LOS ÍTEMS DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. La herramienta muestra el simulador de las dos encuestas y los registros que copiaría -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div data-zk-cargador-tools style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- LUGAR DE LA HERRAMIENTA -->
+  <div data-cargador="tool"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR, Y NUNCA EN LA ENCUESTA QUE RESPONDE EL ESTUDIANTE) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-cargador-tools-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-cargador-tools-style';
+        styleEl.innerHTML = '[data-zk-cargador-tools] > nolink { display: block; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Página "Tools" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      // En local (Live Server): ruta de la Página Tools desde esta vista
+      var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
+      // Herramienta que arranca este cargador (section/utils/README.md):
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      var TOOL = 'CopiaRespuestas';
+      // Opciones de la herramienta. El contenedor lo pone el cargador
+      var OPCIONES = {};
+      // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
+      var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador-tools]')) ||
+        document.querySelector('[data-zk-cargador-tools]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE LA BIBLIOTECA DE TOOLS
+      // ---------------------------------------------------------
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzToolsCarga
+      // y la biblioteca en window.ZhakyzTools.
+      function urlTools() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_TOOLS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS : null;
+        }
+        return new URL(RUTA_LOCAL_TOOLS, window.location.href).href;
+      }
+
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = urlTools();
+        if (!url) return Promise.reject(new Error('La Página Tools de Utils todavía no está publicada.'));
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools) throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISO (PARA EL EQUIPO: EDITAR PREGUNTAS, VISTA PREVIA Y LOCAL)
+      // ---------------------------------------------------------
+      function mostrarError(error) {
+        if (SILENCIOSO) return;
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Tools.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Tools no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        var aviso = parte('aviso');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
+      // ---------------------------------------------------------
+      cargarTools().then(function(Tools) {
+        if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
+        var opciones = { contenedor: parte('tool') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        Tools[TOOL](opciones);
+      }).catch(mostrarError);
+    })();
+  </script>
+</nolink>
+</div>
+]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
           <ITEM TYPE="pagebreak" REQUIRED="0">
                <ITEMID>
                     <![CDATA[8506]]>
@@ -377,6 +547,176 @@
                     <![CDATA[]]>
                </DEPENDVALUE>
           </ITEM>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8771]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuestas "Encuesta Inicial" (cmid 59710) y "Encuesta Cuatrimestral" (cmid 59712) → 5 ítems Área de texto y medios, uno al final de cada página (ids en RULES.md) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTAS INICIAL Y CUATRIMESTRAL · COPIA DE RESPUESTAS (ÁREA DE TEXTO Y MEDIOS AL FINAL DE CADA PÁGINA) -->
+<!-- VA EN: Encuesta Inicial (cmid 59710), un ítem al final de cada una de sus 4 páginas (el de la página 4 depende de trabaja = Si), y Encuesta Cuatrimestral (cmid 59712), un ítem al final. Los 5 ítems tienen este mismo archivo -->
+<!-- QUÉ ES: copia de section/utils/cargador_tools/content.html con TOOL = 'CopiaRespuestas'. Lee la Página Tools de Utils y arranca la herramienta, que copia cada envío a la base Respuestas (docs/specs/copia-encuestas.md) -->
+<!-- SI CAMBIA LA COPIA: se cambia la herramienta en section/utils/tools y se publica la Página Tools. Este ítem solo cambia si cambia el cargador -->
+<!-- NO EDITAR LOS ÍTEMS DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. La herramienta muestra el simulador de las dos encuestas y los registros que copiaría -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div data-zk-cargador-tools style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- LUGAR DE LA HERRAMIENTA -->
+  <div data-cargador="tool"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR, Y NUNCA EN LA ENCUESTA QUE RESPONDE EL ESTUDIANTE) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-cargador-tools-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-cargador-tools-style';
+        styleEl.innerHTML = '[data-zk-cargador-tools] > nolink { display: block; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Página "Tools" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      // En local (Live Server): ruta de la Página Tools desde esta vista
+      var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
+      // Herramienta que arranca este cargador (section/utils/README.md):
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      var TOOL = 'CopiaRespuestas';
+      // Opciones de la herramienta. El contenedor lo pone el cargador
+      var OPCIONES = {};
+      // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
+      var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador-tools]')) ||
+        document.querySelector('[data-zk-cargador-tools]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE LA BIBLIOTECA DE TOOLS
+      // ---------------------------------------------------------
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzToolsCarga
+      // y la biblioteca en window.ZhakyzTools.
+      function urlTools() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_TOOLS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS : null;
+        }
+        return new URL(RUTA_LOCAL_TOOLS, window.location.href).href;
+      }
+
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = urlTools();
+        if (!url) return Promise.reject(new Error('La Página Tools de Utils todavía no está publicada.'));
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools) throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISO (PARA EL EQUIPO: EDITAR PREGUNTAS, VISTA PREVIA Y LOCAL)
+      // ---------------------------------------------------------
+      function mostrarError(error) {
+        if (SILENCIOSO) return;
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Tools.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Tools no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        var aviso = parte('aviso');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
+      // ---------------------------------------------------------
+      cargarTools().then(function(Tools) {
+        if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
+        var opciones = { contenedor: parte('tool') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        Tools[TOOL](opciones);
+      }).catch(mostrarError);
+    })();
+  </script>
+</nolink>
+</div>
+]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
           <ITEM TYPE="pagebreak" REQUIRED="0">
                <ITEMID>
                     <![CDATA[8507]]>
@@ -423,6 +763,176 @@
                     <![CDATA[]]>
                </DEPENDVALUE>
           </ITEM>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8770]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuestas "Encuesta Inicial" (cmid 59710) y "Encuesta Cuatrimestral" (cmid 59712) → 5 ítems Área de texto y medios, uno al final de cada página (ids en RULES.md) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTAS INICIAL Y CUATRIMESTRAL · COPIA DE RESPUESTAS (ÁREA DE TEXTO Y MEDIOS AL FINAL DE CADA PÁGINA) -->
+<!-- VA EN: Encuesta Inicial (cmid 59710), un ítem al final de cada una de sus 4 páginas (el de la página 4 depende de trabaja = Si), y Encuesta Cuatrimestral (cmid 59712), un ítem al final. Los 5 ítems tienen este mismo archivo -->
+<!-- QUÉ ES: copia de section/utils/cargador_tools/content.html con TOOL = 'CopiaRespuestas'. Lee la Página Tools de Utils y arranca la herramienta, que copia cada envío a la base Respuestas (docs/specs/copia-encuestas.md) -->
+<!-- SI CAMBIA LA COPIA: se cambia la herramienta en section/utils/tools y se publica la Página Tools. Este ítem solo cambia si cambia el cargador -->
+<!-- NO EDITAR LOS ÍTEMS DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. La herramienta muestra el simulador de las dos encuestas y los registros que copiaría -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div data-zk-cargador-tools style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- LUGAR DE LA HERRAMIENTA -->
+  <div data-cargador="tool"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR, Y NUNCA EN LA ENCUESTA QUE RESPONDE EL ESTUDIANTE) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-cargador-tools-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-cargador-tools-style';
+        styleEl.innerHTML = '[data-zk-cargador-tools] > nolink { display: block; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Página "Tools" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      // En local (Live Server): ruta de la Página Tools desde esta vista
+      var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
+      // Herramienta que arranca este cargador (section/utils/README.md):
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      var TOOL = 'CopiaRespuestas';
+      // Opciones de la herramienta. El contenedor lo pone el cargador
+      var OPCIONES = {};
+      // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
+      var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador-tools]')) ||
+        document.querySelector('[data-zk-cargador-tools]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE LA BIBLIOTECA DE TOOLS
+      // ---------------------------------------------------------
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzToolsCarga
+      // y la biblioteca en window.ZhakyzTools.
+      function urlTools() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_TOOLS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS : null;
+        }
+        return new URL(RUTA_LOCAL_TOOLS, window.location.href).href;
+      }
+
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = urlTools();
+        if (!url) return Promise.reject(new Error('La Página Tools de Utils todavía no está publicada.'));
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools) throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISO (PARA EL EQUIPO: EDITAR PREGUNTAS, VISTA PREVIA Y LOCAL)
+      // ---------------------------------------------------------
+      function mostrarError(error) {
+        if (SILENCIOSO) return;
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Tools.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Tools no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        var aviso = parte('aviso');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
+      // ---------------------------------------------------------
+      cargarTools().then(function(Tools) {
+        if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
+        var opciones = { contenedor: parte('tool') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        Tools[TOOL](opciones);
+      }).catch(mostrarError);
+    })();
+  </script>
+</nolink>
+</div>
+]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[0]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[]]>
+               </DEPENDVALUE>
+          </ITEM>
           <ITEM TYPE="pagebreak" REQUIRED="0">
                <ITEMID>
                     <![CDATA[8508]]>
@@ -461,6 +971,176 @@
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
+               </OPTIONS>
+               <DEPENDITEM>
+                    <![CDATA[8259]]>
+               </DEPENDITEM>
+               <DEPENDVALUE>
+                    <![CDATA[Si]]>
+               </DEPENDVALUE>
+          </ITEM>
+          <ITEM TYPE="label" REQUIRED="0">
+               <ITEMID>
+                    <![CDATA[8769]]>
+               </ITEMID>
+               <ITEMTEXT>
+                    <![CDATA[label]]>
+               </ITEMTEXT>
+               <ITEMLABEL>
+                    <![CDATA[]]>
+               </ITEMLABEL>
+               <PRESENTATION>
+                    <![CDATA[<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuestas "Encuesta Inicial" (cmid 59710) y "Encuesta Cuatrimestral" (cmid 59712) → 5 ítems Área de texto y medios, uno al final de cada página (ids en RULES.md) · 2026-10-25 -->
+<!-- ÍTEM: ENCUESTAS INICIAL Y CUATRIMESTRAL · COPIA DE RESPUESTAS (ÁREA DE TEXTO Y MEDIOS AL FINAL DE CADA PÁGINA) -->
+<!-- VA EN: Encuesta Inicial (cmid 59710), un ítem al final de cada una de sus 4 páginas (el de la página 4 depende de trabaja = Si), y Encuesta Cuatrimestral (cmid 59712), un ítem al final. Los 5 ítems tienen este mismo archivo -->
+<!-- QUÉ ES: copia de section/utils/cargador_tools/content.html con TOOL = 'CopiaRespuestas'. Lee la Página Tools de Utils y arranca la herramienta, que copia cada envío a la base Respuestas (docs/specs/copia-encuestas.md) -->
+<!-- SI CAMBIA LA COPIA: se cambia la herramienta en section/utils/tools y se publica la Página Tools. Este ítem solo cambia si cambia el cargador -->
+<!-- NO EDITAR LOS ÍTEMS DESDE MOODLE: el editor muestra una versión sin el script y al guardar lo borra -->
+<!-- EN LOCAL: abrir con Live Server. La herramienta muestra el simulador de las dos encuestas y los registros que copiaría -->
+<!-- SIN PIE ZHAKYZ: no tiene interfaz propia -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div data-zk-cargador-tools style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- LUGAR DE LA HERRAMIENTA -->
+  <div data-cargador="tool"></div>
+
+  <!-- AVISO (SOLO SI LA BIBLIOTECA NO SE PUDO CARGAR, Y NUNCA EN LA ENCUESTA QUE RESPONDE EL ESTUDIANTE) -->
+  <div data-cargador="aviso"
+    style="display: none; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; margin: 8px 0 !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important; box-sizing: border-box !important;">
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-cargador-tools-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-cargador-tools-style';
+        styleEl.innerHTML = '[data-zk-cargador-tools] > nolink { display: block; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Página "Tools" de la subsección Utils. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      // En local (Live Server): ruta de la Página Tools desde esta vista
+      var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
+      // Herramienta que arranca este cargador (section/utils/README.md):
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      var TOOL = 'CopiaRespuestas';
+      // Opciones de la herramienta. El contenedor lo pone el cargador
+      var OPCIONES = {};
+      // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
+      var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
+
+      // Contenedor de esta copia del cargador: puede haber varias en la misma página
+      var raiz = (document.currentScript && document.currentScript.closest('[data-zk-cargador-tools]')) ||
+        document.querySelector('[data-zk-cargador-tools]:not([data-iniciado])');
+      raiz.setAttribute('data-iniciado', '1');
+
+      function parte(nombre) {
+        return raiz.querySelector('[data-cargador="' + nombre + '"]');
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE LA BIBLIOTECA DE TOOLS
+      // ---------------------------------------------------------
+      // Una sola vez por página aunque haya varios cargadores: la promesa queda en window.ZhakyzToolsCarga
+      // y la biblioteca en window.ZhakyzTools.
+      function urlTools() {
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          return CMID_TOOLS ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS : null;
+        }
+        return new URL(RUTA_LOCAL_TOOLS, window.location.href).href;
+      }
+
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = urlTools();
+        if (!url) return Promise.reject(new Error('La Página Tools de Utils todavía no está publicada.'));
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools) throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, otro cargador de la misma página puede volver a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // AVISO (PARA EL EQUIPO: EDITAR PREGUNTAS, VISTA PREVIA Y LOCAL)
+      // ---------------------------------------------------------
+      function mostrarError(error) {
+        if (SILENCIOSO) return;
+        var local = ES_VISTA_LOCAL && window.location.protocol === 'file:' ? ' En local, abrir la vista con Live Server: con file:// el navegador no permite leer la Página Tools.' : '';
+        // fetch rechaza con TypeError cuando no hay respuesta (sin red, file://); su mensaje viene en inglés
+        var motivo = error && error.name === 'TypeError' ? 'la Página Tools no respondió.'
+          : String(error && error.message ? error.message : error).replace(/\.?$/, '.');
+        var aviso = parte('aviso');
+        aviso.innerHTML = '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span>' +
+          '<span>No se pudo cargar la herramienta ' + escapar(TOOL) + ': ' + escapar(motivo) + escapar(local) + '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      // ---------------------------------------------------------
+      // INICIO: CARGAR LA BIBLIOTECA Y ARRANCAR LA HERRAMIENTA
+      // ---------------------------------------------------------
+      cargarTools().then(function(Tools) {
+        if (typeof Tools[TOOL] !== 'function') throw new Error('La biblioteca de Tools no tiene la herramienta ' + TOOL + '.');
+        var opciones = { contenedor: parte('tool') };
+        Object.keys(OPCIONES).forEach(function(k) { opciones[k] = OPCIONES[k]; });
+        Tools[TOOL](opciones);
+      }).catch(mostrarError);
+    })();
+  </script>
+</nolink>
+</div>
+]]>
+               </PRESENTATION>
+               <OPTIONS>
+                    <![CDATA[]]>
                </OPTIONS>
                <DEPENDITEM>
                     <![CDATA[8259]]>
