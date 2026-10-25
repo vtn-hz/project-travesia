@@ -84,7 +84,16 @@ Se siguieron los criterios de la tabla del Plan 2003 del [modelo de ubicación](
 ### Plan 2024
 
 - **Aprobaciones esperadas acumuladas** (contando cada materia en su `cuat_fin`): 3, 7, 12, 18, 24, 31, 36, 42, 46, 52. Coinciden **exactamente** con la tabla del Plan 2024 del `MODELO_UBICACION_Y_ATRASO`.
-- **Total:** 223 créditos y 3568 horas.
+- **Total:** 223 créditos y 3568 horas. Coincide con el cuadro de créditos del documento del Plan 2024 (recibido el 2026-10-24):
+
+  | En el documento | En este archivo |
+  |---|---|
+  | Obligatorios (incluye Práctica Sociocomunitaria, electivas y trabajo final): 215 CG · 3440 h | `obligatoria` 175 + `ingles` 14 + `electiva` 16 + Proyecto IV 10 = 215 CG · 3440 h |
+  | Optativas: 8 CG · 128 h | `optativa` (OPT1, OPT2): 8 CG · 128 h |
+  | PPS: 12,5 CG · 200 h | No es una fila: es un requisito. El cuadro de la Encuesta Inicial la suma aparte |
+  | **Total del plan: 235,5 CG · 3768 h** | 223 CG + 12,5 de la PPS |
+
+- **Requisitos académicos** (sin filas): INGRA01, Práctica Sociocomunitaria y Práctica Profesional Supervisada (200 h). Las electivas se eligen entre las focalizaciones de la OCS 571/23: Gestión de Procesos Industriales, Gestión de la Tecnología y la Innovación, Inteligencia de Datos para la Gestión Estratégica y Gestión del Capital Humano.
 - **Ninguna correlativa** está en el mismo cuatrimestre que la materia que la requiere, ni en uno posterior.
 
 ### Plan 2003

@@ -1,0 +1,26 @@
+{
+  "nombre": "Utils",
+  "descripcion": "Grupo de ítems de la sección Zhakyz: widgets compartidos que las demás vistas importan con el cargador.",
+  "moodle": {
+    "tipo": "subseccion",
+    "config": "subsecciones.Utils",
+    "posicion": "Dentro de Zhakyz, justo antes de la subsección Pruebas"
+  },
+  "items": [
+    {
+      "carpeta": "widgets",
+      "nombre": "Widgets",
+      "tipo": "pagina",
+      "moodle": {
+        "config": "paginas.utils_widgets"
+      },
+      "nota": "Publicado el 2026-10-25 (cmid 59932). La biblioteca (script muerto) y un menú para ver cada widget con #widget=<nombre> en la dirección. Cómo se usa: section/utils/README.md."
+    },
+    {
+      "carpeta": "cargador",
+      "nombre": "Cargador",
+      "tipo": "fragmento",
+      "nota": "No se publica como actividad: se copia en cada vista que usa un widget, con su WIDGET y su CAMPO. El archivo es el ejemplo de la Encuesta Cuatrimestral (ítem 8261 → pregunta 8262); en local, sin #widget muestra un menú con los widgets de la biblioteca y #widget=<nombre> crea ese widget."
+    }
+  ]
+}

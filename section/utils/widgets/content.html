@@ -1,0 +1,1045 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Widgets" (cmid 59932) · 2026-10-25 -->
+<!-- ÍTEM: UTILS · WIDGETS (BIBLIOTECA DE COMPONENTES COMPARTIDOS) -->
+<!-- VA EN: subsección "Utils" de Zhakyz (justo antes de "Pruebas") → Página "Widgets" (cmid en moodle.config.json → paginas.utils_widgets) -->
+<!-- QUÉ ES: la biblioteca, como script muerto (<script type="text/plain">): el navegador no la ejecuta. Las vistas la leen y la ejecutan con el cargador (section/utils/cargador/content.html) -->
+<!-- VISTA: un menú con los widgets que cambia #widget=<nombre> en la dirección (por ejemplo view.php?id=<cmid>#widget=SelectorMaterias) y muestra ese widget con la pregunta de la encuesta simulada -->
+<!-- CÓMO SE USA: section/utils/README.md. Se edita en el repo y se publica con publicar.js: un cambio en la biblioteca llega a todas las vistas que la cargan -->
+<!-- SIN PIE ZHAKYZ PROPIO: el pie lo dibuja el widget -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="vitrina-widgets" style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- MENÚ: #widget=<nombre> EN LA DIRECCIÓN -->
+  <nav id="menu-widgets" aria-label="Widgets"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; max-width: 850px !important; box-sizing: border-box !important; padding: 8px 12px !important; margin: 20px auto 0 auto !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;">
+  </nav>
+
+  <!-- LUGAR DEL WIDGET -->
+  <div id="widget-vitrina"></div>
+
+  <!-- PREGUNTA DE LA ENCUESTA SIMULADA: RECIBE EL VALOR DEL WIDGET -->
+  <div id="pregunta-vitrina"
+    style="max-width: 850px !important; margin: 16px auto !important; padding: 12px 16px !important; border: 1px dashed #c2c9d6 !important; border-radius: 8px !important; background-color: #ffffff !important; box-sizing: border-box !important;">
+  </div>
+
+<!-- BIBLIOTECA (OCULTA) -->
+<div id="widgets-utils" style="display: none !important;">
+  <!-- BIBLIOTECA DE WIDGETS (SCRIPT MUERTO): EL NAVEGADOR NO EJECUTA type="text/plain". LA LEE EL CARGADOR Y LA EJECUTA EN LA VISTA -->
+  <script type="text/plain" id="biblioteca-widgets" data-zk-biblioteca="widgets">
+    (function() {
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE WIDGETS ZHAKYZ → window.ZhakyzUtils
+      // ---------------------------------------------------------
+      // Es la única variable global de la biblioteca: la comparten las vistas que la cargan.
+      // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
+      var VERSION = 2;
+      if (window.ZhakyzUtils && window.ZhakyzUtils.version >= VERSION) return;
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      // Base Materias de la sección Zhakyz. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
+      // Vista local (Live Server): plan de estudios del repo, relativo a la Página Widgets (section/utils/widgets/content.html)
+      var CSV_LOCAL = '../../../data/plan_estudios/PLANES_CARGA.csv';
+      // Dirección de la Página Widgets: la pone el cargador en data-base; si no está, es la página actual
+      var BASE = (document.currentScript && document.currentScript.getAttribute('data-base')) || window.location.href;
+
+      // CRÉDITOS DE CADA PLAN QUE NO SON MATERIAS (NO ESTÁN EN LA BASE MATERIAS): UNA CASILLA CADA UNO, AL FINAL DEL PLAN
+      // Plan 2024 (cuadro de créditos del plan): las 52 materias suman 223 CG; la PPS, 12,5 CG (200 h). Total: 235,5 CG y 3768 h.
+      //   INGRA01 y la Práctica Sociocomunitaria son requisitos sin créditos propios.
+      // Plan 2003 (texto ordenado): las 43 materias suman 229 CG (219 obligatorios + 10 del Trabajo Final); las optativas,
+      //   16 CG sin materias fijas. Total: 245 CG y 3920 h. La PPS (200 h) es un requisito sin créditos: tiene casilla para
+      //   registrar que se cumplió, pero no suma. El IV Nivel de Inglés y el Seminario no tienen casilla.
+      // En el Plan 2024 las optativas (8 CG) ya son materias de la lista (OPT1 y OPT2): no llevan casilla aparte.
+      var OTROS_CREDITOS = {
+        '2024': [{ codigo: 'PPS', nombre: 'Práctica Profesional Supervisada', detalle: 'PPS · 200 h', creditos: 12.5 }],
+        '2003': [
+          { codigo: 'PPS', nombre: 'Práctica Profesional Supervisada', detalle: 'PPS · 200 h · requisito sin créditos en este plan', creditos: 0 },
+          { codigo: 'OPTATIVAS', nombre: 'Optativas', detalle: 'Marcar al completar los 16 CG de asignaturas optativas · 256 h', creditos: 16 }
+        ]
+      };
+
+      // MATERIAS DE EJEMPLO: SOLO SI EN LOCAL NO SE PUEDE LEER EL CSV (POR EJEMPLO, CON file://)
+      var MATERIAS_EJEMPLO = [
+        { plan: '2024', codigo: 'INGM101', nombre: 'Análisis Matemático I', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '6' },
+        { plan: '2024', codigo: 'INGM105', nombre: 'Álgebra I- B', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '4' },
+        { plan: '2024', codigo: 'INGM102', nombre: 'Análisis Matemático II', cuatrimestre: '2', duracion: 'cuatrimestral', creditos: '5' },
+        { plan: '2024', codigo: 'ING8501', nombre: 'Proyecto de Ingeniería Industrial I', cuatrimestre: '3', duracion: 'anual', creditos: '4' },
+        { plan: '2003', codigo: '633', nombre: 'Análisis Matemático A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' },
+        { plan: '2003', codigo: '631', nombre: 'Álgebra A', cuatrimestre: '1', duracion: 'cuatrimestral', creditos: '8' }
+      ];
+
+      // ---------------------------------------------------------
+      // ESTILOS COMPARTIDOS (UNA SOLA VEZ POR PÁGINA)
+      // ---------------------------------------------------------
+      function inyectarEstilos() {
+        if (document.getElementById('zhakyz-widgets-style')) return;
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-widgets-style';
+        styleEl.innerHTML =
+          '.zk-cuadro-creditos button:focus-visible, .zk-cuadro-creditos input:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '.zk-cuadro-creditos label.zk-materia:hover { background-color: rgba(218, 222, 231, 0.2); }' +
+          '.zk-selector-materias button:focus-visible, .zk-selector-materias select:focus-visible, .zk-selector-materias input[type="checkbox"]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          // Las pastillas son radios ocultos: el estado marcado solo se puede pintar con :checked
+          '.zk-selector-materias .zk-pastilla { background-color: #ffffff !important; border: 1px solid #dadee7 !important; color: #0b0e14 !important; }' +
+          '.zk-selector-materias input:not(:checked) + .zk-pastilla:hover { background-color: #f5f6fa !important; }' +
+          '.zk-selector-materias input:checked + .zk-pastilla { background-color: #0b0e14 !important; border-color: #333c4d !important; color: #ffffff !important; }' +
+          '.zk-selector-materias input:focus-visible + .zk-pastilla { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        cerrar: '<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function numero(s) {
+        var n = parseFloat(String(s === null || s === undefined ? '' : s).replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+      }
+
+      // 12.5 → "12,5"
+      function formatear(n) {
+        return String(Math.round(n * 10) / 10).replace('.', ',');
+      }
+
+      function elemento(e) {
+        return typeof e === 'string' ? document.querySelector(e) : e || null;
+      }
+
+      // ---------------------------------------------------------
+      // PIEZAS COMPARTIDAS POR LOS WIDGETS
+      // ---------------------------------------------------------
+      // RAÍZ DEL WIDGET: EN opciones.contenedor O, SI NO SE INDICA, JUSTO ANTES DE LA PREGUNTA DEL CAMPO
+      function crearRaiz(nombre, clase, opciones, selectorCampo) {
+        var raiz = document.createElement('div');
+        raiz.className = clase;
+        raiz.setAttribute('data-zk-widget', clase.replace(/^zk-/, ''));
+        raiz.setAttribute('style', 'position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;');
+        if (opciones.contenedor) {
+          var destino = elemento(opciones.contenedor);
+          if (!destino) throw new Error(nombre + ': no se encontró el contenedor "' + opciones.contenedor + '".');
+          destino.appendChild(raiz);
+          return raiz;
+        }
+        var campo = document.querySelector(selectorCampo);
+        if (!campo) throw new Error(nombre + ': no se encontró el campo "' + selectorCampo + '" y no se indicó un contenedor.');
+        // En las encuestas de Moodle cada pregunta es un .fitem: el widget va justo antes de la pregunta
+        var fila = campo.closest('.fitem') || campo;
+        fila.parentNode.insertBefore(raiz, fila);
+        return raiz;
+      }
+
+      function encabezado(titulo, descripcion, idTitulo) {
+        return '<div style="margin-bottom: 16px !important;">' +
+          '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
+          '<h3' + (idTitulo ? ' id="' + escapar(idTitulo) + '"' : '') + ' style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">' + escapar(titulo) + '</h3>' +
+          '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">' + escapar(descripcion) + '</p></div>';
+      }
+
+      function pie() {
+        return '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">' +
+          '<span style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">Zhakyz \x26amp; Asociados</span>' +
+          '<span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span></div>';
+      }
+
+      function cajaError(texto) {
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; font-size: 14px !important;">' +
+          '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span><span>' + escapar(texto) + '</span></div>';
+      }
+
+      // BOTONES "PLAN 2024 · PLAN 2003": atributo es el data-* que identifica el plan en cada widget
+      function botonesPlan(lista, actual, atributo) {
+        var planes = {};
+        (lista || []).forEach(function(m) { planes[m.plan] = true; });
+        return Object.keys(planes).sort().reverse().map(function(p) {
+          var activo = p === actual;
+          return '<button type="button" ' + atributo + '="' + escapar(p) + '" aria-pressed="' + activo + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; border: 1px solid ' + (activo ? '#333c4d' : '#dadee7') + ' !important; background-color: ' + (activo ? '#0b0e14' : '#ffffff') + ' !important; color: ' + (activo ? '#ffffff' : '#0b0e14') + ' !important;">Plan ' + escapar(p) + '</button>';
+        }).join('');
+      }
+
+      // MATERIAS DE UN PLAN, POR CUATRIMESTRE Y CÓDIGO
+      function materiasDe(lista, plan) {
+        return (lista || []).filter(function(m) { return m.plan === plan; })
+          .sort(function(a, b) { return (parseInt(a.cuatrimestre, 10) - parseInt(b.cuatrimestre, 10)) || (a.codigo < b.codigo ? -1 : 1); });
+      }
+
+      function anioDe(m) {
+        return Math.ceil(parseInt(m.cuatrimestre, 10) / 2);
+      }
+
+      // "2.º C" o "Anual (3.º y 4.º C)"
+      function cuatrimestreDe(m) {
+        var c = parseInt(m.cuatrimestre, 10);
+        return m.duracion === 'anual' ? 'Anual (' + c + '.º y ' + (c + 1) + '.º C)' : c + '.º C';
+      }
+
+      // ---------------------------------------------------------
+      // LECTURA DE LA BASE MATERIAS (O DEL CSV DEL REPO EN LOCAL)
+      // ---------------------------------------------------------
+      // ENTRADAS VIGENTES: LA MÁS NUEVA DE CADA plan + codigo, SIN LAS DADAS DE BAJA
+      function vigentes(entradas) {
+        var ultima = {};
+        entradas.forEach(function(e, i) {
+          var clave = e.plan + '|' + e.codigo;
+          var orden = /^\d+$/.test(e.rid || '') ? parseInt(e.rid, 10) : i;
+          if (!ultima[clave] || orden >= ultima[clave].orden) ultima[clave] = { orden: orden, e: e };
+        });
+        return Object.keys(ultima).map(function(k) { return ultima[k].e; })
+          .filter(function(e) { return e.estado !== 'baja'; });
+      }
+
+      // ENTRADAS DEL LISTADO: PRIMERO LA PLANTILLA PROPIA DE MATERIAS (.zk-registro CON CELDAS data-campo),
+      // SI NO LA PLANTILLA POR DEFECTO DE MOODLE (MISMO CRITERIO QUE LA SECCIÓN plan_estudios)
+      function parsearListado(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var propias = doc.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return Array.prototype.map.call(propias, function(el) {
+            var valores = {};
+            el.querySelectorAll('[data-campo]').forEach(function(c) { valores[c.getAttribute('data-campo')] = c.textContent.trim(); });
+            var enlace = el.querySelector('a[href*="rid="]');
+            valores.rid = /^\d+$/.test(el.getAttribute('data-rid') || '') ? el.getAttribute('data-rid')
+              : enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+            return valores;
+          });
+        }
+        return Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
+          var valores = {};
+          entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            var celdas = fila.children;
+            if (celdas.length >= 2) valores[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
+          });
+          var enlace = entrada.querySelector('a[href*="rid="]');
+          valores.rid = enlace ? (enlace.href.match(/[?&]rid=(\d+)/) || [])[1] : null;
+          return valores;
+        });
+      }
+
+      // CSV CON ENCABEZADO Y CAMPOS ENTRE COMILLAS (FORMATO DE data/plan_estudios/PLANES_CARGA.csv)
+      function parsearCsv(texto) {
+        var filas = [], fila = [], campo = '', comillas = false;
+        texto = texto.replace(/^﻿/, '');
+        for (var i = 0; i < texto.length; i++) {
+          var c = texto.charAt(i);
+          if (comillas) {
+            if (c === '"' && texto.charAt(i + 1) === '"') { campo += '"'; i++; }
+            else if (c === '"') comillas = false;
+            else campo += c;
+          } else if (c === '"') comillas = true;
+          else if (c === ',') { fila.push(campo); campo = ''; }
+          else if (c === '\n' || c === '\r') {
+            if (c === '\r' && texto.charAt(i + 1) === '\n') i++;
+            fila.push(campo); filas.push(fila); fila = []; campo = '';
+          } else campo += c;
+        }
+        if (campo || fila.length) { fila.push(campo); filas.push(fila); }
+        var encabezado = (filas.shift() || []).map(function(h) { return h.trim(); });
+        return filas.filter(function(f) { return f.join('').trim(); }).map(function(f) {
+          var o = {};
+          encabezado.forEach(function(h, j) { o[h] = (f[j] || '').trim(); });
+          return o;
+        });
+      }
+
+      function leerTexto(url, opciones) {
+        return fetch(url, opciones).then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        });
+      }
+
+      // MATERIAS VIGENTES, UNA SOLA LECTURA POR PÁGINA AUNQUE HAYA VARIOS WIDGETS.
+      // Devuelve { lista, fuente }: fuente es 'base' (Moodle), 'csv' (local con Live Server) o 'ejemplo' (local con file://).
+      // En Moodle, si la base no se puede leer, la promesa se rechaza.
+      var cargaMaterias = null;
+      function cargarMaterias() {
+        if (cargaMaterias) return cargaMaterias;
+        if (window.M && M.cfg && M.cfg.wwwroot) {
+          cargaMaterias = leerTexto(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_MATERIAS + '&perpage=1000', { credentials: 'same-origin' })
+            .then(function(html) { return { lista: vigentes(parsearListado(html)), fuente: 'base' }; });
+        } else {
+          cargaMaterias = leerTexto(new URL(CSV_LOCAL, BASE).href)
+            .then(function(texto) { return { lista: vigentes(parsearCsv(texto)), fuente: 'csv' }; })
+            .catch(function() { return { lista: MATERIAS_EJEMPLO.slice(), fuente: 'ejemplo' }; });
+        }
+        return cargaMaterias;
+      }
+
+      // ---------------------------------------------------------
+      // WIDGET: CUADRO DE CRÉDITOS
+      // ---------------------------------------------------------
+      // new ZhakyzUtils.CuadroCreditos(selectorCampo, opciones)
+      //   selectorCampo        selector CSS del campo que recibe el total (por ejemplo 'input[name="numeric_8262"]')
+      //   opciones.contenedor  elemento o selector donde se dibuja; si no se indica, justo antes de la pregunta del campo
+      //   opciones.plan        plan que se muestra primero ('2024')
+      //   opciones.titulo, opciones.descripcion  textos del encabezado
+      //   opciones.materias    lista fija de materias, en lugar de la base Materias
+      //   opciones.otrosCreditos  reemplaza OTROS_CREDITOS: { '<plan>': [{ codigo, nombre, detalle, creditos }] }
+      //   opciones.pie         false para no dibujar el pie Zhakyz
+      function CuadroCreditos(selectorCampo, opciones) {
+        if (!(this instanceof CuadroCreditos)) return new CuadroCreditos(selectorCampo, opciones);
+        if (typeof selectorCampo !== 'string' || !selectorCampo) {
+          throw new Error('CuadroCreditos: falta el selector del campo que recibe el total.');
+        }
+        var op = opciones || {};
+        var self = this;
+        this.selector = selectorCampo;
+        this.opciones = op;
+        this.otros = op.otrosCreditos || OTROS_CREDITOS;
+        this.estado = { materias: null, error: '', plan: String(op.plan || '2024'), marcadas: {} };
+        inyectarEstilos();
+        this.raiz = this.ubicar();
+        this.dibujarEstructura();
+
+        // DELEGACIÓN DE EVENTOS, LIMITADA AL CUADRO
+        this.raiz.addEventListener('change', function(e) {
+          var t = e.target;
+          if (!t.hasAttribute || !t.hasAttribute('data-codigo-creditos')) return;
+          self.marcadasDelPlan()[t.getAttribute('data-codigo-creditos')] = t.checked;
+          self.renderizar();
+        });
+        this.raiz.addEventListener('click', function(e) {
+          var t = e.target;
+          if (!t.closest) return;
+          var plan = t.closest('[data-plan-creditos]');
+          if (plan) {
+            self.estado.plan = plan.getAttribute('data-plan-creditos');
+            return self.renderizar();
+          }
+          var anio = t.closest('[data-anio-creditos]');
+          if (anio) {
+            var marcar = anio.getAttribute('data-marcar') === '1';
+            var numeroAnio = parseInt(anio.getAttribute('data-anio-creditos'), 10);
+            var sel = self.marcadasDelPlan();
+            self.materiasDelPlan().forEach(function(m) {
+              if (anioDe(m) === numeroAnio) sel[m.codigo] = marcar;
+            });
+            self.renderizar();
+          }
+        });
+        // El campo está fuera del cuadro: si su valor cambia por otra vía, vuelve a ser la suma
+        document.addEventListener('input', function(e) {
+          if (e.target === self.campo()) self.escribirTotal();
+        });
+        // Antes de enviar el formulario que contiene el campo se escribe la suma una vez más
+        document.addEventListener('submit', function(e) {
+          var campo = self.campo();
+          if (campo && e.target.contains(campo)) self.escribirTotal();
+        }, true);
+
+        var fuente = op.materias ? Promise.resolve({ lista: op.materias, fuente: 'opciones' }) : cargarMaterias();
+        fuente.then(function(r) {
+          self.estado.materias = r.lista;
+          if (!r.lista.length) self.estado.error = 'No se encontraron materias en la base Materias. El total de créditos se completa a mano.';
+        }, function() {
+          self.estado.materias = [];
+          self.estado.error = 'No se pudo leer la base Materias. El total de créditos se completa a mano.';
+        }).then(function() { self.renderizar(); });
+        this.renderizar();
+      }
+
+      // ---------------------------------------------------------
+      // UBICACIÓN Y ESTRUCTURA
+      // ---------------------------------------------------------
+      CuadroCreditos.prototype.ubicar = function() {
+        return crearRaiz('CuadroCreditos', 'zk-cuadro-creditos', this.opciones, this.selector);
+      };
+
+      CuadroCreditos.prototype.dibujarEstructura = function() {
+        var op = this.opciones;
+        var titulo = op.titulo || 'Materias aprobadas';
+        var descripcion = op.descripcion || 'Seleccionar las materias aprobadas en forma definitiva y los otros créditos del plan cumplidos. El total de créditos se completa automáticamente en la pregunta de la encuesta.';
+        this.raiz.innerHTML = encabezado(titulo, descripcion) +
+          '<div data-parte="resumen"></div>' +
+          '<div data-parte="lista"></div>' +
+          (op.pie === false ? '' : pie());
+      };
+
+      CuadroCreditos.prototype.parte = function(nombre) {
+        return this.raiz.querySelector('[data-parte="' + nombre + '"]');
+      };
+
+      // ---------------------------------------------------------
+      // CÁLCULO
+      // ---------------------------------------------------------
+      CuadroCreditos.prototype.campo = function() {
+        return document.querySelector(this.selector);
+      };
+
+      CuadroCreditos.prototype.marcadasDelPlan = function() {
+        var m = this.estado.marcadas;
+        return m[this.estado.plan] = m[this.estado.plan] || {};
+      };
+
+      CuadroCreditos.prototype.materiasDelPlan = function() {
+        return materiasDe(this.estado.materias, this.estado.plan);
+      };
+
+      CuadroCreditos.prototype.otrosDelPlan = function() {
+        return this.otros[this.estado.plan] || [];
+      };
+
+      // LOS OTROS CRÉDITOS SUMAN AL TOTAL PERO NO CUENTAN COMO MATERIAS
+      CuadroCreditos.prototype.totales = function() {
+        var sel = this.marcadasDelPlan();
+        var t = { materias: 0, creditosPlan: 0, aprobadas: 0, creditos: 0 };
+        this.materiasDelPlan().forEach(function(m) {
+          t.materias++;
+          t.creditosPlan += numero(m.creditos);
+          if (sel[m.codigo]) { t.aprobadas++; t.creditos += numero(m.creditos); }
+        });
+        this.otrosDelPlan().forEach(function(o) {
+          t.creditosPlan += o.creditos;
+          if (sel[o.codigo]) t.creditos += o.creditos;
+        });
+        return t;
+      };
+
+      // TOTAL DE CRÉDITOS SELECCIONADOS DEL PLAN ACTUAL
+      CuadroCreditos.prototype.total = function() {
+        return Math.round(this.totales().creditos * 10) / 10;
+      };
+
+      // SELECCIÓN ACTUAL: { plan, codigos, creditos }
+      CuadroCreditos.prototype.seleccion = function() {
+        var sel = this.marcadasDelPlan();
+        return {
+          plan: this.estado.plan,
+          codigos: Object.keys(sel).filter(function(c) { return sel[c]; }),
+          creditos: this.total()
+        };
+      };
+
+      // EL CAMPO SOLO SE BLOQUEA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, SE COMPLETA A MANO
+      CuadroCreditos.prototype.calculoActivo = function() {
+        return this.estado.materias !== null && !this.estado.error;
+      };
+
+      // EL TOTAL VA AL CAMPO (MOODLE ACEPTA COMA O PUNTO) Y EL CAMPO QUEDA DE SOLO LECTURA
+      CuadroCreditos.prototype.escribirTotal = function() {
+        var campo = this.campo();
+        if (!campo || !this.calculoActivo()) return;
+        if (!campo.readOnly) {
+          campo.readOnly = true;
+          campo.setAttribute('aria-readonly', 'true');
+          campo.title = 'Se calcula con las materias seleccionadas en el cuadro de créditos.';
+          campo.style.setProperty('background-color', '#f5f6fa', 'important');
+          campo.style.setProperty('cursor', 'not-allowed', 'important');
+        }
+        var total = formatear(this.totales().creditos);
+        if (campo.value !== total) {
+          campo.value = total;
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      CuadroCreditos.prototype.renderizar = function() {
+        if (this.estado.materias === null) {
+          this.parte('lista').innerHTML = '<p style="margin: 0 !important; color: #47536b !important;">Leyendo las materias del plan…</p>';
+          return;
+        }
+        var planes = this.estado.materias.map(function(m) { return m.plan; });
+        if (planes.length && planes.indexOf(this.estado.plan) === -1) this.estado.plan = planes[0];
+        this.renderizarResumen();
+        this.renderizarLista();
+        this.escribirTotal();
+        // Aviso para otras vistas (por ejemplo, la copia de respuestas): la selección viaja en detail
+        this.raiz.dispatchEvent(new CustomEvent('zk-creditos', { bubbles: true, detail: this.seleccion() }));
+      };
+
+      CuadroCreditos.prototype.renderizarResumen = function() {
+        var t = this.totales();
+        var porcentaje = t.creditosPlan ? Math.round(t.creditos / t.creditosPlan * 100) : 0;
+        var botones = botonesPlan(this.estado.materias, this.estado.plan, 'data-plan-creditos');
+        this.parte('resumen').innerHTML =
+          '<div style="display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: wrap !important; margin-bottom: 12px !important;">' +
+          '<span style="font-size: 14px !important; font-weight: 500 !important;">Plan de estudios</span>' + botones + '</div>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
+          tarjeta('Créditos aprobados', formatear(t.creditos), 'de ' + formatear(t.creditosPlan) + ' del plan (' + porcentaje + ' %)') +
+          tarjeta('Materias aprobadas', t.aprobadas, 'de ' + t.materias + ' del plan') +
+          '</div>' +
+          '<div aria-hidden="true" style="height: 8px !important; border-radius: 999px !important; background-color: #ebeef4 !important; overflow: hidden !important; margin-bottom: 16px !important;">' +
+          '<div style="height: 100% !important; width: ' + porcentaje + '% !important; background-color: #027af2 !important;"></div></div>';
+      };
+
+      function tarjeta(titulo, valor, detalle) {
+        return '<div style="flex: 1 1 200px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 500 !important;">' + titulo + '</div>' +
+          '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important; margin: 4px 0 !important;">' + valor + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + detalle + '</div></div>';
+      }
+
+      // FILA CON CASILLA: MATERIA U OTRO CRÉDITO DEL PLAN (detalle ya escapado)
+      function filaSeleccion(codigo, nombre, detalle, creditos, marcada) {
+        return '<label class="zk-materia" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 16px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; margin: 0 !important; cursor: pointer !important; font-weight: 400 !important;">' +
+          '<input type="checkbox" data-codigo-creditos="' + escapar(codigo) + '"' + (marcada ? ' checked' : '') + ' style="width: 18px !important; height: 18px !important; margin: 0 !important; flex: 0 0 auto !important; accent-color: #026bd4 !important;">' +
+          '<span style="flex: 1 1 auto !important; min-width: 0 !important;"><span style="display: block !important; font-weight: 500 !important;">' + escapar(nombre) + '</span>' +
+          '<span style="display: block !important; font-size: 12px !important; color: #47536b !important;">' + detalle + '</span></span>' +
+          '<span style="flex: 0 0 auto !important; font-size: 13px !important; color: #47536b !important; white-space: nowrap !important;">' + (creditos ? formatear(creditos) + ' créd.' : 'Sin créditos') + '</span></label>';
+      }
+
+      // GRUPO DE FILAS CON ENCABEZADO GRIS (UN AÑO O LOS OTROS CRÉDITOS)
+      function grupo(titulo, marcadas, total, boton, filas) {
+        return '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-bottom: 12px !important; overflow: hidden !important;">' +
+          '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; min-height: 32px !important; padding: 10px 16px !important; background-color: #f5f6fa !important;">' +
+          '<span style="font-size: 14px !important; font-weight: 600 !important;">' + titulo + ' <span style="font-weight: 400 !important; color: #47536b !important;">· ' + marcadas + ' de ' + total + '</span></span>' + boton + '</div>' +
+          filas + '</div>';
+      }
+
+      // UNA TARJETA POR AÑO, CON LAS MATERIAS DE SUS DOS CUATRIMESTRES, Y AL FINAL LOS OTROS CRÉDITOS DEL PLAN
+      CuadroCreditos.prototype.renderizarLista = function() {
+        var cont = this.parte('lista');
+        if (this.estado.error) {
+          cont.innerHTML = cajaError(this.estado.error);
+          return;
+        }
+        var sel = this.marcadasDelPlan();
+        var porAnio = {};
+        this.materiasDelPlan().forEach(function(m) {
+          var anio = anioDe(m);
+          (porAnio[anio] = porAnio[anio] || []).push(m);
+        });
+        var anios = Object.keys(porAnio).sort(function(a, b) { return a - b; }).map(function(anio) {
+          var lista = porAnio[anio];
+          var marcadas = lista.filter(function(m) { return sel[m.codigo]; }).length;
+          var todas = marcadas === lista.length;
+          var boton = '<button type="button" data-anio-creditos="' + anio + '" data-marcar="' + (todas ? '0' : '1') + '" style="height: 32px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">' + (todas ? 'Quitar todas' : 'Seleccionar todas') + '</button>';
+          return grupo(anio + '.º año', marcadas, lista.length, boton, lista.map(function(m) {
+            return filaSeleccion(m.codigo, m.nombre, escapar(m.codigo) + ' · ' + cuatrimestreDe(m), numero(m.creditos), sel[m.codigo]);
+          }).join(''));
+        }).join('');
+        var otros = this.otrosDelPlan();
+        var bloqueOtros = otros.length ? grupo('Otros créditos y requisitos del plan', otros.filter(function(o) { return sel[o.codigo]; }).length, otros.length, '',
+          otros.map(function(o) { return filaSeleccion(o.codigo, o.nombre, escapar(o.detalle), o.creditos, sel[o.codigo]); }).join('')) : '';
+        cont.innerHTML = anios + bloqueOtros;
+      };
+
+      // ---------------------------------------------------------
+      // WIDGET: SELECTOR DE MATERIAS CURSADAS
+      // ---------------------------------------------------------
+      // new ZhakyzUtils.SelectorMaterias(selectorCampo, opciones)
+      //   selectorCampo        selector CSS del campo de texto que guarda la selección (por ejemplo 'textarea[name="textarea_<id>"]')
+      //   opciones.contenedor  elemento o selector donde se dibuja; si no se indica, justo antes de la pregunta del campo
+      //   opciones.plan        plan que se muestra primero ('2024'). Si en la página hay un CuadroCreditos, se usa su plan
+      //   opciones.titulo, opciones.descripcion  textos del encabezado
+      //   opciones.materias    lista fija de materias, en lugar de la base Materias
+      //   opciones.preguntas   false para elegir solo las materias, sin primera vez ni dificultad
+      //   opciones.obligatorio false para dejar pasar de página sin materias y sin "No cursé materias"
+      //   opciones.pie         false para no dibujar el pie Zhakyz
+      // Valor del campo: JSON con la selección, o vacío si no se eligió nada.
+      //   { "plan": "2024", "ninguna": false, "materias": [{ "codigo", "nombre", "primera_vez", "dificultad" }] }
+      //   primera_vez: true, false (la recursa) o null (sin responder); dificultad: 1 a 5 o null. Con preguntas: false, solo codigo y nombre.
+      //   En una "Respuesta de texto larga" (textarea) va una materia por renglón; en una corta (input), en un solo renglón.
+      //   SelectorMaterias.parsear(valor) lo vuelve a convertir en objeto.
+      var instanciasSelector = 0;
+
+      function SelectorMaterias(selectorCampo, opciones) {
+        if (!(this instanceof SelectorMaterias)) return new SelectorMaterias(selectorCampo, opciones);
+        if (typeof selectorCampo !== 'string' || !selectorCampo) {
+          throw new Error('SelectorMaterias: falta el selector del campo que guarda las materias.');
+        }
+        var op = opciones || {};
+        var self = this;
+        this.selector = selectorCampo;
+        this.opciones = op;
+        this.preguntas = op.preguntas !== false;
+        // Prefijo de los ids y de los nombres de los radios: puede haber más de un selector en la página
+        this.id = 'zk-selector-materias-' + (++instanciasSelector);
+        this.estado = {
+          materias: null, error: '', plan: String(op.plan || '2024'), ninguna: false,
+          elegidas: {}, // { '<plan>': [{ codigo, primera_vez, dificultad }] }, en el orden en que se agregaron
+          planDelCuadro: !!document.querySelector('[data-zk-widget="cuadro-creditos"]'),
+          revisar: false // después de un intento de pasar de página con respuestas faltantes
+        };
+        inyectarEstilos();
+        this.raiz = crearRaiz('SelectorMaterias', 'zk-selector-materias', op, selectorCampo);
+        this.dibujarEstructura();
+
+        // DELEGACIÓN DE EVENTOS, LIMITADA AL SELECTOR
+        this.raiz.addEventListener('change', function(e) {
+          var t = e.target;
+          if (t.hasAttribute('data-agregar-materia')) {
+            if (t.value) self.agregar(t.value);
+            return;
+          }
+          if (t.hasAttribute('data-ninguna-materia')) {
+            self.estado.ninguna = t.checked;
+            return self.renderizar();
+          }
+          var respuesta = t.getAttribute('data-respuesta');
+          var cursada = respuesta ? self.buscarElegida(t.getAttribute('data-codigo-cursada')) : null;
+          if (!cursada) return;
+          // Sin volver a dibujar la lista, para no perder el foco del teclado
+          cursada[respuesta] = respuesta === 'dificultad' ? parseInt(t.value, 10) : t.value === 'S';
+          self.actualizar();
+        });
+        this.raiz.addEventListener('click', function(e) {
+          var t = e.target;
+          if (!t.closest) return;
+          var plan = t.closest('[data-plan-materias]');
+          if (plan) {
+            self.estado.plan = plan.getAttribute('data-plan-materias');
+            return self.renderizar();
+          }
+          var quitar = t.closest('[data-quitar-materia]');
+          if (quitar) self.quitar(quitar.getAttribute('data-quitar-materia'));
+        });
+        // Con un cuadro de créditos en la página, el plan se elige ahí: el selector usa el mismo
+        document.addEventListener('zk-creditos', function(e) {
+          var plan = e.detail && e.detail.plan;
+          if (!plan || (self.estado.planDelCuadro && plan === self.estado.plan)) return;
+          self.estado.planDelCuadro = true;
+          self.estado.plan = plan;
+          self.renderizar();
+        });
+        // Antes de pasar de página o enviar: el valor se escribe otra vez y, si faltan respuestas, el envío se frena.
+        // Volver a la página anterior o cancelar no se frena
+        document.addEventListener('submit', function(e) {
+          var campo = self.campo();
+          if (!campo || !e.target.contains(campo) || !self.activo()) return;
+          if (e.submitter && /^(gopreviouspage|cancel)$/.test(e.submitter.name)) return;
+          self.escribirValor();
+          if (!self.faltantes().length) return;
+          e.preventDefault();
+          self.estado.revisar = true;
+          self.actualizar();
+          self.raiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, true);
+
+        var fuente = op.materias ? Promise.resolve({ lista: op.materias, fuente: 'opciones' }) : cargarMaterias();
+        fuente.then(function(r) {
+          self.estado.materias = r.lista;
+          if (!r.lista.length) self.estado.error = 'No se encontraron materias en la base Materias. Las materias se escriben a mano en el campo de texto.';
+          else self.restaurar();
+        }, function() {
+          self.estado.materias = [];
+          self.estado.error = 'No se pudo leer la base Materias. Las materias se escriben a mano en el campo de texto.';
+        }).then(function() { self.renderizar(); });
+        this.renderizar();
+      }
+
+      // VALOR DEL CAMPO ↔ SELECCIÓN. variosRenglones: una materia por renglón (en un input los saltos de línea se pierden)
+      SelectorMaterias.serializar = function(sel, preguntas, variosRenglones) {
+        if (!sel.ninguna && !sel.materias.length) return '';
+        var materias = sel.materias.map(function(m) {
+          return preguntas === false ? { codigo: m.codigo, nombre: m.nombre }
+            : { codigo: m.codigo, nombre: m.nombre, primera_vez: m.primera_vez, dificultad: m.dificultad };
+        });
+        if (!variosRenglones) return JSON.stringify({ plan: sel.plan, ninguna: sel.ninguna, materias: materias });
+        return '{\n  "plan": ' + JSON.stringify(sel.plan) + ',\n  "ninguna": ' + sel.ninguna + ',\n  "materias": [' +
+          materias.map(function(m) { return '\n    ' + JSON.stringify(m); }).join(',') + (materias.length ? '\n  ' : '') + ']\n}';
+      };
+
+      // JSON DEL CAMPO → { plan, ninguna, materias: [{ codigo, nombre, primera_vez, dificultad }] }
+      // Devuelve null si el valor no es ese JSON (por ejemplo, texto escrito a mano)
+      SelectorMaterias.parsear = function(valor) {
+        var d;
+        try { d = JSON.parse(valor); } catch (e) { return null; }
+        if (!d || typeof d.plan !== 'string' || !Array.isArray(d.materias)) return null;
+        return {
+          plan: d.plan,
+          ninguna: d.ninguna === true,
+          materias: d.materias.filter(function(m) { return m && typeof m.codigo === 'string' && m.codigo; }).map(function(m) {
+            return {
+              codigo: m.codigo,
+              nombre: typeof m.nombre === 'string' ? m.nombre : m.codigo,
+              primera_vez: typeof m.primera_vez === 'boolean' ? m.primera_vez : null,
+              dificultad: [1, 2, 3, 4, 5].indexOf(m.dificultad) !== -1 ? m.dificultad : null
+            };
+          })
+        };
+      };
+
+      SelectorMaterias.prototype.dibujarEstructura = function() {
+        var op = this.opciones;
+        var titulo = op.titulo || '¿Qué materias cursaste el anterior cuatrimestre?';
+        var descripcion = op.descripcion || (this.preguntas
+          ? 'Elegir cada materia de la lista. En cada una, indicar si fue la primera vez que la cursaste y qué tan difícil te resultó.'
+          : 'Elegir cada materia de la lista.');
+        this.raiz.innerHTML = encabezado(titulo, descripcion, this.id + '-titulo') +
+          '<div data-parte="plan"></div>' +
+          '<div data-parte="controles"></div>' +
+          '<div data-parte="lista"></div>' +
+          '<div data-parte="aviso" aria-live="polite"></div>' +
+          (op.pie === false ? '' : pie());
+      };
+
+      SelectorMaterias.prototype.parte = CuadroCreditos.prototype.parte;
+
+      SelectorMaterias.prototype.campo = function() {
+        return document.querySelector(this.selector);
+      };
+
+      // EL CAMPO SOLO SE OCULTA CUANDO LA LISTA DE MATERIAS SE PUDO LEER: SI NO, SE COMPLETA A MANO
+      SelectorMaterias.prototype.activo = function() {
+        return this.estado.materias !== null && !this.estado.error;
+      };
+
+      SelectorMaterias.prototype.materiasDelPlan = function() {
+        return materiasDe(this.estado.materias, this.estado.plan);
+      };
+
+      SelectorMaterias.prototype.elegidasDelPlan = function() {
+        var e = this.estado.elegidas;
+        return e[this.estado.plan] = e[this.estado.plan] || [];
+      };
+
+      SelectorMaterias.prototype.buscarElegida = function(codigo) {
+        return this.elegidasDelPlan().filter(function(c) { return c.codigo === codigo; })[0] || null;
+      };
+
+      SelectorMaterias.prototype.agregar = function(codigo) {
+        if (!this.buscarElegida(codigo)) this.elegidasDelPlan().push({ codigo: codigo, primera_vez: null, dificultad: null });
+        this.estado.ninguna = false;
+        this.renderizar();
+        // El foco vuelve a la lista para agregar otra materia
+        this.raiz.querySelector('[data-agregar-materia]').focus();
+      };
+
+      SelectorMaterias.prototype.quitar = function(codigo) {
+        var lista = this.elegidasDelPlan();
+        lista.splice(lista.indexOf(this.buscarElegida(codigo)), 1);
+        this.renderizar();
+        this.raiz.querySelector('[data-agregar-materia]').focus();
+      };
+
+      // AL VOLVER A UNA PÁGINA DE LA ENCUESTA, MOODLE TRAE EL VALOR GUARDADO: SE RECUPERA LA SELECCIÓN
+      SelectorMaterias.prototype.restaurar = function() {
+        var campo = this.campo();
+        var previo = campo ? SelectorMaterias.parsear(campo.value) : null;
+        if (!previo) return;
+        var codigos = materiasDe(this.estado.materias, previo.plan).map(function(m) { return m.codigo; });
+        if (!codigos.length) return;
+        this.estado.plan = previo.plan;
+        this.estado.ninguna = previo.ninguna;
+        this.estado.elegidas[previo.plan] = previo.materias.filter(function(m) { return codigos.indexOf(m.codigo) !== -1; })
+          .map(function(m) { return { codigo: m.codigo, primera_vez: m.primera_vez, dificultad: m.dificultad }; });
+      };
+
+      // SELECCIÓN ACTUAL, CON LA MISMA FORMA QUE EL JSON DEL CAMPO: { plan, ninguna, materias: [{ codigo, nombre, primera_vez, dificultad }] }
+      SelectorMaterias.prototype.seleccion = function() {
+        var nombres = {};
+        this.materiasDelPlan().forEach(function(m) { nombres[m.codigo] = m.nombre; });
+        return {
+          plan: this.estado.plan,
+          ninguna: this.estado.ninguna,
+          materias: this.estado.ninguna ? [] : this.elegidasDelPlan().map(function(c) {
+            return { codigo: c.codigo, nombre: nombres[c.codigo] || c.codigo, primera_vez: c.primera_vez, dificultad: c.dificultad };
+          })
+        };
+      };
+
+      SelectorMaterias.prototype.valor = function() {
+        var campo = this.campo();
+        return SelectorMaterias.serializar(this.seleccion(), this.preguntas, !!campo && campo.tagName === 'TEXTAREA');
+      };
+
+      SelectorMaterias.prototype.incompletas = function() {
+        if (!this.preguntas) return [];
+        return this.seleccion().materias.filter(function(m) { return m.primera_vez === null || m.dificultad === null; });
+      };
+
+      // MOTIVOS POR LOS QUE NO SE PUEDE PASAR DE PÁGINA (VACÍO SI ESTÁ COMPLETO)
+      SelectorMaterias.prototype.faltantes = function() {
+        var sel = this.seleccion();
+        var f = [];
+        if (!sel.ninguna && !sel.materias.length && this.opciones.obligatorio !== false) {
+          f.push('Agregar las materias que cursaste el anterior cuatrimestre, o marcar que no cursaste materias.');
+        }
+        var incompletas = this.incompletas();
+        if (incompletas.length) {
+          f.push('Falta responder la primera vez y la dificultad de: ' + incompletas.map(function(m) { return m.nombre; }).join(', ') + '.');
+        }
+        // Una "Respuesta de texto corta" de Moodle admite hasta 255 caracteres (unas 2 materias en JSON); una larga no tiene límite
+        var campo = this.campo();
+        if (campo && campo.maxLength > 0 && this.valor().length > campo.maxLength) {
+          f.push('Las materias elegidas no entran en la respuesta de la encuesta (máximo ' + campo.maxLength + ' caracteres).');
+        }
+        return f;
+      };
+
+      // EL VALOR VA AL CAMPO. EN LA ENCUESTA SU PREGUNTA SE OCULTA; SIN .fitem (VISTA LOCAL) QUEDA DE SOLO LECTURA
+      SelectorMaterias.prototype.escribirValor = function() {
+        var campo = this.campo();
+        if (!campo || !this.activo()) return;
+        var fila = campo.closest('.fitem');
+        if (fila) fila.style.setProperty('display', 'none', 'important');
+        else if (!campo.readOnly) {
+          campo.readOnly = true;
+          campo.setAttribute('aria-readonly', 'true');
+          campo.title = 'Se completa con las materias elegidas en el selector.';
+          campo.style.setProperty('background-color', '#f5f6fa', 'important');
+          campo.style.setProperty('cursor', 'not-allowed', 'important');
+        }
+        var valor = this.valor();
+        if (campo.value !== valor) {
+          campo.value = valor;
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      SelectorMaterias.prototype.renderizar = function() {
+        if (this.estado.materias === null) {
+          this.parte('lista').innerHTML = '<p style="margin: 0 !important; color: #47536b !important;">Leyendo las materias del plan…</p>';
+          return;
+        }
+        if (this.estado.error) {
+          this.parte('lista').innerHTML = cajaError(this.estado.error);
+          return;
+        }
+        var planes = this.estado.materias.map(function(m) { return m.plan; });
+        if (planes.indexOf(this.estado.plan) === -1) this.estado.plan = planes[0];
+        this.renderizarPlan();
+        this.renderizarControles();
+        this.renderizarLista();
+        this.actualizar();
+      };
+
+      // RESPUESTAS FALTANTES, VALOR DEL CAMPO Y AVISO A OTRAS VISTAS, SIN VOLVER A DIBUJAR LA LISTA
+      SelectorMaterias.prototype.actualizar = function() {
+        var self = this;
+        var incompletas = this.incompletas().map(function(m) { return m.codigo; });
+        this.raiz.querySelectorAll('[data-cursada]').forEach(function(fila) {
+          var falta = self.estado.revisar && incompletas.indexOf(fila.getAttribute('data-cursada')) !== -1;
+          fila.querySelector('[data-falta]').style.setProperty('display', falta ? 'block' : 'none', 'important');
+        });
+        var faltantes = this.estado.revisar ? this.faltantes() : [];
+        this.parte('aviso').innerHTML = faltantes.length ? '<div style="margin-top: 12px !important;">' + cajaError(faltantes.join(' ')) + '</div>' : '';
+        this.escribirValor();
+        // Aviso para otras vistas (por ejemplo, la copia de respuestas): la selección viaja en detail
+        this.raiz.dispatchEvent(new CustomEvent('zk-materias', { bubbles: true, detail: this.seleccion() }));
+      };
+
+      // CON CUADRO DE CRÉDITOS EL PLAN SE ELIGE AHÍ; SI NO, BOTONES PROPIOS (SOLO SI HAY MÁS DE UN PLAN)
+      SelectorMaterias.prototype.renderizarPlan = function() {
+        var cont = this.parte('plan');
+        var planes = {};
+        this.estado.materias.forEach(function(m) { planes[m.plan] = true; });
+        if (this.estado.planDelCuadro) {
+          cont.innerHTML = '<p style="margin: 0 0 12px 0 !important; font-size: 13px !important; color: #47536b !important;">Plan ' + escapar(this.estado.plan) + ': el elegido en el cuadro de materias aprobadas.</p>';
+        } else if (Object.keys(planes).length > 1) {
+          cont.innerHTML = '<div style="display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: wrap !important; margin-bottom: 12px !important;">' +
+            '<span style="font-size: 14px !important; font-weight: 500 !important;">Plan de estudios</span>' +
+            botonesPlan(this.estado.materias, this.estado.plan, 'data-plan-materias') + '</div>';
+        } else cont.innerHTML = '';
+      };
+
+      // LISTA DE TODAS LAS MATERIAS DEL PLAN, POR AÑO, SIN LAS YA ELEGIDAS, Y LA CASILLA "NO CURSÉ MATERIAS"
+      SelectorMaterias.prototype.renderizarControles = function() {
+        var self = this;
+        var ninguna = this.estado.ninguna;
+        var porAnio = {};
+        this.materiasDelPlan().forEach(function(m) {
+          if (self.buscarElegida(m.codigo)) return;
+          (porAnio[anioDe(m)] = porAnio[anioDe(m)] || []).push(m);
+        });
+        var grupos = Object.keys(porAnio).sort(function(a, b) { return a - b; }).map(function(anio) {
+          return '<optgroup label="' + anio + '.º año">' + porAnio[anio].map(function(m) {
+            return '<option value="' + escapar(m.codigo) + '">' + escapar(m.nombre) + ' · ' + escapar(m.codigo) + '</option>';
+          }).join('') + '</optgroup>';
+        }).join('');
+        this.parte('controles').innerHTML =
+          '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 12px 24px !important; margin-bottom: 12px !important;">' +
+          '<select data-agregar-materia aria-labelledby="' + this.id + '-titulo"' + (ninguna ? ' disabled' : '') + ' style="flex: 1 1 280px !important; min-width: 0 !important; max-width: 100% !important; height: 40px !important; padding: 0 12px !important; margin: 0 !important; border-radius: 8px !important; border: 1px solid #c2c9d6 !important; background-color: ' + (ninguna ? '#f5f6fa' : '#ffffff') + ' !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; cursor: ' + (ninguna ? 'not-allowed' : 'pointer') + ' !important;">' +
+          '<option value="">Agregar una materia…</option>' + grupos + '</select>' +
+          '<label style="display: inline-flex !important; align-items: center !important; gap: 8px !important; margin: 0 !important; font-weight: 400 !important; cursor: pointer !important;">' +
+          '<input type="checkbox" data-ninguna-materia' + (ninguna ? ' checked' : '') + ' style="width: 18px !important; height: 18px !important; margin: 0 !important; flex: 0 0 auto !important; accent-color: #026bd4 !important;">' +
+          'No cursé materias el anterior cuatrimestre</label></div>';
+      };
+
+      // UNA FILA POR MATERIA ELEGIDA: NOMBRE, QUITAR Y, SI HAY PREGUNTAS, PRIMERA VEZ Y DIFICULTAD
+      SelectorMaterias.prototype.renderizarLista = function() {
+        var self = this;
+        var cont = this.parte('lista');
+        if (this.estado.ninguna) {
+          cont.innerHTML = '';
+          return;
+        }
+        var porCodigo = {};
+        this.materiasDelPlan().forEach(function(m) { porCodigo[m.codigo] = m; });
+        var elegidas = this.elegidasDelPlan();
+        if (!elegidas.length) {
+          cont.innerHTML = '<p style="margin: 0 !important; font-size: 13px !important; color: #47536b !important;">Todavía no hay materias elegidas.</p>';
+          return;
+        }
+        cont.innerHTML = '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; overflow: hidden !important;">' +
+          elegidas.map(function(c, i) {
+            var m = porCodigo[c.codigo] || { codigo: c.codigo, nombre: c.codigo };
+            return '<div data-cursada="' + escapar(c.codigo) + '" style="padding: 12px 16px !important;' + (i ? ' border-top: 1px solid rgba(194, 201, 214, 0.4) !important;' : '') + '">' +
+              '<div style="display: flex !important; align-items: flex-start !important; gap: 12px !important;">' +
+              '<span style="flex: 1 1 auto !important; min-width: 0 !important;"><span style="display: block !important; font-weight: 500 !important;">' + escapar(m.nombre) + '</span>' +
+              '<span style="display: block !important; font-size: 12px !important; color: #47536b !important;">' + escapar(m.codigo) + (m.cuatrimestre ? ' · ' + cuatrimestreDe(m) : '') + '</span></span>' +
+              '<button type="button" data-quitar-materia="' + escapar(c.codigo) + '" aria-label="Quitar ' + escapar(m.nombre) + '" title="Quitar" style="flex: 0 0 auto !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 32px !important; height: 32px !important; padding: 0 !important; margin: 0 !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #47536b !important; cursor: pointer !important;">' + icono('cerrar', 18) + '</button></div>' +
+              (self.preguntas ? '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px 32px !important; margin-top: 8px !important;">' +
+                self.pregunta(c, 'primera_vez', '¿Es la primera vez que la cursaste?', [['S', 'Sí', c.primera_vez === true], ['N', 'No', c.primera_vez === false]]) +
+                self.pregunta(c, 'dificultad', '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', [1, 2, 3, 4, 5].map(function(n) { return [String(n), String(n), c.dificultad === n]; })) +
+                '</div>' : '') +
+              '<div data-falta style="display: none !important; margin-top: 6px !important; font-size: 12px !important; color: #c20a0a !important;">Falta responder esta materia.</div></div>';
+          }).join('') + '</div>';
+      };
+
+      // PREGUNTA DE UNA MATERIA: RADIOS OCULTOS CON PASTILLAS (opciones: [valor, texto, marcada]).
+      // form="zk-sin-formulario" (un id que no existe) los deja fuera del formulario de la encuesta: Moodle no los recibe
+      SelectorMaterias.prototype.pregunta = function(cursada, respuesta, texto, opciones) {
+        var nombre = this.id + '-' + respuesta + '-' + cursada.codigo;
+        return '<fieldset style="border: 0 !important; margin: 0 !important; padding: 0 !important; min-width: 0 !important;">' +
+          '<legend style="float: none !important; width: auto !important; margin: 0 0 4px 0 !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 400 !important; line-height: 1.5 !important; color: #47536b !important;">' + escapar(texto) + '</legend>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 6px !important;">' + opciones.map(function(o) {
+            return '<label style="position: relative !important; display: inline-flex !important; margin: 0 !important; cursor: pointer !important;">' +
+              '<input type="radio" form="zk-sin-formulario" name="' + escapar(nombre) + '" value="' + escapar(o[0]) + '" data-respuesta="' + respuesta + '" data-codigo-cursada="' + escapar(cursada.codigo) + '"' + (o[2] ? ' checked' : '') + ' style="position: absolute !important; opacity: 0 !important; width: 1px !important; height: 1px !important; margin: 0 !important; pointer-events: none !important;">' +
+              '<span class="zk-pastilla" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; min-width: 40px !important; height: 32px !important; padding: 0 10px !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 500 !important; box-sizing: border-box !important;">' + escapar(o[1]) + '</span></label>';
+          }).join('') + '</div></fieldset>';
+      };
+
+      // ---------------------------------------------------------
+      // EXPORTACIÓN
+      // ---------------------------------------------------------
+      window.ZhakyzUtils = {
+        version: VERSION,
+        CuadroCreditos: CuadroCreditos,
+        SelectorMaterias: SelectorMaterias,
+        cargarMaterias: cargarMaterias,
+        OTROS_CREDITOS: OTROS_CREDITOS
+      };
+    })();
+  </script>
+</div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS (MENÚ DE WIDGETS) -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-vitrina-widgets-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-vitrina-widgets-style';
+        styleEl.innerHTML = '#vitrina-widgets > nolink { display: block; }' +
+          '#menu-widgets a:focus-visible { outline: 3px solid rgba(153, 204, 255, 0.8); outline-offset: 2px; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN: WIDGETS DEL MENÚ Y LA PREGUNTA QUE SIMULA CADA UNO (LA DE LA ENCUESTA CUATRIMESTRAL)
+      // ---------------------------------------------------------
+      var WIDGETS = {
+        CuadroCreditos: { tipo: 'numeric', item: 8262, pregunta: 'Los créditos obtenidos actualmente son:' },
+        SelectorMaterias: { tipo: 'textarea', item: 8273, pregunta: 'JSON que se guarda en la respuesta (en la encuesta la pregunta queda oculta):' }
+      };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // ---------------------------------------------------------
+      // BIBLIOTECA: SE EJECUTA EL SCRIPT MUERTO DE ESTA MISMA PÁGINA
+      // ---------------------------------------------------------
+      function biblioteca() {
+        if (!window.ZhakyzUtils) {
+          var s = document.createElement('script');
+          s.textContent = document.getElementById('biblioteca-widgets').textContent;
+          document.head.appendChild(s);
+        }
+        return window.ZhakyzUtils;
+      }
+
+      // WIDGET DE LA DIRECCIÓN (#widget=<nombre>); SI NO HAY, EL PRIMERO
+      function widgetPedido() {
+        var m = window.location.hash.match(/widget=(\w+)/);
+        return m && WIDGETS[m[1]] ? m[1] : Object.keys(WIDGETS)[0];
+      }
+
+      // ---------------------------------------------------------
+      // MOSTRAR EL WIDGET PEDIDO
+      // ---------------------------------------------------------
+      // Cada vez se crea una pregunta con otro nombre: el widget anterior queda sin campo y deja de responder
+      var instancia = 0;
+      function mostrar() {
+        var widget = widgetPedido();
+        var w = WIDGETS[widget];
+        instancia++;
+        document.getElementById('menu-widgets').innerHTML =
+          '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important;">' + icono('ver', 18) + 'Widgets</span>' +
+          '<span style="color: #c2c9d6 !important;">' + Object.keys(WIDGETS).map(function(nombre) {
+            return nombre === widget ? '<span aria-current="page" style="color: #ffffff !important; font-weight: 600 !important;">' + escapar(nombre) + '</span>'
+              : '<a href="#widget=' + escapar(nombre) + '" style="color: #99ccff !important; text-decoration: underline !important;">' + escapar(nombre) + '</a>';
+          }).join(' · ') + '</span>';
+
+        var nombre = w.tipo + '_' + w.item + '_vista' + instancia;
+        var pregunta = document.getElementById('pregunta-vitrina');
+        pregunta.innerHTML = '<label for="id_' + nombre + '" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin-bottom: 6px !important;">' +
+          escapar(w.pregunta) + ' <span style="color: #47536b !important; font-weight: 400 !important;">(pregunta ' + w.item + ' de la Encuesta Cuatrimestral, simulada)</span></label>';
+        var campo = document.createElement(w.tipo === 'textarea' ? 'textarea' : 'input');
+        if (w.tipo === 'textarea') campo.rows = 8;
+        else campo.type = 'text';
+        campo.id = 'id_' + nombre;
+        campo.name = nombre;
+        campo.setAttribute('style', 'padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; box-sizing: border-box !important; ' +
+          (w.tipo === 'textarea' ? 'width: 100% !important; height: auto !important; resize: vertical !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important;'
+            : 'width: 160px !important; height: 40px !important; font-size: 14px !important;'));
+        pregunta.appendChild(campo);
+
+        var lugar = document.getElementById('widget-vitrina');
+        lugar.innerHTML = '';
+        try {
+          new (biblioteca()[widget])((w.tipo === 'textarea' ? 'textarea' : 'input') + '[name="' + nombre + '"]', { contenedor: lugar });
+        } catch (e) {
+          lugar.innerHTML = '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; max-width: 850px !important; margin: 20px auto !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid rgba(246, 85, 85, 0.4) !important; box-sizing: border-box !important;">' +
+            '<span style="color: #c20a0a !important;">' + icono('error', 20) + '</span><span>No se pudo crear el widget: ' + escapar(e && e.message ? e.message : e) + '</span></div>';
+        }
+      }
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      window.addEventListener('hashchange', mostrar);
+      mostrar();
+    })();
+  </script>
+</nolink>
+</div>
