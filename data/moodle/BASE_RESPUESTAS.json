@@ -50,13 +50,13 @@
       "nombre": "json_pregunta_respuesta",
       "tipo": "text",
       "requerido": true,
-      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }, más \"materia\" en las preguntas por materia: una entrada por pregunta respondida"
+      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }, más \"opcion\" en las de opción múltiple y \"materia\" en las preguntas por materia: una entrada por pregunta respondida"
     },
     {
       "nombre": "puntaje_criticidad",
       "tipo": "number",
       "requerido": true,
-      "descripcion": "Suma de la criticidad de las respuestas (0 a 100), calculada al enviar con los valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md. El estudiante no la ve"
+      "descripcion": "Suma de la criticidad de las respuestas (0 a 100), calculada al enviar por CriticidadInicial o CriticidadCuatrimestral (alGuardar de la copia) con los valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md; 0 si no se pudo calcular. El estudiante no la ve"
     },
     {
       "nombre": "created_at",
@@ -66,7 +66,7 @@
     }
   ],
   "formato_json": {
-    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. Las preguntas por materia de la Cuatrimestral (primera_vez y dificultad, del selector de materias) llevan además \"materia\" con el código. criticidad: puntos que aporta (null si no puntúa). Las preguntas dependientes que no corresponden no se guardan.",
+    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. Las preguntas por materia de la Cuatrimestral (primera_vez y dificultad, del selector de materias) llevan además \"materia\" con el código. opcion: solo en las de opción múltiple, el número de opción que envía Moodle (1, 2…), con el que puntúan las tools de criticidad (desde el 2026-10-26). criticidad: puntos que aporta (null si no puntúa), que completa el alGuardar de la copia. Las preguntas dependientes que no corresponden no se guardan.",
     "ejemplo": [
       {
         "variable": "plan",

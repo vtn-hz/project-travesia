@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 2;
+      var VERSION = 3;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -36,7 +36,8 @@
       // =========================================================
       // Va en un ítem "Área de texto y medios" al final de cada página de las Encuestas Inicial y Cuatrimestral
       // (docs/specs/copia-encuestas.md, docs/decisions/006-versionado-de-encuestas.md). Al enviar la encuesta, agrega una versión
-      // con su criticidad a la base Respuestas. Una sola instancia por página: en Editar preguntas se ven todas las páginas juntas.
+      // a la base Respuestas. Solo copia: la criticidad la calcula la función alGuardar que le pasa el cargador
+      // (CriticidadInicial o CriticidadCuatrimestral). Una sola instancia por página: en Editar preguntas se ven todas las páginas juntas.
       // Elementos de la instancia: los crea CopiaRespuestas en el contenedor que le pasa el cargador
       var elRaiz = null, elAviso = null, elSimulador = null;
 
@@ -67,11 +68,12 @@
       var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
       var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
 
+      var ESPERA_AL_GUARDAR = 3000; // milisegundos que se espera alGuardar: si tarda más o falla, se guarda el registro sin criticidad
+
       // ---------------------------------------------------------
-      // ÍTEMS DE CADA ENCUESTA Y PUNTOS DE CRITICIDAD (docs/models/MODELO_CRITICIDAD_ENCUESTAS.md, VALORES PROVISORIOS)
+      // ÍTEMS DE CADA ENCUESTA (LOS PUNTOS DE CRITICIDAD ESTÁN EN CriticidadInicial Y CriticidadCuatrimestral)
       // ---------------------------------------------------------
       // id: ítem de la Encuesta de Moodle (data/moodle/encuestas/*.xml). variable: su etiqueta en Moodle.
-      // puntos: por número de opción (Moodle envía 1, 2…, no el texto). avance: créditos que se comparan con los esperados (EN ANÁLISIS: hoy no suman puntos).
       // depende: el ítem solo cuenta si otro tiene ese número de opción (en Moodle, inicio_laboral depende de trabaja = Si).
       // Un ítem que no está en la lista se copia igual, como "pregunta_<id>" y sin puntos.
       // seleccionCreditos: respuesta oculta donde el cuadro de créditos guarda { plan, codigos }. No se copia como pregunta: si el cuadro
@@ -81,41 +83,31 @@
       // con esta lista el script reconoce ese envío final. Si la encuesta cambia en Moodle, actualizar la lista (Editar preguntas avisa).
       var ENCUESTAS = {};
       ENCUESTAS[CMID_INICIAL] = {
-        clave: 'inicial', titulo: 'Encuesta inicial', version: 1, porPeriodo: false, maximoAvance: 70,
+        clave: 'inicial', titulo: 'Encuesta inicial', version: 1, porPeriodo: false,
         paginas: [[8254, 8253, 8774], [8257, 8258], [8259], [8260]],
         items: [
-          { id: 8253, variable: 'creditos_aprobados', avance: true },
+          { id: 8253, variable: 'creditos_aprobados' },
           { id: 8774, seleccionCreditos: true },
-          { id: 8257, variable: 'año_cohorte', cohorte: 'anio' },
-          { id: 8258, variable: 'cuatri_cohorte', cohorte: 'cuatrimestre' },
-          { id: 8259, variable: 'trabaja', puntos: { 1: 10, 2: 0 } },
-          { id: 8260, variable: 'inicio_laboral', depende: { id: 8259, opcion: 1 }, puntos: { 1: 20, 2: 20 } }
+          { id: 8257, variable: 'año_cohorte' },
+          { id: 8258, variable: 'cuatri_cohorte' },
+          { id: 8259, variable: 'trabaja' },
+          { id: 8260, variable: 'inicio_laboral', depende: { id: 8259, opcion: 1 } }
         ]
       };
       // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
       ENCUESTAS[CMID_CUATRIMESTRAL] = {
-        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true, maximoAvance: 30,
+        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true,
         paginas: [[8261, 8262, 8775, 8264, 8265, 8266, 8270, 8768, 8271]],
         items: [
-          { id: 8262, variable: 'creditos_aprobados', avance: true },
+          { id: 8262, variable: 'creditos_aprobados' },
           { id: 8775, seleccionCreditos: true },
-          { id: 8264, variable: 'progreso_proyecto_final', puntos: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 } },
-          { id: 8265, variable: 'trabaja', puntos: { 1: 5, 2: 0 } },
-          { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 }, puntos: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 } },
-          // Selector de materias: no cursar es inactividad, salvo con el PFG en desarrollo (4) o finalizado (5)
-          { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true, inactividadSalvo: { id: 8264, opciones: [4, 5] } },
-          { id: 8271, variable: 'avance_percibido', puntos: { 1: 0, 2: 5, 3: 10 } }
+          { id: 8264, variable: 'progreso_proyecto_final' },
+          { id: 8265, variable: 'trabaja' },
+          { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 } },
+          { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true },
+          { id: 8271, variable: 'avance_percibido' }
         ]
       };
-
-      // EN ANÁLISIS: la criticidad por avance curricular (créditos aprobados / esperados) queda desactivada mientras el equipo la revisa.
-      // creditos_aprobados se copia igual, con criticidad null. maximoAvance no se usa hasta que se reactive.
-      // // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
-      // var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
-      // // Cociente aprobados / esperados → parte del máximo de avance (0,3897: umbral crítico del ICE)
-      // var TRAMOS_AVANCE = [
-      //   { desde: 1, parte: 0 }, { desde: 0.75, parte: 0.25 }, { desde: 0.5, parte: 0.5 }, { desde: 0.3897, parte: 0.75 }, { desde: -Infinity, parte: 1 }
-      // ];
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
@@ -320,60 +312,37 @@
       }
 
       // ---------------------------------------------------------
-      // ARMADO DEL REGISTRO Y CRITICIDAD
+      // ARMADO DEL REGISTRO (SOLO DATOS: LA CRITICIDAD LA PONE alGuardar)
       // ---------------------------------------------------------
-      // EN ANÁLISIS: criticidad por avance curricular desactivada (ver ESPERADOS_2024 más arriba)
-      // // CUATRIMESTRES COMPLETOS DESDE EL INGRESO HASTA EL ANTERIOR AL PERÍODO ACTUAL
-      // function cuatrimestresTranscurridos(anio, cuatrimestre) {
-      //   var p = PERIODO_ACTUAL.split('-');
-      //   return (Number(p[0]) * 2 + Number(p[1])) - (Number(anio) * 2 + Number(cuatrimestre));
-      // }
-      //
-      // // PUNTOS DE AVANCE CURRICULAR: null SI NO SE PUEDE CALCULAR (INGRESANTE, INGRESO DESCONOCIDO U OTRO PLAN)
-      // function puntosAvance(creditos, cohorte, plan, maximo) {
-      //   if (creditos === null || !cohorte || !cohorte.anio || !cohorte.cuatrimestre || (plan && plan !== '2024')) return null;
-      //   var t = cuatrimestresTranscurridos(cohorte.anio, cohorte.cuatrimestre);
-      //   if (!(t > 0)) return null;
-      //   var r = creditos / ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)];
-      //   var tramo = TRAMOS_AVANCE.filter(function(x) { return r >= x.desde; })[0];
-      //   return Math.round(maximo * tramo.parte);
-      // }
+      // Cada entrada lleva criticidad null. Las de opción múltiple llevan además "opcion": el número de opción que envía Moodle
+      // (1, 2…), que es con lo que puntúan CriticidadInicial y CriticidadCuatrimestral.
+      function entrada(variable, pregunta, respuesta, extra) {
+        var e = { variable: variable, pregunta: pregunta, respuesta: respuesta, criticidad: null };
+        Object.keys(extra || {}).forEach(function(k) { e[k] = extra[k]; });
+        return e;
+      }
 
-      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): UNA ENTRADA POR MATERIA Y LOS PUNTOS DEL BLOQUE DE CURSADA (MÁXIMO 35)
-      // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
-      // Dificultad: cada materia aporta (dificultad − 1) × 2,5 ÷ cantidad de materias (el promedio de 1 a 5 da de 0 a 10)
-      var PUNTOS_CANTIDAD = [35, 10, 5];
-      var PUNTOS_RECURSADA = [8, 7];
-      function entradasMaterias(d, it, items) {
+      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): LA LISTA DE CÓDIGOS Y UNA ENTRADA POR MATERIA PARA primera_vez Y dificultad
+      function entradasMaterias(d, it) {
         var sel = null;
         try { sel = JSON.parse(it.valor); } catch (e) { sel = null; }
         if (!sel || !Array.isArray(sel.materias)) {
-          // Sin el selector (no se pudo cargar): se guarda lo que se escribió a mano, sin puntos
+          // Sin el selector (no se pudo cargar): se guarda lo que se escribió a mano
           var texto = String(it.valor || '').trim();
-          return texto ? [{ variable: d.variable, pregunta: it.pregunta, respuesta: texto, criticidad: null }] : [];
+          return texto ? [entrada(d.variable, it.pregunta, texto)] : [];
         }
-        var n = sel.materias.length;
-        var pfg = items[d.inactividadSalvo.id];
-        var exceptuado = !!pfg && d.inactividadSalvo.opciones.indexOf(pfg.opcion) !== -1;
-        var lista = [{ variable: 'materias_cursadas', pregunta: it.pregunta, respuesta: sel.materias.map(function(m) { return m.codigo; }),
-          criticidad: n === 0 ? (exceptuado ? 0 : PUNTOS_CANTIDAD[0]) : (PUNTOS_CANTIDAD[n] || 0) }];
-        var recursadas = 0;
+        var lista = [entrada('materias_cursadas', it.pregunta, sel.materias.map(function(m) { return m.codigo; }))];
         sel.materias.forEach(function(m) {
-          var puntos = m.primera_vez === false ? (PUNTOS_RECURSADA[recursadas++] || 0) : m.primera_vez === true ? 0 : null;
-          lista.push({ variable: 'primera_vez', pregunta: '¿Es la primera vez que la cursaste?', materia: m.codigo,
-            respuesta: m.primera_vez === true ? 'Sí' : m.primera_vez === false ? 'No' : null, criticidad: puntos });
+          lista.push(entrada('primera_vez', '¿Es la primera vez que la cursaste?', m.primera_vez === true ? 'Sí' : m.primera_vez === false ? 'No' : null, { materia: m.codigo }));
         });
         sel.materias.forEach(function(m) {
-          var dif = typeof m.dificultad === 'number' ? m.dificultad : null;
-          lista.push({ variable: 'dificultad', pregunta: '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', materia: m.codigo,
-            respuesta: dif, criticidad: dif === null ? null : Math.round((dif - 1) * 2.5 / n * 10) / 10 });
+          lista.push(entrada('dificultad', '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', typeof m.dificultad === 'number' ? m.dificultad : null, { materia: m.codigo }));
         });
         return lista;
       }
 
       // REGISTRO DE LA BASE RESPUESTAS A PARTIR DE LAS PÁGINAS RESPONDIDAS
-      // cohorteInicial: año y cuatrimestre de ingreso de la Encuesta inicial (la cuatrimestral no los pregunta)
-      function armarRegistro(cmid, paginas, usuario, cohorteInicial) {
+      function armarRegistro(cmid, paginas, usuario) {
         var enc = ENCUESTAS[cmid];
         var items = itemsRespondidos(paginas), cuadro = null;
         Object.keys(paginas).forEach(function(k) { if (paginas[k].cuadro) cuadro = paginas[k].cuadro; });
@@ -386,16 +355,10 @@
             if (s && s.plan) cuadro = { plan: String(s.plan), materias: Array.isArray(s.codigos) ? s.codigos : [] };
           } catch (e) { /* sin selección guardada */ }
         });
-        var cohorte = cohorteInicial || {};
-        enc.items.forEach(function(d) {
-          var it = items[d.id];
-          if (d.cohorte && it) cohorte[d.cohorte] = d.cohorte === 'anio' ? numeroMoodle(it.valor) : it.texto;
-        });
-        var plan = cuadro ? cuadro.plan : null;
         var lista = [];
         if (cuadro) {
-          lista.push({ variable: 'plan', pregunta: 'Plan de estudios (cuadro de créditos)', respuesta: plan, criticidad: null });
-          lista.push({ variable: 'materias_aprobadas', pregunta: 'Materias aprobadas (cuadro de créditos)', respuesta: cuadro.materias, criticidad: null });
+          lista.push(entrada('plan', 'Plan de estudios (cuadro de créditos)', cuadro.plan));
+          lista.push(entrada('materias_aprobadas', 'Materias aprobadas (cuadro de créditos)', cuadro.materias));
         }
         var conocidos = {};
         enc.items.forEach(function(d) {
@@ -403,20 +366,15 @@
           var it = items[d.id];
           if (!it || d.ignorar || d.seleccionCreditos) return; // no se mostró, no se respondió, se ignora o no es una pregunta
           if (d.depende && !(items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion)) return;
-          if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it, items)); return; }
+          if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it)); return; }
           var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);
-          var criticidad = null;
-          // EN ANÁLISIS: if (d.avance) criticidad = puntosAvance(respuesta, cohorte, plan, enc.maximoAvance); else
-          if (d.puntos && it.opcion) criticidad = d.puntos[it.opcion] !== undefined ? d.puntos[it.opcion] : 0;
-          lista.push({ variable: d.variable, pregunta: it.pregunta || d.texto || '', respuesta: respuesta, criticidad: criticidad });
+          lista.push(entrada(d.variable, it.pregunta || d.texto || '', respuesta, it.tipo === 'multichoice' ? { opcion: it.opcion || null } : null));
         });
         Object.keys(items).forEach(function(id) {
           if (conocidos[id]) return;
           var it = items[id];
-          lista.push({ variable: 'pregunta_' + id, pregunta: it.pregunta, respuesta: it.tipo === 'multichoice' ? it.texto : it.valor, criticidad: null });
+          lista.push(it.tipo === 'multichoice' ? entrada('pregunta_' + id, it.pregunta, it.texto, { opcion: it.opcion || null }) : entrada('pregunta_' + id, it.pregunta, it.valor));
         });
-        var total = 0;
-        lista.forEach(function(x) { if (typeof x.criticidad === 'number') total += x.criticidad; });
         return {
           id_usuario: usuario.id,
           dni: usuario.dni,
@@ -424,7 +382,7 @@
           version_encuesta: enc.version,
           periodo: enc.porPeriodo ? PERIODO_ACTUAL : '',
           json_pregunta_respuesta: lista,
-          puntaje_criticidad: Math.round(total),
+          puntaje_criticidad: null, // la base lo pide: si alGuardar no lo completa, se guarda 0
           created_at: ahoraIso()
         };
       }
@@ -477,18 +435,6 @@
           });
       }
 
-      // AÑO Y CUATRIMESTRE DE INGRESO SEGÚN LA ENCUESTA INICIAL MÁS RECIENTE
-      function cohorteDe(registros) {
-        var inicial = registros.filter(function(r) { return r.encuesta === 'inicial'; })
-          .sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); }).pop();
-        if (!inicial) return null;
-        var c = {};
-        (inicial.json_pregunta_respuesta || []).forEach(function(x) {
-          if (x.variable === 'año_cohorte') c.anio = x.respuesta;
-          if (x.variable === 'cuatri_cohorte') c.cuatrimestre = x.respuesta;
-        });
-        return c.anio && c.cuatrimestre ? c : null;
-      }
 
       // AGREGAR UNA ENTRADA (rid=0: NUNCA SE EDITA NI SE BORRA). LOS CAMPOS SE UBICAN POR SU ETIQUETA EN EL FORMULARIO DE ALTA
       function guardarRespuestaMoodle(registro) {
@@ -565,15 +511,12 @@
       function copiar(cmid, paginas, actual) {
         var faltan = [];
         for (var k = 0; k < actual.pagina; k++) if (!paginas[k]) faltan.push(k);
-        var enc = ENCUESTAS[cmid];
         return Promise.all(faltan.map(function(k) {
           return adaptador.leerPagina(cmid, k).then(function(p) { paginas[k] = p; });
         })).then(function() {
           return adaptador.usuario();
         }).then(function(usuario) {
-          return (enc.porPeriodo ? adaptador.respuestasPropias(usuario.id).then(cohorteDe) : Promise.resolve(null)).then(function(cohorte) {
-            return armarRegistro(cmid, paginas, usuario, cohorte);
-          });
+          return aplicarAlGuardar(armarRegistro(cmid, paginas, usuario), contextoDe(cmid, usuario));
         }).then(function(registro) {
           ultimoRegistro = registro;
           return adaptador.guardar(registro).then(function() { return registro; }, function(e) {
@@ -583,11 +526,49 @@
         });
       }
 
-      // ESPERA LA COPIA COMO MUCHO ESPERA_MAXIMA: EL ENVÍO A MOODLE NUNCA QUEDA BLOQUEADO
+      // ---------------------------------------------------------
+      // alGuardar: FUNCIÓN QUE LE PASA LA VISTA (OPCIONES DEL CARGADOR) PARA TRANSFORMAR EL REGISTRO ANTES DE GUARDARLO
+      // ---------------------------------------------------------
+      // Contrato: alGuardar(registro, contexto) → registro o una promesa del registro. Recibe una copia: puede cambiarla y devolverla.
+      // Si falla, tarda más de ESPERA_AL_GUARDAR o no devuelve un registro, se guarda el registro tal cual (sin criticidad): la copia
+      // nunca se pierde por un error en la criticidad. La base pide un puntaje_criticidad numérico: si no lo completa, va 0.
+      var alGuardar = null;
+
+      // contexto: { encuesta, cmid, version, periodo, usuario: { id, dni }, respuestasPropias() → promesa de los registros del estudiante }
+      function contextoDe(cmid, usuario) {
+        var enc = ENCUESTAS[cmid];
+        return {
+          encuesta: enc.clave, cmid: cmid, version: enc.version, periodo: enc.porPeriodo ? PERIODO_ACTUAL : '',
+          usuario: { id: usuario.id, dni: usuario.dni },
+          respuestasPropias: function() { return adaptador.respuestasPropias(usuario.id); }
+        };
+      }
+
+      function aplicarAlGuardar(registro, contexto) {
+        var completar = function(r) {
+          if (typeof r.puntaje_criticidad !== 'number' || !isFinite(r.puntaje_criticidad)) r.puntaje_criticidad = 0;
+          return r;
+        };
+        if (!alGuardar) return Promise.resolve(completar(registro));
+        var copia = JSON.parse(JSON.stringify(registro));
+        return conLimite(new Promise(function(resolver) { resolver(alGuardar(copia, contexto)); }), ESPERA_AL_GUARDAR, 'alGuardar')
+          .then(function(r) {
+            if (!r || !Array.isArray(r.json_pregunta_respuesta)) throw new Error('alGuardar no devolvió un registro.');
+            return completar(r);
+          })
+          .catch(function(e) {
+            // En la encuesta del estudiante no se avisa; en la vista previa local, sí
+            if (ES_VISTA_LOCAL) avisar('alGuardar falló y el registro se guardó sin criticidad: ' + (e && e.message ? e.message : e), 'alerta');
+            return completar(registro);
+          });
+      }
+
+      // ESPERA UNA PROMESA COMO MUCHO "ms" (POR DEFECTO ESPERA_MAXIMA): EL ENVÍO A MOODLE NUNCA QUEDA BLOQUEADO
       var ultimoRegistro = null;
-      function conLimite(promesa) {
+      function conLimite(promesa, ms, que) {
+        var espera = ms || ESPERA_MAXIMA;
         return Promise.race([promesa, new Promise(function(r, rechazar) {
-          setTimeout(function() { rechazar(new Error('La copia tardó más de ' + (ESPERA_MAXIMA / 1000) + ' segundos.')); }, ESPERA_MAXIMA);
+          setTimeout(function() { rechazar(new Error((que || 'La copia') + ' tardó más de ' + (espera / 1000) + ' segundos.')); }, espera);
         })]);
       }
 
@@ -820,7 +801,7 @@
           '<button type="button" data-sim-encuesta="' + CMID_CUATRIMESTRAL + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">Cuatrimestral</button></div>' +
           '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
           '<h3 style="margin: 0 0 4px 0 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Copia de respuestas de las encuestas</h3>' +
-          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro con su criticidad a la base Respuestas (simulada). Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
+          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro a la base Respuestas (simulada), con la criticidad que calcula el alGuardar del cargador. Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
           '<div id="formulario-simulado" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important;"></div>' +
           '<div id="registros-simulados"></div>' +
           '<div id="footer-zhakyz" style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important;">' +
@@ -900,12 +881,16 @@
       }
 
       // ---------------------------------------------------------
-      // CONSTRUCTOR: CopiaRespuestas({ contenedor })
+      // CONSTRUCTOR: CopiaRespuestas({ contenedor, alGuardar })
       // ---------------------------------------------------------
       function CopiaRespuestas(opciones) {
         if (elRaiz) return null; // ya hay una instancia en esta página: solo la primera copia (o avisa)
         var contenedor = opciones && opciones.contenedor;
         if (!contenedor) throw new Error('CopiaRespuestas necesita un contenedor.');
+        if (opciones.alGuardar !== undefined && opciones.alGuardar !== null && typeof opciones.alGuardar !== 'function') {
+          throw new Error('alGuardar de CopiaRespuestas tiene que ser una función: alGuardar(registro, contexto) → registro.');
+        }
+        alGuardar = opciones.alGuardar || null;
         contenedor.innerHTML = '<div class="zk-copia-respuestas" style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">' +
           '<div data-copia="aviso" style="display: none;"></div><div data-copia="simulador" style="display: none;"></div></div>';
         elRaiz = contenedor.firstChild;
@@ -914,6 +899,137 @@
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
         else iniciar();
         return elRaiz;
+      }
+
+      // =========================================================
+      // HERRAMIENTAS CriticidadInicial Y CriticidadCuatrimestral: PUNTOS DE CRITICIDAD DE UN REGISTRO DE LA BASE RESPUESTAS
+      // =========================================================
+      // Son el alGuardar de CopiaRespuestas (lo arma el cargador de los ítems de las encuestas). No leen ni guardan nada en Moodle:
+      // reciben el registro que armó la copia, completan "criticidad" en cada entrada y "puntaje_criticidad" con la suma, y lo devuelven.
+      // Valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md (PROVISORIOS). Los puntos van por variable y número de opción (1, 2…).
+
+      // PUNTOS POR VARIABLE Y NÚMERO DE OPCIÓN DE CADA ENCUESTA
+      var PUNTOS_INICIAL = {
+        trabaja: { 1: 10, 2: 0 },
+        inicio_laboral: { 1: 20, 2: 20 }
+      };
+      var PUNTOS_CUATRIMESTRAL = {
+        progreso_proyecto_final: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 },
+        trabaja: { 1: 5, 2: 0 },
+        inicio_laboral: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 },
+        avance_percibido: { 1: 0, 2: 5, 3: 10 }
+      };
+
+      // MATERIAS CURSADAS DE LA CUATRIMESTRAL: BLOQUE DE CURSADA (MÁXIMO 35)
+      // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. No cursar no es inactividad con el PFG en desarrollo (4)
+      // o finalizado (5). Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
+      // Dificultad: cada materia aporta (dificultad − 1) × 2,5 ÷ cantidad de materias (el promedio de 1 a 5 da de 0 a 10)
+      var PUNTOS_CANTIDAD = [35, 10, 5];
+      var PUNTOS_RECURSADA = [8, 7];
+      var PFG_SIN_INACTIVIDAD = [4, 5];
+
+      // EN ANÁLISIS: la criticidad por avance curricular (créditos aprobados / esperados) queda desactivada mientras el equipo la revisa.
+      // creditos_aprobados se copia igual, con criticidad null. Máximo del avance: 70 en la inicial y 30 en la cuatrimestral.
+      // // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
+      // var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
+      // // Cociente aprobados / esperados → parte del máximo de avance (0,3897: umbral crítico del ICE)
+      // var TRAMOS_AVANCE = [
+      //   { desde: 1, parte: 0 }, { desde: 0.75, parte: 0.25 }, { desde: 0.5, parte: 0.5 }, { desde: 0.3897, parte: 0.75 }, { desde: -Infinity, parte: 1 }
+      // ];
+      //
+      // // CUATRIMESTRES COMPLETOS DESDE EL INGRESO HASTA EL ANTERIOR AL PERÍODO ACTUAL
+      // function cuatrimestresTranscurridos(anio, cuatrimestre) {
+      //   var p = PERIODO_ACTUAL.split('-');
+      //   return (Number(p[0]) * 2 + Number(p[1])) - (Number(anio) * 2 + Number(cuatrimestre));
+      // }
+      //
+      // // PUNTOS DE AVANCE CURRICULAR: null SI NO SE PUEDE CALCULAR (INGRESANTE, INGRESO DESCONOCIDO U OTRO PLAN)
+      // function puntosAvance(creditos, cohorte, plan, maximo) {
+      //   if (creditos === null || !cohorte || !cohorte.anio || !cohorte.cuatrimestre || (plan && plan !== '2024')) return null;
+      //   var t = cuatrimestresTranscurridos(cohorte.anio, cohorte.cuatrimestre);
+      //   if (!(t > 0)) return null;
+      //   var r = creditos / ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)];
+      //   var tramo = TRAMOS_AVANCE.filter(function(x) { return r >= x.desde; })[0];
+      //   return Math.round(maximo * tramo.parte);
+      // }
+      //
+      // // AÑO Y CUATRIMESTRE DE INGRESO DE UNA LISTA DE ENTRADAS (LA INICIAL LOS PREGUNTA)
+      // function cohorteDeEntradas(lista) {
+      //   var c = {};
+      //   (lista || []).forEach(function(x) {
+      //     if (x.variable === 'año_cohorte') c.anio = x.respuesta;
+      //     if (x.variable === 'cuatri_cohorte') c.cuatrimestre = x.respuesta;
+      //   });
+      //   return c.anio && c.cuatrimestre ? c : null;
+      // }
+      //
+      // // INGRESO SEGÚN LA ENCUESTA INICIAL MÁS RECIENTE DEL ESTUDIANTE (LA CUATRIMESTRAL NO LO PREGUNTA): contexto.respuestasPropias()
+      // function cohorteDe(registros) {
+      //   var inicial = registros.filter(function(r) { return r.encuesta === 'inicial'; })
+      //     .sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); }).pop();
+      //   return inicial ? cohorteDeEntradas(inicial.json_pregunta_respuesta) : null;
+      // }
+      //
+      // // PUNTOS DE AVANCE EN LA ENTRADA creditos_aprobados
+      // function aplicarAvance(lista, cohorte, maximo) {
+      //   var plan = (lista.filter(function(x) { return x.variable === 'plan'; })[0] || {}).respuesta || null;
+      //   lista.forEach(function(x) {
+      //     if (x.variable === 'creditos_aprobados') x.criticidad = puntosAvance(x.respuesta, cohorte, plan, maximo);
+      //   });
+      // }
+
+      // EL REGISTRO TIENE QUE SER DE ESA ENCUESTA: LAS DOS TOOLS NO SE ARRANCAN CON TOOL (RECIBIRÍAN { contenedor })
+      function validarRegistro(tool, registro, encuesta) {
+        if (!registro || !Array.isArray(registro.json_pregunta_respuesta)) {
+          throw new Error(tool + ' recibe un registro de la base Respuestas: se usa como alGuardar de CopiaRespuestas, no con TOOL.');
+        }
+        if (registro.encuesta !== encuesta) throw new Error(tool + ' es para la encuesta ' + encuesta + ', no para ' + registro.encuesta + '.');
+      }
+
+      // PUNTOS DE LAS PREGUNTAS DE OPCIÓN MÚLTIPLE: OPCIÓN SIN VALOR EN LA TABLA → 0; SIN OPCIÓN → null
+      function aplicarPuntos(lista, tabla) {
+        lista.forEach(function(x) {
+          var t = tabla[x.variable];
+          if (t && typeof x.opcion === 'number') x.criticidad = t[x.opcion] !== undefined ? t[x.opcion] : 0;
+        });
+      }
+
+      function sumarCriticidad(registro) {
+        var total = 0;
+        registro.json_pregunta_respuesta.forEach(function(x) { if (typeof x.criticidad === 'number') total += x.criticidad; });
+        registro.puntaje_criticidad = Math.round(total);
+        return registro;
+      }
+
+      // CriticidadInicial(registro, contexto) → registro
+      function CriticidadInicial(registro) {
+        validarRegistro('CriticidadInicial', registro, 'inicial');
+        var lista = registro.json_pregunta_respuesta;
+        aplicarPuntos(lista, PUNTOS_INICIAL);
+        // EN ANÁLISIS: aplicarAvance(lista, cohorteDeEntradas(lista), 70);
+        return sumarCriticidad(registro);
+      }
+
+      // CriticidadCuatrimestral(registro, contexto) → registro
+      // Cuando se reactive el avance devuelve una promesa: el ingreso sale de la Encuesta inicial guardada (contexto.respuestasPropias)
+      function CriticidadCuatrimestral(registro) {
+        validarRegistro('CriticidadCuatrimestral', registro, 'cuatrimestral');
+        var lista = registro.json_pregunta_respuesta;
+        aplicarPuntos(lista, PUNTOS_CUATRIMESTRAL);
+        var cursadas = lista.filter(function(x) { return x.variable === 'materias_cursadas'; })[0];
+        if (cursadas && Array.isArray(cursadas.respuesta)) {
+          var n = cursadas.respuesta.length;
+          var pfg = lista.filter(function(x) { return x.variable === 'progreso_proyecto_final'; })[0];
+          var exceptuado = !!pfg && PFG_SIN_INACTIVIDAD.indexOf(pfg.opcion) !== -1;
+          cursadas.criticidad = n === 0 ? (exceptuado ? 0 : PUNTOS_CANTIDAD[0]) : (PUNTOS_CANTIDAD[n] || 0);
+          var recursadas = 0;
+          lista.forEach(function(x) {
+            if (x.variable === 'primera_vez') x.criticidad = x.respuesta === 'No' ? (PUNTOS_RECURSADA[recursadas++] || 0) : x.respuesta === 'Sí' ? 0 : null;
+            if (x.variable === 'dificultad') x.criticidad = typeof x.respuesta === 'number' ? Math.round((x.respuesta - 1) * 2.5 / n * 10) / 10 : null;
+          });
+        }
+        // EN ANÁLISIS: return contexto.respuestasPropias().then(cohorteDe).then(function(c) { aplicarAvance(lista, c, 30); return sumarCriticidad(registro); });
+        return sumarCriticidad(registro);
       }
 
       // =========================================================
@@ -1069,6 +1185,8 @@
       window.ZhakyzTools = {
         version: VERSION,
         CopiaRespuestas: CopiaRespuestas,
+        CriticidadInicial: CriticidadInicial,
+        CriticidadCuatrimestral: CriticidadCuatrimestral,
         LeerBase: LeerBase
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
@@ -1095,9 +1213,19 @@
       // ---------------------------------------------------------
       var TOOLS = {
         CopiaRespuestas: {
-          descripcion: 'Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, como una versión nueva: las anteriores se conservan. No tiene interfaz: solo muestra un aviso si la copia no se pudo guardar.',
+          descripcion: 'Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, como una versión nueva: las anteriores se conservan. Solo copia: antes de guardar aplica la función alGuardar(registro, contexto) que le pasa el cargador. No tiene interfaz: solo muestra un aviso si la copia no se pudo guardar.',
           uso: 'Encuesta Inicial (un ítem al final de cada una de sus 4 páginas) y Encuesta Cuatrimestral (un ítem al final)',
-          carga: 'TOOL = \'CopiaRespuestas\''
+          carga: 'TOOL = \'CopiaRespuestas\' · OPCIONES = { alGuardar: function(registro, contexto) { … } }'
+        },
+        CriticidadInicial: {
+          descripcion: 'Calcula la criticidad de un registro de la Encuesta Inicial: completa la criticidad de cada respuesta y el puntaje total. No lee ni guarda nada. El avance curricular está en análisis (desactivado).',
+          uso: 'alGuardar de CopiaRespuestas en los ítems de la Encuesta Inicial',
+          carga: 'Tools.CriticidadInicial(registro, contexto), desde el alGuardar del cargador (no se arranca con TOOL)'
+        },
+        CriticidadCuatrimestral: {
+          descripcion: 'Calcula la criticidad de un registro de la Encuesta Cuatrimestral, incluido el bloque de materias cursadas. No lee ni guarda nada. El avance curricular está en análisis (desactivado).',
+          uso: 'alGuardar de CopiaRespuestas en el ítem de la Encuesta Cuatrimestral',
+          carga: 'Tools.CriticidadCuatrimestral(registro, contexto), desde el alGuardar del cargador (no se arranca con TOOL)'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
