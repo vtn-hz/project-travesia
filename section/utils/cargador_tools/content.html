@@ -40,12 +40,21 @@
       // En local (Live Server): ruta de la Página Tools desde esta vista
       var RUTA_LOCAL_TOOLS = '../tools/content.html';
       // Herramienta que arranca este cargador (section/utils/README.md):
-      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página)
+      //   'CopiaRespuestas' → copia cada envío de la encuesta a la base Respuestas (un ítem al final de cada página). Su criticidad
+      //                       va en OPCIONES.alGuardar (CriticidadInicial o CriticidadCuatrimestral)
       //   null              → no arranca ninguna: solo carga la biblioteca, para usar sus herramientas desde el código de la vista
       //                       (por ejemplo LeerBase). La biblioteca avisa con el evento "zk-tools" en document (las herramientas en detail)
       var TOOL = 'CopiaRespuestas';
-      // Opciones de la herramienta. El contenedor lo pone el cargador
-      var OPCIONES = {};
+      // Opciones de la herramienta. El contenedor lo pone el cargador.
+      // alGuardar: la criticidad de cada encuesta. Se resuelve al guardar, cuando la biblioteca ya está cargada (window.ZhakyzTools)
+      var OPCIONES = {
+        alGuardar: function(registro, contexto) {
+          var Tools = window.ZhakyzTools;
+          return contexto.encuesta === 'inicial'
+            ? Tools.CriticidadInicial(registro, contexto)
+            : Tools.CriticidadCuatrimestral(registro, contexto);
+        }
+      };
       // En la encuesta que responde el estudiante no se muestra ningún error: la encuesta funciona igual sin la herramienta
       var SILENCIOSO = !ES_VISTA_LOCAL && /\/mod\/feedback\/complete\.php/.test(window.location.pathname);
 
