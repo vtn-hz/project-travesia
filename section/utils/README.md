@@ -60,7 +60,9 @@ Igual que la de widgets: un `<script type="text/plain" data-zk-biblioteca="tools
 | Miembro | Qué es |
 |---|---|
 | `version` | Número de versión. Si la página ya tiene esa versión o una más nueva, la biblioteca no se vuelve a definir |
-| `CopiaRespuestas({ contenedor })` | Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, con su criticidad ([spec](../../docs/specs/copia-encuestas.md)). Una sola instancia por página: si hay varias copias del cargador, arranca la primera. En Editar preguntas y en la vista previa muestra un aviso para el equipo con el control de la estructura de páginas; en local, el simulador de las dos encuestas |
+| `CopiaRespuestas({ contenedor, alGuardar })` | Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas ([spec](../../docs/specs/copia-encuestas.md)). Solo copia: antes de guardar aplica `alGuardar(registro, contexto)`, la función que le pasa el cargador (si falla, guarda sin criticidad). Una sola instancia por página: si hay varias copias del cargador, arranca la primera. En Editar preguntas y en la vista previa muestra un aviso para el equipo con el control de la estructura de páginas; en local, el simulador de las dos encuestas |
+| `CriticidadInicial(registro, contexto)` | Completa la criticidad de un registro de la Encuesta Inicial y su `puntaje_criticidad`. No lee ni guarda nada. Se usa desde el `alGuardar` del cargador, no con `TOOL`. Avance curricular en análisis (comentado) |
+| `CriticidadCuatrimestral(registro, contexto)` | Igual, para la Encuesta Cuatrimestral, con el bloque de materias cursadas |
 | `LeerBase(opciones)` | Lee todas las entradas de una base de datos, página por página (ver más abajo). **Ninguna vista la usa por ahora** |
 
 Al ejecutarse, la biblioteca avisa con el evento `zk-tools` en `document`, con las herramientas en `detail`.
@@ -84,7 +86,7 @@ Si la biblioteca no se puede cargar, en la encuesta que responde el estudiante *
 | Encuesta Inicial (cmid 59710) | Uno al final de cada una de las 4 páginas. El de la página 4 depende de `trabaja` = Si, igual que la 8260 | `CopiaRespuestas` |
 | Encuesta Cuatrimestral (cmid 59712) | Uno al final de la página | `CopiaRespuestas` |
 
-Los 5 ítems tienen el mismo contenido: [`section/copia_encuestas/content.html`](../copia_encuestas/content.html).
+Los 5 ítems tienen el mismo contenido: [`section/copia_encuestas/content.html`](../copia_encuestas/content.html). Su `OPCIONES.alGuardar` aplica `CriticidadInicial` o `CriticidadCuatrimestral` según `contexto.encuesta`, y se resuelve al guardar, cuando la biblioteca ya está cargada. Se publican con `publicar_item_encuesta.js` (el editor de Moodle borra el script).
 
 ## Herramienta: `LeerBase`
 

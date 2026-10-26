@@ -3,25 +3,26 @@
 > Documento vivo: se actualiza a medida que se refinan los requerimientos.
 
 - **Código:** la herramienta `CopiaRespuestas` de la biblioteca de Tools ([`section/utils/tools/content.html`](../../section/utils/tools/content.html), Página "Tools" de Utils). Desde el 2026-10-25 ya no es un script autocontenido ([guía de Utils](../../section/utils/README.md#3-tools-toolscontenthtml)).
-- **Ítem:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html), una copia del cargador de tools con `TOOL = 'CopiaRespuestas'`. Un cambio en la copia se publica solo en la Página Tools; los ítems cambian solo si cambia el cargador.
+- **Ítem:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html), una copia del cargador de tools con `TOOL = 'CopiaRespuestas'` y un `alGuardar` en `OPCIONES` que aplica `CriticidadInicial` o `CriticidadCuatrimestral` según la encuesta. Un cambio en la copia o en la criticidad se publica solo en la Página Tools; los ítems cambian solo si cambia el cargador o qué tool usa su `alGuardar`.
+- **Criticidad:** desde el 2026-10-26 la copia **solo copia**. Los puntos los calculan las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la misma biblioteca, a través de `alGuardar` (ver [Copia y criticidad](#copia-y-criticidad)).
 - **Dónde va en Moodle:** un ítem "Área de texto y medios" con el cargador **al final de cada página** de cada encuesta (ver [Publicación](#publicación)):
   - Encuesta Inicial (cmid 59710): 4 páginas, 4 ítems;
   - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
 - **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Probado con un envío real de la Cuatrimestral** el 2026-10-25 (dos versiones en la base, con DNI). Falta probar la Inicial.
-- **Última actualización:** 2026-10-25
+- **Última actualización:** 2026-10-26
 
 ## Qué hace
 
-La Encuesta de Moodle valida, guarda y precarga como siempre, pero guarda solo la última respuesta. Este script agrega **cada envío** como una versión nueva en la base Respuestas, con su puntaje de criticidad.
+La Encuesta de Moodle valida, guarda y precarga como siempre, pero guarda solo la última respuesta. Este script agrega **cada envío** como una versión nueva en la base Respuestas, con el puntaje de criticidad que calcula su `alGuardar`.
 
 1. **Al pasar de página**, guarda en el navegador (`sessionStorage`) lo respondido en esa página. Si en la página está el cuadro de créditos, guarda también el plan elegido y las casillas marcadas.
 2. **Al hacer el envío final:**
    - repite los controles de Moodle (obligatorias y rango de los numéricos). Si algo falla, no copia y deja que Moodle muestre el error;
    - arma el registro con todas las páginas. Si falta alguna, lee su HTML con `fetch` (Moodle la muestra con lo ya respondido);
    - convierte el JSON del selector de materias en una entrada por materia;
-   - calcula la criticidad y agrega la entrada a la base Respuestas (`rid=0`);
+   - le pasa el registro a `alGuardar`, que completa la criticidad, y agrega la entrada a la base Respuestas (`rid=0`);
    - deja seguir el envío a Moodle. La copia espera como mucho 8 segundos.
 3. **Si la copia falla**, la respuesta igual se guarda en Moodle:
    - el registro queda pendiente en el navegador (`localStorage`) y se reintenta la próxima vez que se abre la encuesta;
@@ -84,16 +85,16 @@ Definida en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json) (pr
   "json_pregunta_respuesta": [
     { "variable": "plan", "pregunta": "Plan de estudios (cuadro de créditos)", "respuesta": "2024", "criticidad": null },
     { "variable": "materias_aprobadas", "pregunta": "Materias aprobadas (cuadro de créditos)", "respuesta": ["ING1103", "INGM101", "INGM105"], "criticidad": null },
-    { "variable": "creditos_aprobados", "pregunta": "Los créditos obtenidos actualmente son:", "respuesta": 14, "criticidad": 0 },
-    { "variable": "progreso_proyecto_final", "pregunta": "¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?", "respuesta": "No iniciado", "criticidad": 10 },
-    { "variable": "trabaja", "pregunta": "¿Trabaja actualmente?", "respuesta": "Si", "criticidad": 5 },
-    { "variable": "inicio_laboral", "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?", "respuesta": "Comencé en 2.º año", "criticidad": 10 },
+    { "variable": "creditos_aprobados", "pregunta": "Los créditos obtenidos actualmente son:", "respuesta": 14, "criticidad": null },
+    { "variable": "progreso_proyecto_final", "pregunta": "¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?", "respuesta": "No iniciado", "opcion": 2, "criticidad": 10 },
+    { "variable": "trabaja", "pregunta": "¿Trabaja actualmente?", "respuesta": "Si", "opcion": 1, "criticidad": 5 },
+    { "variable": "inicio_laboral", "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?", "respuesta": "Comencé en 2.º año", "opcion": 3, "criticidad": 10 },
     { "variable": "materias_cursadas", "pregunta": "¿Qué materias cursaste el anterior cuatrimestre?", "respuesta": ["INGM102", "INGF101"], "criticidad": 5 },
     { "variable": "primera_vez", "pregunta": "¿Es la primera vez que la cursaste?", "materia": "INGM102", "respuesta": "No", "criticidad": 8 },
     { "variable": "primera_vez", "pregunta": "¿Es la primera vez que la cursaste?", "materia": "INGF101", "respuesta": "Sí", "criticidad": 0 },
     { "variable": "dificultad", "pregunta": "¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)", "materia": "INGM102", "respuesta": 4, "criticidad": 3.8 },
     { "variable": "dificultad", "pregunta": "¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)", "materia": "INGF101", "respuesta": 2, "criticidad": 1.3 },
-    { "variable": "avance_percibido", "pregunta": "Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?", "respuesta": "Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)", "criticidad": 5 }
+    { "variable": "avance_percibido", "pregunta": "Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?", "respuesta": "Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)", "opcion": 2, "criticidad": 5 }
   ],
   "puntaje_criticidad": 48,
   "created_at": "2026-10-25T00:40:00-03:00"
@@ -103,7 +104,30 @@ Definida en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json) (pr
 - **`respuesta`:** el texto de la opción tal como está en Moodle; los números van como número; las materias, como lista de códigos.
 - **`pregunta`:** el texto de la pregunta tal como la vio el estudiante.
 - **`materia`:** solo en las preguntas por materia.
+- **`opcion`:** solo en las de opción múltiple: el número de opción que envía Moodle (1, 2…). Con eso puntúan las tools de criticidad (desde el 2026-10-26).
+- **`criticidad`:** la completa `alGuardar`. `creditos_aprobados` va con `null` mientras el avance curricular está en análisis.
 - **Preguntas dependientes:** si no corresponden, no se guardan. Por ejemplo, `inicio_laboral` cuando no trabaja, aunque la Cuatrimestral la pida igual.
+
+## Copia y criticidad
+
+`CopiaRespuestas` arma el registro con `criticidad: null` en cada entrada y, antes de guardarlo, aplica la función `alGuardar` que le pasa el cargador del ítem:
+
+```js
+// section/copia_encuestas/content.html (OPCIONES del cargador)
+var OPCIONES = {
+  alGuardar: function(registro, contexto) {
+    var Tools = window.ZhakyzTools;
+    return contexto.encuesta === 'inicial'
+      ? Tools.CriticidadInicial(registro, contexto)
+      : Tools.CriticidadCuatrimestral(registro, contexto);
+  }
+};
+```
+
+- **Contrato:** `alGuardar(registro, contexto) → registro` o una promesa del registro. `contexto = { encuesta, cmid, version, periodo, usuario: { id, dni }, respuestasPropias() }`. Recibe una copia del registro.
+- **Si falla**, tarda más de 3 segundos o no devuelve un registro, se guarda el registro sin criticidad. La copia nunca se pierde por un error en la criticidad.
+- **`puntaje_criticidad`** es obligatorio en la base: si `alGuardar` no lo completa, va 0.
+- **`CriticidadInicial` y `CriticidadCuatrimestral`** no leen ni guardan nada. Puntúan por variable y número de opción (`opcion`), y la Cuatrimestral además el bloque de materias cursadas. El avance curricular está comentado en las dos ("EN ANÁLISIS").
 
 ## Datos en Moodle
 
@@ -136,7 +160,7 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
    - **Inicial:** uno al final de cada una de las 4 páginas. El de la página 4 tiene que **depender de `trabaja` = Si**, igual que la 8260. Si no, la página 4 nunca queda vacía y el estudiante que no trabaja ve una página en blanco.
    - **Cuatrimestral:** uno al final de la página.
 
-   El editor de ítems de Moodle borra los scripts: hay que guardarlos con un POST directo al formulario del ítem, como el cuadro de créditos. Los ids nuevos no hace falta cargarlos en el script.
+   El editor de ítems de Moodle borra los scripts: hay que guardarlos con un POST directo al formulario del ítem, como el cuadro de créditos. Los ids nuevos no hace falta cargarlos en el script. Para actualizarlos: `publicar_item_encuesta.js` ([skill publicar-seccion](../../.skills/publicar-seccion/SKILL.md)).
 6. **Probar un envío.** Con la cuenta del equipo (rol Profesor), la encuesta no se puede responder. Hay dos caminos:
    - una cuenta con rol Estudiante (Nicolás Zuviria es el único del equipo);
    - **"Cambiar rol a… Estudiante"** con la cuenta del equipo. Moodle no guarda la respuesta cuando el rol está cambiado (`feedback_check_is_switchrole()`), pero la copia sí se agrega a la base. Sirve para probar la copia sin ensuciar las respuestas de la encuesta.

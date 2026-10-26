@@ -2,7 +2,7 @@
 
 - **Estado:** propuesta, con **valores provisorios** para que el equipo los ajuste.
 - **Alcance:** solo el **Plan 2024** (223 créditos en 10 cuatrimestres). El Plan 2003 queda afuera ([`RULES.md`](../../RULES.md) → *Alcance*).
-- **Dónde se usa:** el [script de copia](../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../decisions/006-versionado-de-encuestas.md)), que calcula el puntaje al enviar.
+- **Dónde se usa:** las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la [biblioteca de Tools](../../section/utils/tools/content.html), que el [script de copia](../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../decisions/006-versionado-de-encuestas.md)) aplica al enviar, con su `alGuardar`.
 - **Qué calcula:** un puntaje de **0 a 100** para cada versión guardada de una encuesta.
   - **0** significa sin señales de riesgo.
   - **100** es la combinación de respuestas más crítica posible.
@@ -26,7 +26,7 @@
 
 ## Avance curricular (lo usan las dos encuestas)
 
-> **En análisis (2026-10-26).** El cálculo está desactivado en el [script de copia](../../section/utils/tools/content.html) (comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
+> **En análisis (2026-10-26).** El cálculo está desactivado en `CriticidadInicial` y `CriticidadCuatrimestral` ([biblioteca de Tools](../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
 
 Compara los **créditos aprobados** con los **créditos esperados** según los cuatrimestres que pasaron desde el ingreso.
 
@@ -137,7 +137,7 @@ En el recursado, los puntos se reparten entre las respuestas *No* para que la su
 
 ## En las Encuestas de Moodle
 
-Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el texto en registro formal. El script de copia asigna los puntos **por número de opción, en el orden de Moodle** (por ejemplo, en el Proyecto Final: *No aplico por nivel* = 1.ª opción → 0; *No iniciado* = 2.ª → 10).
+Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el texto en registro formal. Las tools de criticidad asignan los puntos **por número de opción, en el orden de Moodle** (el campo `opcion` de cada respuesta) (por ejemplo, en el Proyecto Final: *No aplico por nivel* = 1.ª opción → 0; *No iniciado* = 2.ª → 10).
 
 - **Inicial:** se aplica completa.
 - **Cuatrimestral:** el bloque *Cursada del cuatrimestre anterior* (35 puntos) sale del selector de materias (ítem 8270), que guarda en la respuesta 8768 las materias cursadas con su primera vez y su dificultad. Desde el 2026-10-25 se aplica completa.
