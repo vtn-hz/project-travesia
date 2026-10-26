@@ -62,6 +62,20 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
 - **No se pudo identificar el cmid de una actividad nueva:** buscarla a mano en la sección Zhakyz y anotar el cmid. No crear otra.
 - **Archivos (imágenes, logos):** este script publica solo HTML. Subir archivos requiere el flujo de borrador de Moodle (ver la memoria del proyecto o el resumen de Zhakyz) y su propia confirmación.
 
+## Ítems de las Encuestas (`publicar_item_encuesta.js`)
+
+Los ítems "Área de texto y medios" de una Encuesta de Zhakyz (`mod_feedback`) con script, como los de la copia de respuestas (`section/copia_encuestas`), **no se pueden guardar desde el editor de Moodle**: el editor borra el `<script>`. El script manda el mismo formulario de edición del ítem (`edit_item.php`) con el HTML del archivo, sin abrir el editor. Solo actualiza ítems que ya existen; la posición y la dependencia no cambian.
+
+```bash
+MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
+  node .skills/publicar-seccion/publicar_item_encuesta.js --archivo section/copia_encuestas/content.html \
+  --encuesta inicial --items 8772,8771,8770,8769
+```
+
+- `--encuesta` es la clave de `moodle.config.json` → `encuestas`. El script verifica que la encuesta esté en Zhakyz (o en una de sus subsecciones) y que cada ítem sea un "Área de texto y medios" de esa encuesta.
+- Sin `--confirmar` simula: muestra el tamaño y los cambios de cada ítem. Con `--confirmar` guarda uno por uno, relee lo guardado y frena si un ítem perdió scripts.
+- Actualiza la fecha del comentario `PUBLICADO EN MOODLE` del archivo.
+
 ## Crear bases de datos (`crear_base.js`)
 
 Para las bases (`mod_data`) que usan las secciones, el flujo es el mismo (simular → confirmar → verificar) con `crear_base.js`:
