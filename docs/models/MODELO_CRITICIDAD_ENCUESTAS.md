@@ -26,6 +26,8 @@
 
 ## Avance curricular (lo usan las dos encuestas)
 
+> **En análisis (2026-10-26).** El cálculo está desactivado en el [script de copia](../../section/utils/tools/content.html) (comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
+
 Compara los **créditos aprobados** con los **créditos esperados** según los cuatrimestres que pasaron desde el ingreso.
 
 **T, cuatrimestres transcurridos:** los cuatrimestres completos desde el ingreso hasta el anterior al de la respuesta. Por ejemplo, una respuesta de 2026-2 da:

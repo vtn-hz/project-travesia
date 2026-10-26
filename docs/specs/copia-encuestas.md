@@ -46,14 +46,14 @@ Copiados de [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIA
 | Encuesta | Página | Ítem | Variable | Criticidad |
 |---|---|---|---|---|
 | Inicial (versión 1) | 1 | 8254 (cuadro de créditos) | `plan`, `materias_aprobadas` | — |
-| | 1 | 8253 | `creditos_aprobados` | Avance curricular (máx. 70) |
+| | 1 | 8253 | `creditos_aprobados` | Avance curricular (máx. 70). **En análisis:** desactivado, hoy `null` |
 | | 1 | 8774 (oculta, la completa el cuadro) | — | No se copia como pregunta. Si el cuadro no está en pantalla, de ahí salen `plan` y `materias_aprobadas` |
 | | 2 | 8257 | `año_cohorte` | — (se usa para el avance) |
 | | 2 | 8258 | `cuatri_cohorte` | — (se usa para el avance) |
 | | 3 | 8259 | `trabaja` | Sí → 10 |
 | | 4 | 8260 (depende de `trabaja` = Si) | `inicio_laboral` | 20 |
 | Cuatrimestral (versión 2) | 1 | 8261 (cuadro de créditos) | `plan`, `materias_aprobadas` | — |
-| | 1 | 8262 | `creditos_aprobados` | Avance curricular (máx. 30). El ingreso sale de la Encuesta inicial vigente en la base |
+| | 1 | 8262 | `creditos_aprobados` | Avance curricular (máx. 30). **En análisis:** desactivado, hoy `null`. El ingreso sale de la Encuesta inicial vigente en la base |
 | | 1 | 8775 (oculta, la completa el cuadro) | — | Igual que la 8774 |
 | | 1 | 8264 | `progreso_proyecto_final` | 0 · 10 · 7 · 3 · 0 |
 | | 1 | 8265 | `trabaja` | Sí → 5 |
