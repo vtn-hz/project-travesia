@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 // El editor de ítems de Moodle borra los <script> al guardar: este script manda el mismo formulario de edición del ítem
 // (edit_item.php) con el HTML del archivo, sin pasar por el editor. Solo ACTUALIZA ítems que ya existen; no crea ni borra.
+// El formulario de edición muestra el texto ya limpio (sin scripts): lo guardado se lee de la exportación de la encuesta (export.php).
 // Uso (por defecto SIMULA; solo escribe con --confirmar):
 //   MOODLE_USUARIO=... MOODLE_CLAVE=... NODE_PATH=$(npm root -g) node .skills/publicar-seccion/publicar_item_encuesta.js \
 //     --archivo section/<nombre>/content.html --encuesta inicial|cuatrimestral --items <id>[,<id>…] [--confirmar]
@@ -138,7 +139,20 @@ const scripts = (s) => (s.match(/<script/g) || []).length;
   const ajenos = args.items.filter((id) => !enEncuesta.includes(id));
   if (ajenos.length) salir(`Los ítems ${ajenos.join(', ')} no están en la encuesta "${act.nombre}" (cmid ${args.cmid}). No se publica.`);
 
-  // FORMULARIO DE EDICIÓN DE UN ÍTEM, LEÍDO DEL HTML DEL SERVIDOR (SIN EL EDITOR)
+  // CONTENIDO GUARDADO DE CADA ÍTEM, DESDE LA EXPORTACIÓN DE LA ENCUESTA: { id: presentation }
+  async function leerGuardados() {
+    const xml = await page.evaluate(async (u) => (await fetch(u, { credentials: 'same-origin' })).text(),
+      `${BASE}/mod/feedback/export.php?action=exportfile&id=${args.cmid}`);
+    const items = {};
+    for (const m of xml.matchAll(/<ITEM TYPE="[a-z]+"[^>]*>[\s\S]*?<\/ITEM>/g)) {
+      const id = (m[0].match(/<ITEMID>[\s\S]*?(\d+)[\s\S]*?<\/ITEMID>/) || [])[1];
+      const pres = (m[0].match(/<PRESENTATION>\s*<!\[CDATA\[([\s\S]*?)\]\]>/) || [])[1];
+      if (id) items[id] = (pres || '').replace(/\r\n/g, '\n');
+    }
+    return items;
+  }
+
+  // FORMULARIO DE EDICIÓN DE UN ÍTEM, LEÍDO DEL HTML DEL SERVIDOR (SIN EL EDITOR). Su texto viene limpio: solo sirve para verificar el destino
   async function leerItem(id) {
     await page.goto(`${BASE}/mod/feedback/edit_item.php?id=${id}`, { waitUntil: 'domcontentloaded' });
     return page.evaluate(async ({ id, campo }) => {
@@ -155,15 +169,15 @@ const scripts = (s) => (s.match(/<script/g) || []).length;
   console.log('──────────────── PUBLICAR ÍTEMS DE ENCUESTA ────────────────');
   console.log(`Archivo local : ${args.archivo} (${contenido.length} caracteres, sha ${hash(contenido)})`);
   console.log(`Encuesta      : "${act.nombre}" (cmid ${args.cmid}) en ${SECCION_NOMBRE}`);
-  const actuales = {};
+  const actuales = await leerGuardados();
   for (const id of args.items) {
     const it = await leerItem(id);
     if (!it || it.typ !== 'label' || it.id !== id || it.cmid !== args.cmid) {
       salir(`El ítem ${id} no es un "Área de texto y medios" de la encuesta ${args.cmid}: ${JSON.stringify(it && { id: it.id, cmid: it.cmid, typ: it.typ })}.`);
     }
-    actuales[id] = it.texto;
-    const dif = diferencias(it.texto, contenido);
-    console.log(`Ítem ${id}     : hoy ${it.texto.length} caracteres (sha ${hash(it.texto)}, ${scripts(it.texto)} scripts) · cambios +${dif.agregadas} / -${dif.quitadas} líneas${normal(it.texto) === normal(contenido) ? ' (SIN CAMBIOS)' : ''}`);
+    const hoy = actuales[id] || '';
+    const dif = diferencias(hoy, contenido);
+    console.log(`Ítem ${id}     : hoy ${hoy.length} caracteres (sha ${hash(hoy)}, ${scripts(hoy)} scripts) · cambios +${dif.agregadas} / -${dif.quitadas} líneas${normal(hoy) === normal(contenido) ? ' (SIN CAMBIOS)' : ''}`);
   }
   if (!args.confirmar) {
     console.log('\nSIMULACIÓN: no se escribió nada. Para publicar, repetir con --confirmar (requiere confirmación explícita del equipo).');
@@ -191,8 +205,8 @@ const scripts = (s) => (s.match(/<script/g) || []).length;
     fase = 'lectura';
     itemEnEscritura = null;
     if (r.status !== 200 || r.errores.length || /edit_item\.php/.test(r.url)) salir(`Moodle rechazó el guardado del ítem ${id}: ${JSON.stringify(r)}`);
-    // VERIFICAR LEYENDO LO GUARDADO
-    const guardado = (await leerItem(id)).texto;
+    // VERIFICAR LEYENDO LO GUARDADO (EXPORTACIÓN)
+    const guardado = (await leerGuardados())[id] || '';
     const identico = normal(guardado) === normal(contenido);
     const conserva = scripts(guardado) === scripts(contenido);
     console.log(`✔ Ítem ${id}: ${identico ? 'el contenido guardado coincide con el local' : 'Moodle modificó el contenido al guardarlo (revisar)'}; scripts ${conserva ? 'conservados' : 'ALTERADOS'}`);
