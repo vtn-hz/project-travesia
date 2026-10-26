@@ -71,7 +71,7 @@
       // ÍTEMS DE CADA ENCUESTA Y PUNTOS DE CRITICIDAD (docs/models/MODELO_CRITICIDAD_ENCUESTAS.md, VALORES PROVISORIOS)
       // ---------------------------------------------------------
       // id: ítem de la Encuesta de Moodle (data/moodle/encuestas/*.xml). variable: su etiqueta en Moodle.
-      // puntos: por número de opción (Moodle envía 1, 2…, no el texto). avance: créditos que se comparan con los esperados.
+      // puntos: por número de opción (Moodle envía 1, 2…, no el texto). avance: créditos que se comparan con los esperados (EN ANÁLISIS: hoy no suman puntos).
       // depende: el ítem solo cuenta si otro tiene ese número de opción (en Moodle, inicio_laboral depende de trabaja = Si).
       // Un ítem que no está en la lista se copia igual, como "pregunta_<id>" y sin puntos.
       // seleccionCreditos: respuesta oculta donde el cuadro de créditos guarda { plan, codigos }. No se copia como pregunta: si el cuadro
@@ -108,12 +108,14 @@
         ]
       };
 
-      // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
-      var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
-      // Cociente aprobados / esperados → parte del máximo de avance (0,3897: umbral crítico del ICE)
-      var TRAMOS_AVANCE = [
-        { desde: 1, parte: 0 }, { desde: 0.75, parte: 0.25 }, { desde: 0.5, parte: 0.5 }, { desde: 0.3897, parte: 0.75 }, { desde: -Infinity, parte: 1 }
-      ];
+      // EN ANÁLISIS: la criticidad por avance curricular (créditos aprobados / esperados) queda desactivada mientras el equipo la revisa.
+      // creditos_aprobados se copia igual, con criticidad null. maximoAvance no se usa hasta que se reactive.
+      // // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
+      // var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
+      // // Cociente aprobados / esperados → parte del máximo de avance (0,3897: umbral crítico del ICE)
+      // var TRAMOS_AVANCE = [
+      //   { desde: 1, parte: 0 }, { desde: 0.75, parte: 0.25 }, { desde: 0.5, parte: 0.5 }, { desde: 0.3897, parte: 0.75 }, { desde: -Infinity, parte: 1 }
+      // ];
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
@@ -320,21 +322,22 @@
       // ---------------------------------------------------------
       // ARMADO DEL REGISTRO Y CRITICIDAD
       // ---------------------------------------------------------
-      // CUATRIMESTRES COMPLETOS DESDE EL INGRESO HASTA EL ANTERIOR AL PERÍODO ACTUAL
-      function cuatrimestresTranscurridos(anio, cuatrimestre) {
-        var p = PERIODO_ACTUAL.split('-');
-        return (Number(p[0]) * 2 + Number(p[1])) - (Number(anio) * 2 + Number(cuatrimestre));
-      }
-
-      // PUNTOS DE AVANCE CURRICULAR: null SI NO SE PUEDE CALCULAR (INGRESANTE, INGRESO DESCONOCIDO U OTRO PLAN)
-      function puntosAvance(creditos, cohorte, plan, maximo) {
-        if (creditos === null || !cohorte || !cohorte.anio || !cohorte.cuatrimestre || (plan && plan !== '2024')) return null;
-        var t = cuatrimestresTranscurridos(cohorte.anio, cohorte.cuatrimestre);
-        if (!(t > 0)) return null;
-        var r = creditos / ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)];
-        var tramo = TRAMOS_AVANCE.filter(function(x) { return r >= x.desde; })[0];
-        return Math.round(maximo * tramo.parte);
-      }
+      // EN ANÁLISIS: criticidad por avance curricular desactivada (ver ESPERADOS_2024 más arriba)
+      // // CUATRIMESTRES COMPLETOS DESDE EL INGRESO HASTA EL ANTERIOR AL PERÍODO ACTUAL
+      // function cuatrimestresTranscurridos(anio, cuatrimestre) {
+      //   var p = PERIODO_ACTUAL.split('-');
+      //   return (Number(p[0]) * 2 + Number(p[1])) - (Number(anio) * 2 + Number(cuatrimestre));
+      // }
+      //
+      // // PUNTOS DE AVANCE CURRICULAR: null SI NO SE PUEDE CALCULAR (INGRESANTE, INGRESO DESCONOCIDO U OTRO PLAN)
+      // function puntosAvance(creditos, cohorte, plan, maximo) {
+      //   if (creditos === null || !cohorte || !cohorte.anio || !cohorte.cuatrimestre || (plan && plan !== '2024')) return null;
+      //   var t = cuatrimestresTranscurridos(cohorte.anio, cohorte.cuatrimestre);
+      //   if (!(t > 0)) return null;
+      //   var r = creditos / ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)];
+      //   var tramo = TRAMOS_AVANCE.filter(function(x) { return r >= x.desde; })[0];
+      //   return Math.round(maximo * tramo.parte);
+      // }
 
       // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): UNA ENTRADA POR MATERIA Y LOS PUNTOS DEL BLOQUE DE CURSADA (MÁXIMO 35)
       // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
@@ -403,8 +406,8 @@
           if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it, items)); return; }
           var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);
           var criticidad = null;
-          if (d.avance) criticidad = puntosAvance(respuesta, cohorte, plan, enc.maximoAvance);
-          else if (d.puntos && it.opcion) criticidad = d.puntos[it.opcion] !== undefined ? d.puntos[it.opcion] : 0;
+          // EN ANÁLISIS: if (d.avance) criticidad = puntosAvance(respuesta, cohorte, plan, enc.maximoAvance); else
+          if (d.puntos && it.opcion) criticidad = d.puntos[it.opcion] !== undefined ? d.puntos[it.opcion] : 0;
           lista.push({ variable: d.variable, pregunta: it.pregunta || d.texto || '', respuesta: respuesta, criticidad: criticidad });
         });
         Object.keys(items).forEach(function(id) {
