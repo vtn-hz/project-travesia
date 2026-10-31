@@ -62,7 +62,7 @@ Copiados de [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIA
 | | 1 | 8270 (selector de materias) → 8768 | `materias_cursadas`, `primera_vez` y `dificultad` por materia | Bloque de cursada (máx. 35) |
 | | 1 | 8271 | `avance_percibido` | 0 · 5 · 10 |
 
-- **Puntos:** van por número de opción, en el orden de Moodle. Los valores son los provisorios de [`MODELO_CRITICIDAD_ENCUESTAS.md`](../models/MODELO_CRITICIDAD_ENCUESTAS.md).
+- **Puntos:** van por número de opción, en el orden de Moodle. Los valores son los provisorios de [`MODELO_CRITICIDAD_ENCUESTAS.md`](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md).
 - **Bloque de cursada:** sale del JSON que el selector escribe en la 8768.
   - Cantidad: ninguna (inactividad) 35, salvo con el PFG en desarrollo o finalizado; 1 materia 10; 2 materias 5; 3 o más 0.
   - Recursado: 8 por la primera materia recursada y 7 por la segunda.

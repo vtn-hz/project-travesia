@@ -195,7 +195,7 @@ selector.valor();     // el JSON que se guarda en el campo
 ZhakyzUtils.SelectorMaterias.parsear(valor); // { plan, ninguna, materias: [...] } o null si no es ese JSON
 ```
 
-En cada materia elegida pregunta lo que pide el ítem 8270: **¿Es la primera vez que la cursaste?** (Sí / No) y **¿Qué tan difícil te resultó?** (1 a 5). Hay una casilla **No cursé materias el anterior cuatrimestre**, porque no cursar es un dato (inactividad, 35 puntos en el [modelo de criticidad](../../docs/models/MODELO_CRITICIDAD_ENCUESTAS.md)) y no es lo mismo que no responder.
+En cada materia elegida pregunta lo que pide el ítem 8270: **¿Es la primera vez que la cursaste?** (Sí / No) y **¿Qué tan difícil te resultó?** (1 a 5). Hay una casilla **No cursé materias el anterior cuatrimestre**, porque no cursar es un dato (inactividad, 35 puntos en el [modelo de criticidad](../../docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md)) y no es lo mismo que no responder.
 
 | Parámetro | Descripción | Por defecto |
 |---|---|---|

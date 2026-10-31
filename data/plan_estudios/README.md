@@ -42,11 +42,11 @@ Se transcribió del documento oficial de la Facultad: **"Ingeniería Industrial 
 | "(anual)" dentro del nombre | Sacado del nombre: lo indica `cuatrimestre = Anual` |
 | Sin ubicación en la escala 1–10 que usan nuestros modelos | Columnas `cuat_inicio` y `cuat_fin` |
 
-El requisito de ingreso "Introducción a la Ciencia y la Ingeniería" se registra con el código **`INGRA01`**, como lo nombra el [modelo de ubicación](../../docs/models/MODELO_UBICACION_Y_ATRASO.md).
+El requisito de ingreso "Introducción a la Ciencia y la Ingeniería" se registra con el código **`INGRA01`**, como lo nombra el [modelo de ubicación](../../docs/models/trayectoria/MODELO_UBICACION_Y_ATRASO.md).
 
 ### Plan 2003 (documento oficial)
 
-Se siguieron los criterios de la tabla del Plan 2003 del [modelo de ubicación](../../docs/models/MODELO_UBICACION_Y_ATRASO.md):
+Se siguieron los criterios de la tabla del Plan 2003 del [modelo de ubicación](../../docs/models/trayectoria/MODELO_UBICACION_Y_ATRASO.md):
 
 | En el documento | Cómo quedó acá |
 |---|---|

@@ -1,8 +1,8 @@
 # Puntaje de criticidad de las encuestas
 
 - **Estado:** propuesta, con **valores provisorios** para que el equipo los ajuste.
-- **Alcance:** solo el **Plan 2024** (223 créditos en 10 cuatrimestres). El Plan 2003 queda afuera ([`RULES.md`](../../RULES.md) → *Alcance*).
-- **Dónde se usa:** las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la [biblioteca de Tools](../../section/utils/tools/content.html), que el [script de copia](../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../decisions/006-versionado-de-encuestas.md)) aplica al enviar, con su `alGuardar`.
+- **Alcance:** solo el **Plan 2024** (223 créditos en 10 cuatrimestres). El Plan 2003 queda afuera ([`RULES.md`](../../../RULES.md) → *Alcance*).
+- **Dónde se usa:** las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que el [script de copia](../../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)) aplica al enviar, con su `alGuardar`.
 - **Qué calcula:** un puntaje de **0 a 100** para cada versión guardada de una encuesta.
   - **0** significa sin señales de riesgo.
   - **100** es la combinación de respuestas más crítica posible.
@@ -26,7 +26,7 @@
 
 ## Avance curricular (lo usan las dos encuestas)
 
-> **En análisis (2026-10-26).** El cálculo está desactivado en `CriticidadInicial` y `CriticidadCuatrimestral` ([biblioteca de Tools](../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
+> **En análisis (2026-10-26).** El cálculo está desactivado en `CriticidadInicial` y `CriticidadCuatrimestral` ([biblioteca de Tools](../../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
 
 Compara los **créditos aprobados** con los **créditos esperados** según los cuatrimestres que pasaron desde el ingreso.
 
@@ -145,6 +145,6 @@ Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el
 ## Pendientes
 
 - **Calibrar los valores** con el equipo. Son provisorios: los máximos de cada bloque siguen el orden de importancia del ICE (lo académico primero), pero no están validados con datos.
-- **Período de cálculo:** T depende de cuándo se abre la encuesta cuatrimestral. Está pendiente la *ventana del período* (ver los [pendientes de la copia](../specs/copia-encuestas.md#pendientes)).
+- **Período de cálculo:** T depende de cuándo se abre la encuesta cuatrimestral. Está pendiente la *ventana del período* (ver los [pendientes de la copia](../../specs/copia-encuestas.md#pendientes)).
 - **PFG:** un estudiante de los primeros años que elige *No iniciado* en lugar de *No aplica* suma 10. Conviene mostrar la pregunta solo con el 70 % de los créditos aprobados (156 de 223), como propone el ICE.
 - **Avance percibido:** las opciones *Demorado* y *Muy demorado* tienen el mismo umbral (50 %) en la Encuesta de Moodle. Hay que corregir el texto para que los puntos signifiquen algo distinto.

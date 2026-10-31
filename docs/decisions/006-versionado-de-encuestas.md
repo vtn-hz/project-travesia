@@ -2,7 +2,7 @@
 
 - **Estado:** Aceptada (2026-10-24): Encuesta de Moodle + copia de cada envío en la base Respuestas. Desarrollada en local, sin publicar
 - **Fecha:** 2026-10-24
-- **Refs:** [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de criticidad](../models/MODELO_CRITICIDAD_ENCUESTAS.md), DER v2 · módulo Cualitativo (retirado el 2026-10-31; en el historial de git), [modelo simplificado · base 8](../models/MODELO_SIMPLIFICADO_MOODLE.md#8-respuestas), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml), [`ENCUESTA_CUATRIMESTRAL.xml`](../../data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml)
+- **Refs:** [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de criticidad](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md), DER v2 · módulo Cualitativo (retirado el 2026-10-31; en el historial de git), [modelo simplificado · base 8](../models/datos/MODELO_SIMPLIFICADO_MOODLE.md#8-respuestas), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml), [`ENCUESTA_CUATRIMESTRAL.xml`](../../data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml)
 
 ## Contexto
 
@@ -50,7 +50,7 @@ D llegó a desarrollarse en local y se descartó: **el equipo prefiere conservar
   - Después deja seguir el envío. La copia espera como mucho 8 segundos.
 - **Respuestas de varias páginas:** cada página se guarda en el navegador al pasar a la siguiente. Si falta alguna, por ejemplo porque la encuesta se empezó en otra pestaña, se lee su HTML, que Moodle muestra con lo ya respondido.
 - **Si la copia falla**, queda pendiente en el navegador y se reintenta al volver a abrir la encuesta. Antes de reintentar se verifica que no haya llegado (mismo `created_at`).
-- **Criticidad:** cada respuesta lleva sus puntos y la entrada guarda el total en `puntaje_criticidad` ([modelo](../models/MODELO_CRITICIDAD_ENCUESTAS.md), valores provisorios). El estudiante no lo ve.
+- **Criticidad:** cada respuesta lleva sus puntos y la entrada guarda el total en `puntaje_criticidad` ([modelo](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md), valores provisorios). El estudiante no lo ve.
 - **Privacidad:** la base va con "Requiere aprobación" y sin aprobar entradas.
 
 ### Del DER a Moodle

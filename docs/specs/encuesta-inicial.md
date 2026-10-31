@@ -11,7 +11,7 @@
 
 ## Propósito
 
-Que el estudiante seleccione las materias que tiene aprobadas y que el total de créditos se complete solo en la pregunta `creditos_aprobados`, en lugar de calcularlo a mano. Alimenta el avance curricular acumulado (requerimiento de indicadores) y el término `Créditos aprobados / Créditos esperados` del [modelo ICE](../models/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md).
+Que el estudiante seleccione las materias que tiene aprobadas y que el total de créditos se complete solo en la pregunta `creditos_aprobados`, en lugar de calcularlo a mano. Alimenta el avance curricular acumulado (requerimiento de indicadores) y el término `Créditos aprobados / Créditos esperados` del [modelo ICE](../models/criticidad/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md).
 
 ## Preguntas de la encuesta (importadas)
 

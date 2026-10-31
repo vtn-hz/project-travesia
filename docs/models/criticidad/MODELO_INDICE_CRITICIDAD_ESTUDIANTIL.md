@@ -2,7 +2,7 @@
 
 - **Estado:** propuesta. Los pesos todavía no están calibrados.
 - **Qué calcula:** la criticidad de cada estudiante desde 2.º año en una escala de 0 a 100, combinando las notas registradas por la facultad con una encuesta cuatrimestral que responde el propio estudiante.
-- **Relación con los otros modelos:** [ubicación y atraso](MODELO_UBICACION_Y_ATRASO.md) y [criticidad por correlativas](MODELO_CRITICIDAD_POR_CORRELATIVAS.md) pueden aportar el término académico; ver [Pendientes](#pendientes).
+- **Relación con los otros modelos:** [ubicación y atraso](../trayectoria/MODELO_UBICACION_Y_ATRASO.md) y [criticidad por correlativas](../trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md) pueden aportar el término académico; ver [Pendientes](#pendientes).
 
 Este modelo responde a lo que falta definir en el documento de trabajo sobre trayectorias en Ingeniería. Tiene tres partes:
 1. **10 preguntas clave** para la encuesta cuatrimestral que responde el estudiante desde 2.º año;
@@ -223,7 +223,7 @@ Una entrada por subíndice en cada versión, más una entrada para la suma final
 - **Vigente:** la versión `publicada` más alta cuya `vigente_desde` ya llegó.
 - **La fórmula de la entrada `ICE` no se escribe a mano:** la arma la página con los pesos de las demás entradas de esa versión.
 - **Histórico:** cada cálculo guardado en la base Criticidad registra la `version` de la ponderación y el valor de cada subíndice. Así un ICE viejo se puede explicar aunque después cambien los pesos.
-- **Un subíndice nuevo** (por ejemplo, la [criticidad por correlativas](MODELO_CRITICIDAD_POR_CORRELATIVAS.md)) primero se programa en el motor. Después entra como una entrada más, y puede arrancar con peso 0 hasta que se decida usarlo.
+- **Un subíndice nuevo** (por ejemplo, la [criticidad por correlativas](../trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md)) primero se programa en el motor. Después entra como una entrada más, y puede arrancar con peso 0 hasta que se decida usarlo.
 
 ### Ejemplo de cálculo
 
@@ -247,6 +247,6 @@ Queda en **verde** (por debajo de 40). Con la versión 2 de ejemplo (laboral 25 
 - **Calibrar los pesos.** Una opción es simular el cálculo con tres perfiles típicos de estudiantes de Ingeniería Industrial antes de cargar los pesos en la base Ponderaciones.
 - **Confirmar la corrección de escala de $C_{\text{voc}}$** ($H_{\text{estudio}}/100$) con quien propuso la fórmula.
 - **Preguntas en la base o en el código.** Si quedan fijas en el código, la base Preguntas no se usa para la encuesta cuatrimestral, y la tabla de valores de la sección 4 es la referencia.
-- **Fuente de las preguntas 1, 3 y 4.** El avance, el recursado de básicas y las correlativas trabadas también se pueden **calcular** con las notas de la facultad (Situación académica) y el plan de estudios ([criticidad por correlativas](MODELO_CRITICIDAD_POR_CORRELATIVAS.md)). Hay que decidir si gana el dato de la facultad o el del estudiante.
+- **Fuente de las preguntas 1, 3 y 4.** El avance, el recursado de básicas y las correlativas trabadas también se pueden **calcular** con las notas de la facultad (Situación académica) y el plan de estudios ([criticidad por correlativas](../trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md)). Hay que decidir si gana el dato de la facultad o el del estudiante.
 - **Pregunta 6.** El momento en que empezó a trabajar se puede deducir del historial de encuestas: es el primer cuatrimestre en que respondió que trabaja. Si se deduce, la pregunta se puede sacar.
-- **Escala del semáforo.** Las bandas 40 y 70 no coinciden con las del índice provisorio del [detalle del estudiante](../specs/detalle-estudiante.md), que usa 40 y 80. Hay que unificarlas.
+- **Escala del semáforo.** Las bandas 40 y 70 no coinciden con las del índice provisorio del [detalle del estudiante](../../specs/detalle-estudiante.md), que usa 40 y 80. Hay que unificarlas.

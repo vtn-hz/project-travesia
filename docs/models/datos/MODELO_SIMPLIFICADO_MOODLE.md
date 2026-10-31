@@ -3,8 +3,8 @@
 Este documento es el **modelo de datos del SBIRE**: adapta el DER v2 (23 entidades) a lo que permite Moodle. Cada tabla de este documento es una **base de datos de Moodle** (actividad `mod_data`) dentro de la subsección *Database* de Zhakyz.
 
 - **DER v2:** se retiró del repo el 2026-10-31 y este es el único modelo de datos. Las reglas y los pendientes que solo estaban en el DER pasaron a [Reglas que controla la página](#reglas-que-controla-la-página), [Datos que se calculan y no se guardan](#datos-que-se-calculan-y-no-se-guardan) y [Decisiones pendientes](#decisiones-pendientes). La columna *Origen en el DER* queda como referencia de nombres; el DER completo está en el historial de git (`git show 3f7047a:docs/models/MODELO_DE_DATOS_V2.md`).
-- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8). Preguntas se creó y se borró el 2026-10-25. Crear las demás requiere confirmación ([`RULES.md`](../../RULES.md)).
-- **Pregunta abierta:** si es viable cargar los datos de todos los estudiantes desde el navegador. Está en el [ADR-005](../decisions/005-modelo-de-bases-moodle.md) y se resuelve antes de crear las bases.
+- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8). Preguntas se creó y se borró el 2026-10-25. Crear las demás requiere confirmación ([`RULES.md`](../../../RULES.md)).
+- **Pregunta abierta:** si es viable cargar los datos de todos los estudiantes desde el navegador. Está en el [ADR-005](../../decisions/005-modelo-de-bases-moodle.md) y se resuelve antes de crear las bases.
 
 ## Por qué hay que simplificar
 
@@ -64,7 +64,7 @@ Toda entrada tiene además, sin crear campos: `rid` (clave), `userid` (quién la
 
 ### 1. Plan de estudios
 
-> **En Moodle es la base Materias** (cmid 59717, d=152), con otros campos: `plan`, `codigo`, `nombre`, `cuatrimestre`, `duracion`, `tipo`, `creditos`, `horas`, `desbloquea`, `estado` y `cambio` ([`BASE_MATERIAS.json`](../../data/moodle/BASE_MATERIAS.json)). La tabla de abajo es la propuesta original.
+> **En Moodle es la base Materias** (cmid 59717, d=152), con otros campos: `plan`, `codigo`, `nombre`, `cuatrimestre`, `duracion`, `tipo`, `creditos`, `horas`, `desbloquea`, `estado` y `cambio` ([`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)). La tabla de abajo es la propuesta original.
 
 Una entrada por materia en un plan. Los datos del plan (vigencia, duración) se repiten en cada fila porque son pocos y no cambian.
 
@@ -185,7 +185,7 @@ Era una propuesta, sin crear; se descartó junto con la base Preguntas. Para cub
 
 ### 8. Respuestas
 
-Propuesta en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
+Propuesta en [`BASE_RESPUESTAS.json`](../../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
 
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
@@ -195,7 +195,7 @@ Propuesta en [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json). L
 | `version_encuesta` | number | `Encuesta.version` | Versión de la encuesta que respondió |
 | `periodo` | text | `Envio_Encuesta.id_periodo` | Vacío en la inicial |
 | `json_pregunta_respuesta` | text (JSON) | `Respuesta` | `[{ variable, pregunta, respuesta, criticidad }]`: `variable` es la etiqueta de la pregunta en Moodle y `criticidad`, los puntos que aporta |
-| `puntaje_criticidad` | number | (nuevo) | Suma de la criticidad de 0 a 100 ([modelo](MODELO_CRITICIDAD_ENCUESTAS.md)) |
+| `puntaje_criticidad` | number | (nuevo) | Suma de la criticidad de 0 a 100 ([modelo](../criticidad/MODELO_CRITICIDAD_ENCUESTAS.md)) |
 | `created_at` | text (fecha y hora) | `Envio_Encuesta.fecha_completado` | |
 
 No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período, y está **vencido** si además pasaron los `dias_plazo`. Así no hay que crear una entrada por estudiante al abrir el período.
@@ -319,10 +319,10 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 
 ## Decisiones pendientes
 
-1. **Volumen y carga en el navegador.** Pregunta abierta del [ADR-005](../decisions/005-modelo-de-bases-moodle.md). Si no alcanza, una opción es sumar una base 13, *Estado actual*: una entrada por estudiante con el último estado, que el tablero lea en lugar de toda Criticidad.
+1. **Volumen y carga en el navegador.** Pregunta abierta del [ADR-005](../../decisions/005-modelo-de-bases-moodle.md). Si no alcanza, una opción es sumar una base 13, *Estado actual*: una entrada por estudiante con el último estado, que el tablero lea en lugar de toda Criticidad.
 2. **Preguntas: banco o por encuesta.** Hoy usamos un banco reutilizable más el armado de cada encuesta; el DER ata cada pregunta a una encuesta. El banco con `version` en el armado cubre lo mismo y ya está hecho.
 3. **Respuestas por materia.** Se guardan dentro del JSON con `id_materia`. Falta definir cómo las arma el formulario del estudiante.
-4. **Índice de criticidad de 0 a 100.** Es provisorio (ver la spec del [detalle del estudiante](../specs/detalle-estudiante.md)). Depende de `Indicadores.peso` y de la escala de `Evaluacion.nota`, que en el DER sigue pendiente.
+4. **Índice de criticidad de 0 a 100.** Es provisorio (ver la spec del [detalle del estudiante](../../specs/detalle-estudiante.md)). Depende de `Indicadores.peso` y de la escala de `Evaluacion.nota`, que en el DER sigue pendiente.
 5. **Cambio de plan del estudiante.** Mismo pendiente que el DER: con esta simplificación, Estudiantes guarda un solo `plan`. Opciones: una entrada por plan con fechas desde y hasta, o un solo plan más la fecha del cambio.
 6. **Consentimiento.** Solo se guarda `fecha_consentimiento`. Falta la versión del texto aceptado y la revocación, si la universidad las exige.
 7. **Datos de contexto del estudiante.** No hay edad, género ni colegio de origen. Definir si se van a segmentar indicadores por ellos.

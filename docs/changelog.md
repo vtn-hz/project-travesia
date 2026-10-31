@@ -13,3 +13,4 @@ Registro cronológico de todas las decisiones de diseño y arquitectura.
 | 2026-10-17 | [005](decisions/005-modelo-de-bases-moodle.md) | Modelo de bases de Moodle para la criticidad y su historial; en revisión por el peso de la carga de datos en el frontend | Pendiente |
 | 2026-10-24 | [006](decisions/006-versionado-de-encuestas.md) | Las Encuestas de Moodle quedan como están y un script copia cada envío, con su puntaje de criticidad, a la base Respuestas, que solo agrega entradas (Moodle guarda solo la última respuesta). Se descarta la página propia de encuestas | Aceptada |
 | 2026-10-31 | — | Se retira el DER v2 (`MODELO_DE_DATOS_V2.md`): el modelo simplificado para Moodle queda como único modelo de datos, con las reglas y los pendientes que solo estaban en el DER | Aceptada |
+| 2026-10-31 | — | Los modelos se agrupan en `docs/models/datos`, `trayectoria` y `criticidad` | Aceptada |
