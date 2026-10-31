@@ -2,7 +2,7 @@
 
 - **Estado:** Aceptada (2026-10-24): Encuesta de Moodle + copia de cada envío en la base Respuestas. Desarrollada en local, sin publicar
 - **Fecha:** 2026-10-24
-- **Refs:** [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de criticidad](../models/MODELO_CRITICIDAD_ENCUESTAS.md), [DER v2 · módulo Cualitativo](../models/MODELO_DE_DATOS_V2.md#módulo-cualitativo), [modelo simplificado · base 8](../models/MODELO_SIMPLIFICADO_MOODLE.md#8-respuestas), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml), [`ENCUESTA_CUATRIMESTRAL.xml`](../../data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml)
+- **Refs:** [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de criticidad](../models/MODELO_CRITICIDAD_ENCUESTAS.md), DER v2 · módulo Cualitativo (retirado el 2026-10-31; en el historial de git), [modelo simplificado · base 8](../models/MODELO_SIMPLIFICADO_MOODLE.md#8-respuestas), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml), [`ENCUESTA_CUATRIMESTRAL.xml`](../../data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml)
 
 ## Contexto
 

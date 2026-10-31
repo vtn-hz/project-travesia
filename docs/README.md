@@ -21,8 +21,7 @@ docs/
 │   ├── MODELO_UBICACION_Y_ATRASO.md
 │   ├── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
 │   ├── MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md ← ICE: encuesta cuatrimestral + fórmula de 0 a 100
-│   ├── MODELO_DE_DATOS_V2.md      ← DER del SBIRE (23 entidades)
-│   └── MODELO_SIMPLIFICADO_MOODLE.md ← El DER llevado a 12 bases de Moodle
+│   └── MODELO_SIMPLIFICADO_MOODLE.md ← Modelo de datos: 12 bases de Moodle
 ├── decisions/             ← Registros de Decisiones (ADR)
 │   ├── 001-arquitectura-general.md
 │   ├── 002-main-menu-contenido.md

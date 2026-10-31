@@ -63,7 +63,7 @@ Zhakyz (sección 15647)
 
 ## Bases de datos de Moodle
 
-Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.json) → `bases`. El modelo completo está en [`MODELO_SIMPLIFICADO_MOODLE.md`](docs/models/MODELO_SIMPLIFICADO_MOODLE.md): 12 bases, que salen del [DER v2](docs/models/MODELO_DE_DATOS_V2.md).
+Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.json) → `bases`. El modelo completo está en [`MODELO_SIMPLIFICADO_MOODLE.md`](docs/models/MODELO_SIMPLIFICADO_MOODLE.md): 12 bases (es el único modelo de datos; el DER v2 se retiró el 2026-10-31).
 
 | # | Base | Definición | Estado |
 |---|---|---|---|

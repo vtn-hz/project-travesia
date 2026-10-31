@@ -1,8 +1,9 @@
 # SBIRE: modelo simplificado para Moodle
 
-Este documento adapta el [modelo de datos v2](MODELO_DE_DATOS_V2.md) (DER de 23 entidades) a lo que permite Moodle. Cada tabla de este documento es una **base de datos de Moodle** (actividad `mod_data`) dentro de la subsección *Database* de Zhakyz.
+Este documento es el **modelo de datos del SBIRE**: adapta el DER v2 (23 entidades) a lo que permite Moodle. Cada tabla de este documento es una **base de datos de Moodle** (actividad `mod_data`) dentro de la subsección *Database* de Zhakyz.
 
-- **Estado:** propuesta. Ninguna base nueva está creada; la única que existe es Preguntas. Crearlas requiere confirmación ([`RULES.md`](../../RULES.md)).
+- **DER v2:** se retiró del repo el 2026-10-31 y este es el único modelo de datos. Las reglas y los pendientes que solo estaban en el DER pasaron a [Reglas que controla la página](#reglas-que-controla-la-página), [Datos que se calculan y no se guardan](#datos-que-se-calculan-y-no-se-guardan) y [Decisiones pendientes](#decisiones-pendientes). La columna *Origen en el DER* queda como referencia de nombres; el DER completo está en el historial de git (`git show 3f7047a:docs/models/MODELO_DE_DATOS_V2.md`).
+- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8). Preguntas se creó y se borró el 2026-10-25. Crear las demás requiere confirmación ([`RULES.md`](../../RULES.md)).
 - **Pregunta abierta:** si es viable cargar los datos de todos los estudiantes desde el navegador. Está en el [ADR-005](../decisions/005-modelo-de-bases-moodle.md) y se resuelve antes de crear las bases.
 
 ## Por qué hay que simplificar
@@ -62,6 +63,8 @@ Tipos de campo de Moodle:
 Toda entrada tiene además, sin crear campos: `rid` (clave), `userid` (quién la cargó), `timecreated` y `timemodified`.
 
 ### 1. Plan de estudios
+
+> **En Moodle es la base Materias** (cmid 59717, d=152), con otros campos: `plan`, `codigo`, `nombre`, `cuatrimestre`, `duracion`, `tipo`, `creditos`, `horas`, `desbloquea`, `estado` y `cambio` ([`BASE_MATERIAS.json`](../../data/moodle/BASE_MATERIAS.json)). La tabla de abajo es la propuesta original.
 
 Una entrada por materia en un plan. Los datos del plan (vigencia, duración) se repiten en cada fila porque son pocos y no cambian.
 
@@ -291,7 +294,9 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
   - `dni` en Estudiantes;
   - `periodo` en Períodos;
   - `plan` + `codigo` en Plan de estudios;
-  - `clave` + `version` en Indicadores.
+  - `clave` + `version` en Indicadores;
+  - cada materia una sola vez dentro de `cursadas_json` (en el DER, `Cursada` era única por estudiante, materia y período);
+  - cada pregunta (y materia, si es por materia) una sola vez dentro de `json_pregunta_respuesta`.
 - **Bases que solo agregan** (Situación académica, Respuestas, Criticidad): la página nunca edita ni borra; siempre guarda con `rid=0`.
 - **Vigente = la entrada más reciente** por clave:
   - Situación académica: (`dni`, `periodo`);
@@ -301,6 +306,16 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 - **Privacidad:**
   - **Respuestas** con "Requiere aprobación" y sin aprobar entradas;
   - el resto, con acceso restringido al equipo por grupo o rol. Ocultar la actividad no alcanza, porque se puede entrar por URL.
+- **Al menos uno:** toda foto calculada de Criticidad tiene al menos una medición en `mediciones_json`.
+
+## Datos que se calculan y no se guardan
+
+- **Recursa:** si hay una cursada anterior de la misma materia en Situación académica. Es distinto del recursado que **declara** el estudiante en la encuesta (`primera_vez`), que sí se guarda en Respuestas.
+- **Inicio laboral:** se puede deducir como el primer período con `trabaja` = Sí en Respuestas.
+- **Avance curricular.**
+- **Egresados, titulados y los que continúan en 2.º año por cohorte:** se cuentan sobre Estudiantes.
+- **Estado vigente del estudiante:** sale de su última entrada en Criticidad.
+- **Envío pendiente o vencido:** ver la base 8.
 
 ## Decisiones pendientes
 
@@ -308,4 +323,7 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 2. **Preguntas: banco o por encuesta.** Hoy usamos un banco reutilizable más el armado de cada encuesta; el DER ata cada pregunta a una encuesta. El banco con `version` en el armado cubre lo mismo y ya está hecho.
 3. **Respuestas por materia.** Se guardan dentro del JSON con `id_materia`. Falta definir cómo las arma el formulario del estudiante.
 4. **Índice de criticidad de 0 a 100.** Es provisorio (ver la spec del [detalle del estudiante](../specs/detalle-estudiante.md)). Depende de `Indicadores.peso` y de la escala de `Evaluacion.nota`, que en el DER sigue pendiente.
-5. **Cambio de plan del estudiante.** Mismo pendiente que el DER: con esta simplificación, Estudiantes guarda un solo `plan`.
+5. **Cambio de plan del estudiante.** Mismo pendiente que el DER: con esta simplificación, Estudiantes guarda un solo `plan`. Opciones: una entrada por plan con fechas desde y hasta, o un solo plan más la fecha del cambio.
+6. **Consentimiento.** Solo se guarda `fecha_consentimiento`. Falta la versión del texto aceptado y la revocación, si la universidad las exige.
+7. **Datos de contexto del estudiante.** No hay edad, género ni colegio de origen. Definir si se van a segmentar indicadores por ellos.
+8. **Responsable de las acciones acordadas.** `acciones_json` no dice quién tiene que cumplir cada acción ni si generó un acompañamiento nuevo.
