@@ -1,0 +1,376 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Dashboard Estudiantes de Primero" (cmid 60035) · importada 2026-10-31 -->
+<!-- ORIGEN: creada directamente en Moodle por el equipo (descripción "Esto es una prueba") e importada sin cambios. Variante del Listado_Criticidad_Primero con el índice ICm por materia e ICG por estudiante. No sigue RULES.md (clases de Bootstrap, emojis, cmids fijos en lugar de líneas // @config). -->
+<!-- DATOS: bases Carga_Parciales_Primero (cmid 59521, d=117) y Carga_Materias_Primero (cmid 59522, d=118) — data/moodle/BASE_CARGA_*_PRIMERO.json -->
+<!-- Contenedores para renderizar las tablas -->
+<div id="tabla_estudiantes_criticos" class="my-4">
+<div class="text-muted">Calculando ICG y listado de estudiantes críticos...</div>
+</div>
+<p>
+<script>
+    // -------------------------------------------------------------
+    // FUNCIONES DE CRITICIDAD
+    // -------------------------------------------------------------
+    function calcularICm(promedio, pctAprobados, pctAusentismo, alertaCritica) {
+      const promNum = parseFloat(promedio) || 0;
+      const aprobPct = parseFloat(pctAprobados) || 0;
+      const ausentPct = parseFloat(pctAusentismo) || 0;
+
+      const FP = Math.max(0, (10 - promNum) / 10);
+      const FR = 1 - aprobPct / 100;
+      const FA = ausentPct / 100;
+      const FAC = alertaCritica ? 1 : 0;
+
+      // Pesos: FP: 35%, FR: 35%, FA: 15%, FAC: 15%
+      const icm = (0.35 * FP + 0.35 * FR + 0.15 * FA + 0.15 * FAC) * 100;
+      return Math.min(100, Math.round(icm * 10) / 10);
+    }
+
+    function calcularICG(listaICm) {
+      if (!listaICm || listaICm.length === 0) return 0;
+
+      const suma = listaICm.reduce((acc, val) => acc + val, 0);
+      const promedio = suma / listaICm.length;
+      const maximo = Math.max(...listaICm);
+
+      // 60% peso promedio + 40% peso materia más crítica
+      const icg = 0.6 * promedio + 0.4 * maximo;
+      return Math.min(100, Math.round(icg * 10) / 10);
+    }
+
+    // -------------------------------------------------------------
+    // EJECUCIÓN PRINCIPAL
+    // -------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", async function() {
+      const URL_BASE_DATOS_PARCIALES = window.location.origin +
+        '/mod/data/view.php?id=59521&perpage=2000';
+      const URL_BASE_DATOS_MATERIAS = window.location.origin +
+        '/mod/data/view.php?id=59522&perpage=2000';
+
+      // Fecha límite fija que marca el inicio del 2º Cuatrimestre (MM-DD)
+      const INICIO_SEGUNDO_CUATRIMESTRE_MMDD = "04-01";
+
+      // Fecha actual del sistema
+      const hoy = new Date();
+      const ANIO_ACTUAL = hoy.getFullYear();
+      const mesActual = String(hoy.getMonth() + 1).padStart(2, '0');
+      const diaActual = String(hoy.getDate()).padStart(2, '0');
+      const mmddHoy = `${mesActual}-${diaActual}`;
+
+      // Determinar dinámicamente el límite de fecha según el cuatrimestre actual
+      let fechaMinimaMMDD = "01-01"; // Por defecto (1er Cuatrimestre)
+      let cuatrimestreActualTxt = "1er Cuatrimestre";
+
+      if (mmddHoy >= INICIO_SEGUNDO_CUATRIMESTRE_MMDD) {
+        fechaMinimaMMDD =
+          INICIO_SEGUNDO_CUATRIMESTRE_MMDD; // Límite desde 2º Cuatrimestre
+        cuatrimestreActualTxt = "2do Cuatrimestre";
+      }
+
+      console.log(
+        `[Filtro Activo] Año: ${ANIO_ACTUAL} | Periodo: ${cuatrimestreActualTxt} | Fecha mínima: ${fechaMinimaMMDD}`
+      );
+
+      try {
+        const parser = new DOMParser();
+
+        // 1. OBTENCIÓN DE MATERIAS
+        const responseMaterias = await fetch(URL_BASE_DATOS_MATERIAS);
+        const htmlTextoMaterias = await responseMaterias.text();
+        const docMaterias = parser.parseFromString(htmlTextoMaterias,
+          'text/html');
+
+        let filasMaterias = docMaterias.querySelectorAll(
+          'tr[data-tipo="entrada_materia"]');
+        if (filasMaterias.length === 0) {
+          filasMaterias = docMaterias.querySelectorAll(
+            '[data-id="tabla_materias"] tbody tr');
+        }
+
+        const registrosMaterias = [];
+        filasMaterias.forEach((fila) => {
+          const celdas = fila.querySelectorAll('td');
+          if (celdas.length >= 3) {
+            const regMateria = {
+              materia: celdas[0]?.innerText.trim() || '',
+              esCritica: celdas[1]?.innerText.trim() || '',
+              umbral: celdas[2]?.innerText.trim() || '4'
+            };
+            if (regMateria.materia) registrosMaterias.push(
+              regMateria);
+          }
+        });
+
+        // 2. OBTENCIÓN Y FILTRADO DINÁMICO DE PARCIALES
+        const responseParciales = await fetch(URL_BASE_DATOS_PARCIALES);
+        const htmlTextoParciales = await responseParciales.text();
+        const docParciales = parser.parseFromString(htmlTextoParciales,
+          'text/html');
+
+        let filasParciales = docParciales.querySelectorAll(
+          'tr[data-tipo="entrada_parcial"]');
+        if (filasParciales.length === 0) {
+          filasParciales = docParciales.querySelectorAll(
+            '[data-id="tabla_parciales"] tbody tr');
+        }
+
+        const registrosParcialesBrutos = [];
+
+        filasParciales.forEach((fila) => {
+          const celdas = fila.querySelectorAll('td');
+          if (celdas.length >= 8) {
+            const fechaStr = celdas[4]?.innerText.trim() ||
+              ''; // Formato YYYY-MM-DD
+
+            let cumpleFecha = false;
+            if (fechaStr.length >= 10) {
+              const [anio, mes, dia] = fechaStr.split('-');
+              const mmddReg = `${mes}-${dia}`;
+
+              // Verifica mismo año y fecha >= fechaMinimaMMDD
+              if (parseInt(anio, 10) === ANIO_ACTUAL && mmddReg >=
+                fechaMinimaMMDD) {
+                cumpleFecha = true;
+              }
+            }
+
+            if (cumpleFecha) {
+              const regParcial = {
+                dni: celdas[0]?.innerText.trim() || '',
+                estudiante: celdas[1]?.innerText.trim() || '',
+                materia: celdas[2]?.innerText.trim() || '',
+                instancia: celdas[3]?.innerText.trim() || '',
+                fecha: fechaStr,
+                nota: celdas[5]?.innerText.trim() || '',
+                estado: celdas[6]?.innerText.trim() || '',
+                recuperaA: celdas[7]?.innerText.trim() || ''
+              };
+
+              if (regParcial.dni || regParcial.estudiante) {
+                registrosParcialesBrutos.push(regParcial);
+              }
+            }
+          }
+        });
+
+        // 3. APLICAR REEMPLAZO POR RECUPERATORIO
+        const evaluacionesProcesadas = {};
+
+        registrosParcialesBrutos.forEach(reg => {
+          const claveGrupo =
+            `${reg.estudiante.trim()}___${reg.materia.trim()}`;
+          if (!evaluacionesProcesadas[claveGrupo]) {
+            evaluacionesProcesadas[claveGrupo] = {
+              dni: reg.dni.trim(),
+              estudiante: reg.estudiante.trim(),
+              materia: reg.materia.trim(),
+              instancias: {}
+            };
+          }
+
+          const grupo = evaluacionesProcesadas[claveGrupo];
+
+          if (reg.recuperaA) {
+            // Reemplaza la nota/estado de la instancia indicada
+            grupo.instancias[reg.recuperaA.trim()] = {
+              nota: reg.nota,
+              estado: reg.estado,
+              esRecuperatorio: true,
+              instanciaOrigen: reg.instancia
+            };
+          } else {
+            if (!grupo.instancias[reg.instancia.trim()]) {
+              grupo.instancias[reg.instancia.trim()] = {
+                nota: reg.nota,
+                estado: reg.estado,
+                esRecuperatorio: false,
+                instanciaOrigen: reg.instancia
+              };
+            }
+          }
+        });
+
+        // 4. CALCULAR INDICADORES POR (ESTUDIANTE + MATERIA)
+        const listaICmMaterias = [];
+
+        Object.values(evaluacionesProcesadas).forEach(g => {
+          let programados = 0;
+          let rendidos = 0;
+          let ausencias = 0;
+          let aprobados = 0;
+          let sumaNotas = 0;
+          const evaluaciones = [];
+
+          Object.values(g.instancias).forEach(inst => {
+            programados++;
+            const estadoTxt = inst.estado.toLowerCase().trim();
+            const notaLimpia = inst.nota.replace(',', '.').trim();
+            const notaNum = parseFloat(notaLimpia);
+
+            if (estadoTxt.includes('ausente') || isNaN(notaNum)) {
+              ausencias++;
+            } else {
+              rendidos++;
+              sumaNotas += notaNum;
+              evaluaciones.push(notaNum);
+
+              if (estadoTxt.includes('aprobado') && !estadoTxt
+                .includes('des')) {
+                aprobados++;
+              }
+            }
+          });
+
+          const promedio = rendidos > 0 ? (sumaNotas / rendidos)
+            .toFixed(2) : 0;
+          const pctAprobados = rendidos > 0 ? ((aprobados /
+            rendidos) * 100).toFixed(1) : 0;
+          const pctAusentismo = programados > 0 ? ((ausencias /
+            programados) * 100).toFixed(1) : 0;
+
+          const normalizarStr = (str) => str.toLowerCase().replace(
+            /[\s\-_]/g, '');
+          const infoMateria = registrosMaterias.find(m =>
+            normalizarStr(m.materia) === normalizarStr(g.materia));
+
+          let alertaCritica = false;
+          let umbral = 4;
+
+          if (infoMateria) {
+            const critTxt = infoMateria.esCritica.toString().trim()
+              .toUpperCase();
+            const esMateriaCritica = ['S', 'SI', 'SÍ', 'TRUE', '1']
+              .includes(critTxt);
+            umbral = parseFloat(infoMateria.umbral.toString().replace(
+              ',', '.').trim()) || 4;
+
+            if (esMateriaCritica && evaluaciones.some(nota => nota <
+                umbral)) {
+              alertaCritica = true;
+            }
+          }
+
+          const icm = calcularICm(promedio, pctAprobados,
+            pctAusentismo, alertaCritica);
+
+          listaICmMaterias.push({
+            dni: g.dni,
+            estudiante: g.estudiante,
+            materia: g.materia,
+            promedio: promedio,
+            pctAprobados: pctAprobados + '%',
+            pctAusentismo: pctAusentismo + '%',
+            alertaCritica: alertaCritica,
+            icm: icm
+          });
+        });
+
+        // 5. AGRUPAR POR ESTUDIANTE Y CALCULAR ICG GENERAL
+        const gruposEstudiantes = {};
+
+        listaICmMaterias.forEach(item => {
+          if (!gruposEstudiantes[item.dni]) {
+            gruposEstudiantes[item.dni] = {
+              dni: item.dni,
+              estudiante: item.estudiante,
+              icms: [],
+              materiasDetalle: []
+            };
+          }
+          gruposEstudiantes[item.dni].icms.push(item.icm);
+          gruposEstudiantes[item.dni].materiasDetalle.push({
+            materia: item.materia,
+            icm: item.icm
+          });
+        });
+
+        const estudiantesCriticos = Object.values(gruposEstudiantes).map(
+          est => {
+            const icg = calcularICG(est.icms);
+
+            let nivelRiesgo = 'Bajo';
+            let estadoBadge =
+              '<span class="badge bg-success fs-6">🟢 Regular / Estable</span>';
+
+            if (icg >= 65) {
+              nivelRiesgo = 'Alto';
+              estadoBadge =
+                '<span class="badge bg-danger fs-6">🔴 Estudiante Crítico</span>';
+            } else if (icg >= 40) {
+              nivelRiesgo = 'Medio';
+              estadoBadge =
+                '<span class="badge bg-warning text-dark fs-6">🟡 En Observación</span>';
+            }
+
+            return {
+              dni: est.dni,
+              estudiante: est.estudiante,
+              icg: icg,
+              nivelRiesgo: nivelRiesgo,
+              estadoBadge: estadoBadge,
+              materiasDetalle: est.materiasDetalle
+            };
+          });
+
+        // Ordenar por DNI (ascendente)
+        estudiantesCriticos.sort((a, b) => {
+          const dniA = parseInt(a.dni.replace(/\D/g, ''), 10) || 0;
+          const dniB = parseInt(b.dni.replace(/\D/g, ''), 10) || 0;
+          return dniA - dniB;
+        });
+
+        console.log("=== ESTUDIANTES Y SU ICG GENERAL ===");
+        console.table(estudiantesCriticos);
+
+        // 6. RENDERIZAR TABLA DE ESTUDIANTES CRÍTICOS
+        const contenedor = document.getElementById(
+          'tabla_estudiantes_criticos');
+        if (contenedor) {
+          if (estudiantesCriticos.length === 0) {
+            contenedor.innerHTML =
+              `<div class="alert alert-warning">No se encontraron estudiantes para procesar el ICG en el cuatrimestre activo (${cuatrimestreActualTxt}).</div>`;
+          } else {
+            let html = `
+              <div class="table-responsive">
+                <h4 class="mb-3">📊 Listado de Estudiantes y Criticidad General (${cuatrimestreActualTxt} - ${ANIO_ACTUAL})</h4>
+                <table class="table table-striped table-hover table-bordered align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>DNI</th>
+                      <th>Estudiante</th>
+                      <th>Rango de ICG (0-100)</th>
+                      <th>Nivel de Riesgo</th>
+                      <th>Estado del Estudiante</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+
+            estudiantesCriticos.forEach(e => {
+              html += `
+                <tr>
+                  <td>${e.dni}</td>
+                  <td class="fw-bold">${e.estudiante}</td>
+                  <td><span class="fw-bold fs-6">${e.icg}</span></td>
+                  <td class="fw-bold">${e.nivelRiesgo}</td>
+                  <td>${e.estadoBadge}</td>
+                </tr>
+              `;
+            });
+
+            html += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+            contenedor.innerHTML = html;
+          }
+        }
+
+      } catch (error) {
+        console.error(
+          "Error al procesar el ICG y listado de estudiantes críticos:",
+          error);
+      }
+    });
+  </script>
+</p>
