@@ -7,7 +7,7 @@
 - **Criticidad:** desde el 2026-10-26 la copia **solo copia**. Los puntos los calculan las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la misma biblioteca, a través de `alGuardar` (ver [Copia y criticidad](#copia-y-criticidad)).
 - **Dónde va en Moodle:** un ítem "Área de texto y medios" con el cargador **al final de cada página** de cada encuesta (ver [Publicación](#publicación)):
   - Encuesta Inicial (cmid 59710): 4 páginas, 4 ítems;
-  - Encuesta Cuatrimestral (cmid 59712): 1 página, 1 ítem.
+  - Encuesta Cuatrimestral (cmid 59712): 5 páginas desde que el equipo agregó los saltos 8781 a 8784 en Moodle (exportados el 2026-10-31), y 1 ítem, al final de la última. **Pendiente:** `paginas` de la Cuatrimestral en la Página Tools sigue con una sola página; hay que actualizarla (y evaluar un ítem de copia por página, como en la Inicial) y publicar la Página Tools.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
 - **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Probado con un envío real de la Cuatrimestral** el 2026-10-25 (dos versiones en la base, con DNI). Falta probar la Inicial.
@@ -198,7 +198,7 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 1. **Publicar**, con los pasos de [Publicación](#publicación). Cada paso requiere confirmación.
 2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
-4. **Encuesta Cuatrimestral (para el equipo):** `inicio_laboral` depende de `trabaja`, pero están en la misma página, así que Moodle la muestra y la pide siempre. Hace falta un salto de página entre las dos. (El ítem 8273 se borró el 2026-10-25.)
+4. **Encuesta Cuatrimestral (para el equipo):** ~~`inicio_laboral` depende de `trabaja`, pero están en la misma página.~~ Resuelto en Moodle por el equipo: el salto 8783 separa las dos (exportado el 2026-10-31). (El ítem 8273 se borró el 2026-10-25.)
 5. **Cuadro de créditos:** todavía ofrece el Plan 2003, que quedó fuera del alcance. Si el estudiante lo elige, el avance no se puntúa. Desde el 2026-10-25 el cuadro guarda su selección en las respuestas ocultas 8774 y 8775 y la recupera al volver a su página; la copia usa esas respuestas cuando el cuadro no está en pantalla (por ejemplo, si el estudiante termina la encuesta en otro dispositivo).
 6. **Control para el equipo:** comparar la última respuesta de Moodle con la última versión de la base, para detectar copias que no llegaron.
 7. **`avance_percibido`:** "Demorado" y "Muy demorado" tienen el mismo umbral (50 %) en Moodle.
