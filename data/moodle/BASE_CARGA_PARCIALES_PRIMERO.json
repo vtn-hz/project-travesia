@@ -3,15 +3,16 @@
   "nombre": "Carga_Parciales_Primero",
   "descripcion": "Notas de parciales de 1.er año: una entrada por evaluación de un estudiante en una materia.",
   "subseccion": "Hub",
-  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). Moodle muestra truncada la descripción del campo Estudiante.",
+  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). Actualizada el 2026-10-31 con los cambios del equipo en Moodle: Fecha pasó a texto obligatorio (AAAA-MM-DD) y se agregó Recupera_a.",
   "plantillas": "data/moodle/plantillas/carga_parciales_primero/",
   "campos": [
     { "nombre": "DNI", "tipo": "text", "requerido": true, "descripcion": "DNI del Estudiante" },
-    { "nombre": "Estudiante", "tipo": "text", "requerido": false, "descripcion": "Nombre y Apellido del …" },
+    { "nombre": "Estudiante", "tipo": "text", "requerido": false, "descripcion": "Nombre y Apellido del Estudiante" },
     { "nombre": "Materia", "tipo": "text", "requerido": true, "descripcion": "Código de la materia a agregar" },
-    { "nombre": "Instancia", "tipo": "text", "requerido": false, "descripcion": "Parcial 1 | Parcial 2 | ..." },
-    { "nombre": "Fecha", "tipo": "date", "requerido": false, "descripcion": "DD/MM/AAAA" },
+    { "nombre": "Instancia", "tipo": "text", "requerido": false, "descripcion": "Parcial 1 | Parcial 2 | Recuperatorio" },
+    { "nombre": "Fecha", "tipo": "text", "requerido": true, "descripcion": "AAAA-MM-DD" },
     { "nombre": "Nota", "tipo": "number", "requerido": true, "descripcion": "" },
-    { "nombre": "Estado", "tipo": "multimenu", "requerido": true, "descripcion": "", "opciones": ["Aprobado", "Desaprobado", "Ausente"] }
+    { "nombre": "Estado", "tipo": "multimenu", "requerido": true, "descripcion": "", "opciones": ["Aprobado", "Desaprobado", "Ausente"] },
+    { "nombre": "Recupera_a", "tipo": "text", "requerido": false, "descripcion": "(Instancia que reemplaza)" }
   ]
 }
