@@ -28,16 +28,17 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 3;
+      var VERSION = 4;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
       // HERRAMIENTA CopiaRespuestas: COPIA CADA ENVÍO DE LAS ENCUESTAS A LA BASE RESPUESTAS
       // =========================================================
       // Va en un ítem "Área de texto y medios" al final de cada página de las Encuestas Inicial y Cuatrimestral
-      // (docs/specs/copia-encuestas.md, docs/decisions/006-versionado-de-encuestas.md). Al enviar la encuesta, agrega una versión
-      // a la base Respuestas. Solo copia: la criticidad la calcula la función alGuardar que le pasa el cargador
-      // (CriticidadInicial o CriticidadCuatrimestral). Una sola instancia por página: en Editar preguntas se ven todas las páginas juntas.
+      // (docs/specs/copia-encuestas.md, docs/decisions/006-versionado-de-encuestas.md y 007-encuestas-respuestas-y-criticidad.md).
+      // Al enviar la encuesta, agrega una versión a la base Respuestas (solo lo respondido: { item_id, respuestas }) y una entrada a la
+      // base Criticidad (fuente respuestas), con el índice que calcula CriticidadEncuesta con la versión vigente de la base Encuestas.
+      // Una sola instancia por página: en Editar preguntas se ven todas las páginas juntas.
       // Elementos de la instancia: los crea CopiaRespuestas en el contenedor que le pasa el cargador
       var elRaiz = null, elAviso = null, elSimulador = null;
 
@@ -64,50 +65,32 @@
       var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
+      var DATAID_ENCUESTAS = null; // @config bases.encuestas.dataid
+      var DATAID_CRITICIDAD = null; // @config bases.criticidad.dataid
+      var DATAID_PARCIALES_PRIMERO = 117; // @config bases.carga_parciales_primero.dataid
+      var DATAID_MATERIAS_PRIMERO = 118; // @config bases.carga_materias_primero.dataid
       var ESPERA_MAXIMA = 8000; // milisegundos que se espera la copia antes de dejar seguir el envío a Moodle
       var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
       var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
-
-      var ESPERA_AL_GUARDAR = 3000; // milisegundos que se espera alGuardar: si tarda más o falla, se guarda el registro sin criticidad
+      var CLAVE_PENDIENTES_CRITICIDAD = 'zk-criticidad-pendientes'; // entradas de Criticidad que no se pudieron guardar (localStorage)
+      // En local (Live Server): entradas de la base Encuestas, desde la Página Tools del repo (section/utils/tools/content.html).
+      // Cuando la biblioteca la ejecuta un cargador, data-base es la dirección de la Página Tools
+      var RUTA_LOCAL_ENCUESTAS = '../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json';
+      var BASE_BIBLIOTECA = (document.currentScript && document.currentScript.getAttribute('data-base')) || window.location.href;
 
       // ---------------------------------------------------------
-      // ÍTEMS DE CADA ENCUESTA (LOS PUNTOS DE CRITICIDAD ESTÁN EN CriticidadInicial Y CriticidadCuatrimestral)
+      // ENCUESTAS: CADA CMID CON SU codigo_encuesta (LA DEFINICIÓN DE CADA VERSIÓN ESTÁ EN LA BASE ENCUESTAS)
       // ---------------------------------------------------------
-      // id: ítem de la Encuesta de Moodle (data/moodle/encuestas/*.xml). variable: su etiqueta en Moodle.
-      // depende: el ítem solo cuenta si otro tiene ese número de opción (en Moodle, inicio_laboral depende de trabaja = Si).
-      // Un ítem que no está en la lista se copia igual, como "pregunta_<id>" y sin puntos.
-      // seleccionCreditos: respuesta oculta donde el cuadro de créditos guarda { plan, codigos }. No se copia como pregunta: si el cuadro
-      // no está en pantalla (página leída de nuevo, por ejemplo al terminar en otro dispositivo), de ahí salen el plan y las materias aprobadas.
-      // paginas: ids de todos los ítems de cada página, incluidos los de texto (sin los saltos de página). Moodle muestra
-      // "Página siguiente" aunque las páginas que siguen queden vacías por una dependencia, y en ese caso guarda al pasar de página:
-      // con esta lista el script reconoce ese envío final. Si la encuesta cambia en Moodle, actualizar la lista (Editar preguntas avisa).
+      // La base Encuestas (data/moodle/BASE_ENCUESTAS.json, ADR-007) tiene los ítems de cada versión: item_id, variable, página,
+      // opciones y puntos. Si la encuesta cambia en Moodle (una pregunta, un salto de página), se carga una versión nueva en la base:
+      // este script no cambia. "Editar preguntas" y la vista previa avisan si la estructura de páginas no coincide con la versión vigente.
       var ENCUESTAS = {};
-      ENCUESTAS[CMID_INICIAL] = {
-        clave: 'inicial', titulo: 'Encuesta inicial', version: 1, porPeriodo: false,
-        paginas: [[8254, 8253, 8774], [8257, 8258], [8259], [8260]],
-        items: [
-          { id: 8253, variable: 'creditos_aprobados' },
-          { id: 8774, seleccionCreditos: true },
-          { id: 8257, variable: 'año_cohorte' },
-          { id: 8258, variable: 'cuatri_cohorte' },
-          { id: 8259, variable: 'trabaja' },
-          { id: 8260, variable: 'inicio_laboral', depende: { id: 8259, opcion: 1 } }
-        ]
-      };
-      // Versión 2 (2026-10-25): cuadro de créditos (8261) y selector de materias (8270) de Utils. El selector guarda un JSON en la 8768
-      ENCUESTAS[CMID_CUATRIMESTRAL] = {
-        clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral', version: 2, porPeriodo: true,
-        paginas: [[8261, 8262, 8775, 8264, 8265, 8266, 8270, 8768, 8271]],
-        items: [
-          { id: 8262, variable: 'creditos_aprobados' },
-          { id: 8775, seleccionCreditos: true },
-          { id: 8264, variable: 'progreso_proyecto_final' },
-          { id: 8265, variable: 'trabaja' },
-          { id: 8266, variable: 'inicio_laboral', depende: { id: 8265, opcion: 1 } },
-          { id: 8768, variable: 'materias_cuatrimestre', selectorMaterias: true },
-          { id: 8271, variable: 'avance_percibido' }
-        ]
-      };
+      ENCUESTAS[CMID_INICIAL] = { clave: 'inicial', titulo: 'Encuesta inicial' };
+      ENCUESTAS[CMID_CUATRIMESTRAL] = { clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral' };
+      // Dependencias entre preguntas (no van en la base Encuestas: las define la Encuesta de Moodle). Por variable:
+      // la pregunta solo cuenta si la otra tiene ese número de opción. Moodle muestra "Página siguiente" aunque las páginas que siguen
+      // queden vacías por una dependencia, y en ese caso guarda al pasar de página: con esto el script reconoce ese envío final.
+      var DEPENDENCIAS = { inicio_laboral: { variable: 'trabaja', opcion: 1 } };
 
       // ---------------------------------------------------------
       // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
@@ -265,10 +248,84 @@
       }
 
       // ---------------------------------------------------------
+      // DEFINICIÓN VIGENTE DE CADA ENCUESTA (BASE ENCUESTAS)
+      // ---------------------------------------------------------
+      // Definición: { codigo_encuesta, version, preguntas, porPeriodo, puntajeMaximo, created_at, paginas: [[item_id…], …] }.
+      // paginas sale del campo "pagina" de cada ítem (los widgets también cuentan; los ítems de copia no están en la base)
+      var definiciones = {}; // codigo_encuesta → promesa de la definición vigente
+      var definicionCargada = {}; // codigo_encuesta → definición ya leída: el envío final se decide sin esperar
+      var entradasEncuestasCarga = null;
+
+      // ENTRADA DE LA BASE ENCUESTAS (CAMPOS EN TEXTO, O json_preguntas YA COMO OBJETO EN LOCAL) → DEFINICIÓN
+      function definicionDeEntrada(campos) {
+        var preguntas = typeof campos.json_preguntas === 'string' ? JSON.parse(campos.json_preguntas) : campos.json_preguntas;
+        if (!Array.isArray(preguntas)) throw new Error('json_preguntas de la encuesta ' + campos.codigo_encuesta + ' no es una lista.');
+        var paginas = [];
+        preguntas.forEach(function(p) {
+          var k = Number(p.pagina) - 1;
+          while (paginas.length <= k) paginas.push([]);
+          paginas[k].push(Number(p.item_id));
+        });
+        return {
+          codigo_encuesta: String(campos.codigo_encuesta),
+          version: Number(campos.version),
+          preguntas: preguntas,
+          porPeriodo: String(campos.por_periodo) === 'si',
+          puntajeMaximo: Number(campos.puntaje_maximo),
+          created_at: campos.created_at,
+          paginas: paginas.filter(function(x) { return x.length; })
+        };
+      }
+
+      // VIGENTE = LA DE MAYOR version PARA ESE codigo_encuesta
+      function vigenteDe(entradas, codigo) {
+        var lista = entradas.filter(function(c) { return String(c.codigo_encuesta) === codigo; })
+          .sort(function(a, b) { return Number(a.version) - Number(b.version); });
+        if (!lista.length) throw new Error('La base Encuestas no tiene ninguna versión de la encuesta ' + codigo + '.');
+        return definicionDeEntrada(lista[lista.length - 1]);
+      }
+
+      // ENTRADAS DE LA BASE ENCUESTAS: EN MOODLE CON LeerBase; EN LOCAL, EL ARCHIVO DEL REPO
+      function entradasEncuestas() {
+        if (ES_VISTA_LOCAL || !(window.M && M.cfg && M.cfg.wwwroot)) {
+          return fetch(new URL(RUTA_LOCAL_ENCUESTAS, BASE_BIBLIOTECA).href).then(function(r) {
+            if (!r.ok) throw new Error('No se encontró ' + RUTA_LOCAL_ENCUESTAS + ' (HTTP ' + r.status + ').');
+            return r.json();
+          }).then(function(d) { return d.entradas; });
+        }
+        if (!DATAID_ENCUESTAS) return Promise.reject(new Error('La base Encuestas todavía no está creada en Moodle.'));
+        return LeerBase({ dataid: DATAID_ENCUESTAS }).then(function(r) { return r.entradas.map(function(e) { return e.campos; }); });
+      }
+
+      function definicionVigente(codigo) {
+        if (!definiciones[codigo]) {
+          if (!entradasEncuestasCarga) entradasEncuestasCarga = entradasEncuestas();
+          var p = entradasEncuestasCarga.then(function(e) { return (definicionCargada[codigo] = vigenteDe(e, codigo)); });
+          definiciones[codigo] = p;
+          // Si falla, la próxima llamada vuelve a leer la base
+          p.catch(function() { definiciones[codigo] = null; entradasEncuestasCarga = null; });
+        }
+        return definiciones[codigo];
+      }
+
+      // ---------------------------------------------------------
       // ESTRUCTURA DE PÁGINAS: ¿EL BOTÓN "PÁGINA SIGUIENTE" ES EL ENVÍO FINAL?
       // ---------------------------------------------------------
-      function definicionItem(enc, id) {
-        return enc.items.filter(function(d) { return d.id === Number(id); })[0] || null;
+      function preguntaPorId(def, id) {
+        return def.preguntas.filter(function(p) { return Number(p.item_id) === Number(id); })[0] || null;
+      }
+
+      function preguntaPorVariable(def, variable) {
+        return def.preguntas.filter(function(p) { return p.variable === variable; })[0] || null;
+      }
+
+      // ¿SE CUMPLE LA DEPENDENCIA DE LA PREGUNTA? (SIN DEPENDENCIA, SÍ)
+      function dependenciaCumplida(def, p, items) {
+        var dep = p && p.variable ? DEPENDENCIAS[p.variable] : null;
+        if (!dep) return true;
+        var de = preguntaPorVariable(def, dep.variable);
+        var it = de ? items[de.item_id] : null;
+        return !!it && it.opcion === dep.opcion;
       }
 
       // RESPUESTAS DE TODAS LAS PÁGINAS GUARDADAS, LAS MÁS NUEVAS PRIMERO: { id: item leído }
@@ -280,18 +337,18 @@
         return items;
       }
 
-      // ¿LA PÁGINA ACTUAL COINCIDE CON LA ESTRUCTURA CONOCIDA? (SI NO, NO SE ADIVINA EL ENVÍO FINAL)
-      function estructuraCoincide(enc, pagina) {
-        var esperados = (enc.paginas || [])[pagina.pagina];
+      // ¿LA PÁGINA ACTUAL COINCIDE CON LA ESTRUCTURA DE LA VERSIÓN VIGENTE? (SI NO, NO SE ADIVINA EL ENVÍO FINAL)
+      function estructuraCoincide(def, pagina) {
+        var esperados = (def.paginas || [])[pagina.pagina];
         return !!esperados && Object.keys(pagina.items).every(function(id) { return esperados.indexOf(Number(id)) !== -1; });
       }
 
       // ¿QUEDA ALGUNA PÁGINA POSTERIOR CON UN ÍTEM VISIBLE? (UN ÍTEM DEPENDIENTE SE VE SOLO SI SE CUMPLE SU CONDICIÓN)
-      function quedanPaginasVisibles(enc, desde, items) {
-        for (var k = desde + 1; k < enc.paginas.length; k++) {
-          var visible = enc.paginas[k].some(function(id) {
-            var d = definicionItem(enc, id);
-            return !d || !d.depende || (items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion);
+      function quedanPaginasVisibles(def, desde, items) {
+        for (var k = desde + 1; k < def.paginas.length; k++) {
+          var visible = def.paginas[k].some(function(id) {
+            var p = preguntaPorId(def, id);
+            return !p || dependenciaCumplida(def, p, items);
           });
           if (visible) return true;
         }
@@ -299,7 +356,7 @@
       }
 
       // ÍTEMS Y SALTOS DE PÁGINA TAL COMO LOS MUESTRA "EDITAR PREGUNTAS" O LA VISTA PREVIA: [[ids de la página 1], …]
-      // Los ítems con el cargador de tools no cuentan: van en todas las páginas y su id no está en la lista
+      // Los ítems con el cargador de tools no cuentan: van en todas las páginas y su id no está en la base Encuestas
       function estructuraEnPantalla() {
         var paginas = [[]];
         Array.prototype.forEach.call(document.querySelectorAll('[id^="fitem_id_"], [id^="fgroup_id_group_"]'), function(el) {
@@ -312,85 +369,102 @@
       }
 
       // ---------------------------------------------------------
-      // ARMADO DEL REGISTRO (SOLO DATOS: LA CRITICIDAD LA PONE alGuardar)
+      // ARMADO DEL REGISTRO DE RESPUESTAS: { item_id, respuestas: [...] } POR ÍTEM (LOS TEXTOS Y LOS PUNTOS ESTÁN EN LA BASE ENCUESTAS)
       // ---------------------------------------------------------
-      // Cada entrada lleva criticidad null. Las de opción múltiple llevan además "opcion": el número de opción que envía Moodle
-      // (1, 2…), que es con lo que puntúan CriticidadInicial y CriticidadCuatrimestral.
-      function entrada(variable, pregunta, respuesta, extra) {
-        var e = { variable: variable, pregunta: pregunta, respuesta: respuesta, criticidad: null };
-        Object.keys(extra || {}).forEach(function(k) { e[k] = extra[k]; });
-        return e;
+      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS) → [{ materia, primera_vez, dificultad }]; SIN EL SELECTOR, EL TEXTO TAL CUAL
+      function respuestasMaterias(texto) {
+        var sel = null;
+        try { sel = JSON.parse(texto); } catch (e) { sel = null; }
+        if (!sel || !Array.isArray(sel.materias)) return texto ? [texto] : null;
+        return sel.materias.map(function(m) {
+          return {
+            materia: m.codigo,
+            primera_vez: typeof m.primera_vez === 'boolean' ? m.primera_vez : null,
+            dificultad: typeof m.dificultad === 'number' ? m.dificultad : null
+          };
+        });
       }
 
-      // MATERIAS CURSADAS (JSON DEL SELECTOR DE MATERIAS): LA LISTA DE CÓDIGOS Y UNA ENTRADA POR MATERIA PARA primera_vez Y dificultad
-      function entradasMaterias(d, it) {
-        var sel = null;
-        try { sel = JSON.parse(it.valor); } catch (e) { sel = null; }
-        if (!sel || !Array.isArray(sel.materias)) {
-          // Sin el selector (no se pudo cargar): se guarda lo que se escribió a mano
-          var texto = String(it.valor || '').trim();
-          return texto ? [entrada(d.variable, it.pregunta, texto)] : [];
+      // RESPUESTAS DE UN ÍTEM LEÍDO (null SI NO SE RESPONDIÓ). Opción múltiple: el número de opción que envía Moodle
+      function respuestasDeItem(p, it) {
+        if (it.tipo === 'multichoice') {
+          if (Array.isArray(it.opcion)) return it.opcion.length ? it.opcion.slice() : null;
+          return it.opcion ? [it.opcion] : null;
         }
-        var lista = [entrada('materias_cursadas', it.pregunta, sel.materias.map(function(m) { return m.codigo; }))];
-        sel.materias.forEach(function(m) {
-          lista.push(entrada('primera_vez', '¿Es la primera vez que la cursaste?', m.primera_vez === true ? 'Sí' : m.primera_vez === false ? 'No' : null, { materia: m.codigo }));
-        });
-        sel.materias.forEach(function(m) {
-          lista.push(entrada('dificultad', '¿Qué tan difícil te resultó? (1 más fácil, 5 más difícil)', typeof m.dificultad === 'number' ? m.dificultad : null, { materia: m.codigo }));
-        });
-        return lista;
+        if (it.tipo === 'numeric') {
+          var n = numeroMoodle(it.valor);
+          return n === null ? null : [n];
+        }
+        var texto = String(it.valor || '').trim();
+        if (p && p.formato === 'selector_materias') return respuestasMaterias(texto);
+        return texto ? [texto] : null;
+      }
+
+      // SELECCIÓN DEL CUADRO DE CRÉDITOS: EN PANTALLA O, SI NO, LA QUE GUARDÓ EN SU RESPUESTA OCULTA ({ plan, codigos })
+      function seleccionCreditos(cuadro, it) {
+        if (cuadro && cuadro.plan) return { plan: String(cuadro.plan), materias: cuadro.materias || [] };
+        if (!it) return null;
+        try {
+          var s = JSON.parse(it.valor);
+          if (s && s.plan) return { plan: String(s.plan), materias: Array.isArray(s.codigos) ? s.codigos : [] };
+        } catch (e) { /* sin selección guardada */ }
+        return null;
       }
 
       // REGISTRO DE LA BASE RESPUESTAS A PARTIR DE LAS PÁGINAS RESPONDIDAS
-      function armarRegistro(cmid, paginas, usuario) {
-        var enc = ENCUESTAS[cmid];
+      function armarRegistro(def, paginas, usuario) {
         var items = itemsRespondidos(paginas), cuadro = null;
         Object.keys(paginas).forEach(function(k) { if (paginas[k].cuadro) cuadro = paginas[k].cuadro; });
-        // Sin el cuadro en pantalla: la selección que el cuadro guardó en su respuesta oculta
-        enc.items.forEach(function(d) {
-          var it = d.seleccionCreditos && !cuadro ? items[d.id] : null;
-          if (!it) return;
-          try {
-            var s = JSON.parse(it.valor);
-            if (s && s.plan) cuadro = { plan: String(s.plan), materias: Array.isArray(s.codigos) ? s.codigos : [] };
-          } catch (e) { /* sin selección guardada */ }
+        var lista = [], conocidos = {};
+        def.preguntas.forEach(function(p) {
+          conocidos[p.item_id] = true;
+          if (p.tipo === 'label') return; // widget: no es una pregunta
+          if (p.formato === 'seleccion_creditos') {
+            var sel = seleccionCreditos(cuadro, items[p.item_id]);
+            if (sel) lista.push({ item_id: p.item_id, respuestas: [sel] });
+            return;
+          }
+          var it = items[p.item_id];
+          if (!it || !dependenciaCumplida(def, p, items)) return; // no se mostró, no se respondió o no corresponde
+          var respuestas = respuestasDeItem(p, it);
+          if (respuestas) lista.push({ item_id: p.item_id, respuestas: respuestas });
         });
-        var lista = [];
-        if (cuadro) {
-          lista.push(entrada('plan', 'Plan de estudios (cuadro de créditos)', cuadro.plan));
-          lista.push(entrada('materias_aprobadas', 'Materias aprobadas (cuadro de créditos)', cuadro.materias));
-        }
-        var conocidos = {};
-        enc.items.forEach(function(d) {
-          conocidos[d.id] = true;
-          var it = items[d.id];
-          if (!it || d.ignorar || d.seleccionCreditos) return; // no se mostró, no se respondió, se ignora o no es una pregunta
-          if (d.depende && !(items[d.depende.id] && items[d.depende.id].opcion === d.depende.opcion)) return;
-          if (d.selectorMaterias) { lista = lista.concat(entradasMaterias(d, it)); return; }
-          var respuesta = it.tipo === 'numeric' ? numeroMoodle(it.valor) : it.tipo === 'multichoice' ? it.texto : (String(it.valor || '').trim() || null);
-          lista.push(entrada(d.variable, it.pregunta || d.texto || '', respuesta, it.tipo === 'multichoice' ? { opcion: it.opcion || null } : null));
-        });
+        // Ítems que la versión vigente no conoce: se guardan igual, con el valor que envía Moodle
         Object.keys(items).forEach(function(id) {
           if (conocidos[id]) return;
-          var it = items[id];
-          lista.push(it.tipo === 'multichoice' ? entrada('pregunta_' + id, it.pregunta, it.texto, { opcion: it.opcion || null }) : entrada('pregunta_' + id, it.pregunta, it.valor));
+          var respuestas = respuestasDeItem(null, items[id]);
+          if (respuestas) lista.push({ item_id: Number(id), respuestas: respuestas });
         });
         return {
           id_usuario: usuario.id,
           dni: usuario.dni,
-          encuesta: enc.clave,
-          version_encuesta: enc.version,
-          periodo: enc.porPeriodo ? PERIODO_ACTUAL : '',
-          json_pregunta_respuesta: lista,
-          puntaje_criticidad: null, // la base lo pide: si alGuardar no lo completa, se guarda 0
+          codigo_encuesta: def.codigo_encuesta,
+          version: def.version,
+          periodo: def.porPeriodo ? PERIODO_ACTUAL : '',
+          json_respuesta: lista,
           created_at: ahoraIso()
         };
       }
 
+      // ENTRADA DE CRITICIDAD DE UN ENVÍO (indice_total Y semaforo LOS COMPLETA registrarCriticidad)
+      function entradaDeEncuesta(registro, rid, indice) {
+        return {
+          id_usuario: registro.id_usuario, dni: registro.dni, periodo: registro.periodo || PERIODO_ACTUAL,
+          origen: 'automatica', fuente: 'respuestas', rid_fuente: rid, indice: indice,
+          indice_total: null, semaforo: null, motivo: '', created_at: ahoraIso()
+        };
+      }
+
+      // ÍNDICE DE UN REGISTRO CON SU DEFINICIÓN (null SI NO SE PUDO CALCULAR: LA RESPUESTA SE GUARDA IGUAL)
+      function indiceDeRegistro(registro, def) {
+        try { return CriticidadEncuesta(registro, def).indice; } catch (e) { return null; }
+      }
+
       // ---------------------------------------------------------
-      // ACCESO A LA BASE RESPUESTAS (MOODLE)
+      // ACCESO A LAS BASES DE MOODLE (RESPUESTAS Y CRITICIDAD)
       // ---------------------------------------------------------
-      var CAMPOS_RESPUESTA = ['id_usuario', 'dni', 'encuesta', 'version_encuesta', 'periodo', 'json_pregunta_respuesta', 'puntaje_criticidad', 'created_at'];
+      var CAMPOS_RESPUESTA = ['id_usuario', 'dni', 'codigo_encuesta', 'version', 'periodo', 'json_respuesta', 'created_at'];
+      var CAMPOS_CRITICIDAD = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'indice_total', 'semaforo', 'motivo', 'created_at'];
 
       // USUARIO DE LA SESIÓN: id (M.cfg.userId) y DNI (nombre de usuario del campus, en /login/change_password.php)
       var usuarioMoodle = null;
@@ -407,55 +481,41 @@
           }, function() { return (usuarioMoodle = u); });
       }
 
-      // ENTRADAS PROPIAS DE LA BASE (CON "REQUIERE APROBACIÓN", EL ESTUDIANTE SOLO VE LAS SUYAS)
-      // Lee la plantilla de lista propia (data/moodle/plantillas/respuestas); si falta, la de Moodle por defecto (filas "campo | valor")
-      function leerRespuestasMoodle(idUsuario) {
-        return fetch(M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_RESPUESTAS + '&perpage=1000', { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var propias = doc.querySelectorAll('.zk-registro[data-tipo="entrada_respuesta"]');
-            var filas = propias.length ? Array.prototype.map.call(propias, function(el) {
-              var v = {};
-              el.querySelectorAll('[data-campo]').forEach(function(c) { v[c.getAttribute('data-campo')] = c.textContent.trim(); });
-              return v;
-            }) : Array.prototype.map.call(doc.querySelectorAll('.defaulttemplate-listentry'), function(entrada) {
-              var v = {};
-              entrada.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
-                var celdas = fila.children;
-                if (celdas.length >= 2) v[celdas[0].textContent.trim().toLowerCase()] = celdas[1].textContent.trim();
-              });
-              return v;
-            });
-            return filas.map(function(v) {
-              try { v.json_pregunta_respuesta = JSON.parse(v.json_pregunta_respuesta); } catch (e) { v.json_pregunta_respuesta = []; }
-              v.id_usuario = Number(v.id_usuario);
-              return v;
-            }).filter(function(r) { return r.id_usuario === idUsuario; });
-          });
+      // ENTRADAS PROPIAS DE UNA BASE CON "REQUIERE APROBACIÓN" (EL ESTUDIANTE SOLO VE LAS SUYAS): campos + rid
+      function entradasPropias(dataid, idUsuario) {
+        if (!dataid) return Promise.reject(new Error('La base todavía no está creada en Moodle.'));
+        return LeerBase({ dataid: dataid }).then(function(r) {
+          return r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = e.campos[k]; });
+            c.rid = e.rid ? Number(e.rid) : null;
+            return c;
+          }).filter(function(c) { return Number(c.id_usuario) === Number(idUsuario); });
+        });
       }
 
-
-      // AGREGAR UNA ENTRADA (rid=0: NUNCA SE EDITA NI SE BORRA). LOS CAMPOS SE UBICAN POR SU ETIQUETA EN EL FORMULARIO DE ALTA
-      function guardarRespuestaMoodle(registro) {
-        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_RESPUESTAS, { credentials: 'same-origin' })
+      // AGREGAR UNA ENTRADA (rid=0: NUNCA SE EDITA NI SE BORRA) → PROMESA DEL rid NUEVO.
+      // Los campos se ubican por su etiqueta en el formulario de alta. Moodle redirige a view.php?d=…&rid=<nuevo>
+      function guardarEntradaMoodle(dataid, campos, registro) {
+        if (!dataid) return Promise.reject(new Error('La base todavía no está creada en Moodle.'));
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + dataid, { credentials: 'same-origin' })
           .then(function(r) { return r.text(); })
           .then(function(html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
-            if (!form) throw new Error('No se encontró el formulario de alta de la base Respuestas.');
+            if (!form) throw new Error('No se encontró el formulario de alta de la base (d=' + dataid + ').');
             var porCampo = {};
             form.querySelectorAll('label[for]').forEach(function(l) {
               var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
               if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
             });
             var fd = new FormData(form);
-            fd.set('d', String(DATAID_RESPUESTAS));
+            fd.set('d', String(dataid));
             fd.set('rid', '0');
-            CAMPOS_RESPUESTA.forEach(function(k) {
-              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base Respuestas.');
+            campos.forEach(function(k) {
+              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base (d=' + dataid + ').');
               var v = registro[k];
-              fd.set(porCampo[k], typeof v === 'string' || typeof v === 'number' ? String(v) : JSON.stringify(v));
+              fd.set(porCampo[k], v === null || v === undefined ? '' : typeof v === 'string' || typeof v === 'number' ? String(v) : JSON.stringify(v));
             });
             fd.delete('saveandadd');
             fd.set('saveandview', 'Guardar');
@@ -463,28 +523,72 @@
           })
           .then(function(r) {
             if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
             return r.text().then(function(html) {
               var doc = new DOMParser().parseFromString(html, 'text/html');
               var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
-              if (errores.length) throw new Error(errores.join(' '));
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la entrada nueva.');
             });
           });
       }
 
-      // COPIAS PENDIENTES: SE REINTENTAN AL VOLVER A ABRIR LA ENCUESTA, SIN DUPLICAR LAS QUE SÍ LLEGARON (MISMO created_at)
+      // BASE CRITICIDAD EN MOODLE: { leer(idUsuario), guardar(entrada) }
+      var baseCriticidadMoodle = {
+        leer: function(idUsuario) { return entradasPropias(DATAID_CRITICIDAD, idUsuario); },
+        guardar: function(entrada) { return guardarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_CRITICIDAD, entrada); }
+      };
+
+      // ENTRADAS DE CRITICIDAD PENDIENTES (localStorage): SE REINTENTAN SIN DUPLICAR (MISMA fuente, rid_fuente Y created_at)
+      function agregarCriticidadPendiente(entrada) {
+        var p = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, []);
+        p.push(entrada);
+        escribirAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, p);
+      }
+
+      function reintentarCriticidadPendiente() {
+        var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, []);
+        if (!pendientes.length) return Promise.resolve();
+        var quedan = [];
+        return pendientes.reduce(function(p, e) {
+          return p.then(function() {
+            // Notas que no se llegaron a calcular: se calculan ahora con las notas de hoy
+            if (e.fuente === 'notas_1ro' && (e.indice === null || e.indice === undefined)) {
+              return criticidadDeNotas(e.rid_fuente).catch(function() { quedan.push(e); });
+            }
+            return registrarCriticidad(baseCriticidadMoodle, e, {
+              yaEsta: function(c) { return c.fuente === e.fuente && Number(c.rid_fuente) === Number(e.rid_fuente) && c.created_at === e.created_at; }
+            }).catch(function() { quedan.push(e); });
+          });
+        }, Promise.resolve()).then(function() {
+          escribirAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, quedan.length ? quedan : null);
+        });
+      }
+
+      // COPIAS PENDIENTES: { registro, indice }. SE REINTENTAN AL VOLVER A ABRIR LA ENCUESTA, SIN DUPLICAR (MISMO created_at)
+      // Las de la versión anterior de la copia (sin json_respuesta) se dejan como están: no entran en los campos nuevos de la base
       function reintentarPendientes() {
         var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES, []);
-        if (!pendientes.length) return Promise.resolve();
-        return leerUsuarioMoodle().then(function(u) { return leerRespuestasMoodle(u.id); }).then(function(guardadas) {
-          var ya = guardadas.map(function(r) { return r.created_at; });
+        if (!pendientes.length) return reintentarCriticidadPendiente().catch(function() {});
+        return leerUsuarioMoodle().then(function(u) { return entradasPropias(DATAID_RESPUESTAS, u.id); }).then(function(guardadas) {
+          var ya = {};
+          guardadas.forEach(function(r) { ya[r.created_at] = r.rid; });
           var quedan = [];
-          return pendientes.reduce(function(p, reg) {
+          return pendientes.reduce(function(p, item) {
             return p.then(function() {
-              if (ya.indexOf(reg.created_at) !== -1) return;
-              return guardarRespuestaMoodle(reg).catch(function() { quedan.push(reg); });
+              if (!item || !item.registro || !Array.isArray(item.registro.json_respuesta)) { quedan.push(item); return; }
+              var reg = item.registro;
+              var guardado = ya[reg.created_at] ? Promise.resolve(ya[reg.created_at]) : guardarEntradaMoodle(DATAID_RESPUESTAS, CAMPOS_RESPUESTA, reg);
+              return guardado.then(function(rid) {
+                if (item.indice === null || item.indice === undefined) return;
+                var e = entradaDeEncuesta(reg, rid, item.indice);
+                return registrarCriticidad(baseCriticidadMoodle, e, {
+                  yaEsta: function(c) { return c.fuente === 'respuestas' && Number(c.rid_fuente) === Number(rid); }
+                }).catch(function() { agregarCriticidadPendiente(e); });
+              }, function() { quedan.push(item); });
             });
           }, Promise.resolve()).then(function() { escribirAlmacen(window.localStorage, CLAVE_PENDIENTES, quedan.length ? quedan : null); });
-        }).catch(function() { /* sin conexión con la base: se reintenta en la próxima visita */ });
+        }).then(reintentarCriticidadPendiente).catch(function() { /* sin conexión con la base: se reintenta en la próxima visita */ });
       }
 
       // ---------------------------------------------------------
@@ -508,62 +612,38 @@
         return paginas;
       }
 
+      // 1) RESPUESTAS (LA COPIA) Y 2) CRITICIDAD (CON EL rid DE LA RESPUESTA). SI FALLA 1, QUEDAN PENDIENTES LAS DOS;
+      // SI FALLA SOLO 2, QUEDA PENDIENTE LA ENTRADA DE CRITICIDAD. LA PROMESA SE RECHAZA SOLO SI NO SE GUARDÓ LA RESPUESTA
       function copiar(cmid, paginas, actual) {
+        var def = null;
         var faltan = [];
         for (var k = 0; k < actual.pagina; k++) if (!paginas[k]) faltan.push(k);
-        return Promise.all(faltan.map(function(k) {
-          return adaptador.leerPagina(cmid, k).then(function(p) { paginas[k] = p; });
-        })).then(function() {
+        return definicionVigente(ENCUESTAS[cmid].clave).then(function(d) {
+          def = d;
+          return Promise.all(faltan.map(function(k) {
+            return adaptador.leerPagina(cmid, k).then(function(p) { paginas[k] = p; });
+          }));
+        }).then(function() {
           return adaptador.usuario();
         }).then(function(usuario) {
-          return aplicarAlGuardar(armarRegistro(cmid, paginas, usuario), contextoDe(cmid, usuario));
-        }).then(function(registro) {
+          var registro = armarRegistro(def, paginas, usuario);
+          var indice = indiceDeRegistro(registro, def);
           ultimoRegistro = registro;
-          return adaptador.guardar(registro).then(function() { return registro; }, function(e) {
-            adaptador.pendiente(registro);
-            throw e;
+          return adaptador.guardar(registro).then(function(rid) {
+            if (indice === null) return registro;
+            var e = entradaDeEncuesta(registro, rid, indice);
+            return conLimite(registrarCriticidad(adaptador.criticidad, e), ESPERA_CRITICIDAD, 'La criticidad')
+              .catch(function() { adaptador.pendienteCriticidad(e); })
+              .then(function() { return registro; });
+          }, function(err) {
+            adaptador.pendiente({ registro: registro, indice: indice });
+            throw err;
           });
         });
       }
 
-      // ---------------------------------------------------------
-      // alGuardar: FUNCIÓN QUE LE PASA LA VISTA (OPCIONES DEL CARGADOR) PARA TRANSFORMAR EL REGISTRO ANTES DE GUARDARLO
-      // ---------------------------------------------------------
-      // Contrato: alGuardar(registro, contexto) → registro o una promesa del registro. Recibe una copia: puede cambiarla y devolverla.
-      // Si falla, tarda más de ESPERA_AL_GUARDAR o no devuelve un registro, se guarda el registro tal cual (sin criticidad): la copia
-      // nunca se pierde por un error en la criticidad. La base pide un puntaje_criticidad numérico: si no lo completa, va 0.
-      var alGuardar = null;
-
-      // contexto: { encuesta, cmid, version, periodo, usuario: { id, dni }, respuestasPropias() → promesa de los registros del estudiante }
-      function contextoDe(cmid, usuario) {
-        var enc = ENCUESTAS[cmid];
-        return {
-          encuesta: enc.clave, cmid: cmid, version: enc.version, periodo: enc.porPeriodo ? PERIODO_ACTUAL : '',
-          usuario: { id: usuario.id, dni: usuario.dni },
-          respuestasPropias: function() { return adaptador.respuestasPropias(usuario.id); }
-        };
-      }
-
-      function aplicarAlGuardar(registro, contexto) {
-        var completar = function(r) {
-          if (typeof r.puntaje_criticidad !== 'number' || !isFinite(r.puntaje_criticidad)) r.puntaje_criticidad = 0;
-          return r;
-        };
-        if (!alGuardar) return Promise.resolve(completar(registro));
-        var copia = JSON.parse(JSON.stringify(registro));
-        return conLimite(new Promise(function(resolver) { resolver(alGuardar(copia, contexto)); }), ESPERA_AL_GUARDAR, 'alGuardar')
-          .then(function(r) {
-            if (!r || !Array.isArray(r.json_pregunta_respuesta)) throw new Error('alGuardar no devolvió un registro.');
-            return completar(r);
-          })
-          .catch(function(e) {
-            // En la encuesta del estudiante no se avisa; en la vista previa local, sí
-            if (ES_VISTA_LOCAL) avisar('alGuardar falló y el registro se guardó sin criticidad: ' + (e && e.message ? e.message : e), 'alerta');
-            return completar(registro);
-          });
-      }
-
       // ESPERA UNA PROMESA COMO MUCHO "ms" (POR DEFECTO ESPERA_MAXIMA): EL ENVÍO A MOODLE NUNCA QUEDA BLOQUEADO
+      var ESPERA_CRITICIDAD = 4000; // milisegundos que se espera la entrada de Criticidad, después de guardar la respuesta
       var ultimoRegistro = null;
       function conLimite(promesa, ms, que) {
         var espera = ms || ESPERA_MAXIMA;
@@ -591,10 +671,11 @@
         if (accion === 'cancel') return escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
         var actual = leerPagina(form, true);
         var paginas = guardarPaginaEnSesion(cmid, actual);
-        var enc = ENCUESTAS[cmid];
-        // Envío final: "Enviar respuestas", o "Página siguiente" cuando las páginas que siguen quedan vacías por una dependencia
+        // Envío final: "Enviar respuestas", o "Página siguiente" cuando las páginas que siguen quedan vacías por una dependencia.
+        // Para lo segundo hace falta la versión vigente ya leída (se pide al abrir la encuesta); sin ella solo se copia con "Enviar respuestas"
+        var def = definicionCargada[ENCUESTAS[cmid].clave];
         var final = accion === 'savevalues' ||
-          (accion === 'gonextpage' && estructuraCoincide(enc, actual) && !quedanPaginasVisibles(enc, actual.pagina, itemsRespondidos(paginas)));
+          (accion === 'gonextpage' && !!def && estructuraCoincide(def, actual) && !quedanPaginasVisibles(def, actual.pagina, itemsRespondidos(paginas)));
         if (!final) return; // página siguiente o anterior: Moodle sigue solo
         if (faltantes(actual).length) return; // Moodle va a rechazar el envío: no se copia
         e.preventDefault();
@@ -625,13 +706,15 @@
               });
           },
           usuario: leerUsuarioMoodle,
-          respuestasPropias: leerRespuestasMoodle,
-          guardar: function(registro) { return conLimite(guardarRespuestaMoodle(registro)); },
-          pendiente: function(registro) {
+          // Devuelve el rid de la respuesta nueva
+          guardar: function(registro) { return conLimite(guardarEntradaMoodle(DATAID_RESPUESTAS, CAMPOS_RESPUESTA, registro)); },
+          criticidad: baseCriticidadMoodle,
+          pendiente: function(item) {
             var p = leerAlmacen(window.localStorage, CLAVE_PENDIENTES, []);
-            p.push(registro);
+            p.push(item);
             escribirAlmacen(window.localStorage, CLAVE_PENDIENTES, p);
           },
+          pendienteCriticidad: agregarCriticidadPendiente,
           // Sigue el envío original: el botón presionado viaja como campo oculto para que Moodle sepa que es el envío final
           continuar: function(form, boton) {
             if (boton && boton.name) {
@@ -667,13 +750,18 @@
         ]
       };
       SIMULACION[CMID_CUATRIMESTRAL] = {
-        // Cuadro de créditos (8261) y selector de materias (8270), que escribe su JSON en la 8768
+        // Páginas de la Encuesta Cuatrimestral tal como están en Moodle desde el 2026-10-31 (cuatro saltos de página):
+        // cuadro de créditos (8261) y selector de materias (8270), que escribe su JSON en la 8768
         paginas: [[
           { tipo: 'cuadro' },
-          { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true },
-          { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true },
-          { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true },
-          { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'], req: true },
+          { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true }
+        ], [
+          { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true }
+        ], [
+          { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true }
+        ], [
+          { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'], req: true, depende: [8265, 1] }
+        ], [
           { id: 8768, tipo: 'textarea', texto: '¿Qué materias cursaste el anterior cuatrimestre?', ejemplo: JSON.stringify({ plan: '2024', ninguna: false, materias: [
             { codigo: 'INGM102', nombre: 'Análisis Matemático II', primera_vez: false, dificultad: 4 },
             { codigo: 'INGF101', nombre: 'Física A', primera_vez: true, dificultad: 2 }] }) },
@@ -683,7 +771,13 @@
       // Materias del cuadro de créditos simulado (Plan 2024, 1.er año)
       var MATERIAS_CUADRO = [{ codigo: 'INGM101', nombre: 'Análisis Matemático I', creditos: 6 }, { codigo: 'INGM105', nombre: 'Álgebra I- B', creditos: 4 }, { codigo: 'ING1103', nombre: 'Fundamentos de Química', creditos: 4 }];
 
-      var sim = { cmid: CMID_INICIAL, pagina: 0, valores: {}, base: [], error: '', guardado: '' };
+      // base: entradas de Respuestas; criticidad: entradas de Criticidad (con una de notas de 1.er año de ejemplo, para ver indice_total)
+      var sim = { cmid: CMID_INICIAL, pagina: 0, valores: {}, base: [], criticidad: [], error: '', guardado: '' };
+      function criticidadDeEjemplo() {
+        return [{ rid: 1, id_usuario: USUARIO_PRUEBA.id, dni: USUARIO_PRUEBA.dni, periodo: PERIODO_ACTUAL, origen: 'automatica', fuente: 'notas_1ro', rid_fuente: 1,
+          indice: 52, indice_total: 52, semaforo: 'amarillo', motivo: 'Ejemplo de la vista previa: notas de 1.er año ya cargadas', created_at: '2026-10-20T10:00:00-03:00' }];
+      }
+      sim.criticidad = criticidadDeEjemplo();
 
       function itemsVisibles(cmid, k) {
         return SIMULACION[cmid].paginas[k].filter(function(d) { return !d.depende || sim.valores['multichoice_' + d.depende[0]] === String(d.depende[1]); });
@@ -749,15 +843,26 @@
         }
       }
 
+      // REGISTROS DE UNA BASE SIMULADA, DEL MÁS NUEVO AL MÁS VIEJO
+      function htmlRegistros(lista, titulo, resumen, vacio) {
+        var pre = 'margin: 8px 0 0 0 !important; padding: 10px 12px !important; background-color: #0b0e14 !important; color: #ebeef4 !important; border-radius: 8px !important; font-size: 12px !important; line-height: 1.45 !important; overflow-x: auto !important; white-space: pre !important;';
+        return '<div style="font-size: 16px !important; font-weight: 600 !important; margin: 16px 0 4px 0 !important;">' + escapar(titulo) + '</div>' +
+          (lista.length ? lista.slice().reverse().map(function(r, i) {
+            return '<details' + (i === 0 ? ' open' : '') + ' style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 10px 14px !important; margin-bottom: 8px !important;">' +
+              '<summary style="cursor: pointer !important; font-weight: 600 !important;">' + escapar(resumen(r)) + '</summary>' +
+              '<pre style="' + pre + '">' + escapar(JSON.stringify(r, null, 2)) + '</pre></details>';
+          }).join('') : '<p style="margin: 0 !important; color: #47536b !important;">' + escapar(vacio) + '</p>');
+      }
+
       function renderizarRegistros() {
         var cont = document.getElementById('registros-simulados');
-        cont.innerHTML = '<div style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0 !important;">Registros copiados a la base Respuestas</div>' +
-          '<div style="font-size: 12px !important; color: #47536b !important; margin-bottom: 8px !important;">Simulación en memoria: un registro por envío, del más nuevo al más viejo. El estudiante no ve esta información.</div>' +
-          (sim.base.length ? sim.base.slice().reverse().map(function(r, i) {
-            return '<details' + (i === 0 ? ' open' : '') + ' style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 10px 14px !important; margin-bottom: 8px !important;">' +
-              '<summary style="cursor: pointer !important; font-weight: 600 !important;">' + escapar(r.encuesta + (r.periodo ? ' ' + r.periodo : '') + ' · puntaje de criticidad ' + r.puntaje_criticidad + ' · ' + r.created_at) + '</summary>' +
-              '<pre style="margin: 8px 0 0 0 !important; padding: 10px 12px !important; background-color: #0b0e14 !important; color: #ebeef4 !important; border-radius: 8px !important; font-size: 12px !important; line-height: 1.45 !important; overflow-x: auto !important; white-space: pre !important;">' + escapar(JSON.stringify(r, null, 2)) + '</pre></details>';
-          }).join('') : '<p style="margin: 0 !important; color: #47536b !important;">Sin registros. Responder la encuesta simulada y enviarla.</p>');
+        cont.innerHTML = '<div style="font-size: 12px !important; color: #47536b !important;">Simulación en memoria de las bases Respuestas y Criticidad. El estudiante no ve la criticidad en la encuesta.</div>' +
+          htmlRegistros(sim.base, 'Base Respuestas', function(r) {
+            return 'rid ' + r.rid + ' · ' + r.codigo_encuesta + ' v' + r.version + (r.periodo ? ' ' + r.periodo : '') + ' · ' + r.created_at;
+          }, 'Sin registros. Responder la encuesta simulada y enviarla.') +
+          htmlRegistros(sim.criticidad, 'Base Criticidad', function(c) {
+            return 'rid ' + c.rid + ' · ' + c.fuente + (c.rid_fuente ? ' (rid ' + c.rid_fuente + ')' : '') + ' · índice ' + c.indice + ' · total ' + c.indice_total + ' · ' + c.semaforo;
+          }, 'Sin entradas.');
       }
 
       function adaptadorLocal() {
@@ -771,15 +876,29 @@
             return Promise.resolve(p);
           },
           usuario: function() { return Promise.resolve(USUARIO_PRUEBA); },
-          respuestasPropias: function(id) { return Promise.resolve(sim.base.filter(function(r) { return r.id_usuario === id; })); },
-          guardar: function(registro) { sim.base.push(registro); return Promise.resolve(); },
+          guardar: function(registro) {
+            var r = JSON.parse(JSON.stringify(registro));
+            r.rid = 100 + sim.base.length;
+            sim.base.push(r);
+            return Promise.resolve(r.rid);
+          },
+          criticidad: {
+            leer: function(id) { return Promise.resolve(sim.criticidad.filter(function(c) { return Number(c.id_usuario) === Number(id); })); },
+            guardar: function(e) {
+              var c = JSON.parse(JSON.stringify(e));
+              c.rid = 1 + sim.criticidad.length;
+              sim.criticidad.push(c);
+              return Promise.resolve(c.rid);
+            }
+          },
           pendiente: function() {},
+          pendienteCriticidad: function() {},
           // Equivale a que Moodle reciba el envío final: valida el rango en el servidor, guarda y vuelve a la primera página
           continuar: function() {
             sim.error = '';
             sim.valores = {};
             sim.pagina = 0;
-            sim.guardado = 'Moodle guardó la respuesta y se copió a la base Respuestas.';
+            sim.guardado = 'Moodle guardó la respuesta, se copió a la base Respuestas y se agregó su entrada a Criticidad.';
             renderizarSimulador();
             renderizarRegistros();
             avisar(sim.guardado, 'ok');
@@ -801,7 +920,7 @@
           '<button type="button" data-sim-encuesta="' + CMID_CUATRIMESTRAL + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">Cuatrimestral</button></div>' +
           '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
           '<h3 style="margin: 0 0 4px 0 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Copia de respuestas de las encuestas</h3>' +
-          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro a la base Respuestas (simulada), con la criticidad que calcula el alGuardar del cargador. Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
+          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro a la base Respuestas y una entrada a la base Criticidad (las dos simuladas), con la versión vigente de data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json. Criticidad empieza con una entrada de notas de ejemplo, para ver el índice total. Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
           '<div id="formulario-simulado" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important;"></div>' +
           '<div id="registros-simulados"></div>' +
           '<div id="footer-zhakyz" style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important;">' +
@@ -866,31 +985,37 @@
           // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas.
           // Ahí se ven todas las páginas juntas: el aviso lo muestra solo el primer ítem (la primera instancia)
           var enc = ENCUESTAS[M.cfg.contextInstanceId];
+          var base = 'Ítem con script: copia cada envío de esta encuesta a la base Respuestas y agrega su entrada a Criticidad. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/utils/tools, herramienta CopiaRespuestas). ';
+          if (!enc) { avisar(base + 'Esta encuesta no está en la lista del script.', 'info'); return; }
           // Editar preguntas dibuja los ítems sin los fitem de la encuesta: la estructura solo se puede leer en la vista previa
           var enPantalla = estructuraEnPantalla();
-          var igual = enc && JSON.stringify(enPantalla) === JSON.stringify(enc.paginas);
-          avisar('Ítem con script: copia cada envío de esta encuesta a la base Respuestas. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/utils/tools, herramienta CopiaRespuestas). ' +
-            (!enc ? 'Esta encuesta no está en la lista del script.' : !enPantalla.length ? 'La estructura de páginas se controla en la vista previa.'
-              : igual ? 'La estructura de páginas coincide con la del script.'
-              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(enPantalla) + '; en el script: ' + JSON.stringify(enc.paginas) + '). Actualizar la lista "paginas" del script.'),
-            !enc || igual || !enPantalla.length ? 'info' : 'alerta');
+          definicionVigente(enc.clave).then(function(def) {
+            var igual = JSON.stringify(enPantalla) === JSON.stringify(def.paginas);
+            avisar(base + 'Versión vigente en la base Encuestas: ' + def.version + '. ' + (!enPantalla.length ? 'La estructura de páginas se controla en la vista previa.'
+              : igual ? 'La estructura de páginas coincide con la versión vigente.'
+              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(enPantalla) + '; en la versión ' + def.version + ': ' + JSON.stringify(def.paginas) + '). Cargar una versión nueva en la base Encuestas.'),
+              igual || !enPantalla.length ? 'info' : 'alerta');
+          }, function(e) {
+            avisar(base + 'No se pudo leer la versión vigente: ' + (e && e.message ? e.message : e), 'alerta');
+          });
         } else if (window.M && DATAID_RESPUESTAS && formularioEncuesta(document)) {
           adaptador = adaptadorMoodle();
+          // La versión vigente se pide al abrir la encuesta: el envío final con "Página siguiente" se decide sin esperar
+          var abierta = ENCUESTAS[Number((formularioEncuesta(document).querySelector('input[name="id"]') || {}).value)];
+          if (abierta) definicionVigente(abierta.clave).catch(function() { /* se vuelve a pedir al enviar */ });
           reintentarPendientes();
         }
       }
 
       // ---------------------------------------------------------
-      // CONSTRUCTOR: CopiaRespuestas({ contenedor, alGuardar })
+      // CONSTRUCTOR: CopiaRespuestas({ contenedor })
       // ---------------------------------------------------------
+      // Desde la versión 4 la criticidad la calcula la copia con la base Encuestas (CriticidadEncuesta): la opción alGuardar
+      // de los ítems publicados antes del ADR-007 se ignora
       function CopiaRespuestas(opciones) {
         if (elRaiz) return null; // ya hay una instancia en esta página: solo la primera copia (o avisa)
         var contenedor = opciones && opciones.contenedor;
         if (!contenedor) throw new Error('CopiaRespuestas necesita un contenedor.');
-        if (opciones.alGuardar !== undefined && opciones.alGuardar !== null && typeof opciones.alGuardar !== 'function') {
-          throw new Error('alGuardar de CopiaRespuestas tiene que ser una función: alGuardar(registro, contexto) → registro.');
-        }
-        alGuardar = opciones.alGuardar || null;
         contenedor.innerHTML = '<div class="zk-copia-respuestas" style="margin: 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">' +
           '<div data-copia="aviso" style="display: none;"></div><div data-copia="simulador" style="display: none;"></div></div>';
         elRaiz = contenedor.firstChild;
@@ -902,32 +1027,70 @@
       }
 
       // =========================================================
-      // HERRAMIENTAS CriticidadInicial Y CriticidadCuatrimestral: PUNTOS DE CRITICIDAD DE UN REGISTRO DE LA BASE RESPUESTAS
+      // HERRAMIENTA CriticidadEncuesta: ÍNDICE DE 0 A 100 DE UN REGISTRO DE RESPUESTAS, CON LA DEFINICIÓN DE SU VERSIÓN
       // =========================================================
-      // Son el alGuardar de CopiaRespuestas (lo arma el cargador de los ítems de las encuestas). No leen ni guardan nada en Moodle:
-      // reciben el registro que armó la copia, completan "criticidad" en cada entrada y "puntaje_criticidad" con la suma, y lo devuelven.
-      // Valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md (PROVISORIOS). Los puntos van por variable y número de opción (1, 2…).
+      // No lee ni guarda nada en Moodle. Los puntos salen de la base Encuestas (ADR-007): cada opción de opción múltiple tiene su
+      // criticidad, y las preguntas con "regla" se calculan acá (cursada; avance_curricular está en análisis y no suma).
+      // Valores provisorios de docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md.
+      // indice = puntos ÷ puntaje_maximo de la versión × 100: con el avance desactivado, el máximo es 30 en la inicial y 70 en la cuatrimestral.
 
-      // PUNTOS POR VARIABLE Y NÚMERO DE OPCIÓN DE CADA ENCUESTA
-      var PUNTOS_INICIAL = {
-        trabaja: { 1: 10, 2: 0 },
-        inicio_laboral: { 1: 20, 2: 20 }
-      };
-      var PUNTOS_CUATRIMESTRAL = {
-        progreso_proyecto_final: { 1: 0, 2: 10, 3: 7, 4: 3, 5: 0 },
-        trabaja: { 1: 5, 2: 0 },
-        inicio_laboral: { 1: 10, 2: 10, 3: 10, 4: 7, 5: 7, 6: 4, 7: 4 },
-        avance_percibido: { 1: 0, 2: 5, 3: 10 }
-      };
+      // PUNTOS DEL BLOQUE DE CURSADA (MATERIAS DEL SELECTOR): CANTIDAD, RECURSADO Y DIFICULTAD
+      // Cantidad: ninguna → cantidad[0] (inactividad), salvo con el PFG en una de las opciones de sin_inactividad; n → cantidad[n] (o 0).
+      // Recursado: la 1.ª materia con primera_vez = false suma recursada[0], la 2.ª recursada[1], las demás 0.
+      // Dificultad: el promedio de 1 a 5 da de 0 a dificultad_max: cada materia aporta (dificultad − 1) × dificultad_max ÷ 4 ÷ cantidad de materias
+      function puntosCursada(respuestas, regla, opcionPfg) {
+        if (!Array.isArray(respuestas) || respuestas.some(function(m) { return !m || typeof m !== 'object'; })) return 0; // texto a mano: sin puntos
+        var n = respuestas.length;
+        var sin = regla.sin_inactividad || {};
+        if (n === 0) return (sin.opciones || []).indexOf(opcionPfg) !== -1 ? 0 : (regla.cantidad || [])[0] || 0;
+        var puntos = (regla.cantidad || [])[n] || 0;
+        var recursadas = 0;
+        respuestas.forEach(function(m) {
+          if (m.primera_vez === false) puntos += (regla.recursada || [])[recursadas++] || 0;
+          if (typeof m.dificultad === 'number') puntos += (m.dificultad - 1) * (regla.dificultad_max || 0) / 4 / n;
+        });
+        return puntos;
+      }
 
-      // MATERIAS CURSADAS DE LA CUATRIMESTRAL: BLOQUE DE CURSADA (MÁXIMO 35)
-      // Cantidad: ninguna → 35 (inactividad) · 1 → 10 · 2 → 5 · 3 o más → 0. No cursar no es inactividad con el PFG en desarrollo (4)
-      // o finalizado (5). Recursado: 1.ª materia recursada 8, 2.ª 7, las demás 0.
-      // Dificultad: cada materia aporta (dificultad − 1) × 2,5 ÷ cantidad de materias (el promedio de 1 a 5 da de 0 a 10)
-      var PUNTOS_CANTIDAD = [35, 10, 5];
-      var PUNTOS_RECURSADA = [8, 7];
-      var PFG_SIN_INACTIVIDAD = [4, 5];
+      // CriticidadEncuesta(registro, definicion) → { indice, puntos, maximo }
+      // registro: entrada de Respuestas ({ codigo_encuesta, version, json_respuesta }); definicion: la de esa versión
+      // (la que devuelve la copia, o la entrada de la base Encuestas con json_preguntas)
+      function CriticidadEncuesta(registro, definicion) {
+        if (!registro || !Array.isArray(registro.json_respuesta)) throw new Error('CriticidadEncuesta recibe un registro de la base Respuestas (con json_respuesta).');
+        var def = definicion && Array.isArray(definicion.preguntas) ? definicion : definicionDeEntrada(definicion || {});
+        if (def.codigo_encuesta !== registro.codigo_encuesta || Number(def.version) !== Number(registro.version)) {
+          throw new Error('La definición es de ' + def.codigo_encuesta + ' v' + def.version + ' y el registro, de ' + registro.codigo_encuesta + ' v' + registro.version + '.');
+        }
+        var respuestaDe = function(variable) {
+          var p = preguntaPorVariable(def, variable);
+          var r = p ? registro.json_respuesta.filter(function(x) { return Number(x.item_id) === Number(p.item_id); })[0] : null;
+          return r && Array.isArray(r.respuestas) ? r.respuestas[0] : null;
+        };
+        var puntos = 0;
+        registro.json_respuesta.forEach(function(r) {
+          var p = preguntaPorId(def, r.item_id);
+          if (!p || !Array.isArray(r.respuestas)) return; // ítem que la versión no conoce: sin puntos
+          if (p.regla) {
+            if (!p.regla.activa) return;
+            if (p.regla.nombre === 'cursada') puntos += puntosCursada(r.respuestas, p.regla, respuestaDe((p.regla.sin_inactividad || {}).variable));
+            return;
+          }
+          if (!Array.isArray(p.opciones)) return;
+          r.respuestas.forEach(function(o) {
+            var op = p.opciones.filter(function(x) { return Number(x.opcion) === Number(o); })[0];
+            if (op && typeof op.criticidad === 'number') puntos += op.criticidad;
+          });
+        });
+        var maximo = Number(def.puntajeMaximo);
+        return {
+          indice: maximo > 0 ? Math.min(100, Math.round(puntos * 100 / maximo)) : 0,
+          puntos: Math.round(puntos * 10) / 10,
+          maximo: maximo
+        };
+      }
 
+      // La regla avance_curricular (creditos_aprobados) tiene activa: false en la base Encuestas. Su cálculo sigue abajo, comentado y sin borrar,
+      // como estaba antes del ADR-007: al reactivarlo hay que leer las respuestas por item_id (json_respuesta) en lugar de por variable.
       // EN ANÁLISIS: la criticidad por avance curricular (créditos aprobados / esperados) queda desactivada mientras el equipo la revisa.
       // creditos_aprobados se copia igual, con criticidad null. Máximo del avance: 70 en la inicial y 30 en la cuatrimestral.
       // // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre (las anuales cuentan al terminar). El Plan 2003 queda fuera del alcance
@@ -978,58 +1141,206 @@
       //   });
       // }
 
-      // EL REGISTRO TIENE QUE SER DE ESA ENCUESTA: LAS DOS TOOLS NO SE ARRANCAN CON TOOL (RECIBIRÍAN { contenedor })
-      function validarRegistro(tool, registro, encuesta) {
-        if (!registro || !Array.isArray(registro.json_pregunta_respuesta)) {
-          throw new Error(tool + ' recibe un registro de la base Respuestas: se usa como alGuardar de CopiaRespuestas, no con TOOL.');
-        }
-        if (registro.encuesta !== encuesta) throw new Error(tool + ' es para la encuesta ' + encuesta + ', no para ' + registro.encuesta + '.');
+
+      // ---------------------------------------------------------
+      // BASE CRITICIDAD: SEMÁFORO, ÍNDICE TOTAL Y ALTA DE UNA ENTRADA AUTOMÁTICA (LA USAN LA COPIA Y CriticidadNotas)
+      // ---------------------------------------------------------
+      // Semáforo del índice total: los mismos cortes que el ICE y el modelo de las encuestas
+      var CORTES_SEMAFORO = { amarillo: 40, rojo: 70 };
+      // Grupos de fuentes para indice_total: materias es un recálculo de las notas, y omision ocupa el lugar de la encuesta no respondida
+      var GRUPO_FUENTE = { notas_1ro: 'notas', materias: 'notas', respuestas: 'encuestas', omision: 'encuestas' };
+
+      function semaforoDe(indice) {
+        if (typeof indice !== 'number' || !isFinite(indice)) return null;
+        return indice >= CORTES_SEMAFORO.rojo ? 'rojo' : indice >= CORTES_SEMAFORO.amarillo ? 'amarillo' : 'verde';
       }
 
-      // PUNTOS DE LAS PREGUNTAS DE OPCIÓN MÚLTIPLE: OPCIÓN SIN VALOR EN LA TABLA → 0; SIN OPCIÓN → null
-      function aplicarPuntos(lista, tabla) {
-        lista.forEach(function(x) {
-          var t = tabla[x.variable];
-          if (t && typeof x.opcion === 'number') x.criticidad = t[x.opcion] !== undefined ? t[x.opcion] : 0;
+      function tiempoDe(iso) {
+        var t = new Date(iso).getTime();
+        return isFinite(t) ? t : 0;
+      }
+
+      // indice_total = PROMEDIO DEL ÚLTIMO ÍNDICE DE CADA GRUPO DE FUENTES DEL ESTUDIANTE EN EL PERÍODO, CONTANDO LA ENTRADA NUEVA.
+      // Solo entradas automáticas: las manuales no cambian el calculado (el tablero muestra los dos)
+      function indiceTotal(nueva, propias) {
+        var ultimas = {};
+        propias.concat([nueva]).forEach(function(c) {
+          var grupo = GRUPO_FUENTE[c.fuente];
+          var indice = numeroMoodle(c.indice);
+          if (!grupo || c.origen !== 'automatica' || String(c.periodo) !== String(nueva.periodo) || indice === null) return;
+          var t = c === nueva ? Infinity : tiempoDe(c.created_at);
+          if (!ultimas[grupo] || t >= ultimas[grupo].t) ultimas[grupo] = { indice: indice, t: t };
+        });
+        var valores = Object.keys(ultimas).map(function(g) { return ultimas[g].indice; });
+        return valores.length ? Math.round(valores.reduce(function(a, b) { return a + b; }, 0) / valores.length) : null;
+      }
+
+      // AGREGA UNA ENTRADA AUTOMÁTICA: LEE LAS ENTRADAS PROPIAS (CON "REQUIERE APROBACIÓN", LAS DEL ESTUDIANTE), CALCULA indice_total
+      // Y semaforo, Y LA GUARDA. base: { leer(idUsuario), guardar(entrada) }. opciones.yaEsta(entrada): no guardar si ya hay una así
+      function registrarCriticidad(base, entrada, opciones) {
+        return base.leer(entrada.id_usuario).then(function(propias) {
+          if (opciones && opciones.yaEsta && propias.some(opciones.yaEsta)) return null;
+          entrada.indice_total = indiceTotal(entrada, propias);
+          entrada.semaforo = semaforoDe(entrada.indice_total);
+          return base.guardar(entrada).then(function() { return entrada; });
         });
       }
 
-      function sumarCriticidad(registro) {
-        var total = 0;
-        registro.json_pregunta_respuesta.forEach(function(x) { if (typeof x.criticidad === 'number') total += x.criticidad; });
-        registro.puntaje_criticidad = Math.round(total);
-        return registro;
+      // =========================================================
+      // HERRAMIENTA IndiceNotasPrimero: ÍNDICE DE 0 A 100 DE LAS NOTAS DE 1.ER AÑO DE UN ESTUDIANTE
+      // =========================================================
+      // Es la fórmula del Dashboard Estudiantes de Primero (section/dashboard_estudiantes_primero), que la creó el equipo, documentada en
+      // docs/models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md (provisoria). Por materia, ICm = (35 % FP + 35 % FR + 15 % FA + 15 % FAC) × 100:
+      //   FP = (10 − promedio de lo rendido) ÷ 10 · FR = 1 − aprobados ÷ rendidos · FA = ausentes ÷ instancias · FAC = 1 si la materia es
+      //   crítica y alguna nota está debajo de su umbral (4 si no tiene).
+      // Por estudiante, ICG = 60 % el promedio de sus ICm + 40 % el ICm más alto. Un recuperatorio (recupera_a) reemplaza la instancia que indica.
+      // parciales: [{ materia, instancia, nota, estado, recupera_a }]; materias: [{ materia, es_critica, umbral }] (Carga_Materias_Primero)
+      function normalizarMateria(s) {
+        return String(s || '').toLowerCase().replace(/[\s_-]/g, '');
       }
 
-      // CriticidadInicial(registro, contexto) → registro
-      function CriticidadInicial(registro) {
-        validarRegistro('CriticidadInicial', registro, 'inicial');
-        var lista = registro.json_pregunta_respuesta;
-        aplicarPuntos(lista, PUNTOS_INICIAL);
-        // EN ANÁLISIS: aplicarAvance(lista, cohorteDeEntradas(lista), 70);
-        return sumarCriticidad(registro);
-      }
-
-      // CriticidadCuatrimestral(registro, contexto) → registro
-      // Cuando se reactive el avance devuelve una promesa: el ingreso sale de la Encuesta inicial guardada (contexto.respuestasPropias)
-      function CriticidadCuatrimestral(registro) {
-        validarRegistro('CriticidadCuatrimestral', registro, 'cuatrimestral');
-        var lista = registro.json_pregunta_respuesta;
-        aplicarPuntos(lista, PUNTOS_CUATRIMESTRAL);
-        var cursadas = lista.filter(function(x) { return x.variable === 'materias_cursadas'; })[0];
-        if (cursadas && Array.isArray(cursadas.respuesta)) {
-          var n = cursadas.respuesta.length;
-          var pfg = lista.filter(function(x) { return x.variable === 'progreso_proyecto_final'; })[0];
-          var exceptuado = !!pfg && PFG_SIN_INACTIVIDAD.indexOf(pfg.opcion) !== -1;
-          cursadas.criticidad = n === 0 ? (exceptuado ? 0 : PUNTOS_CANTIDAD[0]) : (PUNTOS_CANTIDAD[n] || 0);
-          var recursadas = 0;
-          lista.forEach(function(x) {
-            if (x.variable === 'primera_vez') x.criticidad = x.respuesta === 'No' ? (PUNTOS_RECURSADA[recursadas++] || 0) : x.respuesta === 'Sí' ? 0 : null;
-            if (x.variable === 'dificultad') x.criticidad = typeof x.respuesta === 'number' ? Math.round((x.respuesta - 1) * 2.5 / n * 10) / 10 : null;
+      function IndiceNotasPrimero(parciales, materias) {
+        var grupos = {};
+        (parciales || []).forEach(function(r) {
+          var clave = normalizarMateria(r.materia);
+          if (!clave) return;
+          var g = grupos[clave] || (grupos[clave] = { materia: String(r.materia).trim(), instancias: {} });
+          var reemplaza = String(r.recupera_a || '').trim();
+          var instancia = String(r.instancia || '').trim();
+          if (reemplaza) g.instancias[reemplaza] = { nota: r.nota, estado: r.estado };
+          else if (!g.instancias[instancia]) g.instancias[instancia] = { nota: r.nota, estado: r.estado };
+        });
+        var detalle = Object.keys(grupos).map(function(clave) {
+          var g = grupos[clave];
+          var programados = 0, rendidos = 0, ausencias = 0, aprobados = 0, suma = 0, notas = [];
+          Object.keys(g.instancias).forEach(function(k) {
+            var inst = g.instancias[k];
+            var estado = String(inst.estado || '').toLowerCase();
+            var nota = numeroMoodle(inst.nota);
+            programados++;
+            if (estado.indexOf('ausente') !== -1 || nota === null) { ausencias++; return; }
+            rendidos++;
+            suma += nota;
+            notas.push(nota);
+            if (estado.indexOf('aprobado') !== -1 && estado.indexOf('des') === -1) aprobados++;
           });
+          var info = (materias || []).filter(function(m) { return normalizarMateria(m.materia) === clave; })[0];
+          var critica = !!info && ['S', 'SI', 'SÍ', 'TRUE', '1'].indexOf(String(info.es_critica || '').trim().toUpperCase()) !== -1;
+          var umbral = info ? numeroMoodle(info.umbral) : null;
+          if (umbral === null || umbral === 0) umbral = 4;
+          var promedio = rendidos ? suma / rendidos : 0;
+          var pctAprobados = rendidos ? aprobados / rendidos * 100 : 0;
+          var pctAusentismo = programados ? ausencias / programados * 100 : 0;
+          var alerta = critica && notas.some(function(n) { return n < umbral; });
+          var icm = (0.35 * Math.max(0, (10 - promedio) / 10) + 0.35 * (1 - pctAprobados / 100) + 0.15 * (pctAusentismo / 100) + 0.15 * (alerta ? 1 : 0)) * 100;
+          return {
+            materia: g.materia, promedio: Math.round(promedio * 100) / 100, pct_aprobados: Math.round(pctAprobados * 10) / 10,
+            pct_ausentismo: Math.round(pctAusentismo * 10) / 10, alerta_critica: alerta, icm: Math.min(100, Math.round(icm * 10) / 10)
+          };
+        });
+        if (!detalle.length) return { indice: null, materias: [] };
+        var icms = detalle.map(function(d) { return d.icm; });
+        var icg = 0.6 * (icms.reduce(function(a, b) { return a + b; }, 0) / icms.length) + 0.4 * Math.max.apply(null, icms);
+        return { indice: Math.min(100, Math.round(icg)), materias: detalle };
+      }
+
+      // =========================================================
+      // HERRAMIENTA CriticidadNotas: AL GUARDAR UNA NOTA EN Carga_Parciales_Primero, AGREGA LA CRITICIDAD DE LAS NOTAS A CRITICIDAD
+      // =========================================================
+      // La llama la plantilla "Javascript personalizado" de Carga_Parciales_Primero (data/moodle/plantillas/carga_parciales_primero/jstemplate.js),
+      // que Moodle carga también en el formulario de alta y edición (mod/data/edit.php). Desde el 2026-11-01 cada estudiante carga sus notas.
+      //   CriticidadNotas({ form, boton }) → guarda la nota con fetch (el DNI vacío se completa con el de la cuenta), lee las notas del
+      //     estudiante en el período y los umbrales de Carga_Materias_Primero, agrega la entrada (fuente notas_1ro, rid_fuente = la nota)
+      //     y sigue a la página que muestra Moodle. Si la nota no se guardó (error de validación), repite el envío normal para que Moodle
+      //     muestre el error. Si falla la criticidad, queda pendiente y se reintenta en la próxima página de la base.
+      //   CriticidadNotas({}) → solo reintenta las pendientes.
+      // El período de una nota sale de su fecha: enero a julio → AAAA-1, agosto a diciembre → AAAA-2 (provisorio).
+      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
+      var COLUMNAS_MATERIAS_PRIMERO = ['materia', 'es_critica', 'umbral'];
+      var ESPERA_NOTAS = 8000; // milisegundos que se espera la criticidad antes de seguir a la página de Moodle
+
+      function periodoDeFecha(fecha) {
+        var m = String(fecha || '').match(/^(\d{4})-(\d{2})/);
+        return m ? m[1] + '-' + (Number(m[2]) <= 7 ? 1 : 2) : null;
+      }
+
+      // NOTAS DEL ESTUDIANTE EN EL PERÍODO ACTUAL Y MATERIAS DE 1.ER AÑO (LAS PLANTILLAS DE LISTA DEL REPO: UNA CELDA POR CAMPO)
+      function leerNotasPropias(dni) {
+        return Promise.all([
+          LeerBase({ dataid: DATAID_PARCIALES_PRIMERO, filas: 'tr[data-tipo="entrada_parcial"]', columnas: COLUMNAS_PARCIALES }),
+          LeerBase({ dataid: DATAID_MATERIAS_PRIMERO, filas: 'tr[data-tipo="entrada_materia"]', columnas: COLUMNAS_MATERIAS_PRIMERO })
+        ]).then(function(r) {
+          return {
+            parciales: r[0].entradas.map(function(e) { return e.campos; }).filter(function(c) {
+              return String(c.dni || '').trim() === dni && periodoDeFecha(c.fecha) === PERIODO_ACTUAL;
+            }),
+            materias: r[1].entradas.map(function(e) { return e.campos; })
+          };
+        });
+      }
+
+      // CALCULA Y AGREGA LA ENTRADA DE LAS NOTAS DEL ESTUDIANTE (rid: LA NOTA QUE LA DISPARÓ)
+      function criticidadDeNotas(rid) {
+        return leerUsuarioMoodle().then(function(u) {
+          if (!u.dni) throw new Error('No se pudo leer el DNI de la cuenta.');
+          return leerNotasPropias(u.dni).then(function(datos) {
+            var calculo = IndiceNotasPrimero(datos.parciales, datos.materias);
+            if (calculo.indice === null) return null; // sin notas en el período: no hay nada que registrar
+            return registrarCriticidad(baseCriticidadMoodle, {
+              id_usuario: u.id, dni: u.dni, periodo: PERIODO_ACTUAL, origen: 'automatica', fuente: 'notas_1ro', rid_fuente: rid,
+              indice: calculo.indice, indice_total: null, semaforo: null, motivo: '', created_at: ahoraIso()
+            });
+          });
+        });
+      }
+
+      // CAMPO DEL FORMULARIO DE ALTA POR SU ETIQUETA (EN MINÚSCULAS)
+      function campoPorEtiqueta(form, etiqueta) {
+        var l = Array.prototype.filter.call(form.querySelectorAll('label[for]'), function(x) {
+          return x.textContent.replace(/\s+/g, ' ').trim().toLowerCase() === etiqueta;
+        })[0];
+        return l ? form.querySelector('#' + CSS.escape(l.getAttribute('for'))) : null;
+      }
+
+      // ENVÍO NORMAL DEL FORMULARIO, CON EL BOTÓN PRESIONADO COMO CAMPO OCULTO
+      function enviarNormal(form, boton) {
+        if (boton && boton.name) {
+          var h = document.createElement('input');
+          h.type = 'hidden';
+          h.name = boton.name;
+          h.value = boton.value;
+          form.appendChild(h);
         }
-        // EN ANÁLISIS: return contexto.respuestasPropias().then(cohorteDe).then(function(c) { aplicarAvance(lista, c, 30); return sumarCriticidad(registro); });
-        return sumarCriticidad(registro);
+        form.setAttribute('data-zk-notas', 'enviando');
+        HTMLFormElement.prototype.submit.call(form);
+      }
+
+      function CriticidadNotas(opciones) {
+        var form = opciones && opciones.form, boton = opciones && opciones.boton;
+        if (!(window.M && M.cfg && M.cfg.wwwroot)) return Promise.reject(new Error('CriticidadNotas solo funciona dentro de Moodle.'));
+        if (!form) return reintentarCriticidadPendiente();
+        var d = form.querySelector('input[name="d"]');
+        if (!d || Number(d.value) !== DATAID_PARCIALES_PRIMERO) { enviarNormal(form, boton); return Promise.resolve(null); }
+        // "Guardar y agregar otra" no devuelve el rid: se guarda con "Guardar y ver" y después se abre un formulario vacío
+        var otra = !!boton && boton.name === 'saveandadd';
+        return leerUsuarioMoodle().then(function(u) {
+          var dni = campoPorEtiqueta(form, 'dni');
+          if (dni && !String(dni.value || '').trim() && u.dni) dni.value = u.dni;
+          var fd = new FormData(form);
+          fd.delete('saveandadd');
+          fd.set(otra || !boton || !boton.name ? 'saveandview' : boton.name, otra || !boton ? 'Guardar' : boton.value);
+          return fetch(form.action, { method: 'POST', body: fd, credentials: 'same-origin' });
+        }).then(function(r) {
+          var m = (r.url || '').match(/[?&]rid=(\d+)/);
+          if (!r.ok || !m) { enviarNormal(form, boton); return null; } // Moodle no la guardó: que muestre el error
+          var rid = Number(m[1]);
+          var destino = otra ? M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_PARCIALES_PRIMERO : r.url;
+          return conLimite(criticidadDeNotas(rid), ESPERA_NOTAS, 'La criticidad de las notas')
+            .catch(function() {
+              agregarCriticidadPendiente({ id_usuario: Number(M.cfg.userId), periodo: PERIODO_ACTUAL, origen: 'automatica', fuente: 'notas_1ro', rid_fuente: rid, indice: null });
+            })
+            .then(function() { window.location.href = destino; return rid; });
+        });
       }
 
       // =========================================================
@@ -1185,8 +1496,9 @@
       window.ZhakyzTools = {
         version: VERSION,
         CopiaRespuestas: CopiaRespuestas,
-        CriticidadInicial: CriticidadInicial,
-        CriticidadCuatrimestral: CriticidadCuatrimestral,
+        CriticidadEncuesta: CriticidadEncuesta,
+        IndiceNotasPrimero: IndiceNotasPrimero,
+        CriticidadNotas: CriticidadNotas,
         LeerBase: LeerBase
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
@@ -1213,23 +1525,28 @@
       // ---------------------------------------------------------
       var TOOLS = {
         CopiaRespuestas: {
-          descripcion: 'Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, como una versión nueva: las anteriores se conservan. Solo copia: antes de guardar aplica la función alGuardar(registro, contexto) que le pasa el cargador. No tiene interfaz: solo muestra un aviso si la copia no se pudo guardar.',
+          descripcion: 'Copia cada envío de las Encuestas Inicial y Cuatrimestral a la base Respuestas, como una versión nueva (solo lo respondido, por item_id), y agrega su entrada a la base Criticidad (fuente respuestas) con el índice de CriticidadEncuesta y el índice total del estudiante. La estructura de cada encuesta sale de su versión vigente en la base Encuestas. No tiene interfaz: solo muestra un aviso si la copia no se pudo guardar.',
           uso: 'Encuesta Inicial (un ítem al final de cada una de sus 4 páginas) y Encuesta Cuatrimestral (un ítem al final)',
-          carga: 'TOOL = \'CopiaRespuestas\' · OPCIONES = { alGuardar: function(registro, contexto) { … } }'
+          carga: 'TOOL = \'CopiaRespuestas\' · OPCIONES = {}'
         },
-        CriticidadInicial: {
-          descripcion: 'Calcula la criticidad de un registro de la Encuesta Inicial: completa la criticidad de cada respuesta y el puntaje total. No lee ni guarda nada. El avance curricular está en análisis (desactivado).',
-          uso: 'alGuardar de CopiaRespuestas en los ítems de la Encuesta Inicial',
-          carga: 'Tools.CriticidadInicial(registro, contexto), desde el alGuardar del cargador (no se arranca con TOOL)'
+        CriticidadEncuesta: {
+          descripcion: 'Calcula el índice de 0 a 100 de un registro de Respuestas con la definición de su versión en la base Encuestas: los puntos de cada opción y las reglas (bloque de cursada; el avance curricular está en análisis). No lee ni guarda nada.',
+          uso: 'CopiaRespuestas, al guardar cada envío',
+          carga: 'Tools.CriticidadEncuesta(registro, definicion) → { indice, puntos, maximo }'
         },
-        CriticidadCuatrimestral: {
-          descripcion: 'Calcula la criticidad de un registro de la Encuesta Cuatrimestral, incluido el bloque de materias cursadas. No lee ni guarda nada. El avance curricular está en análisis (desactivado).',
-          uso: 'alGuardar de CopiaRespuestas en el ítem de la Encuesta Cuatrimestral',
-          carga: 'Tools.CriticidadCuatrimestral(registro, contexto), desde el alGuardar del cargador (no se arranca con TOOL)'
+        IndiceNotasPrimero: {
+          descripcion: 'Calcula el índice de 0 a 100 de las notas de 1.er año de un estudiante (ICm por materia e ICG, la fórmula del Dashboard de 1.er año). No lee ni guarda nada.',
+          uso: 'CriticidadNotas',
+          carga: 'Tools.IndiceNotasPrimero(parciales, materias) → { indice, materias }'
+        },
+        CriticidadNotas: {
+          descripcion: 'Al guardar una nota en Carga_Parciales_Primero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Reintenta las entradas pendientes.',
+          uso: 'Plantilla Javascript personalizado de Carga_Parciales_Primero',
+          carga: 'Tools.CriticidadNotas({ form, boton }) desde la plantilla, al enviar el formulario de alta o edición'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
-          uso: 'Ninguna vista por ahora',
+          uso: 'CopiaRespuestas y CriticidadNotas (bases Encuestas, Respuestas, Criticidad, Carga_Parciales_Primero y Carga_Materias_Primero)',
           carga: 'Tools.LeerBase({ dataid: … }) desde el código de la vista, con el cargador de tools en TOOL = null'
         }
       };
