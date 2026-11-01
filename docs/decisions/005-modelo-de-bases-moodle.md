@@ -24,7 +24,7 @@ Para eso hacen falta datos guardados en Moodle. Las restricciones son las del pr
 
 1. **El historial se guarda, no se recalcula.** Cada cálculo de criticidad queda como una foto fija. Recalcular con las notas de hoy cambiaría el pasado.
 2. **Las bases de historial solo agregan entradas.** Se aplica a Criticidad, Asignaciones, Respuestas y Entrevistas: editar agrega una entrada nueva y nada se borra.
-3. **Clave común: `id_usuario` de Moodle.** Los CSV de notas vienen por DNI y la base Estudiantes traduce DNI a `id_usuario`.
+3. **Clave común: `id_usuario` de Moodle.** Desde el 2026-11-01 (cambio de requerimientos) cada estudiante carga sus propias notas, así que siempre tiene cuenta y cada entrada lleva su `id_usuario` y su DNI. Si además llegan notas por CSV (por DNI), la base Estudiantes traduce DNI a `id_usuario`.
 4. **Lo que Moodle ya sabe no se copia:**
    - el autor y la fecha de cada entrada los guarda Moodle solo;
    - la foto y los datos del campus se leen en vivo del perfil.

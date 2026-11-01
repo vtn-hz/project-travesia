@@ -26,7 +26,7 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
    - los detalles de un registro pasan a un campo JSON (evaluaciones de una cursada, mediciones de un corte, acciones de una entrevista);
    - los catálogos chicos se unen (`Plan_Estudio` + `Materia` + `Materia_Plan` + `Correlatividad`).
 2. **Las bases de historial solo agregan entradas.** En Situación académica, Respuestas y Criticidad, editar agrega una entrada nueva; la vigente es la más reciente. Nada se borra.
-3. **Clave del estudiante: el DNI.** En 1.er año a veces solo se conoce el DNI. La cuenta de Moodle (`id_usuario_moodle`) es opcional, y cuando existe sirve para la foto y los datos del campus.
+3. **Clave del estudiante: el DNI, siempre junto con la cuenta de Moodle.** Desde el 2026-11-01 (cambio de requerimientos) cada estudiante carga sus propias notas, así que todo estudiante tiene cuenta del campus: `id_usuario_moodle` es obligatorio y sirve además para la foto y los datos del campus.
 4. **Lo que ya existe en Moodle no se duplica:**
    - los docentes son usuarios del campus;
    - su rol sale de los grupos del curso;
@@ -111,10 +111,10 @@ Cambiar una regla agrega una versión nueva; la vigente es la de mayor `version`
 |---|---|---|---|
 | `dni` | text | `Estudiante.dni` | **Clave del estudiante.** Único |
 | `legajo` | text | `Estudiante.legajo` | Opcional |
-| `nombre` | text | `Estudiante.nombre` | Opcional en 1.er año |
-| `apellido` | text | `Estudiante.apellido` | Opcional en 1.er año |
+| `nombre` | text | `Estudiante.nombre` | El de la cuenta del campus |
+| `apellido` | text | `Estudiante.apellido` | El de la cuenta del campus |
 | `email` | text | `Estudiante.email` | Opcional |
-| `id_usuario_moodle` | number | `Estudiante.id_usuario_moodle` | Opcional. Con él se muestran la foto y los datos del campus |
+| `id_usuario_moodle` | number | `Estudiante.id_usuario_moodle` | Obligatorio: todo estudiante tiene cuenta, porque carga sus propias notas. Con él se muestran la foto y los datos del campus |
 | `cohorte` | text | `Estudiante.id_cohorte` | Período de ingreso (`AAAA-n`) |
 | `plan` | menu (`Plan 2003`, `Plan 2024`) | `Estudiante.id_plan` | |
 | `fecha_consentimiento` | text (fecha) | `Estudiante.fecha_consentimiento` | Opcional |
