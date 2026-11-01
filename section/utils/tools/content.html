@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 4;
+      var VERSION = 5;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1253,6 +1253,9 @@
       //     estudiante en el período y los umbrales de Carga_Materias_Primero, agrega la entrada (fuente notas_1ro, rid_fuente = la nota)
       //     y sigue a la página que muestra Moodle. Si la nota no se guardó (error de validación), repite el envío normal para que Moodle
       //     muestre el error. Si falla la criticidad, queda pendiente y se reintenta en la próxima página de la base.
+      //   CriticidadNotas({ rid }) → para una página propia que guarda la nota por su cuenta (sin el formulario de Moodle): con el rid de
+      //     la nota ya guardada, calcula y agrega la entrada. Devuelve una promesa de la entrada (null si no hay notas en el período).
+      //     Si falla, queda pendiente y la promesa se rechaza (docs/specs/carga-parciales-primero.md).
       //   CriticidadNotas({}) → solo reintenta las pendientes.
       // El período de una nota sale de su fecha: enero a julio → AAAA-1, agosto a diciembre → AAAA-2 (provisorio).
       var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
@@ -1318,6 +1321,13 @@
       function CriticidadNotas(opciones) {
         var form = opciones && opciones.form, boton = opciones && opciones.boton;
         if (!(window.M && M.cfg && M.cfg.wwwroot)) return Promise.reject(new Error('CriticidadNotas solo funciona dentro de Moodle.'));
+        if (opciones && opciones.rid) {
+          var ridNota = Number(opciones.rid);
+          return conLimite(criticidadDeNotas(ridNota), ESPERA_NOTAS, 'La criticidad de las notas').catch(function(e) {
+            agregarCriticidadPendiente({ id_usuario: Number(M.cfg.userId), periodo: PERIODO_ACTUAL, origen: 'automatica', fuente: 'notas_1ro', rid_fuente: ridNota, indice: null });
+            throw e;
+          });
+        }
         if (!form) return reintentarCriticidadPendiente();
         var d = form.querySelector('input[name="d"]');
         if (!d || Number(d.value) !== DATAID_PARCIALES_PRIMERO) { enviarNormal(form, boton); return Promise.resolve(null); }
@@ -1540,9 +1550,9 @@
           carga: 'Tools.IndiceNotasPrimero(parciales, materias) → { indice, materias }'
         },
         CriticidadNotas: {
-          descripcion: 'Al guardar una nota en Carga_Parciales_Primero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Reintenta las entradas pendientes.',
-          uso: 'Plantilla Javascript personalizado de Carga_Parciales_Primero',
-          carga: 'Tools.CriticidadNotas({ form, boton }) desde la plantilla, al enviar el formulario de alta o edición'
+          descripcion: 'Al guardar una nota en Carga_Parciales_Primero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Una página propia que guarda la nota por su cuenta la llama con el rid de la nota. Reintenta las entradas pendientes.',
+          uso: 'Plantilla Javascript personalizado de Carga_Parciales_Primero, y páginas propias de carga de notas',
+          carga: 'Tools.CriticidadNotas({ form, boton }) desde la plantilla · Tools.CriticidadNotas({ rid }) desde una página propia, después de guardar'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
