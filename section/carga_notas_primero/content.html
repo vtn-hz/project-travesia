@@ -83,11 +83,12 @@
       </label>
       <label for="campo-nota-notas" style="flex: 0 1 110px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
         Nota
-        <input id="campo-nota-notas" name="nota" type="number" min="0" max="10" step="0.01" inputmode="decimal" placeholder="0 a 10" data-zk-campo>
+        <!-- type="text": con type="number" el navegador descarta la coma ("1,0" llegaba como 10). Sin inputmode="decimal", que en teclados en español solo ofrece la coma -->
+        <input id="campo-nota-notas" name="nota" type="text" autocomplete="off" placeholder="Ej.: 4.5" data-zk-campo>
       </label>
     </div>
     <p id="ayuda-form-notas" style="margin: 10px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">
-      Un recuperatorio reemplaza la nota del parcial correspondiente. Con la condición Ausente, la nota no se completa.</p>
+      La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial correspondiente. Con la condición Ausente, la nota no se completa.</p>
 
     <!-- ERRORES DEL FORMULARIO -->
     <div id="errores-form-notas"
@@ -482,7 +483,7 @@
         var instancia = instanciaDe($('campo-instancia-notas').value);
         var fecha = $('campo-fecha-notas').value;
         var condicion = $('campo-condicion-notas').value;
-        var notaTexto = $('campo-nota-notas').value.trim().replace(',', '.');
+        var notaTexto = $('campo-nota-notas').value.trim();
         var errores = [];
 
         if (!materia) errores.push('Materia: seleccionar una materia de la lista.');
@@ -495,10 +496,11 @@
 
         var nota = NOTA_AUSENTE;
         if (condicion && condicion !== 'Ausente') {
-          var valor = Number(notaTexto);
+          // Punto como separador decimal y hasta dos decimales: "4.5" sí, "4,5" no
           if (notaTexto === '') errores.push('Nota: completar la nota (con la condición ' + condicion + ').');
-          else if (!isFinite(valor) || valor < 0 || valor > 10) errores.push('Nota: "' + notaTexto + '" debe ser un número de 0 a 10.');
-          else nota = String(Math.round(valor * 100) / 100);
+          else if (/^\d{1,2},\d+$/.test(notaTexto)) errores.push('Nota: "' + notaTexto + '" debe usar punto como separador decimal (por ejemplo, ' + notaTexto.replace(',', '.') + ').');
+          else if (!/^\d{1,2}(\.\d{1,2})?$/.test(notaTexto) || Number(notaTexto) > 10) errores.push('Nota: "' + notaTexto + '" debe ser un número de 0 a 10, con hasta dos decimales y punto como separador (por ejemplo, 4.5).');
+          else nota = String(Number(notaTexto));
         }
 
         return {
@@ -670,7 +672,7 @@
         var campo = $('campo-nota-notas');
         campo.disabled = ausente;
         if (ausente) campo.value = '';
-        campo.setAttribute('placeholder', ausente ? 'No corresponde' : '0 a 10');
+        campo.setAttribute('placeholder', ausente ? 'No corresponde' : 'Ej.: 4.5');
       }
 
       function bloquearFormulario(bloquear) {
