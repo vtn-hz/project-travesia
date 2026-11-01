@@ -152,7 +152,7 @@ Cada paso requiere confirmación explícita (`RULES.md`, regla 3):
    El editor de ítems de Moodle borra los scripts: hay que guardarlos con un POST directo al formulario del ítem, como el cuadro de créditos. Los ids nuevos no hace falta cargarlos en el script. Para actualizarlos: `publicar_item_encuesta.js` ([skill publicar-seccion](../../.skills/publicar-seccion/SKILL.md)).
 6. **Probar un envío.** Con la cuenta del equipo (rol Profesor), la encuesta no se puede responder. Hay dos caminos:
    - una cuenta con rol Estudiante (Nicolás Zuviria es el único del equipo);
-   - **"Cambiar rol a… Estudiante"** con la cuenta del equipo. Moodle no guarda la respuesta cuando el rol está cambiado (`feedback_check_is_switchrole()`), pero la copia sí se agrega a la base. Sirve para probar la copia sin ensuciar las respuestas de la encuesta.
+   - **"Cambiar rol a… Estudiante"** con la cuenta del equipo. La copia se agrega a las bases. **Ojo: en el campus (5.0.2) Moodle también guarda la respuesta en la encuesta** y reemplaza la anterior de esa cuenta (verificado el 2026-11-01), aunque en el código de Moodle 4.4 `feedback_check_is_switchrole()` lo evitaba.
 
 ## Vista previa local
 
@@ -164,6 +164,15 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 - muestra las entradas que se agregarían a Respuestas y a Criticidad. Criticidad empieza con una entrada de notas de 1.er año de ejemplo (índice 52), para ver el `indice_total`. Si Moodle guardara sin que la copia lo tomara, avisa.
 
 ## Pruebas hechas
+
+**Envío real de la Inicial con Tools v4 (2026-11-01).** Con la cuenta de Valentino Hernández Pascual y "Cambiar rol a… Estudiante", por la interfaz de Moodle: cuadro de créditos con 2 materias (completó 10 créditos), ingreso 2026-1, trabaja desde 1.er año.
+
+| Dónde | Resultado |
+|---|---|
+| Moodle | "Sus respuestas han sido guardadas": siguió 5,4 s después de "Enviar respuestas" y reemplazó la respuesta anterior de esa cuenta en la Encuesta Inicial |
+| Respuestas | rid 20150: `inicial` v2, `id_usuario` 2048, DNI, 6 ítems (`8253: [10]`, `8774: [{ plan: "2024", materias: ["INGM101", "INGM105"] }]`, `8257: [2026]`, `8258: [1]`, `8259: [1]`, `8260: [2]`) |
+| Criticidad | rid 20151: `respuestas`, `rid_fuente` 20150, índice 100, total 100, rojo |
+| Navegador | Sin copias pendientes y sin errores de JavaScript |
 
 **Con la base Encuestas y la base Criticidad, en local (2026-11-01, Tools v4).** Simulador con Playwright, sin errores de JavaScript:
 
@@ -195,7 +204,7 @@ La Página Tools (índice) carga sin errores y a 400 px no desborda.
 
 ## Pendientes
 
-1. ~~**Publicar el ADR-007.**~~ Publicado el 2026-11-01 ([ADR-007 · publicación](../decisions/007-encuestas-respuestas-y-criticidad.md#publicación-y-pendientes)). Falta probar un envío real con la versión 4.
+1. ~~**Publicar el ADR-007.**~~ Publicado el 2026-11-01 ([ADR-007 · publicación](../decisions/007-encuestas-respuestas-y-criticidad.md#publicación-y-pendientes)). La Inicial se probó con un envío real ([Pruebas hechas](#pruebas-hechas)); falta la Cuatrimestral con la versión 4.
 2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
 4. **Encuesta Cuatrimestral (para el equipo):** ~~`inicio_laboral` depende de `trabaja`, pero están en la misma página.~~ Resuelto en Moodle por el equipo: el salto 8783 separa las dos (exportado el 2026-10-31). (El ítem 8273 se borró el 2026-10-25.)

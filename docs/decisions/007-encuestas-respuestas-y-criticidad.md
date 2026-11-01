@@ -101,7 +101,7 @@ Publicado el 2026-11-01, en este orden y con cada paso releído:
 
 Quedan:
 
-1. **Configurar Carga_Parciales_Primero para que escriban los estudiantes** ("Requiere aprobación"). No se cambió: la base es del equipo y hoy la carga el equipo.
-2. **Probar un envío real** con una cuenta de estudiante (la del equipo tiene rol Profesor y no puede responder), y una nota cargada por un estudiante.
+1. **Preparar Carga_Parciales_Primero para que escriban los estudiantes:** "Requiere aprobación", las materias de 1.er año que faltan en Carga_Materias_Primero y, si el apartado es una página propia, publicar Tools v5 (`CriticidadNotas({ rid })`). Ver la [guía de la carga de notas](../specs/carga-parciales-primero.md#antes-de-abrirlo-a-los-estudiantes).
+2. **Probar la Cuatrimestral.** Ya se probaron el 2026-11-01, con "Cambiar rol a… Estudiante", la Inicial (Respuestas rid 20150 y Criticidad rid 20151, [spec](../specs/copia-encuestas.md#pruebas-hechas)) y una nota (Carga_Parciales_Primero rid 20152 y Criticidad rid 20153, [guía de la carga de notas](../specs/carga-parciales-primero.md#prueba-hecha)).
 3. **Escritura del equipo:** asignaciones manuales (tablero o detalle), recálculo por `materias` y alertas por `omision`.
 4. **Período:** `PERIODO_ACTUAL` sigue fijo en el código, y el período de una nota se deduce de su fecha (enero a julio → 1, agosto a diciembre → 2). Definirlo con la base Períodos.
