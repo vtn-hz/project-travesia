@@ -2,7 +2,7 @@
 
 - **Estado:** propuesta, con **valores provisorios** para que el equipo los ajuste.
 - **Alcance:** solo el **Plan 2024** (223 créditos en 10 cuatrimestres). El Plan 2003 queda afuera ([`RULES.md`](../../../RULES.md) → *Alcance*).
-- **Dónde se usa:** la tool `CriticidadEncuesta` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que el [script de copia](../../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)) aplica al enviar. Hasta la versión 3 de Tools (la publicada) eran `CriticidadInicial` y `CriticidadCuatrimestral`, con los puntos en el código.
+- **Dónde se usa:** la tool `CriticidadEncuesta` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que el [script de copia](../../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)) aplica al enviar. Hasta la versión 3 de Tools (publicada hasta el 2026-11-01) eran `CriticidadInicial` y `CriticidadCuatrimestral`, con los puntos en el código.
 - **Dónde están los puntos:** desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md), en la base **Encuestas**: cada opción de cada versión lleva su `criticidad`, y las preguntas que se calculan llevan su `regla` ([`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json)). Cambiar un valor es cargar una versión nueva de la encuesta.
 - **Qué calcula:** un índice de **0 a 100** para cada envío de una encuesta.
   - **0** significa sin señales de riesgo.

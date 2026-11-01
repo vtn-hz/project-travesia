@@ -3,7 +3,7 @@
 Este documento es el **modelo de datos del SBIRE**: adapta el DER v2 (23 entidades) a lo que permite Moodle. Cada tabla de este documento es una **base de datos de Moodle** (actividad `mod_data`) dentro de la subsección *Database* de Zhakyz.
 
 - **DER v2:** se retiró del repo el 2026-10-31 y este es el único modelo de datos. Las reglas y los pendientes que solo estaban en el DER pasaron a [Reglas que controla la página](#reglas-que-controla-la-página), [Datos que se calculan y no se guardan](#datos-que-se-calculan-y-no-se-guardan) y [Decisiones pendientes](#decisiones-pendientes). La columna *Origen en el DER* queda como referencia de nombres; el DER completo está en el historial de git (`git show 3f7047a:docs/models/MODELO_DE_DATOS_V2.md`).
-- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8, todavía con los campos anteriores al [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md)). Preguntas se creó y se borró el 2026-10-25. **Encuestas** (base 7) y **Criticidad** (base 9) están definidas por el ADR-007, sin crear. Crear las demás requiere confirmación ([`RULES.md`](../../../RULES.md)).
+- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)) **Respuestas** (la base 8, con los campos del [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) desde el 2026-11-01), **Encuestas** (base 7) y **Criticidad** (base 9), creadas el 2026-11-01. Preguntas se creó y se borró el 2026-10-25. Crear las demás requiere confirmación ([`RULES.md`](../../../RULES.md)).
 - **Pregunta abierta:** si es viable cargar los datos de todos los estudiantes desde el navegador. Está en el [ADR-005](../../decisions/005-modelo-de-bases-moodle.md) y se resuelve antes de crear las bases.
 
 ## Por qué hay que simplificar
@@ -171,7 +171,7 @@ Y sumar `likert` a las opciones de `tipo`.
 
 ### 7. Encuestas
 
-Definida en [`BASE_ENCUESTAS.json`](../../../data/moodle/BASE_ENCUESTAS.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md); sin crear. Reemplaza al *Armado de encuestas* que se descartó el 2026-10-25. Una entrada por encuesta y versión: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor `version`. Las entradas que se cargan están en [`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json) (Inicial versión 2, Cuatrimestral versión 3).
+Definida en [`BASE_ENCUESTAS.json`](../../../data/moodle/BASE_ENCUESTAS.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md). Creada el 2026-11-01 (cmid 60190, d=198). Reemplaza al *Armado de encuestas* que se descartó el 2026-10-25. Una entrada por encuesta y versión: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor `version`. Las entradas que se cargan están en [`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json) (Inicial versión 2, Cuatrimestral versión 3).
 
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
@@ -190,7 +190,7 @@ Definida en [`BASE_ENCUESTAS.json`](../../../data/moodle/BASE_ENCUESTAS.json) po
 
 Definida en [`BASE_RESPUESTAS.json`](../../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
 
-Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) guarda **solo lo respondido**: los textos están en Encuestas y la criticidad, en Criticidad. En Moodle la base sigue con los campos anteriores (`encuesta`, `version_encuesta`, `json_pregunta_respuesta`, `puntaje_criticidad`) hasta que se publique el cambio.
+Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) guarda **solo lo respondido**: los textos están en Encuestas y la criticidad, en Criticidad. Los campos anteriores (`encuesta`, `version_encuesta`, `json_pregunta_respuesta`, `puntaje_criticidad`) se reemplazaron en Moodle el 2026-11-01, después de borrar sus 4 entradas de prueba.
 
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
@@ -206,7 +206,7 @@ No se guardan envíos pendientes: un envío **pendiente** es un estudiante del t
 
 ### 9. Criticidad
 
-Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md); sin crear. **Una entrada por evento:** cada envío de una encuesta, cada nota guardada en Carga_Parciales_Primero, cada recálculo, cada omisión y cada estado asignado a mano (Req 10). El gráfico de evolución del detalle del estudiante lee solo esta base.
+Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md). Creada el 2026-11-01 (cmid 60191, d=199). **Una entrada por evento:** cada envío de una encuesta, cada nota guardada en Carga_Parciales_Primero, cada recálculo, cada omisión y cada estado asignado a mano (Req 10). El gráfico de evolución del detalle del estudiante lee solo esta base.
 
 | Campo | Tipo | Vacío | Notas |
 |---|---|---|---|

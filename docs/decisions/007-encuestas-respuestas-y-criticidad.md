@@ -1,6 +1,6 @@
 # ADR-007: Bases Encuestas, Respuestas y Criticidad
 
-- **Estado:** Aceptada (2026-11-01). Desarrollada en local, sin publicar
+- **Estado:** Aceptada y **publicada** (2026-11-01): bases Encuestas (cmid 60190, d=198) y Criticidad (cmid 60191, d=199), Respuestas con los campos nuevos, Página Tools v4, los 5 ítems de copia y las plantillas de Carga_Parciales_Primero
 - **Fecha:** 2026-11-01
 - **Refs:** [ADR-005](005-modelo-de-bases-moodle.md), [ADR-006](006-versionado-de-encuestas.md), [modelo simplificado · bases 7, 8 y 9](../models/datos/MODELO_SIMPLIFICADO_MOODLE.md#7-encuestas), [`BASE_ENCUESTAS.json`](../../data/moodle/BASE_ENCUESTAS.json), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`BASE_CRITICIDAD.json`](../../data/moodle/BASE_CRITICIDAD.json), [`DEFINICIONES_ENCUESTAS.json`](../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json), [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de las encuestas](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md), [índice de las notas de 1.er año](../models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md)
 
@@ -91,11 +91,17 @@ Se elige **B**. Con C se perdería el historial ("el historial se guarda, no se 
 - **Borrar una nota no agrega una entrada** (pendiente).
 - **Volumen:** cada nota guardada agrega una entrada. Con unos 300 estudiantes son entre 3.000 y 4.500 por cuatrimestre. El tablero tiene que leer solo el período actual, más las manuales.
 
-## Pendientes antes de publicar
+## Publicación y pendientes
 
-1. **Crear las bases Encuestas y Criticidad** (`crear_base.js`) y cargar sus plantillas. Cargar en Encuestas las dos entradas de `DEFINICIONES_ENCUESTAS.json`.
-2. **Cambiar los campos de Respuestas.** `recrear_campos.js` solo funciona con la base vacía, y hoy tiene 4 entradas. Hay que exportarlas a CSV y vaciarla, o crear una base nueva.
-3. **Configurar Carga_Parciales_Primero para que escriban los estudiantes:** "Requiere aprobación", la plantilla de lista con `data-rid` y la plantilla JS.
-4. **Publicar la Página Tools** (versión 4) y actualizar los 5 ítems de copia (`OPCIONES = {}`) con `publicar_item_encuesta.js`.
-5. **Escritura del equipo:** asignaciones manuales (tablero o detalle), recálculo por `materias` y alertas por `omision`.
-6. **Período:** `PERIODO_ACTUAL` sigue fijo en el código, y el período de una nota se deduce de su fecha (enero a julio → 1, agosto a diciembre → 2). Definirlo con la base Períodos.
+Publicado el 2026-11-01, en este orden y con cada paso releído:
+- **Bases nuevas:** Encuestas y Criticidad creadas con `crear_base.js`. Criticidad configurada como Respuestas: requiere aprobación, sin edición de las aprobadas, sin comentarios y sin máximo. Las dos tienen sus plantillas, y Encuestas, sus dos entradas (rid 20148 y 20149).
+- **Respuestas:** se borraron sus 4 entradas con el formato anterior, que eran pruebas del equipo y quedaron respaldadas fuera del repo porque tienen DNI reales. Después se recrearon los campos y se cargaron las plantillas.
+- **Carga_Parciales_Primero:** plantilla de lista con `data-rid` y plantilla JS.
+- **Página Tools v4 y los 5 ítems de copia.** En la vista previa de las dos encuestas, el aviso dice que la estructura coincide con la versión vigente (Inicial 2, Cuatrimestral 3).
+
+Quedan:
+
+1. **Configurar Carga_Parciales_Primero para que escriban los estudiantes** ("Requiere aprobación"). No se cambió: la base es del equipo y hoy la carga el equipo.
+2. **Probar un envío real** con una cuenta de estudiante (la del equipo tiene rol Profesor y no puede responder), y una nota cargada por un estudiante.
+3. **Escritura del equipo:** asignaciones manuales (tablero o detalle), recálculo por `materias` y alertas por `omision`.
+4. **Período:** `PERIODO_ACTUAL` sigue fijo en el código, y el período de una nota se deduce de su fecha (enero a julio → 1, agosto a diciembre → 2). Definirlo con la base Períodos.

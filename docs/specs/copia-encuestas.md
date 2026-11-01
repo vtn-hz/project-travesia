@@ -3,15 +3,15 @@
 > Documento vivo: se actualiza a medida que se refinan los requerimientos.
 
 - **Código:** la herramienta `CopiaRespuestas` de la biblioteca de Tools ([`section/utils/tools/content.html`](../../section/utils/tools/content.html), Página "Tools" de Utils). Desde el 2026-10-25 ya no es un script autocontenido ([guía de Utils](../../section/utils/README.md#3-tools-toolscontenthtml)).
-- **Ítem:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html), una copia del cargador de tools con `TOOL = 'CopiaRespuestas'`. Desde el [ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md) (local), `OPCIONES` va vacío; los ítems publicados todavía pasan un `alGuardar`, que la versión 4 de Tools ignora.
-- **Criticidad:** desde el ADR-007 (local, Tools v4), la copia guarda la respuesta en Respuestas y después agrega una entrada a **Criticidad** con el índice que calcula `CriticidadEncuesta` usando la versión vigente de la base **Encuestas** (ver [Copia y criticidad](#copia-y-criticidad)). En Moodle sigue publicada la versión 3: `alGuardar` con `CriticidadInicial` o `CriticidadCuatrimestral` y la criticidad dentro de Respuestas.
+- **Ítem:** [`section/copia_encuestas/content.html`](../../section/copia_encuestas/content.html), una copia del cargador de tools con `TOOL = 'CopiaRespuestas'`. Desde el [ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md), `OPCIONES` va vacío (los 5 ítems se actualizaron el 2026-11-01).
+- **Criticidad:** desde el ADR-007 (Tools v4, publicada el 2026-11-01), la copia guarda la respuesta en Respuestas y después agrega una entrada a **Criticidad** con el índice que calcula `CriticidadEncuesta` usando la versión vigente de la base **Encuestas** (ver [Copia y criticidad](#copia-y-criticidad)).
 - **Dónde va en Moodle:** un ítem "Área de texto y medios" con el cargador **al final de cada página** de cada encuesta (ver [Publicación](#publicación)):
   - Encuesta Inicial (cmid 59710): 4 páginas, 4 ítems;
-  - Encuesta Cuatrimestral (cmid 59712): 5 páginas desde que el equipo agregó los saltos 8781 a 8784 en Moodle (exportados el 2026-10-31), y 1 ítem, al final de la última. En Moodle, la Página Tools publicada (v3) supone una sola página. En local, la estructura sale de la versión 3 de la Cuatrimestral en la base Encuestas, que ya tiene las 5 páginas. Las páginas 1 a 4 no tienen ítem de copia: sus respuestas se leen con `fetch` al enviar.
+  - Encuesta Cuatrimestral (cmid 59712): 5 páginas desde que el equipo agregó los saltos 8781 a 8784 en Moodle (exportados el 2026-10-31), y 1 ítem, al final de la última. La estructura sale de la versión 3 de la Cuatrimestral en la base Encuestas, que tiene las 5 páginas (la vista previa lo confirma desde el 2026-11-01). Las páginas 1 a 4 no tienen ítem de copia: sus respuestas se leen con `fetch` al enviar.
 - **Rol:** EST (corre mientras el estudiante responde). En "Editar preguntas" y en la vista previa solo muestra un aviso para el equipo.
 - **Decisión:** [ADR-006](../decisions/006-versionado-de-encuestas.md).
 - **Estado:** desarrollado y probado en local, adaptado a los widgets de [Utils](../../section/utils/README.md) que se publicaron el 2026-10-25. **Publicado el 2026-10-25:** base Respuestas (cmid 59940, d=166) configurada, Página Tools (cmid 59941) y los 5 ítems (Inicial 8772, 8771, 8770 y 8769; Cuatrimestral 8773). **Probado con un envío real de la Cuatrimestral** el 2026-10-25 (dos versiones en la base, con DNI). Falta probar la Inicial.
-- **Última actualización:** 2026-11-01 (ADR-007, en local)
+- **Última actualización:** 2026-11-01 (ADR-007, publicado)
 
 ## Qué hace
 
@@ -195,7 +195,7 @@ La Página Tools (índice) carga sin errores y a 400 px no desborda.
 
 ## Pendientes
 
-1. **Publicar el ADR-007:** crear las bases Encuestas y Criticidad, cargar las dos versiones, cambiar los campos de Respuestas (hoy tiene 4 entradas: `recrear_campos.js` solo funciona con la base vacía), publicar la Página Tools v4 y actualizar los 5 ítems (`OPCIONES = {}`). Cada paso requiere confirmación ([ADR-007 · pendientes](../decisions/007-encuestas-respuestas-y-criticidad.md#pendientes-antes-de-publicar)).
+1. ~~**Publicar el ADR-007.**~~ Publicado el 2026-11-01 ([ADR-007 · publicación](../decisions/007-encuestas-respuestas-y-criticidad.md#publicación-y-pendientes)). Falta probar un envío real con la versión 4.
 2. **Probar un envío real de la Inicial.** La Cuatrimestral ya se probó el 2026-10-25: Moodle guardó la respuesta y la base recibió dos versiones (el segundo envío fue una edición), con plan, materias aprobadas, créditos, materias cursadas con primera vez y dificultad, y DNI. El avance no se puntuó porque ese usuario no tiene una copia de la Inicial en la base (sus respuestas a la Inicial son anteriores a la copia).
 3. **App móvil:** verificar si los estudiantes la usan. Si responden desde la app, probablemente el script no corre y no hay copia.
 4. **Encuesta Cuatrimestral (para el equipo):** ~~`inicio_laboral` depende de `trabaja`, pero están en la misma página.~~ Resuelto en Moodle por el equipo: el salto 8783 separa las dos (exportado el 2026-10-31). (El ítem 8273 se borró el 2026-10-25.)
