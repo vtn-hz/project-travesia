@@ -1,7 +1,7 @@
 // PLANTILLA JAVASCRIPT DE LA BASE RESPUESTAS ("Javascript personalizado" de Moodle)
 // Muestra el JSON de las respuestas con sangría, en la lista (al abrir una fila) y en la vista individual.
 // Solo cambia lo que se ve en el navegador: los scripts que leen la base (CopiaRespuestas, LeerBase) bajan el HTML de Moodle
-// sin ejecutar esto y leen el JSON tal como se guardó, de la celda data-campo="json_pregunta_respuesta".
+// sin ejecutar esto y leen el JSON tal como se guardó, de la celda data-campo="json_respuesta".
 (function() {
   function formatear() {
     document.querySelectorAll('.zk-json-completo').forEach(function(el) {

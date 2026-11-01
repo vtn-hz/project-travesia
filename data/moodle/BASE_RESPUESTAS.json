@@ -1,9 +1,9 @@
 {
   "clave": "respuestas",
   "nombre": "Respuestas",
-  "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas.",
+  "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, codigo_encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas. Solo guarda lo que respondió el estudiante: los textos están en la base Encuestas y la criticidad, en la base Criticidad.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js. La escribe el script de copia (section/copia_encuestas), que va en cada página de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
+  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006 y el 2026-11-01 con el ADR-007). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js, con los campos anteriores al ADR-007 (encuesta, version_encuesta, json_pregunta_respuesta y puntaje_criticidad). Los campos de abajo son los del ADR-007, todavía sin aplicar en Moodle. La escribe el script de copia (section/copia_encuestas), que va en las páginas de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
   "configuracion": {
     "descripcion": "crear_base.js no la aplica: se configuró el 2026-10-25 con un POST al formulario de ajustes de la base.",
     "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",
@@ -12,7 +12,7 @@
     "Permitir comentarios": "No.",
     "Disponibilidad": "Visible en Zhakyz: el campus no permite \"disponible pero no mostrada\", y si se oculta los estudiantes no pueden escribir en ella. Con la aprobación, cada estudiante ve solo sus entradas."
   },
-  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25: lista e individual). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: el script la lee para tomar el ingreso de la Encuesta inicial y para no duplicar copias pendientes. El JSON de las respuestas se ve en una línea cortada con \"…\"; al hacer clic se abre completo (un <details> cuyo <pre> tiene el data-campo, así que los scripts leen el valor completo). La plantilla \"Javascript personalizado\" (jstemplate.js) lo muestra con sangría, en la lista y en la vista individual; solo actúa en el navegador, y los scripts que leen la base no la ejecutan. Si falta, el script lee la plantilla de lista de Moodle por defecto (filas \"campo | valor\"). No muestra los botones de editar ni de borrar. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
+  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25 con los campos anteriores; las del repo ya usan los del ADR-007). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: los scripts la leen para no duplicar copias pendientes. El JSON se ve en una línea cortada con \"…\"; al hacer clic se abre completo (un <details> cuyo <pre> tiene el data-campo, así que los scripts leen el valor completo). La plantilla \"Javascript personalizado\" (jstemplate.js) lo muestra con sangría. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [
     {
       "nombre": "id_usuario",
@@ -23,96 +23,55 @@
     {
       "nombre": "dni",
       "tipo": "text",
-      "descripcion": "DNI del estudiante: el nombre de usuario del campus. Vacío si no se pudo leer"
+      "requerido": true,
+      "descripcion": "DNI del estudiante: el nombre de usuario del campus. Es la clave que comparte con Carga_Parciales_Primero"
     },
     {
-      "nombre": "encuesta",
+      "nombre": "codigo_encuesta",
       "tipo": "menu",
       "requerido": true,
-      "descripcion": "Qué encuesta respondió",
+      "descripcion": "Qué encuesta respondió. Con version, apunta a su definición en la base Encuestas",
       "opciones": [
         "inicial",
         "cuatrimestral"
       ]
     },
     {
-      "nombre": "version_encuesta",
+      "nombre": "version",
       "tipo": "number",
       "requerido": true,
-      "descripcion": "Versión de la lista de ítems del script con la que se copió (no es el número de versión de la respuesta, que sale del orden de created_at)"
+      "descripcion": "Versión de la base Encuestas con la que se respondió"
     },
     {
       "nombre": "periodo",
       "tipo": "text",
-      "descripcion": "Período de la respuesta (AAAA-n) en la cuatrimestral; vacío en la inicial"
+      "requerido": false,
+      "descripcion": "Período de la respuesta (AAAA-n) en las encuestas con por_periodo = si; vacío en la inicial"
     },
     {
-      "nombre": "json_pregunta_respuesta",
+      "nombre": "json_respuesta",
       "tipo": "text",
       "requerido": true,
-      "descripcion": "Lista JSON de { variable, pregunta, respuesta, criticidad }, más \"opcion\" en las de opción múltiple y \"materia\" en las preguntas por materia: una entrada por pregunta respondida"
-    },
-    {
-      "nombre": "puntaje_criticidad",
-      "tipo": "number",
-      "requerido": true,
-      "descripcion": "Suma de la criticidad de las respuestas (0 a 100), calculada al enviar por CriticidadInicial o CriticidadCuatrimestral (alGuardar de la copia) con los valores de docs/models/MODELO_CRITICIDAD_ENCUESTAS.md; 0 si no se pudo calcular. El estudiante no la ve"
+      "descripcion": "Lista JSON de { item_id, respuestas: [...] }: una entrada por ítem respondido, en el orden de la encuesta"
     },
     {
       "nombre": "created_at",
       "tipo": "text",
       "requerido": true,
-      "descripcion": "Fecha y hora de esta versión (ISO 8601)"
+      "descripcion": "Fecha y hora de esta versión (ISO 8601 con zona)"
     }
   ],
   "formato_json": {
-    "descripcion": "Una entrada por pregunta respondida, en el orden de la encuesta. variable: etiqueta de la pregunta en Moodle (pregunta_<id> si el script no la conoce). pregunta: texto tal como lo vio el estudiante. respuesta: texto de la opción como está en Moodle, número en los numéricos, lista de códigos en las materias. Las preguntas por materia de la Cuatrimestral (primera_vez y dificultad, del selector de materias) llevan además \"materia\" con el código. opcion: solo en las de opción múltiple, el número de opción que envía Moodle (1, 2…), con el que puntúan las tools de criticidad (desde el 2026-10-26). criticidad: puntos que aporta (null si no puntúa), que completa el alGuardar de la copia. Las preguntas dependientes que no corresponden no se guardan.",
+    "descripcion": "Una entrada por ítem respondido, en el orden de la encuesta. item_id: el id del ítem en Moodle; su texto, sus opciones y sus puntos están en la base Encuestas (codigo_encuesta + version). respuestas: siempre una lista. Numéricos: [número]. Opción múltiple: [número de opción que envía Moodle] (varios en las de selección múltiple). seleccion_creditos (cuadro de créditos): [{ plan, materias: [códigos] }]. selector_materias: [{ materia, primera_vez, dificultad }], o [] si no cursó ninguna; si el selector no cargó, [texto] tal como se escribió. Ítems que no están en la definición: [valor] tal como lo envía Moodle. Las preguntas dependientes que no corresponden no se guardan.",
     "ejemplo": [
-      {
-        "variable": "plan",
-        "pregunta": "Plan de estudios (cuadro de créditos)",
-        "respuesta": "2024",
-        "criticidad": null
-      },
-      {
-        "variable": "materias_aprobadas",
-        "pregunta": "Materias aprobadas (cuadro de créditos)",
-        "respuesta": [
-          "INGM101",
-          "INGM105"
-        ],
-        "criticidad": null
-      },
-      {
-        "variable": "creditos_aprobados",
-        "pregunta": "Los créditos obtenidos actualmente son:",
-        "respuesta": 10,
-        "criticidad": 35
-      },
-      {
-        "variable": "año_cohorte",
-        "pregunta": "¿En qué año ingresaste a la facultad?",
-        "respuesta": 2026,
-        "criticidad": null
-      },
-      {
-        "variable": "cuatri_cohorte",
-        "pregunta": "¿En cuál cuatrimestre ingresaste?",
-        "respuesta": "1",
-        "criticidad": null
-      },
-      {
-        "variable": "trabaja",
-        "pregunta": "¿Trabaja actualmente?",
-        "respuesta": "Si",
-        "criticidad": 10
-      },
-      {
-        "variable": "inicio_laboral",
-        "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?",
-        "respuesta": "Comencé en 1.º año",
-        "criticidad": 20
-      }
+      { "item_id": 8262, "respuestas": [61] },
+      { "item_id": 8775, "respuestas": [{ "plan": "2024", "materias": ["ING1103", "INGM101"] }] },
+      { "item_id": 8264, "respuestas": [1] },
+      { "item_id": 8265, "respuestas": [1] },
+      { "item_id": 8266, "respuestas": [3] },
+      { "item_id": 8768, "respuestas": [{ "materia": "INGM105", "primera_vez": false, "dificultad": 2 }] },
+      { "item_id": 8271, "respuestas": [1] }
     ]
-  }
+  },
+  "formato_anterior": "Las entradas guardadas antes del ADR-007 (inicial versión 1 y cuatrimestral versión 2, del 2026-10-25 al 2026-10-27) tienen los campos encuesta, version_encuesta, json_pregunta_respuesta ({ variable, pregunta, respuesta, criticidad, opcion, materia }) y puntaje_criticidad. Se reconocen por la versión y no se migran."
 }

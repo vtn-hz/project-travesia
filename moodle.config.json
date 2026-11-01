@@ -64,9 +64,17 @@
       "cmid": null,
       "dataid": null
     },
+    "encuestas": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_ENCUESTAS.json",
+      "subseccion": "Database"
+    },
     "criticidad": {
       "cmid": null,
-      "dataid": null
+      "dataid": null,
+      "definicion": "data/moodle/BASE_CRITICIDAD.json",
+      "subseccion": "Database"
     },
     "carga_parciales_primero": {
       "cmid": 59521,

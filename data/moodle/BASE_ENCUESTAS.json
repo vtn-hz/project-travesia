@@ -1,0 +1,72 @@
+{
+  "clave": "encuestas",
+  "nombre": "Encuestas",
+  "descripcion": "Definición de cada versión de las Encuestas de Moodle inicial y cuatrimestral: sus ítems, opciones y la criticidad de cada opción. Solo se agregan entradas: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor version para el mismo codigo_encuesta.",
+  "subseccion": "Database",
+  "origen": "PROPUESTA (2026-11-01, ADR-007). Sin crear en Moodle. Las entradas que se cargan están en data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json.",
+  "configuracion": {
+    "Requiere aprobación": "No: la leen los navegadores de todos los estudiantes que responden las encuestas.",
+    "Permitir la edición de entradas aprobadas": "No.",
+    "Permitir comentarios": "No.",
+    "Quién escribe": "Solo el equipo (ADM)."
+  },
+  "plantillas": "data/moodle/plantillas/encuestas/ (lista con .zk-registro, data-rid y una celda data-campo por campo, para que la lea LeerBase). La de alta es la de Moodle.",
+  "campos": [
+    {
+      "nombre": "codigo_encuesta",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Qué encuesta es. Es la misma clave que codigo_encuesta en Respuestas",
+      "opciones": ["inicial", "cuatrimestral"]
+    },
+    {
+      "nombre": "version",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "Versión de la encuesta. No se repite con el mismo codigo_encuesta (lo controla la página). La vigente es la de número más alto"
+    },
+    {
+      "nombre": "json_preguntas",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Lista JSON de los ítems de la encuesta en Moodle, en orden: { variable, item_id, pagina, tipo, pregunta, obligatoria, rango, formato, opciones: [{ opcion, texto, criticidad }], criticidad_max, regla }"
+    },
+    {
+      "nombre": "por_periodo",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Si la respuesta lleva período (la cuatrimestral sí, la inicial no)",
+      "opciones": ["si", "no"]
+    },
+    {
+      "nombre": "puntaje_maximo",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "Suma de los criticidad_max de las preguntas que puntúan en esta versión. El índice de la encuesta es el puntaje sobre este máximo, llevado a 0–100"
+    },
+    {
+      "nombre": "created_at",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora en que se cargó la versión (ISO 8601 con zona)"
+    }
+  ],
+  "formato_json": {
+    "descripcion": "Un elemento por ítem de la Encuesta de Moodle, en el orden de Moodle y sin los saltos de página ni los ítems de copia (cargador de tools). variable: la etiqueta del ítem (null en los widgets). item_id: el id del ítem en Moodle, con el que Respuestas guarda cada respuesta; hace falta porque algunos ítems no tienen etiqueta. pagina: desde 1. tipo: numeric, multichoice, textarea o label (los widgets). formato: solo en las respuestas largas que guardan un JSON (seleccion_creditos o selector_materias). opciones: solo en las de opción múltiple, con el número de opción que envía Moodle y los puntos de cada una. criticidad_max: lo más que suma la pregunta. regla: las preguntas cuyo puntaje sale de una cuenta y no de una opción (cursada, avance_curricular); activa false = no suma ni cuenta en puntaje_maximo. Las dependencias entre preguntas (inicio_laboral solo si trabaja = Si) no van acá: están en la Encuesta de Moodle y en el script de copia.",
+    "ejemplo": [
+      {
+        "variable": "inicio_laboral",
+        "item_id": 8266,
+        "pagina": 4,
+        "tipo": "multichoice",
+        "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?",
+        "obligatoria": true,
+        "opciones": [
+          { "opcion": 1, "texto": "Comencé antes de ingresar a la carrera", "criticidad": 10 },
+          { "opcion": 2, "texto": "Comencé en 1.º año", "criticidad": 10 }
+        ],
+        "criticidad_max": 10
+      }
+    ]
+  }
+}

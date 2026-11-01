@@ -1,0 +1,86 @@
+{
+  "clave": "criticidad",
+  "nombre": "Criticidad",
+  "descripcion": "Historial de la criticidad de cada estudiante. Solo se agregan entradas: cada envío de una encuesta, cada carga de notas de 1.er año y cada asignación de un tutor agrega una. Nada se edita ni se borra. El calculado vigente es la última entrada automática del período; el asignado vigente es la última entrada manual de cualquier período, si no es sin_asignar.",
+  "subseccion": "Database",
+  "origen": "PROPUESTA (2026-11-01, ADR-007). Sin crear en Moodle. Reemplaza la base 9 del modelo simplificado.",
+  "configuracion": {
+    "Requiere aprobación": "Sí, y no aprobar entradas: el navegador del estudiante escribe las entradas de sus encuestas y de sus notas, y con la aprobación cada estudiante lee solo las suyas (las necesita para calcular indice_total). Una entrada aprobada la verían todos.",
+    "Permitir la edición de entradas aprobadas": "No.",
+    "Número máximo de entradas": "0 (sin límite).",
+    "Permitir comentarios": "No.",
+    "Privacidad": "El estudiante puede ver sus propias entradas, con su índice: la plantilla de lista tiene que mostrar los valores porque los scripts la leen. Es el mismo límite que tenía la base Respuestas con la criticidad adentro."
+  },
+  "plantillas": "data/moodle/plantillas/criticidad/ (lista con .zk-registro, data-rid y una celda data-campo por campo, para que la lea LeerBase). La de alta es la de Moodle: los scripts ubican cada campo por su etiqueta.",
+  "campos": [
+    {
+      "nombre": "id_usuario",
+      "tipo": "number",
+      "requerido": true,
+      "descripcion": "id de Moodle del estudiante. Siempre está: todo estudiante tiene cuenta, porque responde las encuestas y carga sus notas"
+    },
+    {
+      "nombre": "dni",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "DNI del estudiante: el nombre de usuario del campus"
+    },
+    {
+      "nombre": "periodo",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Período del cálculo (AAAA-n). En las manuales, el período en que se asignó: no limita su vigencia"
+    },
+    {
+      "nombre": "origen",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "automatica: la calculó un script. manual: la asignó un tutor (Req 10)",
+      "opciones": ["automatica", "manual"]
+    },
+    {
+      "nombre": "fuente",
+      "tipo": "menu",
+      "requerido": false,
+      "descripcion": "Qué la disparó. notas_1ro: alta o edición en Carga_Parciales_Primero. respuestas: envío de una encuesta. materias: recálculo por un cambio en Carga_Materias_Primero (umbral o materia crítica). omision: el estudiante no respondió la encuesta del período. Vacía en las manuales",
+      "opciones": ["notas_1ro", "respuestas", "materias", "omision"]
+    },
+    {
+      "nombre": "rid_fuente",
+      "tipo": "number",
+      "requerido": false,
+      "descripcion": "rid de la entrada que la disparó: de Respuestas (fuente respuestas), de Carga_Parciales_Primero (notas_1ro) o de Carga_Materias_Primero (materias). Vacío en omision y en las manuales"
+    },
+    {
+      "nombre": "indice",
+      "tipo": "number",
+      "requerido": false,
+      "descripcion": "Criticidad de esa fuente, de 0 a 100. Vacío en las manuales"
+    },
+    {
+      "nombre": "indice_total",
+      "tipo": "number",
+      "requerido": false,
+      "descripcion": "Promedio, de 0 a 100, del último índice de cada grupo de fuentes del estudiante en el período (notas: notas_1ro y materias; encuestas: respuestas y omision), contando esta entrada. Vacío en las manuales"
+    },
+    {
+      "nombre": "semaforo",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "En las automáticas, el semáforo del indice_total (0–39 verde, 40–69 amarillo, 70–100 rojo). En las manuales, el estado asignado; sin_asignar quita el estado asignado anterior",
+      "opciones": ["verde", "amarillo", "rojo", "sin_asignar"]
+    },
+    {
+      "nombre": "motivo",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Obligatorio en las manuales (lo controla la página). En las automáticas, opcional: por ejemplo, el recálculo por un cambio de umbral"
+    },
+    {
+      "nombre": "created_at",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora de la entrada (ISO 8601 con zona)"
+    }
+  ]
+}
