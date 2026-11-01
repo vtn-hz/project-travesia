@@ -3,7 +3,7 @@
   "nombre": "Respuestas",
   "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, codigo_encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas. Solo guarda lo que respondió el estudiante: los textos están en la base Encuestas y la criticidad, en la base Criticidad.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006 y el 2026-11-01 con el ADR-007). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js, con los campos anteriores al ADR-007 (encuesta, version_encuesta, json_pregunta_respuesta y puntaje_criticidad). Los campos de abajo son los del ADR-007, todavía sin aplicar en Moodle. La escribe el script de copia (section/copia_encuestas), que va en las páginas de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
+  "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006 y el 2026-11-01 con el ADR-007). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js, con los campos anteriores al ADR-007 (encuesta, version_encuesta, json_pregunta_respuesta y puntaje_criticidad). El 2026-11-01 se borraron sus 4 entradas con el formato anterior (respaldadas fuera del repo: tienen DNI reales) y se aplicaron los campos de abajo (ADR-007) con recrear_campos.js. La escribe el script de copia (section/copia_encuestas), que va en las páginas de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
   "configuracion": {
     "descripcion": "crear_base.js no la aplica: se configuró el 2026-10-25 con un POST al formulario de ajustes de la base.",
     "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",
@@ -12,7 +12,7 @@
     "Permitir comentarios": "No.",
     "Disponibilidad": "Visible en Zhakyz: el campus no permite \"disponible pero no mostrada\", y si se oculta los estudiantes no pueden escribir en ella. Con la aprobación, cada estudiante ve solo sus entradas."
   },
-  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25 con los campos anteriores; las del repo ya usan los del ADR-007). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: los scripts la leen para no duplicar copias pendientes. El JSON se ve en una línea cortada con \"…\"; al hacer clic se abre completo (un <details> cuyo <pre> tiene el data-campo, así que los scripts leen el valor completo). La plantilla \"Javascript personalizado\" (jstemplate.js) lo muestra con sangría. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
+  "plantillas": "data/moodle/plantillas/respuestas/ (cargadas en Moodle el 2026-10-25 y, con los campos del ADR-007, el 2026-11-01). La plantilla de lista marca cada entrada con .zk-registro, data-rid, data-alta (##timeadded##) y data-modificada (##timemodified##), y cada campo con data-campo: los scripts la leen para no duplicar copias pendientes. El JSON se ve en una línea cortada con \"…\"; al hacer clic se abre completo (un <details> cuyo <pre> tiene el data-campo, así que los scripts leen el valor completo). La plantilla \"Javascript personalizado\" (jstemplate.js) lo muestra con sangría. La plantilla de alta es la de Moodle: el script ubica cada campo por su etiqueta.",
   "campos": [
     {
       "nombre": "id_usuario",
@@ -73,5 +73,5 @@
       { "item_id": 8271, "respuestas": [1] }
     ]
   },
-  "formato_anterior": "Las entradas guardadas antes del ADR-007 (inicial versión 1 y cuatrimestral versión 2, del 2026-10-25 al 2026-10-27) tienen los campos encuesta, version_encuesta, json_pregunta_respuesta ({ variable, pregunta, respuesta, criticidad, opcion, materia }) y puntaje_criticidad. Se reconocen por la versión y no se migran."
+  "formato_anterior": "Antes del ADR-007 la base tenía los campos encuesta, version_encuesta, json_pregunta_respuesta ({ variable, pregunta, respuesta, criticidad, opcion, materia }) y puntaje_criticidad (inicial versión 1 y cuatrimestral versión 2). Sus 4 entradas, de prueba del equipo, se borraron el 2026-11-01 al cambiar los campos."
 }
