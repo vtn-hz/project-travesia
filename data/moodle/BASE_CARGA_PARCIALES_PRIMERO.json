@@ -3,7 +3,7 @@
   "nombre": "Carga_Parciales_Primero",
   "descripcion": "Notas de parciales de 1.er año: una entrada por evaluación de un estudiante en una materia.",
   "subseccion": "Hub",
-  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). Actualizada el 2026-10-31 con los cambios del equipo en Moodle: Fecha pasó a texto obligatorio (AAAA-MM-DD) y se agregó Recupera_a.",
+  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). Actualizada el 2026-10-31 con los cambios del equipo en Moodle: Fecha pasó a texto obligatorio (AAAA-MM-DD) y se agregó Recupera_a. El 2026-11-01 (ADR-007) se publicaron la plantilla de lista con data-rid y la plantilla Javascript personalizado (jstemplate.js), que agrega la criticidad de las notas a la base Criticidad. La configuración no se cambió: falta \"Requiere aprobación\" para que la carguen los estudiantes.",
   "plantillas": "data/moodle/plantillas/carga_parciales_primero/",
   "campos": [
     { "nombre": "DNI", "tipo": "text", "requerido": true, "descripcion": "DNI del Estudiante" },
