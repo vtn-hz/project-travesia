@@ -43,6 +43,7 @@ docs/
 │   ├── plan-estudios.md
 │   ├── encuesta-inicial.md
 │   ├── copia-encuestas.md
+│   ├── carga-parciales-primero.md
 │   └── entrevistas.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
@@ -99,5 +100,6 @@ Sirve como vista rápida de la historia del proyecto.
 - [Puntaje de criticidad de las encuestas](models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) — Versión vigente: los puntos de cada respuesta, de 0 a 100
 - [Índice de las notas de 1.er año](models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) — ICm por materia e ICG por estudiante
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
+- [Carga de parciales de 1.er año](specs/carga-parciales-primero.md) — Guía para el apartado donde los estudiantes suben sus notas, y cómo se calcula su criticidad
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
 - [Reglas de desarrollo](../RULES.md) — Convenciones de código
