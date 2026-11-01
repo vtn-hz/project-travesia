@@ -3,7 +3,7 @@
   "nombre": "Criticidad",
   "descripcion": "Historial de la criticidad de cada estudiante. Solo se agregan entradas: cada envío de una encuesta, cada carga de notas de 1.er año y cada asignación de un tutor agrega una. Nada se edita ni se borra. El calculado vigente es la última entrada automática del período; el asignado vigente es la última entrada manual de cualquier período, si no es sin_asignar.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-11-01, ADR-007). Sin crear en Moodle. Reemplaza la base 9 del modelo simplificado.",
+  "origen": "ADR-007. Creada en Moodle el 2026-11-01 (cmid 60191, d=199) con crear_base.js, configurada con un POST al formulario de ajustes (ver configuracion) y con sus plantillas. Reemplaza la base 9 del modelo simplificado.",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: el navegador del estudiante escribe las entradas de sus encuestas y de sus notas, y con la aprobación cada estudiante lee solo las suyas (las necesita para calcular indice_total). Una entrada aprobada la verían todos.",
     "Permitir la edición de entradas aprobadas": "No.",

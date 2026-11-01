@@ -3,10 +3,10 @@
   "nombre": "Encuestas",
   "descripcion": "Definición de cada versión de las Encuestas de Moodle inicial y cuatrimestral: sus ítems, opciones y la criticidad de cada opción. Solo se agregan entradas: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor version para el mismo codigo_encuesta.",
   "subseccion": "Database",
-  "origen": "PROPUESTA (2026-11-01, ADR-007). Sin crear en Moodle. Las entradas que se cargan están en data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json.",
+  "origen": "ADR-007. Creada en Moodle el 2026-11-01 (cmid 60190, d=198) con crear_base.js, con sus plantillas. Configuración por defecto de Moodle (sin aprobación ni comentarios). Sus entradas (rid 20148 y 20149) son data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json.",
   "configuracion": {
     "Requiere aprobación": "No: la leen los navegadores de todos los estudiantes que responden las encuestas.",
-    "Permitir la edición de entradas aprobadas": "No.",
+    "Permitir la edición de entradas aprobadas": "Sí (valor por defecto de Moodle, no se cambió): sin aprobación todas las entradas quedan aprobadas. No se editan: una versión nueva es una entrada nueva.",
     "Permitir comentarios": "No.",
     "Quién escribe": "Solo el equipo (ADM)."
   },

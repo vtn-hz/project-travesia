@@ -65,16 +65,18 @@
       "dataid": null
     },
     "encuestas": {
-      "cmid": null,
-      "dataid": null,
+      "cmid": 60190,
+      "dataid": 198,
       "definicion": "data/moodle/BASE_ENCUESTAS.json",
-      "subseccion": "Database"
+      "subseccion": "Database",
+      "creada": "2026-11-01"
     },
     "criticidad": {
-      "cmid": null,
-      "dataid": null,
+      "cmid": 60191,
+      "dataid": 199,
       "definicion": "data/moodle/BASE_CRITICIDAD.json",
-      "subseccion": "Database"
+      "subseccion": "Database",
+      "creada": "2026-11-01"
     },
     "carga_parciales_primero": {
       "cmid": 59521,

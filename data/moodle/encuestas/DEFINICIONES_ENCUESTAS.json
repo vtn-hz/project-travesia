@@ -1,6 +1,6 @@
 {
   "descripcion": "Entradas de la base Encuestas (data/moodle/BASE_ENCUESTAS.json): una por encuesta y versión, tal como se cargan en Moodle. json_preguntas va como objeto acá y como texto JSON en la base. La versión vigente de cada encuesta es la de mayor número. Las versiones 1 (inicial) y 2 (cuatrimestral) son las del formato anterior de Respuestas, que guardaba el texto de cada pregunta en la respuesta, y no tienen entrada.",
-  "origen": "Armadas el 2026-11-01 desde data/moodle/encuestas/ENCUESTA_INICIAL.xml y ENCUESTA_CUATRIMESTRAL.xml (exportadas de Moodle; la Cuatrimestral con los 4 saltos de página del 2026-10-31) y los puntos provisorios de docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md. Sin cargar en Moodle: la base no existe todavía.",
+  "origen": "Armadas el 2026-11-01 desde data/moodle/encuestas/ENCUESTA_INICIAL.xml y ENCUESTA_CUATRIMESTRAL.xml (exportadas de Moodle; la Cuatrimestral con los 4 saltos de página del 2026-10-31) y los puntos provisorios de docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md. Cargadas en la base Encuestas (d=198) el 2026-11-01: inicial v2 = rid 20148, cuatrimestral v3 = rid 20149.",
   "entradas": [
     {
       "codigo_encuesta": "inicial",
