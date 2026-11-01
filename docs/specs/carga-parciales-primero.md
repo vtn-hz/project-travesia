@@ -61,7 +61,7 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 
 **Qué muestra:**
 - **Nueva nota:** Materia, Instancia, Fecha del parcial, Condición y Nota. El DNI y el nombre salen de la cuenta y no se editan.
-- **Notas registradas:** las notas propias, de la más reciente a la más antigua, con la fecha en `DD-MM-AAAA` y un botón **Editar** en cada una.
+- **Notas registradas:** las notas propias, de la más reciente a la más antigua, con la fecha en `DD-MM-AAAA`, el cuatrimestre (`2.º 2026`), el parcial que recupera cada recuperatorio y un botón **Editar** en cada una.
 
 **Cómo cumple las [reglas de los campos](#reglas-de-los-campos):**
 
@@ -70,15 +70,15 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 | DNI | Nombre de usuario de la cuenta (`/login/change_password.php`), como en Tools. Sin DNI no se puede cargar |
 | Estudiante | Encabezado del perfil (`/user/profile.php`). Si no se lee, queda vacío |
 | Materia | Lista con las materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2) de la base Materias (d=152), con la versión vigente de cada código y sin bajas. Si la base no se puede leer, usa la lista de respaldo `MATERIAS_PRIMERO` con los mismos 7 nombres |
-| Instancia | Lista fija `INSTANCIAS`: Parcial 1, Parcial 2, Recuperatorio 1 y Recuperatorio 2. Los finales quedan fuera del alcance por ahora |
+| Instancia | `Parcial 1` a `Parcial N` según la materia, más `Recuperatorio` (como indica la descripción del campo en Moodle). La cantidad de parciales sale de `PARCIALES`: 2 por defecto y 3 en Física A. Es el único dato por materia: la cantidad de recuperatorios no se configura, porque cada recuperatorio indica qué parcial recupera (se carga uno por cada parcial recuperado). **Provisorio:** son los datos que recuerda el equipo, sin confirmar con las cátedras. Cuando se confirmen, pueden pasar a un campo "Parciales" en Carga_Materias_Primero (cambio en Moodle, con confirmación). Si una materia tiene de más, sobra una opción; si tiene de menos, no se puede cargar un parcial. Los finales quedan fuera del alcance por ahora |
 | Fecha | Selector de fecha del navegador. Se guarda en `AAAA-MM-DD`. No puede ser posterior a hoy ni anterior a 2024-01-01. El formato que se ve en el selector depende del idioma del navegador: en español, `dd/mm/aaaa` |
 | Nota | De 0 a 10, con hasta dos decimales y **punto** como separador (`4.5`; `4,5` se rechaza con un error que indica el formato). Es un campo de texto: con `type="number"` el navegador descartaba la coma y "1,0" se guardaba como 10. Con la condición Ausente no se completa y se guarda `0`, porque el campo es obligatorio en Moodle. El cálculo cuenta la nota como ausencia por la condición, no por el número |
 | Estado | Una sola opción entre Aprobado, Desaprobado y Ausente (en la página se llama "Condición") |
-| Recupera_a | Se completa solo: Recuperatorio 1 → `Parcial 1`, Recuperatorio 2 → `Parcial 2` |
+| Recupera_a | Con la instancia Recuperatorio aparece el campo **Parcial que recupera**, obligatorio, con los parciales de la materia. Sirve igual si la materia tiene un recuperatorio o uno por parcial. El cálculo agrupa los recuperatorios por este campo, no por el nombre de la instancia |
 
 **Al guardar:**
 1. Valida los campos. Cada error indica el campo, el valor recibido y lo que se esperaba.
-2. Si ya existe una nota propia de la misma materia e instancia, no la duplica: ofrece editar la nota registrada.
+2. Si ya existe una nota propia de la misma materia **en el mismo período**, no la duplica: ofrece editar la nota registrada. Un parcial se repite por su instancia (el mismo Parcial 1) y un recuperatorio, por el parcial que recupera (dos recuperatorios del Parcial 1). En otro período es una recursada: se guarda como nota nueva y la de la cursada anterior se conserva. El cálculo ya usa solo las notas del período actual (`periodoDeFecha` en Tools), así que no se mezclan. No se bloquea la carga de materias ya aprobadas: el cálculo no decide si una materia está aprobada y nadie revisa las notas.
 3. Guarda con el formulario de Moodle de la base: lo pide (`edit.php?d=117`, con `&rid=` al editar), ubica cada campo por su etiqueta (sin la marca "Campo obligatorio" que Moodle agrega en Estado) y lo envía. Lee el `rid` de la redirección.
 4. Llama a `CriticidadNotas({ rid })` sin esperar el resultado. Si la Página Tools publicada es anterior a la v5, la nota se guarda sin criticidad y queda un aviso en la consola.
 
@@ -91,7 +91,9 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 - En el campus, solo con lecturas (GET): DNI y nombre de la cuenta, las 7 materias desde la base Materias, las 14 notas de la base con su `rid`, y el formulario de alta armado con los 8 campos (sin enviarlo).
 - **Guardado real en el campus** (con confirmación, con la cuenta de Luca Zuanetti y la misma función de la página): Análisis Matemático I, Parcial 2, 2026-10-27, nota 7, Aprobado. Moodle la guardó en 0,7 s como **rid 20154**, con los 8 campos iguales a los enviados y el DNI de la cuenta. Sin entrada en Criticidad, porque el campus tiene Tools v4. Esta nota de prueba se borra junto con los demás datos de prueba de la base.
 - **Edición real en el campus** (con confirmación): la misma nota (rid 20154) pasó a nota 8 y fecha 2026-10-28 en 0,7 s. Moodle conservó el rid, actualizó los campos y no creó otra entrada (la base siguió con 15 notas).
-- **Falta probar:** la llamada a `CriticidadNotas`, que necesita Tools v5 publicada.
+- **Revisión de Valentino con Playwright** (local y campus simulado con Tools v5 real): guardado, edición, ausente, recuperatorios, filtro por DNI y llamada a `CriticidadNotas({ rid })`. Corrigió el separador decimal de la nota.
+- En local, después de la revisión: instancias por materia (Física A con Parcial 3), recuperatorio con el parcial que recupera (obligatorio, guardado en Recupera_a y editable), dos recuperatorios de parciales distintos en el mismo período, recursada en otro período guardada como nota nueva, y rechazados el parcial repetido y el segundo recuperatorio del mismo parcial en el mismo período. Sin errores de consola.
+- **Falta probar en el campus real:** la llamada a `CriticidadNotas`, que necesita Tools v5 publicada.
 
 ## Reglas de los campos
 
@@ -102,7 +104,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 | DNI | El de la cuenta del estudiante (el nombre de usuario). **No dejarlo editable** | El índice se calcula con las notas de ese DNI. Si el estudiante escribe otro, su nota no cuenta y ensucia la de otro |
 | Estudiante | Nombre y apellido, de la cuenta | Solo para mostrar |
 | Materia | **Exactamente el nombre de Carga_Materias_Primero** (por ejemplo, `Análisis Matemático I`, `Álgebra I- B`). Ofrecerlo como lista, no como texto libre | Las notas se agrupan por materia y se cruzan con su umbral por nombre. Se ignoran mayúsculas, espacios, guiones y guiones bajos, pero no las tildes |
-| Instancia | `Parcial 1`, `Parcial 2` o `Recuperatorio N` | Cada instancia distinta cuenta como una evaluación |
+| Instancia | `Parcial N` (según los parciales de la materia) o `Recuperatorio` | Cada parcial cuenta como una evaluación |
 | Fecha | `AAAA-MM-DD` | Define el período: de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`. Solo cuentan las notas del período actual (`PERIODO_ACTUAL` en Tools) |
 | Nota | Número de 0 a 10. Vacío si estuvo ausente | Promedio y umbral |
 | Estado | **Uno solo** entre `Aprobado`, `Desaprobado` y `Ausente` (el campo de Moodle permite elegir varios) | `Ausente` o sin nota cuenta como ausencia; `Aprobado`, como aprobada |
