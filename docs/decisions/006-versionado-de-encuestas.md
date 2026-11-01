@@ -1,6 +1,6 @@
 # ADR-006: Versionado de las respuestas de las encuestas (vista del estudiante)
 
-- **Estado:** Aceptada (2026-10-24): Encuesta de Moodle + copia de cada envío en la base Respuestas. Desarrollada en local, sin publicar
+- **Estado:** Aceptada (2026-10-24): Encuesta de Moodle + copia de cada envío en la base Respuestas. Publicada el 2026-10-25. El formato de Respuestas y el lugar de la criticidad los cambia el [ADR-007](007-encuestas-respuestas-y-criticidad.md) (2026-11-01): Respuestas guarda solo lo respondido, por `item_id`, y la criticidad va a la base Criticidad
 - **Fecha:** 2026-10-24
 - **Refs:** [spec Copia de respuestas](../specs/copia-encuestas.md), [puntaje de criticidad](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md), DER v2 · módulo Cualitativo (retirado el 2026-10-31; en el historial de git), [modelo simplificado · base 8](../models/datos/MODELO_SIMPLIFICADO_MOODLE.md#8-respuestas), [`BASE_RESPUESTAS.json`](../../data/moodle/BASE_RESPUESTAS.json), [`ENCUESTA_INICIAL.xml`](../../data/moodle/encuestas/ENCUESTA_INICIAL.xml), [`ENCUESTA_CUATRIMESTRAL.xml`](../../data/moodle/encuestas/ENCUESTA_CUATRIMESTRAL.xml)
 

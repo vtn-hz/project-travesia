@@ -3,7 +3,7 @@
 Este documento es el **modelo de datos del SBIRE**: adapta el DER v2 (23 entidades) a lo que permite Moodle. Cada tabla de este documento es una **base de datos de Moodle** (actividad `mod_data`) dentro de la subsección *Database* de Zhakyz.
 
 - **DER v2:** se retiró del repo el 2026-10-31 y este es el único modelo de datos. Las reglas y los pendientes que solo estaban en el DER pasaron a [Reglas que controla la página](#reglas-que-controla-la-página), [Datos que se calculan y no se guardan](#datos-que-se-calculan-y-no-se-guardan) y [Decisiones pendientes](#decisiones-pendientes). La columna *Origen en el DER* queda como referencia de nombres; el DER completo está en el historial de git (`git show 3f7047a:docs/models/MODELO_DE_DATOS_V2.md`).
-- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8). Preguntas se creó y se borró el 2026-10-25. Crear las demás requiere confirmación ([`RULES.md`](../../../RULES.md)).
+- **Estado:** propuesta. Están creadas en Moodle **Materias** (la base 1, con los campos de [`BASE_MATERIAS.json`](../../../data/moodle/BASE_MATERIAS.json)) y **Respuestas** (la base 8, todavía con los campos anteriores al [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md)). Preguntas se creó y se borró el 2026-10-25. **Encuestas** (base 7) y **Criticidad** (base 9) están definidas por el ADR-007, sin crear. Crear las demás requiere confirmación ([`RULES.md`](../../../RULES.md)).
 - **Pregunta abierta:** si es viable cargar los datos de todos los estudiantes desde el navegador. Está en el [ADR-005](../../decisions/005-modelo-de-bases-moodle.md) y se resuelve antes de crear las bases.
 
 ## Por qué hay que simplificar
@@ -25,7 +25,7 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
    - las relaciones 1 a 0..1 pasan a ser columnas (`Trabajo_Final` dentro de `Estudiante`);
    - los detalles de un registro pasan a un campo JSON (evaluaciones de una cursada, mediciones de un corte, acciones de una entrevista);
    - los catálogos chicos se unen (`Plan_Estudio` + `Materia` + `Materia_Plan` + `Correlatividad`).
-2. **Las bases de historial solo agregan entradas.** En Situación académica, Respuestas y Criticidad, editar agrega una entrada nueva; la vigente es la más reciente. Nada se borra.
+2. **Las bases de historial solo agregan entradas.** En Situación académica, Encuestas, Respuestas y Criticidad, editar agrega una entrada nueva; la vigente es la más reciente. Nada se borra.
 3. **Clave del estudiante: el DNI, siempre junto con la cuenta de Moodle.** Desde el 2026-11-01 (cambio de requerimientos) cada estudiante carga sus propias notas, así que todo estudiante tiene cuenta del campus: `id_usuario_moodle` es obligatorio y sirve además para la foto y los datos del campus.
 4. **Lo que ya existe en Moodle no se duplica:**
    - los docentes son usuarios del campus;
@@ -42,16 +42,16 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
 | 3 | Indicadores | `Indicador` | regla y versión | Editable (versiona) | Equipo |
 | 4 | Estudiantes | `Estudiante`, `Trabajo_Final` | estudiante | Editable | Equipo |
 | 5 | Situación académica | `Cursada`, `Evaluacion`, `Lote_Importacion` | estudiante y período | Solo agrega | Equipo |
-| 6 | Preguntas | `Pregunta` | pregunta | Editable | Equipo |
-| 7 | Armado de encuestas | `Encuesta` | encuesta y versión | Editable | Equipo |
+| 6 | Preguntas (descartada) | `Pregunta` | — | — | Las preguntas van dentro de Encuestas |
+| 7 | Encuestas | `Encuesta`, `Pregunta` | encuesta y versión | Solo agrega | Todos (la leen los navegadores de los estudiantes) |
 | 8 | Respuestas | `Envio_Encuesta`, `Respuesta` | envío respondido | Solo agrega | Cada estudiante ve las suyas |
-| 9 | Criticidad | `Situacion_Cuatrimestral`, `Medicion_Indicador` + **estado asignado** | corte o asignación | Solo agrega | Equipo |
+| 9 | Criticidad | `Situacion_Cuatrimestral` + **estado asignado** | evento: envío de una encuesta, nota guardada, recálculo, omisión o asignación | Solo agrega | Cada estudiante ve las suyas |
 | 10 | Alertas | `Alerta` | alerta | Editable (estado) | Equipo |
 | 11 | Acompañamientos | `Asignacion_Acompanamiento` | asignación | Editable | Equipo |
 | 12 | Entrevistas | `Entrevista`, `Accion_Acordada` | entrevista | Editable (estado) | Equipo |
 | — | (sin base) | `Docente` | — | — | Usuarios y grupos de Moodle |
 
-**Mínimo para el tablero y el detalle del estudiante:** Estudiantes, Situación académica, Criticidad y Respuestas (4 bases). El resto se suma con los módulos de alertas, tutorías y configuración.
+**Mínimo para el tablero y el detalle del estudiante:** Criticidad (el semáforo y su historial), más Respuestas y Carga_Parciales_Primero (lo que explica cada valor). El resto se suma con los módulos de alertas, tutorías y configuración.
 
 ## Bases y campos
 
@@ -156,7 +156,7 @@ Con unos 300 estudiantes, una carga son unas 300 entradas, en lugar de una entra
 
 ### 6. Preguntas (descartada el 2026-10-25)
 
-> Se borró de Moodle (era la cmid 59498, d=114) y del repo: las preguntas quedaron fijas en las Encuestas de Moodle. Lo que sigue queda como referencia del diseño.
+> Se borró de Moodle (era la cmid 59498, d=114) y del repo: las preguntas quedaron fijas en las Encuestas de Moodle. Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md), su texto, sus opciones y su criticidad van dentro de cada versión de la base 7, Encuestas. Lo que sigue queda como referencia del diseño.
 
 Campos actuales: `id`, `pregunta`, `tipo`, `respuestas`, `criticidad`. Para cubrir el DER hay que agregar:
 
@@ -169,56 +169,64 @@ Y sumar `likert` a las opciones de `tipo`.
 
 **Diferencia con el DER:** en el DER cada pregunta pertenece a una encuesta (`id_encuesta`). Nosotros tenemos un banco de preguntas reutilizables y el orden de cada encuesta se arma aparte, en la base 7. Ver *Decisiones pendientes*.
 
-### 7. Armado de encuestas (descartada el 2026-10-25)
+### 7. Encuestas
 
-Era una propuesta, sin crear; se descartó junto con la base Preguntas. Para cubrir el DER:
+Definida en [`BASE_ENCUESTAS.json`](../../../data/moodle/BASE_ENCUESTAS.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md); sin crear. Reemplaza al *Armado de encuestas* que se descartó el 2026-10-25. Una entrada por encuesta y versión: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor `version`. Las entradas que se cargan están en [`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json) (Inicial versión 2, Cuatrimestral versión 3).
 
-| Campo | Tipo | Origen en el DER |
-|---|---|---|
-| `encuesta` | menu (`inicial`, `cuatrimestral`) | `Encuesta.tipo` |
-| `titulo` | text | `Encuesta.nombre` |
-| `descripcion` | text | (nuevo) |
-| `preguntas` | text | `Pregunta.orden`: ids del banco separados por coma, en orden |
-| `version` | number | `Encuesta.version` (nuevo en la propuesta) |
-| `tramo_destino` | menu (`primero`, `superior`, `todos`) | `Encuesta.tramo_destino` (nuevo) |
-| `dias_plazo` | number | `Encuesta.dias_plazo` (nuevo) |
+| Campo | Tipo | Origen en el DER | Notas |
+|---|---|---|---|
+| `codigo_encuesta` | menu (`inicial`, `cuatrimestral`) | `Encuesta.tipo` | |
+| `version` | number | `Encuesta.version` | Única con el mismo `codigo_encuesta` (lo controla la página) |
+| `json_preguntas` | text (JSON) | `Pregunta` | `[{ variable, item_id, pagina, tipo, pregunta, obligatoria, rango, formato, opciones: [{ opcion, texto, criticidad }], criticidad_max, regla }]` |
+| `por_periodo` | menu (`si`, `no`) | (nuevo) | La cuatrimestral lleva período; la inicial, no |
+| `puntaje_maximo` | number | (nuevo) | Suma de los `criticidad_max` de las preguntas que puntúan: el índice de la encuesta es el puntaje sobre este máximo, de 0 a 100 |
+| `created_at` | text (fecha y hora) | (nuevo) | Cuándo se cargó la versión |
+
+- **`item_id`** es el id del ítem en Moodle: algunos ítems no tienen etiqueta y Respuestas guarda cada respuesta por su id.
+- **Las dependencias entre preguntas no van acá:** las define la Encuesta de Moodle (`inicio_laboral` solo si `trabaja` = Si).
+- **Sin `cmid`:** el cmid de cada encuesta está en `moodle.config.json`.
 
 ### 8. Respuestas
 
-Propuesta en [`BASE_RESPUESTAS.json`](../../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
+Definida en [`BASE_RESPUESTAS.json`](../../../data/moodle/BASE_RESPUESTAS.json). La escribe el [script de copia](../../specs/copia-encuestas.md) que va dentro de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)): Moodle guarda solo la última respuesta y esta base guarda todas. Una entrada por envío respondido. Editar agrega un envío nuevo (una versión); el vigente es el más reciente. Se configura con **"Requiere aprobación"** para que cada estudiante vea solo las suyas.
+
+Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) guarda **solo lo respondido**: los textos están en Encuestas y la criticidad, en Criticidad. En Moodle la base sigue con los campos anteriores (`encuesta`, `version_encuesta`, `json_pregunta_respuesta`, `puntaje_criticidad`) hasta que se publique el cambio.
 
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
 | `id_usuario` | number | (cuenta del campus) | Quien responde siempre tiene cuenta (`M.cfg.userId`) |
-| `dni` | text | `Envio_Encuesta.id_estudiante` | El nombre de usuario del campus |
-| `encuesta` | menu (`inicial`, `cuatrimestral`) | `Envio_Encuesta.id_encuesta` | |
-| `version_encuesta` | number | `Encuesta.version` | Versión de la encuesta que respondió |
+| `dni` | text | `Envio_Encuesta.id_estudiante` | El nombre de usuario del campus. La clave que comparte con Carga_Parciales_Primero |
+| `codigo_encuesta` | menu (`inicial`, `cuatrimestral`) | `Envio_Encuesta.id_encuesta` | |
+| `version` | number | `Encuesta.version` | Con `codigo_encuesta`, apunta a su definición en Encuestas |
 | `periodo` | text | `Envio_Encuesta.id_periodo` | Vacío en la inicial |
-| `json_pregunta_respuesta` | text (JSON) | `Respuesta` | `[{ variable, pregunta, respuesta, criticidad }]`: `variable` es la etiqueta de la pregunta en Moodle y `criticidad`, los puntos que aporta |
-| `puntaje_criticidad` | number | (nuevo) | Suma de la criticidad de 0 a 100 ([modelo](../criticidad/MODELO_CRITICIDAD_ENCUESTAS.md)) |
+| `json_respuesta` | text (JSON) | `Respuesta` | `[{ item_id, respuestas: [...] }]`: número de opción, número, `{ plan, materias }` o `{ materia, primera_vez, dificultad }` |
 | `created_at` | text (fecha y hora) | `Envio_Encuesta.fecha_completado` | |
 
-No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período, y está **vencido** si además pasaron los `dias_plazo`. Así no hay que crear una entrada por estudiante al abrir el período.
+No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período. Si al cerrar el período no respondió, el equipo agrega una entrada `omision` en Criticidad.
 
 ### 9. Criticidad
 
-Una entrada por **foto** (cálculo del sistema en un corte) o por **estado asignado** a mano (Req 10, que no está en el DER). El gráfico de evolución del detalle del estudiante lee solo esta base.
+Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md); sin crear. **Una entrada por evento:** cada envío de una encuesta, cada nota guardada en Carga_Parciales_Primero, cada recálculo, cada omisión y cada estado asignado a mano (Req 10). El gráfico de evolución del detalle del estudiante lee solo esta base.
 
-| Campo | Tipo | Origen en el DER | Notas |
+| Campo | Tipo | Vacío | Notas |
 |---|---|---|---|
-| `dni` | text | `Situacion_Cuatrimestral.id_estudiante` | |
-| `periodo` | text | `Situacion_Cuatrimestral.id_periodo` | |
-| `fecha_corte` | text (fecha) | `Situacion_Cuatrimestral.fecha_corte` | |
-| `origen` | menu (`calculado`, `asignado`) | (nuevo) | `asignado` = cambio manual de un tutor |
-| `tramo` | menu (`primero`, `superior`) | `Situacion_Cuatrimestral.tramo` | |
-| `estado_actividad` | menu (`cursando`, `hiatus`, `abandono`, `egresado`, `titulado`) | `Situacion_Cuatrimestral.estado_actividad` | |
-| `indice_criticidad` | number | `Situacion_Cuatrimestral.indice_criticidad` | 0 a 100. Vacío en las asignadas |
-| `semaforo` | menu (`verde`, `amarillo`, `rojo`, `auto`) | `Situacion_Cuatrimestral.semaforo` | `auto` en una asignada = quitar el estado asignado |
-| `motivo` | text | (nuevo) | Obligatorio en las asignadas |
-| `mediciones_json` | text (JSON) | `Medicion_Indicador` | `[{ "indicador": "pct_parciales", "version": 1, "valor": 14, "categoria": null, "semaforo": "rojo" }]` |
+| `id_usuario` | number | no | Todo estudiante tiene cuenta |
+| `dni` | text | no | |
+| `periodo` | text | no | En las manuales, cuándo se asignó: no limita su vigencia |
+| `origen` | menu (`automatica`, `manual`) | no | `manual` = un tutor asigna el estado |
+| `fuente` | menu (`notas_1ro`, `respuestas`, `materias`, `omision`) | sí | Qué la disparó. Vacía en las manuales |
+| `rid_fuente` | number | sí | El `rid` de la entrada que la disparó (Respuestas, Carga_Parciales_Primero o Carga_Materias_Primero). Vacío en `omision` y en las manuales |
+| `indice` | number | sí | De 0 a 100, el de esa fuente. Vacío en las manuales |
+| `indice_total` | number | sí | Promedio del último índice de cada grupo de fuentes del período (*notas*: `notas_1ro` y `materias`; *encuestas*: `respuestas` y `omision`). Vacío en las manuales |
+| `semaforo` | menu (`verde`, `amarillo`, `rojo`, `sin_asignar`) | no | En las automáticas, el del `indice_total` (40 y 70). En las manuales, el asignado; `sin_asignar` lo quita |
+| `motivo` | text | sí | Obligatorio en las manuales |
+| `created_at` | text (fecha y hora) | no | |
 
-- **Estado vigente:** la última asignada, si no es `auto`; si no, la última calculada.
+- **Calculado vigente:** la última entrada automática del período.
+- **Asignado vigente:** la última entrada manual del estudiante, de cualquier período, si no es `sin_asignar`. Persiste hasta que un tutor la quita.
+- **El tablero muestra los dos:** el asignado no reemplaza al calculado.
 - **Quién asignó:** el `userid` de la entrada.
+- **Índices:** el de las encuestas sale de [`MODELO_CRITICIDAD_ENCUESTAS.md`](../criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) y el de las notas de 1.er año, de [`MODELO_CRITICIDAD_NOTAS_PRIMERO.md`](../criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md).
 
 ### 10. Alertas
 
@@ -281,9 +289,8 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 | Estudiantes | Períodos | `cohorte`, `periodo_egreso`, `periodo_titulacion` |
 | Situación académica, Respuestas, Criticidad, Alertas, Acompañamientos, Entrevistas | Estudiantes | `dni` |
 | Situación académica | Plan de estudios | `materia` (código) dentro del JSON |
-| Respuestas | Preguntas | `id` dentro del JSON |
-| Armado de encuestas | Preguntas | `preguntas` (lista de ids) |
-| Criticidad | Indicadores | `indicador` + `version` dentro de `mediciones_json` |
+| Respuestas | Encuestas | `codigo_encuesta` + `version`; `item_id` dentro del JSON |
+| Criticidad | Respuestas, Carga_Parciales_Primero o Carga_Materias_Primero | `rid_fuente`, según `fuente` |
 | Alertas | Criticidad | `rid_situacion` |
 | Entrevistas | Acompañamientos | `rid_acompanamiento` |
 | Entrevistas | Alertas | `rid_alerta` |
@@ -295,18 +302,21 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
   - `periodo` en Períodos;
   - `plan` + `codigo` en Plan de estudios;
   - `clave` + `version` en Indicadores;
+  - `codigo_encuesta` + `version` en Encuestas;
   - cada materia una sola vez dentro de `cursadas_json` (en el DER, `Cursada` era única por estudiante, materia y período);
-  - cada pregunta (y materia, si es por materia) una sola vez dentro de `json_pregunta_respuesta`.
-- **Bases que solo agregan** (Situación académica, Respuestas, Criticidad): la página nunca edita ni borra; siempre guarda con `rid=0`.
+  - cada ítem (`item_id`) una sola vez dentro de `json_respuesta`.
+- **Bases que solo agregan** (Situación académica, Encuestas, Respuestas, Criticidad): la página nunca edita ni borra; siempre guarda con `rid=0`.
 - **Vigente = la entrada más reciente** por clave:
   - Situación académica: (`dni`, `periodo`);
-  - Respuestas: (`dni`, `encuesta`, `periodo`);
-  - Criticidad: (`dni`, `origen`).
+  - Encuestas: (`codigo_encuesta`), por mayor `version`;
+  - Respuestas: (`dni`, `codigo_encuesta`, `periodo`);
+  - Criticidad: (`dni`, `periodo`) entre las automáticas, y (`dni`) entre las manuales, de cualquier período.
 - **Acompañamientos:** exactamente uno entre tutor y asesor par (`tipo`).
 - **Privacidad:**
-  - **Respuestas** con "Requiere aprobación" y sin aprobar entradas;
+  - **Respuestas** y **Criticidad** con "Requiere aprobación" y sin aprobar entradas (cada estudiante ve las suyas, incluido su índice);
+  - **Encuestas**, legible por todos: la leen los navegadores de los estudiantes;
   - el resto, con acceso restringido al equipo por grupo o rol. Ocultar la actividad no alcanza, porque se puede entrar por URL.
-- **Al menos uno:** toda foto calculada de Criticidad tiene al menos una medición en `mediciones_json`.
+- **Criticidad:** toda entrada automática tiene `fuente` e `indice`; toda manual tiene `motivo`.
 
 ## Datos que se calculan y no se guardan
 
@@ -314,14 +324,14 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 - **Inicio laboral:** se puede deducir como el primer período con `trabaja` = Sí en Respuestas.
 - **Avance curricular.**
 - **Egresados, titulados y los que continúan en 2.º año por cohorte:** se cuentan sobre Estudiantes.
-- **Estado vigente del estudiante:** sale de su última entrada en Criticidad.
+- **Estado vigente del estudiante:** el calculado y el asignado salen de sus últimas entradas en Criticidad (ver la base 9).
 - **Envío pendiente o vencido:** ver la base 8.
 
 ## Decisiones pendientes
 
 1. **Volumen y carga en el navegador.** Pregunta abierta del [ADR-005](../../decisions/005-modelo-de-bases-moodle.md). Si no alcanza, una opción es sumar una base 13, *Estado actual*: una entrada por estudiante con el último estado, que el tablero lea en lugar de toda Criticidad.
-2. **Preguntas: banco o por encuesta.** Hoy usamos un banco reutilizable más el armado de cada encuesta; el DER ata cada pregunta a una encuesta. El banco con `version` en el armado cubre lo mismo y ya está hecho.
-3. **Respuestas por materia.** Se guardan dentro del JSON con `id_materia`. Falta definir cómo las arma el formulario del estudiante.
+2. ~~**Preguntas: banco o por encuesta.**~~ Resuelto por el ADR-007: las preguntas van dentro de cada versión de Encuestas.
+3. ~~**Respuestas por materia.**~~ Resuelto: el selector de materias las guarda en `json_respuesta` como `{ materia, primera_vez, dificultad }`.
 4. **Índice de criticidad de 0 a 100.** Es provisorio (ver la spec del [detalle del estudiante](../../specs/detalle-estudiante.md)). Depende de `Indicadores.peso` y de la escala de `Evaluacion.nota`, que en el DER sigue pendiente.
 5. **Cambio de plan del estudiante.** Mismo pendiente que el DER: con esta simplificación, Estudiantes guarda un solo `plan`. Opciones: una entrada por plan con fechas desde y hasta, o un solo plan más la fecha del cambio.
 6. **Consentimiento.** Solo se guarda `fecha_consentimiento`. Falta la versión del texto aceptado y la revocación, si la universidad las exige.

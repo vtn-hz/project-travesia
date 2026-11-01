@@ -2,6 +2,7 @@
 
 - **Estado:** Pendiente (**en revisión**)
 - **Fecha:** 2026-10-17
+- **Actualización (2026-11-01):** la base Criticidad quedó definida por el [ADR-007](007-encuestas-respuestas-y-criticidad.md): una entrada por evento (encuesta, nota, recálculo, omisión o asignación), con `indice_total` y el estado asignado en la misma base (reemplaza a Criticidad y Asignaciones de la tabla de abajo). La pregunta abierta sobre la carga en el frontend sigue en pie.
 - **Refs:** [spec Detalle del estudiante](../specs/detalle-estudiante.md), [spec Tablero de Criticidad](../specs/tablero-estudiantes.md), [`data/moodle/`](../../data/moodle/), [`RULES.md`](../../RULES.md)
 
 > **En revisión.** La visualización de la evolución de la criticidad (tablero + detalle del estudiante) puede ser **muy pesada de cargar en el frontend**. Todo se lee desde el navegador de quien mira, con varias bases y todos los estudiantes. Hay que resolver la [pregunta abierta](#pregunta-abierta-carga-de-datos-en-el-frontend) antes de crear las bases.

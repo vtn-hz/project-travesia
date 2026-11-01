@@ -26,14 +26,16 @@ docs/
 │   │   └── MODELO_CRITICIDAD_POR_CORRELATIVAS.md
 │   └── criticidad/        ← Puntaje de 0 a 100 y semáforo (sale de las encuestas)
 │       ├── MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md ← ICE: fundamento y versión objetivo
-│       └── MODELO_CRITICIDAD_ENCUESTAS.md ← Versión vigente: la que aplican las tools de Moodle
+│       ├── MODELO_CRITICIDAD_ENCUESTAS.md ← Versión vigente: la que aplican las tools de Moodle
+│       └── MODELO_CRITICIDAD_NOTAS_PRIMERO.md ← Índice de las notas de 1.er año (ICm/ICG)
 ├── decisions/             ← Registros de Decisiones (ADR)
 │   ├── 001-arquitectura-general.md
 │   ├── 002-main-menu-contenido.md
 │   ├── 003-paleta-colores.md
 │   ├── 004-sistema-de-diseno-mui.md
 │   ├── 005-modelo-de-bases-moodle.md
-│   └── 006-versionado-de-encuestas.md
+│   ├── 006-versionado-de-encuestas.md
+│   └── 007-encuestas-respuestas-y-criticidad.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
@@ -95,5 +97,7 @@ Sirve como vista rápida de la historia del proyecto.
 - [Modelo de criticidad por correlativas](models/trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md) — Qué materias pendientes traban más
 - [Índice de Criticidad Estudiantil (ICE)](models/criticidad/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md) — 10 preguntas de la encuesta cuatrimestral y la fórmula de 0 a 100
 - [Puntaje de criticidad de las encuestas](models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) — Versión vigente: los puntos de cada respuesta, de 0 a 100
+- [Índice de las notas de 1.er año](models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) — ICm por materia e ICG por estudiante
+- [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
 - [Reglas de desarrollo](../RULES.md) — Convenciones de código

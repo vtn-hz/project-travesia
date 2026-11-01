@@ -2,19 +2,20 @@
 
 - **Estado:** propuesta, con **valores provisorios** para que el equipo los ajuste.
 - **Alcance:** solo el **Plan 2024** (223 créditos en 10 cuatrimestres). El Plan 2003 queda afuera ([`RULES.md`](../../../RULES.md) → *Alcance*).
-- **Dónde se usa:** las tools `CriticidadInicial` y `CriticidadCuatrimestral` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que el [script de copia](../../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)) aplica al enviar, con su `alGuardar`.
-- **Qué calcula:** un puntaje de **0 a 100** para cada versión guardada de una encuesta.
+- **Dónde se usa:** la tool `CriticidadEncuesta` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que el [script de copia](../../specs/copia-encuestas.md) de las Encuestas de Moodle ([ADR-006](../../decisions/006-versionado-de-encuestas.md)) aplica al enviar. Hasta la versión 3 de Tools (la publicada) eran `CriticidadInicial` y `CriticidadCuatrimestral`, con los puntos en el código.
+- **Dónde están los puntos:** desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md), en la base **Encuestas**: cada opción de cada versión lleva su `criticidad`, y las preguntas que se calculan llevan su `regla` ([`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json)). Cambiar un valor es cargar una versión nueva de la encuesta.
+- **Qué calcula:** un índice de **0 a 100** para cada envío de una encuesta.
   - **0** significa sin señales de riesgo.
-  - **100** es la combinación de respuestas más crítica posible.
-- **Cómo se guarda:** cada respuesta del JSON lleva su `criticidad` (los puntos que aporta) y la base Respuestas guarda el total en `puntaje_criticidad`.
-  - El puntaje se calcula al enviar y no se recalcula después. Si cambian los valores, las versiones viejas conservan el suyo.
-  - **El estudiante no lo ve.**
+  - **100** es la combinación de respuestas más crítica posible **entre las preguntas que puntúan en esa versión**.
+- **Cómo se guarda:** cada envío agrega una entrada a la base **Criticidad** (`fuente = respuestas`, `rid_fuente` = la respuesta), con su `indice`, el `indice_total` del estudiante y el semáforo. Respuestas no guarda puntos.
+  - El índice se calcula al enviar y no se recalcula después. Si cambian los valores, las entradas viejas conservan el suyo.
+  - **El estudiante no lo ve en la encuesta,** pero puede ver sus propias entradas de Criticidad (ADR-007).
 
 ## Cómo se arma
 
 - **Cada encuesta reparte 100 puntos entre sus preguntas.** La peor respuesta de cada pregunta suma el máximo de esa pregunta, y la suma de todos los máximos es 100.
 - **Preguntas que no suman puntos:** año y cuatrimestre de ingreso, y materias aprobadas. Se usan para calcular el avance curricular, que va en *Créditos aprobados*.
-- **Redondeo:** el total se redondea al entero más cercano.
+- **Índice:** puntos ÷ `puntaje_maximo` de la versión × 100, redondeado al entero más cercano. `puntaje_maximo` es la suma de los máximos de las preguntas que puntúan en esa versión: hoy 30 en la Inicial y 70 en la Cuatrimestral, porque el avance curricular está desactivado. Con todas las preguntas activas es 100 y el índice coincide con los puntos.
 
 ### Semáforo (mismos cortes que el [ICE](MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md#3-semáforo-de-criticidad))
 
@@ -26,7 +27,7 @@
 
 ## Avance curricular (lo usan las dos encuestas)
 
-> **En análisis (2026-10-26).** El cálculo está desactivado en `CriticidadInicial` y `CriticidadCuatrimestral` ([biblioteca de Tools](../../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. `creditos_aprobados` se sigue copiando, pero con `criticidad: null`. Mientras tanto, el puntaje máximo alcanzable es **30** en la inicial y **70** en la cuatrimestral, así que los cortes del semáforo no son comparables con los de esta propuesta.
+> **En análisis (2026-10-26).** El cálculo está desactivado ([biblioteca de Tools](../../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. En la base Encuestas, `creditos_aprobados` tiene `regla: { nombre: "avance_curricular", activa: false }`: se guarda la respuesta, pero no suma ni cuenta en `puntaje_maximo`. Mientras tanto, el máximo es **30** en la inicial y **70** en la cuatrimestral, y desde el ADR-007 el índice se lleva a 0–100 con ese máximo para que los cortes del semáforo sigan valiendo.
 
 Compara los **créditos aprobados** con los **créditos esperados** según los cuatrimestres que pasaron desde el ingreso.
 
@@ -120,24 +121,38 @@ Las dos opciones de inicio laboral de la inicial son inserción temprana, la de 
 | Cuatrimestral · ingresó en 2024-1, 34 créditos, cursó 4 materias (1 recursada; dificultad 4, 4, 3 y 2), demorado, trabaja desde 2.º año | T = 5, esperados 104, r = 0,33 → 30 · cursada 0 + 8 + 5,6 · 5 · 5 + 10 · 0 | **64** | Amarillo |
 | Cuatrimestral · peor caso | Avance 30 · no cursó materias 35 · muy demorado 10 · trabaja desde 1.er año 15 · PFG no iniciado 10 | **100** | Rojo |
 
-## Cómo queda en el JSON
+Estos ejemplos suponen el avance curricular activo. **Con el avance desactivado (lo vigente),** el índice se calcula sobre el máximo de la versión (probado en el simulador local el 2026-11-01):
 
-Cada respuesta lleva los puntos que aporta. Las que no suman llevan `null`, y la suma de todas es `puntaje_criticidad`.
+| Caso | Puntos ÷ máximo | Índice | Semáforo |
+|---|---|---:|---|
+| Inicial · trabaja desde 1.er año | (10 + 20) ÷ 30 | **100** | Rojo |
+| Inicial · no trabaja | 0 ÷ 30 | **0** | Verde |
+| Cuatrimestral · PFG no iniciado, no trabaja, 2 materias (1 recursada; dificultad 4 y 2), demorado | (10 + 0 + 5 + 8 + 5 + 5) ÷ 70 | **47** | Amarillo |
+
+En la Inicial, con el avance desactivado, solo puntúa la situación laboral: quien trabaja desde 1.er año llega al máximo. **Revisar con el equipo** si el índice de la Inicial tiene que esperar a que se reactive el avance.
+
+## Cómo queda en las bases
+
+En **Encuestas**, cada opción lleva sus puntos y las preguntas calculadas llevan su regla:
 
 ```json
-{ "variable": "creditos_aprobados", "pregunta": "Créditos aprobados", "respuesta": 34, "criticidad": 30 }
-{ "variable": "materias_cursadas", "pregunta": "¿Qué materias cursó en el cuatrimestre anterior?", "respuesta": ["ING8408", "INGF103", "INGM103", "INGM108"], "criticidad": 0 }
-{ "variable": "primera_vez", "pregunta": "¿Es la primera vez que cursó esta materia?", "materia": "INGM108", "respuesta": "No", "criticidad": 8 }
-{ "variable": "dificultad", "pregunta": "¿Qué tan difícil resultó la materia?", "materia": "INGM103", "respuesta": 4, "criticidad": 1.9 }
+{ "variable": "trabaja", "item_id": 8265, "pagina": 3, "tipo": "multichoice", "opciones": [{ "opcion": 1, "texto": "Si", "criticidad": 5 }, { "opcion": 2, "texto": "No", "criticidad": 0 }], "criticidad_max": 5 }
+{ "variable": "materias_cuatrimestre", "item_id": 8768, "pagina": 5, "tipo": "textarea", "formato": "selector_materias", "criticidad_max": 35,
+  "regla": { "nombre": "cursada", "activa": true, "cantidad": [35, 10, 5], "recursada": [8, 7], "dificultad_max": 10, "sin_inactividad": { "variable": "progreso_proyecto_final", "opciones": [4, 5] } } }
 ```
 
-En la dificultad, cada materia aporta su parte del promedio: (dificultad − 1) × 2,5 ÷ cantidad de materias cursadas.
+En **Respuestas**, solo lo respondido (`{ "item_id": 8265, "respuestas": [1] }`). En **Criticidad**, el resultado:
 
-En el recursado, los puntos se reparten entre las respuestas *No* para que la suma dé el total de la tabla: la primera lleva 8, la segunda 7 y las demás 0. Con una materia recursada el total es 8; con dos o más, 15.
+```json
+{ "fuente": "respuestas", "rid_fuente": 102, "indice": 47, "indice_total": 50, "semaforo": "amarillo" }
+```
+
+- En la dificultad, cada materia aporta su parte del promedio: (dificultad − 1) × `dificultad_max` ÷ 4 ÷ cantidad de materias cursadas.
+- En el recursado, la primera materia recursada suma `recursada[0]` (8), la segunda `recursada[1]` (7) y las demás 0.
 
 ## En las Encuestas de Moodle
 
-Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el texto en registro formal. Las tools de criticidad asignan los puntos **por número de opción, en el orden de Moodle** (el campo `opcion` de cada respuesta) (por ejemplo, en el Proyecto Final: *No aplico por nivel* = 1.ª opción → 0; *No iniciado* = 2.ª → 10).
+Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el texto en registro formal. Los puntos se asignan **por número de opción, en el orden de Moodle** (el número que guarda Respuestas). Por ejemplo, en el Proyecto Final: *No aplico por nivel* = 1.ª opción → 0; *No iniciado* = 2.ª → 10.
 
 - **Inicial:** se aplica completa.
 - **Cuatrimestral:** el bloque *Cursada del cuatrimestre anterior* (35 puntos) sale del selector de materias (ítem 8270), que guarda en la respuesta 8768 las materias cursadas con su primera vez y su dificultad. Desde el 2026-10-25 se aplica completa.

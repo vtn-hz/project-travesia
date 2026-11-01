@@ -21,6 +21,13 @@
 
 Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sale el estado. "Automático / manual" describe el mecanismo, pero no quién toma la decisión.
 
+### De dónde salen (base Criticidad, [ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md))
+
+- **Calculado:** el `indice_total` y el `semaforo` de la última entrada automática del estudiante en el período. `indice_total` es el promedio del último índice de sus notas de 1.er año y de su última encuesta.
+- **Asignado:** la última entrada manual del estudiante, de cualquier período, si no es `sin_asignar`. **Persiste** entre períodos hasta que un tutor la quita, y al quitarla se agrega una entrada manual con `sin_asignar`.
+- **El tablero muestra los dos.** El asignado no reemplaza al calculado: el calculado se sigue guardando y mostrando. Si no coinciden, se marca la diferencia ("asignado verde · calculado rojo").
+- **Lectura:** las entradas automáticas del período actual y todas las manuales.
+
 ## Criterios del estado calculado
 
 > **Los criterios de los modelos (`MODELO_UBICACION_Y_ATRASO` y `MODELO_CRITICIDAD_POR_CORRELATIVAS`) todavía no se aplican.** Por ahora solo se usan los criterios que están en los requerimientos.
