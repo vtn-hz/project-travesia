@@ -11,6 +11,7 @@ const path = require('path');
 const RAIZ = path.resolve(__dirname, '..', '..');
 const RUTA = path.join(RAIZ, 'moodle.config.json');
 const DIR_SECCIONES = path.join(RAIZ, 'section');
+const DIR_PLANTILLAS = path.join(RAIZ, 'data', 'moodle', 'plantillas');
 
 function cargar() {
   return JSON.parse(fs.readFileSync(RUTA, 'utf8'));
@@ -55,16 +56,21 @@ function aplicar(texto, config) {
 }
 
 // TODOS LOS content.html DE section/ (SIMPLES E ÍTEMS DE GRUPO)
-function secciones(dir = DIR_SECCIONES) {
+function secciones(dir = DIR_SECCIONES, nombre = 'content.html') {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
     const ruta = path.join(dir, e.name);
-    if (e.isDirectory()) return secciones(ruta);
-    return e.name === 'content.html' ? [ruta] : [];
+    if (e.isDirectory()) return secciones(ruta, nombre);
+    return e.name === nombre ? [ruta] : [];
   });
 }
 
+// LAS PLANTILLAS "JAVASCRIPT PERSONALIZADO" DE LAS BASES (data/moodle/plantillas/<base>/jstemplate.js) TAMBIÉN LLEVAN LÍNEAS @config
+function plantillasJs() {
+  return fs.existsSync(DIR_PLANTILLAS) ? secciones(DIR_PLANTILLAS, 'jstemplate.js') : [];
+}
+
 // SINCRONIZAR LAS SECCIONES CON LA CONFIGURACIÓN (escribir = false solo informa)
-function sincronizar({ escribir = true, archivos = secciones() } = {}) {
+function sincronizar({ escribir = true, archivos = secciones().concat(plantillasJs()) } = {}) {
   const config = cargar();
   return archivos.map((archivo) => {
     const original = fs.readFileSync(archivo, 'utf8');
@@ -74,4 +80,4 @@ function sincronizar({ escribir = true, archivos = secciones() } = {}) {
   });
 }
 
-module.exports = { RAIZ, RUTA, cargar, guardar, valor, aplicar, secciones, sincronizar };
+module.exports = { RAIZ, RUTA, cargar, guardar, valor, aplicar, secciones, plantillasJs, sincronizar };

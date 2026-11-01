@@ -14,7 +14,7 @@ Sube un `content.html` del repo a Moodle con el script [`publicar.js`](publicar.
 3. **Primero simular.** Correr **siempre** el script sin `--confirmar`, mostrar el resultado (destino, tamaño, cambios) y recién con el OK correr con `--confirmar`.
 4. **Relación 1 a 1:** el repo es la fuente. Primero se commitea o se guarda el cambio local y después se publica. El script escribe en el archivo el comentario `<!-- PUBLICADO EN MOODLE: … -->` con el destino y el cmid, y al terminar hay que agregar o actualizar la fila en la tabla de `RULES.md`.
 5. **Nunca notificar:** el script desactiva siempre "Notificación de contenido del curso", para que nadie reciba un aviso por cada publicación.
-6. **Ids desde `moodle.config.json`.** El campus, el curso, la sección y los ids de subsecciones, páginas y bases salen de [`moodle.config.json`](../../moodle.config.json). El script se niega a publicar si las líneas `// @config` del archivo no coinciden con ese archivo: correr `node .skills/publicar-seccion/sincronizar_config.js`.
+6. **Ids desde `moodle.config.json`.** El campus, el curso, la sección y los ids de subsecciones, páginas y bases salen de [`moodle.config.json`](../../moodle.config.json). El script se niega a publicar si las líneas `// @config` del archivo no coinciden con ese archivo: correr `node .skills/publicar-seccion/sincronizar_config.js`. `sincronizar_config.js` actualiza los `content.html` de `section/` y también las plantillas `jstemplate.js` de `data/moodle/plantillas/`.
 7. **Credenciales** solo por variables de entorno (`MOODLE_USUARIO` y `MOODLE_CLAVE`), pedidas al usuario en el momento. No se guardan en archivos, en el repo ni en la memoria.
 
 ## Dónde publicar cada cosa
