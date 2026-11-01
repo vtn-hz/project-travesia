@@ -10,7 +10,8 @@
   - la herramienta `CriticidadNotas` de la [Página Tools](../../section/utils/tools/content.html) ([guía de Utils](../../section/utils/README.md)).
 - **Estado:**
   - **publicado y probado** el 2026-11-01 con el formulario de Moodle (Tools v4, ver [Prueba hecha](#prueba-hecha));
-  - `CriticidadNotas({ rid })`, para una página propia, está en Tools v5, **solo en local**.
+  - `CriticidadNotas({ rid })`, para una página propia, está en Tools v5, **solo en local**;
+  - la página propia ([Página de carga](#página-de-carga-scrum-22)), **solo en local** (SCRUM-22).
 - **Última actualización:** 2026-11-01
 
 ## Qué pasa al guardar una nota
@@ -53,6 +54,44 @@ conTools(function (Tools) {
   });
 });
 ```
+
+### Página de carga (SCRUM-22)
+
+Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carga_notas_primero/content.html), una página con el sistema de diseño para el rol EST. **Solo en local**, todavía sin lugar en Moodle (`paginas.carga_notas_primero` en `moodle.config.json` vale `null`).
+
+**Qué muestra:**
+- **Nueva nota:** Materia, Instancia, Fecha del parcial, Condición y Nota. El DNI y el nombre salen de la cuenta y no se editan.
+- **Notas registradas:** las notas propias, de la más reciente a la más antigua, con la fecha en `DD-MM-AAAA` y un botón **Editar** en cada una.
+
+**Cómo cumple las [reglas de los campos](#reglas-de-los-campos):**
+
+| Campo | En la página |
+|---|---|
+| DNI | Nombre de usuario de la cuenta (`/login/change_password.php`), como en Tools. Sin DNI no se puede cargar |
+| Estudiante | Encabezado del perfil (`/user/profile.php`). Si no se lee, queda vacío |
+| Materia | Lista con las materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2) de la base Materias (d=152), con la versión vigente de cada código y sin bajas. Si la base no se puede leer, usa la lista de respaldo `MATERIAS_PRIMERO` con los mismos 7 nombres |
+| Instancia | Lista fija `INSTANCIAS`: Parcial 1, Parcial 2, Recuperatorio 1 y Recuperatorio 2. Los finales quedan fuera del alcance por ahora |
+| Fecha | Selector de fecha del navegador. Se guarda en `AAAA-MM-DD`. No puede ser posterior a hoy ni anterior a 2024-01-01. El formato que se ve en el selector depende del idioma del navegador: en español, `dd/mm/aaaa` |
+| Nota | De 0 a 10, con hasta dos decimales. Con la condición Ausente no se completa y se guarda `0`, porque el campo es obligatorio en Moodle. El cálculo cuenta la nota como ausencia por la condición, no por el número |
+| Estado | Una sola opción entre Aprobado, Desaprobado y Ausente (en la página se llama "Condición") |
+| Recupera_a | Se completa solo: Recuperatorio 1 → `Parcial 1`, Recuperatorio 2 → `Parcial 2` |
+
+**Al guardar:**
+1. Valida los campos. Cada error indica el campo, el valor recibido y lo que se esperaba.
+2. Si ya existe una nota propia de la misma materia e instancia, no la duplica: ofrece editar la nota registrada.
+3. Guarda con el formulario de Moodle de la base: lo pide (`edit.php?d=117`, con `&rid=` al editar), ubica cada campo por su etiqueta (sin la marca "Campo obligatorio" que Moodle agrega en Estado) y lo envía. Lee el `rid` de la redirección.
+4. Llama a `CriticidadNotas({ rid })` sin esperar el resultado. Si la Página Tools publicada es anterior a la v5, la nota se guarda sin criticidad y queda un aviso en la consola.
+
+**Privacidad:** la tabla filtra por el DNI de la cuenta. Con "requiere aprobación" en la base, Moodle ya devuelve solo las notas propias; el filtro evita que alguien con permiso para ver todas (un docente) vea las de otros en esta página.
+
+**Criterio de 2.º año (para más adelante):** un estudiante pasa a 2.º año cuando empieza a cursar o ya aprobó Proyecto de Ingeniería Industrial I. La página no restringe quién carga: si un estudiante de 2.º recursa una materia de 1.er año, su nota también cuenta.
+
+**Verificado (2026-11-01):**
+- En local, con los 6 integrantes (DNI ficticios 99000001 a 99000006): cargar, editar, ausente, recuperatorio, nota repetida, errores de validación, cancelar la edición y que cada estudiante vea solo sus notas. A 1000 px y a 400 px, sin errores de consola.
+- En el campus, solo con lecturas (GET): DNI y nombre de la cuenta, las 7 materias desde la base Materias, las 14 notas de la base con su `rid`, y el formulario de alta armado con los 8 campos (sin enviarlo).
+- **Guardado real en el campus** (con confirmación, con la cuenta de Luca Zuanetti y la misma función de la página): Análisis Matemático I, Parcial 2, 2026-10-27, nota 7, Aprobado. Moodle la guardó en 0,7 s como **rid 20154**, con los 8 campos iguales a los enviados y el DNI de la cuenta. Sin entrada en Criticidad, porque el campus tiene Tools v4. Esta nota de prueba se borra junto con los demás datos de prueba de la base.
+- **Edición real en el campus** (con confirmación): la misma nota (rid 20154) pasó a nota 8 y fecha 2026-10-28 en 0,7 s. Moodle conservó el rid, actualizó los campos y no creó otra entrada (la base siguió con 15 notas).
+- **Falta probar:** la llamada a `CriticidadNotas`, que necesita Tools v5 publicada.
 
 ## Reglas de los campos
 
