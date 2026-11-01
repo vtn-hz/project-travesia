@@ -72,7 +72,7 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 | Materia | Lista con las materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2) de la base Materias (d=152), con la versión vigente de cada código y sin bajas. Si la base no se puede leer, usa la lista de respaldo `MATERIAS_PRIMERO` con los mismos 7 nombres |
 | Instancia | Lista fija `INSTANCIAS`: Parcial 1, Parcial 2, Recuperatorio 1 y Recuperatorio 2. Los finales quedan fuera del alcance por ahora |
 | Fecha | Selector de fecha del navegador. Se guarda en `AAAA-MM-DD`. No puede ser posterior a hoy ni anterior a 2024-01-01. El formato que se ve en el selector depende del idioma del navegador: en español, `dd/mm/aaaa` |
-| Nota | De 0 a 10, con hasta dos decimales. Con la condición Ausente no se completa y se guarda `0`, porque el campo es obligatorio en Moodle. El cálculo cuenta la nota como ausencia por la condición, no por el número |
+| Nota | De 0 a 10, con hasta dos decimales y **punto** como separador (`4.5`; `4,5` se rechaza con un error que indica el formato). Es un campo de texto: con `type="number"` el navegador descartaba la coma y "1,0" se guardaba como 10. Con la condición Ausente no se completa y se guarda `0`, porque el campo es obligatorio en Moodle. El cálculo cuenta la nota como ausencia por la condición, no por el número |
 | Estado | Una sola opción entre Aprobado, Desaprobado y Ausente (en la página se llama "Condición") |
 | Recupera_a | Se completa solo: Recuperatorio 1 → `Parcial 1`, Recuperatorio 2 → `Parcial 2` |
 
