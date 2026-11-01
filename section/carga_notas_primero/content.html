@@ -73,6 +73,11 @@
         Instancia
         <select id="campo-instancia-notas" name="instancia" data-zk-campo></select>
       </label>
+      <!-- Solo con la instancia Recuperatorio -->
+      <label id="grupo-recupera-notas" for="campo-recupera-notas" style="display: none; flex: 1 1 150px !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Parcial que recupera
+        <select id="campo-recupera-notas" name="recupera_a" data-zk-campo></select>
+      </label>
       <label for="campo-fecha-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
         Fecha del parcial
         <input id="campo-fecha-notas" name="fecha" type="date" data-zk-campo>
@@ -88,7 +93,8 @@
       </label>
     </div>
     <p id="ayuda-form-notas" style="margin: 10px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">
-      La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial correspondiente. Con la condición Ausente, la nota no se completa.</p>
+      La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial que recupera: si se recuperó más de un parcial, cargar un recuperatorio por cada uno. Con la condición Ausente, la nota no se completa.
+      Al recursar una materia, cargar las notas nuevas con su fecha: las de la cursada anterior se conservan.</p>
 
     <!-- ERRORES DEL FORMULARIO -->
     <div id="errores-form-notas"
@@ -161,13 +167,12 @@
       // Columnas de la plantilla de lista de Carga_Parciales_Primero (data/moodle/plantillas/carga_parciales_primero/listtemplate.html), en orden
       var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
 
-      // Instancias de evaluación (docs/specs/carga-parciales-primero.md → Reglas de los campos).
-      // "valor" es lo que se guarda en la base; "recupera" completa Recupera_a. Los finales quedan fuera del alcance por ahora
-      var INSTANCIAS = [
-        { valor: 'Parcial 1', etiqueta: 'Parcial 1', recupera: '' },
-        { valor: 'Parcial 2', etiqueta: 'Parcial 2', recupera: '' },
-        { valor: 'Recuperatorio 1', etiqueta: 'Recuperatorio 1 (del Parcial 1)', recupera: 'Parcial 1' },
-        { valor: 'Recuperatorio 2', etiqueta: 'Recuperatorio 2 (del Parcial 2)', recupera: 'Parcial 2' }
+      // Cantidad de parciales de cada materia (docs/specs/carga-parciales-primero.md → Reglas de los campos). Los recuperatorios no se
+      // configuran: cada uno indica qué parcial recupera. Provisorio, según lo que recuerda el equipo: pasa a Carga_Materias_Primero
+      // cuando se confirme. Los finales quedan fuera del alcance
+      var PARCIALES_POR_DEFECTO = 2;
+      var PARCIALES = [
+        { materia: 'Física A', parciales: 3 }
       ];
       var CONDICIONES = ['Aprobado', 'Desaprobado', 'Ausente'];
       // El campo Nota es obligatorio en Moodle: con la condición Ausente se guarda 0, que el cálculo no usa (cuenta como ausencia)
@@ -223,15 +228,17 @@
       ];
       // Notas de todos los integrantes: la vista solo muestra las del estudiante simulado (igual que en Moodle)
       var NOTAS_PRUEBA = [
+        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2025-05-13', '2', 'Desaprobado', ''],
         ['99000005', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '7', 'Aprobado', ''],
         ['99000005', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '3', 'Desaprobado', ''],
-        ['99000005', 'Álgebra I- B', 'Recuperatorio 1', '2026-06-09', '6.5', 'Aprobado', 'Parcial 1'],
+        ['99000005', 'Álgebra I- B', 'Recuperatorio', '2026-06-09', '6.5', 'Aprobado', 'Parcial 1'],
         ['99000005', 'Fundamentos de Química', 'Parcial 1', '2026-05-26', '0', 'Ausente', ''],
         ['99000005', 'Análisis Matemático II', 'Parcial 1', '2026-09-22', '8', 'Aprobado', ''],
         ['99000001', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '4', 'Desaprobado', ''],
         ['99000001', 'Análisis Matemático I', 'Parcial 2', '2026-06-23', '5', 'Aprobado', ''],
         ['99000004', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '2', 'Desaprobado', ''],
         ['99000006', 'Física A', 'Parcial 1', '2026-09-29', '9', 'Aprobado', ''],
+        ['99000006', 'Física A', 'Parcial 2', '2026-10-20', '5', 'Aprobado', ''],
         ['99000003', 'Fundamentos de la Programación', 'Parcial 1', '2026-10-06', '7.5', 'Aprobado', '']
       ];
 
@@ -275,8 +282,43 @@
 
       function esAusente(n) { return String(n.estado || '').toLowerCase().indexOf('ausente') !== -1; }
 
-      function instanciaDe(valor) {
-        return INSTANCIAS.filter(function(i) { return i.valor === valor; })[0] || null;
+      // PERÍODO DE UNA FECHA, IGUAL QUE periodoDeFecha DE TOOLS: ENERO A JULIO → AAAA-1, AGOSTO A DICIEMBRE → AAAA-2
+      function periodoDeFecha(fecha) {
+        var m = /^(\d{4})-(\d{2})/.exec(String(fecha || ''));
+        return m ? m[1] + '-' + (Number(m[2]) <= 7 ? 1 : 2) : '';
+      }
+
+      // AAAA-1 → "1.º 2026" (LO QUE SE MUESTRA)
+      function periodoVisible(periodo) {
+        var m = /^(\d{4})-([12])$/.exec(periodo);
+        return m ? m[2] + '.º ' + m[1] : '—';
+      }
+
+      function parcialesDe(materia) {
+        var p = PARCIALES.filter(function(e) { return claveMateria(e.materia) === claveMateria(materia); })[0];
+        return p ? p.parciales : PARCIALES_POR_DEFECTO;
+      }
+
+      // INSTANCIAS DE UNA MATERIA: { valor, etiqueta, recupera }. "valor" se guarda en Instancia y "recupera" en Recupera_a.
+      // Un solo "Recuperatorio" con recupera = null: el estudiante elige qué parcial recupera. Sirve igual si la materia tiene
+      // 1 recuperatorio o uno por parcial (se carga uno por cada parcial recuperado)
+      function instanciasDe(materia) {
+        var lista = [];
+        for (var p = 1; p <= parcialesDe(materia); p++) lista.push({ valor: 'Parcial ' + p, etiqueta: 'Parcial ' + p, recupera: '' });
+        lista.push({ valor: 'Recuperatorio', etiqueta: 'Recuperatorio', recupera: null });
+        return lista;
+      }
+
+      // Una instancia que no está en la lista de la materia (nota anterior a este cambio) se edita igual: un recuperatorio pide qué parcial recupera
+      function instanciaDe(materia, valor) {
+        var inst = instanciasDe(materia).filter(function(i) { return i.valor === valor; })[0];
+        if (inst || !valor) return inst || null;
+        return { valor: valor, etiqueta: valor, recupera: /^recuperatorio/i.test(valor) ? null : '' };
+      }
+
+      // INSTANCIA COMO SE MUESTRA EN LA TABLA Y LOS AVISOS: "Recuperatorio (del Parcial 2)"
+      function etiquetaNota(n) {
+        return n.recupera_a ? n.instancia + ' (del ' + n.recupera_a + ')' : n.instancia;
       }
 
       // ESPERA UN TIEMPO (SOLO PARA SIMULAR MOODLE EN LOCAL)
@@ -480,7 +522,8 @@
       // LEE EL FORMULARIO → { registro, errores }
       function leerFormulario() {
         var materia = $('campo-materia-notas').value;
-        var instancia = instanciaDe($('campo-instancia-notas').value);
+        var instancia = instanciaDe(materia, $('campo-instancia-notas').value);
+        var recupera = instancia && instancia.recupera === null ? $('campo-recupera-notas').value : (instancia ? instancia.recupera : '');
         var fecha = $('campo-fecha-notas').value;
         var condicion = $('campo-condicion-notas').value;
         var notaTexto = $('campo-nota-notas').value.trim();
@@ -488,6 +531,7 @@
 
         if (!materia) errores.push('Materia: seleccionar una materia de la lista.');
         if (!instancia) errores.push('Instancia: seleccionar una instancia de la lista.');
+        else if (instancia.recupera === null && !recupera) errores.push('Parcial que recupera: seleccionar el parcial que se recuperó.');
         if (!fecha) errores.push('Fecha del parcial: completar la fecha.');
         else if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) errores.push('Fecha del parcial: "' + fecha + '" no es una fecha válida.');
         else if (fecha > hoyIso()) errores.push('Fecha del parcial: ' + fechaVisible(fecha) + ' es posterior a la fecha de hoy.');
@@ -513,16 +557,20 @@
             fecha: fecha,
             nota: nota,
             estado: condicion,
-            recupera_a: instancia ? instancia.recupera : ''
+            recupera_a: recupera || ''
           }
         };
       }
 
-      // NOTA YA REGISTRADA CON LA MISMA MATERIA E INSTANCIA (SIN CONTAR LA QUE SE ESTÁ EDITANDO)
+      // NOTA YA REGISTRADA DE LA MISMA MATERIA EN EL MISMO PERÍODO (SIN CONTAR LA QUE SE ESTÁ EDITANDO): un parcial se repite por su
+      // instancia y un recuperatorio, por el parcial que recupera. En otro período es una recursada: se guarda como nota nueva
       function notaRepetida(registro) {
         return estado.notas.filter(function(n) {
-          return n.rid !== estado.editando && claveMateria(n.materia) === claveMateria(registro.materia) &&
-            String(n.instancia).trim().toLowerCase() === registro.instancia.toLowerCase();
+          if (n.rid === estado.editando || claveMateria(n.materia) !== claveMateria(registro.materia) ||
+            periodoDeFecha(n.fecha) !== periodoDeFecha(registro.fecha)) return false;
+          var recupera = String(n.recupera_a || '').trim();
+          if (registro.recupera_a) return recupera === registro.recupera_a;
+          return !recupera && String(n.instancia).trim().toLowerCase() === registro.instancia.toLowerCase();
         })[0] || null;
       }
 
@@ -590,9 +638,7 @@
               return '<option value="' + escapar(n) + '">' + escapar(n) + '</option>';
             }).join('') + '</optgroup>';
           }).join('');
-        $('campo-instancia-notas').innerHTML = '<option value="">Seleccionar una instancia</option>' + INSTANCIAS.map(function(i) {
-          return '<option value="' + escapar(i.valor) + '">' + escapar(i.etiqueta) + '</option>';
-        }).join('');
+        actualizarInstancias();
         $('campo-condicion-notas').innerHTML = '<option value="">Seleccionar la condición</option>' + CONDICIONES.map(function(c) {
           return '<option value="' + c + '">' + c + '</option>';
         }).join('');
@@ -621,18 +667,18 @@
         }
         var th = 'text-align: left !important; padding: 0 16px !important; height: 52px !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 14px !important; font-weight: 500 !important; border: 0 !important; white-space: nowrap !important;';
         var td = 'padding: 0 16px !important; height: 52px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 14px !important; color: #0b0e14 !important; vertical-align: middle !important;';
-        $('tabla-notas').innerHTML = '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 640px !important;">' +
+        $('tabla-notas').innerHTML = '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
           '<thead><tr>' +
-          '<th style="' + th + '">Materia</th><th style="' + th + '">Instancia</th><th style="' + th + '">Fecha</th>' +
+          '<th style="' + th + '">Materia</th><th style="' + th + '">Instancia</th><th style="' + th + '">Fecha</th><th style="' + th + '">Cuatrimestre</th>' +
           '<th style="' + th + ' text-align: right !important;">Nota</th><th style="' + th + '">Condición</th><th style="' + th + '"><span style="position: absolute !important; left: -9999px !important;">Acciones</span></th>' +
           '</tr></thead><tbody>' +
           notas.map(function(n) {
-            var inst = instanciaDe(n.instancia);
             var enEdicion = n.rid === estado.editando;
             return '<tr style="border: 0 !important;' + (enEdicion ? ' background-color: #e5f2ff !important;' : '') + ' animation: zk-aparecer 0.25s ease both !important;">' +
               '<td style="' + td + '">' + escapar(n.materia) + '</td>' +
-              '<td style="' + td + '">' + escapar(inst ? inst.etiqueta : n.instancia) + '</td>' +
+              '<td style="' + td + '">' + escapar(etiquetaNota(n)) + '</td>' +
               '<td style="' + td + ' white-space: nowrap !important;">' + escapar(fechaVisible(n.fecha)) + '</td>' +
+              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(periodoVisible(periodoDeFecha(n.fecha))) + '</td>' +
               '<td style="' + td + ' text-align: right !important; font-variant-numeric: tabular-nums !important;">' + (esAusente(n) ? '<span style="color: #47536b !important;">—</span>' : escapar(n.nota)) + '</td>' +
               '<td style="' + td + '">' + chipCondicion(n.estado) + '</td>' +
               '<td style="' + td + ' text-align: right !important;">' +
@@ -656,7 +702,8 @@
           $('campo-materia-notas').appendChild(op);
           $('campo-materia-notas').value = nota.materia;
         }
-        $('campo-instancia-notas').value = nota ? nota.instancia : '';
+        actualizarInstancias(nota ? nota.instancia : '');
+        actualizarRecupera(nota ? String(nota.recupera_a || '') : '');
         $('campo-fecha-notas').value = nota ? nota.fecha : '';
         var condicion = nota ? CONDICIONES.filter(function(c) { return String(nota.estado).indexOf(c) !== -1; })[0] || '' : '';
         $('campo-condicion-notas').value = condicion;
@@ -673,6 +720,45 @@
         campo.disabled = ausente;
         if (ausente) campo.value = '';
         campo.setAttribute('placeholder', ausente ? 'No corresponde' : 'Ej.: 4.5');
+      }
+
+      // INSTANCIAS DE LA MATERIA ELEGIDA; valor: la que queda seleccionada (por defecto, la actual si sigue en la lista)
+      function actualizarInstancias(valor) {
+        var materia = $('campo-materia-notas').value;
+        var select = $('campo-instancia-notas');
+        var elegido = valor === undefined ? select.value : valor;
+        if (!materia) {
+          select.innerHTML = '<option value="">Seleccionar primero la materia</option>';
+        } else {
+          var lista = instanciasDe(materia);
+          var extra = elegido && !lista.some(function(i) { return i.valor === elegido; }) ? [instanciaDe(materia, elegido)] : [];
+          select.innerHTML = '<option value="">Seleccionar una instancia</option>' + lista.concat(extra).map(function(i) {
+            return '<option value="' + escapar(i.valor) + '">' + escapar(i.etiqueta) + '</option>';
+          }).join('');
+          select.value = elegido || '';
+        }
+        actualizarRecupera();
+      }
+
+      // "PARCIAL QUE RECUPERA": SOLO CON UN RECUPERATORIO QUE NO TIENE UN PARCIAL FIJO
+      function actualizarRecupera(valor) {
+        var materia = $('campo-materia-notas').value;
+        var inst = instanciaDe(materia, $('campo-instancia-notas').value);
+        var grupo = $('grupo-recupera-notas');
+        var select = $('campo-recupera-notas');
+        var elegido = valor === undefined ? select.value : valor;
+        if (!inst || inst.recupera !== null) {
+          grupo.style.setProperty('display', 'none');
+          select.innerHTML = '';
+          return;
+        }
+        var parciales = instanciasDe(materia).filter(function(i) { return i.recupera === ''; }).map(function(i) { return i.valor; });
+        if (elegido && parciales.indexOf(elegido) === -1) parciales.push(elegido);
+        select.innerHTML = '<option value="">Seleccionar un parcial</option>' + parciales.map(function(p) {
+          return '<option value="' + escapar(p) + '">' + escapar(p) + '</option>';
+        }).join('');
+        select.value = elegido || '';
+        grupo.style.setProperty('display', 'flex', 'important');
       }
 
       function bloquearFormulario(bloquear) {
@@ -695,9 +781,8 @@
         var registro = leido.registro;
         var repetida = notaRepetida(registro);
         if (repetida) {
-          var inst = instanciaDe(registro.instancia);
-          mostrarAviso('alerta', 'Ya existe una nota de ' + registro.materia + ', ' + (inst ? inst.etiqueta : registro.instancia) +
-            ', del ' + fechaVisible(repetida.fecha) + '. Para corregirla, editar la nota registrada.', { texto: 'Editar la nota registrada', rid: repetida.rid });
+          mostrarAviso('alerta', 'Ya existe una nota de ' + repetida.materia + ', ' + etiquetaNota(repetida) +
+            ', del ' + fechaVisible(repetida.fecha) + ', en el mismo cuatrimestre (' + periodoVisible(periodoDeFecha(repetida.fecha)) + '). Para corregirla, editar la nota registrada.', { texto: 'Editar la nota registrada', rid: repetida.rid });
           return;
         }
         var ridEdicion = estado.editando;
@@ -709,8 +794,7 @@
           else console.info('[Carga de notas] Vista local: en Moodle se llamaría a CriticidadNotas({ rid: ' + rid + ' }).');
           bloquearFormulario(false);
           prepararFormulario(null);
-          var inst = instanciaDe(registro.instancia);
-          mostrarAviso('ok', (ridEdicion ? 'Nota actualizada: ' : 'Nota guardada: ') + registro.materia + ', ' + (inst ? inst.etiqueta : registro.instancia) +
+          mostrarAviso('ok', (ridEdicion ? 'Nota actualizada: ' : 'Nota guardada: ') + registro.materia + ', ' + etiquetaNota(registro) +
             ', ' + (registro.estado === 'Ausente' ? 'ausente' : registro.nota + ' (' + registro.estado.toLowerCase() + ')') + '.' +
             (EN_MOODLE ? '' : ' Vista local: la nota se guardó solo en la memoria del navegador.'));
         }).catch(function(e) {
@@ -783,6 +867,8 @@
 
       document.addEventListener('change', function(e) {
         if (e.target.id === 'campo-condicion-notas') actualizarCampoNota();
+        if (e.target.id === 'campo-materia-notas') actualizarInstancias();
+        if (e.target.id === 'campo-instancia-notas') actualizarRecupera();
       });
 
       // ---------------------------------------------------------
