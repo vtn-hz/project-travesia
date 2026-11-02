@@ -46,7 +46,7 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
 
 - El botón de una sección deshabilitada dice qué falta o desde cuándo está disponible; nunca "No disponible".
 - Una sola acción principal: sin información personal, *Cargar información personal*; en 1.er año, Parciales; en 2.º año en adelante, la primera encuesta pendiente y, si no hay, Entrevistas.
-- Las encuestas se abren con `/mod/feedback/complete.php?id=<cmid>`. Su estado sale de las entradas propias de Respuestas (la cuatrimestral, del período actual).
+- Las encuestas se abren con su portada, `/mod/feedback/view.php?id=<cmid>`, que al estudiante le muestra el botón para responder. `complete.php` da error a quien no puede responder (el equipo, con rol de profesor). Su estado sale de las entradas propias de Respuestas (la cuatrimestral, del período actual).
 
 ## Información personal (Página propia)
 
@@ -60,7 +60,7 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
 | Bloque | Campo | Reglas |
 |---|---|---|
 | Datos personales | Nombre, Apellido | Obligatorios |
-| | DNI | Solo lectura: nombre de usuario de la cuenta |
+| | DNI | Editable, de 7 a 9 números. Se precarga con el nombre de usuario de la cuenta |
 | | Correo electrónico | Opcional; formato `nombre@dominio.com` |
 | Carrera | ¿Cursa o aprobó Proyecto de Ingeniería Industrial I? | Obligatorio. Define el tramo |
 | | Año de ingreso | De 2000 al año actual |
@@ -72,7 +72,7 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
 
 ## Base Estudiantes
 
-Definición: [`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json). Plantilla de lista: [`plantillas/estudiantes/`](../../data/moodle/plantillas/estudiantes/) (`.zk-registro` con `data-rid`, `data-alta`, `data-modificada` y `data-campo`, para `LeerBase`).
+Definición: [`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json). Plantilla de lista: [`plantillas/estudiantes/`](../../data/moodle/plantillas/estudiantes/) (`.zk-registro` con `data-rid` y `data-campo`, para `LeerBase`; la fecha de modificación va en la celda `_modificada`, columna Modificada, porque `##timemodified##` es HTML y rompe un atributo).
 
 | Campo | Para qué |
 |---|---|
