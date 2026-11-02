@@ -539,14 +539,21 @@
       // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
-      // FILAS QUE CUMPLEN LOS FILTROS, ORDENADAS POR ESTADO VIGENTE
+      // TEXTO PARA BUSCAR: SIN TILDES NI MAYÚSCULAS ("nicolas" encuentra a Nicolás)
+      function normalizar(texto) {
+        return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      }
+
+      // FILAS QUE CUMPLEN LOS FILTROS, ORDENADAS POR ESTADO VIGENTE.
+      // La búsqueda se parte en palabras y cada una tiene que aparecer en el nombre o el DNI ("zuanetti luca" encuentra a Luca Zuanetti)
       function filasFiltradas() {
-        var q = $('filtro-busqueda').value.trim().toLowerCase();
+        var palabras = normalizar($('filtro-busqueda').value).split(/\s+/).filter(Boolean);
         var sem = $('filtro-semaforo').value;
         var tramo = $('filtro-tramo').value;
         var cohorte = $('filtro-cohorte').value;
         return filas.filter(function(f) {
-          if (q && f.nombre.toLowerCase().indexOf(q) === -1 && String(f.dni).indexOf(q) === -1) return false;
+          var donde = normalizar(f.nombre) + ' ' + f.dni;
+          if (palabras.some(function(p) { return donde.indexOf(p) === -1; })) return false;
           if (sem && f.vigente !== sem) return false;
           if (filtroKpi === 'asignados' && !f.asignado) return false;
           else if (filtroKpi && filtroKpi !== 'asignados' && f.vigente !== filtroKpi) return false;
