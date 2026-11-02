@@ -277,6 +277,12 @@
         try { var v = window.localStorage.getItem(clave); return v ? JSON.parse(v) : defecto; } catch (e) { return defecto; }
       }
 
+      // ESTADOS ASIGNADOS EN LA VISTA PREVIA: SOLO UNA LISTA DE ENTRADAS CON id_usuario (UN VALOR CORRUPTO NO ROMPE LA PANTALLA)
+      function asignadosPreview() {
+        var v = leerAlmacen(CLAVE_PREVIEW, []);
+        return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
+      }
+
       function escribirAlmacen(clave, valor) {
         try { window.localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) { /* sin almacenamiento: queda en memoria */ }
       }
@@ -450,7 +456,7 @@
           if (!ES_VISTA_LOCAL) $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
           return Promise.resolve({
             estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(leerAlmacen(CLAVE_PREVIEW, [])),
+            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview()),
             respuestas: RESPUESTAS_PRUEBA,
             parciales: PARCIALES_PRUEBA,
             entrevistas: ENTREVISTAS_PRUEBA
@@ -931,7 +937,7 @@
           entrada.rid = rid;
           entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Vos';
           datos.criticidad.push(entrada);
-          if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, leerAlmacen(CLAVE_PREVIEW, []).concat([entrada]));
+          if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, asignadosPreview().concat([entrada]));
           armarEstudiante();
           renderizar();
           if (modal === m) cerrarModal(true);
