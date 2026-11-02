@@ -824,7 +824,7 @@
           return;
         }
         if (!est) {
-          cont.innerHTML = '<div style="padding: 32px !important; text-align: center !important; color: #47536b !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">No se encontró el estudiante. Abrí esta pantalla desde el Tablero de Criticidad.</div>';
+          cont.innerHTML = '<div style="padding: 32px !important; text-align: center !important; color: #47536b !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">No se encontró el estudiante. Esta pantalla se abre desde el Tablero de Criticidad.</div>';
           return;
         }
         cont.innerHTML =
@@ -922,8 +922,8 @@
         if (!est || modal.id !== est.id) return cerrarModal(true);
         var elegido = document.querySelector('#modal-asignar-detalle input[name="nivel-asignado"]:checked');
         var motivo = $('campo-motivo-asignado').value.trim();
-        if (!elegido) return mostrarError('Elegí un estado.');
-        if (!motivo) return mostrarError('Escribí el motivo: queda en el historial del estudiante.', true);
+        if (!elegido) return mostrarError('Falta elegir un estado.');
+        if (!motivo) return mostrarError('Falta el motivo: queda en el historial del estudiante.', true);
         var m = modal;
         var entrada = {
           id_usuario: est.id, dni: est.dni, periodo: PERIODO_ACTUAL, origen: 'manual', fuente: '', rid_fuente: '', indice: '',
@@ -935,7 +935,8 @@
         var guardado = usaPrueba ? Promise.resolve(Date.now()) : agregarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_MANUAL, entrada);
         guardado.then(function(rid) {
           entrada.rid = rid;
-          entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Vos';
+          // Moodle muestra el autor real al volver a leer la base; hasta entonces, quien está mirando
+          entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Usuario actual';
           datos.criticidad.push(entrada);
           if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, asignadosPreview().concat([entrada]));
           armarEstudiante();

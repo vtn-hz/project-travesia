@@ -129,7 +129,7 @@
       // ---------------------------------------------------------
       // Mismo período que la Página Tools (PERIODO_ACTUAL): el calculado sale de las entradas automáticas de este período
       var PERIODO_ACTUAL = '2026-2';
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      // En Moodle el rol saldrá del grupo del usuario; por ahora arranca en ADM.
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
@@ -712,8 +712,8 @@
         if (!modal || modal.guardando) return;
         var elegido = document.querySelector('#modal-asignar-tablero input[name="nivel-asignado"]:checked');
         var motivo = $('campo-motivo-asignado').value.trim();
-        if (!elegido) return mostrarError('Elegí un estado.');
-        if (!motivo) return mostrarError('Escribí el motivo: queda en el historial del estudiante.', true);
+        if (!elegido) return mostrarError('Falta elegir un estado.');
+        if (!motivo) return mostrarError('Falta el motivo: queda en el historial del estudiante.', true);
         var m = modal;
         var f = m.fila;
         var entrada = {
@@ -728,7 +728,8 @@
           : agregarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_MANUAL, entrada);
         guardado.then(function(rid) {
           entrada.rid = rid;
-          entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Vos';
+          // Moodle muestra el autor real al volver a leer la base; hasta entonces, quien está mirando
+          entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Usuario actual';
           datos.criticidad.push(entrada);
           if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, asignadosPreview().concat([entrada]));
           procesar();
