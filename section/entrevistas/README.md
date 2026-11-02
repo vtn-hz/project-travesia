@@ -22,7 +22,7 @@
 ## Pendiente
 
 1. **Detección de roles** por grupo (ADM, TUT, PAR): hasta entonces todos entran como ADM y pueden gestionar cualquier entrevista.
-2. **Lado del estudiante** (pedir, aceptar o contraofertar): no entra en el modelo reducido.
+2. **Lado del estudiante** (pedir, aceptar o contraofertar): no entra en el modelo reducido. Desde SCRUM-24 (local) el estudiante llega desde Mi Trayectoria (`section/vista_estudiante`, tarjeta *Entrevistas y Tutorías*), así que la detección del rol EST pasa a ser necesaria para que no vea la página como ADM.
 
 ## Cómo verla en local
 

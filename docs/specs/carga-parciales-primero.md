@@ -84,7 +84,7 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 
 **Privacidad:** la tabla filtra por el DNI de la cuenta. Con "requiere aprobación" en la base, Moodle ya devuelve solo las notas propias; el filtro evita que alguien con permiso para ver todas (un docente) vea las de otros en esta página.
 
-**Criterio de 2.º año (para más adelante):** un estudiante pasa a 2.º año cuando empieza a cursar o ya aprobó Proyecto de Ingeniería Industrial I. La página no restringe quién carga: si un estudiante de 2.º recursa una materia de 1.er año, su nota también cuenta.
+**Criterio de 2.º año:** un estudiante pasa a 2.º año cuando empieza a cursar o ya aprobó Proyecto de Ingeniería Industrial I. Desde el 2026-11-02 (SCRUM-24, local) el estudiante lo indica en su [información personal](vista-estudiante.md) (campo `es_primer_anio` de la base Estudiantes), y **Mi Trayectoria** habilita la tarjeta *Parciales de primer año* solo en 1.er año. La página de carga no restringe quién carga: si un estudiante de 2.º recursa una materia de 1.er año y entra por el enlace directo, su nota también cuenta.
 
 **Verificado (2026-11-01):**
 - En local, con los 6 integrantes (DNI ficticios 99000001 a 99000006): cargar, editar, ausente, recuperatorio, nota repetida, errores de validación, cancelar la edición y que cada estudiante vea solo sus notas. A 1000 px y a 400 px, sin errores de consola.

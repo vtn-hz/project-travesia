@@ -71,6 +71,8 @@ Son los **6 integrantes de Zhakyz** (ver [EQUIPO_ZHAKYZ](../context/EQUIPO_ZHAKY
 
 Mientras `CMID_ESTUDIANTES` y `CMID_ASIGNACIONES` valgan `null`, o cuando el archivo se abre en local, se usan los datos de prueba y se muestra un aviso.
 
+> **Desde el 2026-11-02 (SCRUM-24) la base Estudiantes tiene otra definición:** [`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json) ([spec](vista-estudiante.md)), con `es_primer_anio` en lugar de `etapa` y `anio_ingreso` + `cuatrimestre_ingreso` en lugar de `cohorte`, y la plantilla de lista de `data/moodle/plantillas/estudiantes/` (una celda `data-campo` por campo). Los datos calculados (`aprobadas_primer_anio`, `notas_cargadas`, `encuesta`) no se guardan ahí: salen de CargaParcialesPrimero y Respuestas. El formato de abajo es el que lee hoy el tablero local, y hay que adaptarlo.
+
 **Estudiantes.** Una entrada por estudiante. La plantilla de lista expone cada campo como `data-*`:
 
 ```html

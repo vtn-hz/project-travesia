@@ -55,6 +55,7 @@ Verificado en el campus (con un integrante del equipo):
 ## Pendientes
 
 - Bases de Zhakyz para las series de criticidad y las actividades (además de Estudiantes y Asignaciones).
+- **Etapa y cohorte:** desde SCRUM-24 salen de la base Estudiantes ([`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json), [spec](vista-estudiante.md)): `es_primer_anio` (`si` = 1.er año) y `anio_ingreso` + `cuatrimestre_ingreso`. Adaptar la lectura cuando se cree la base.
 - Definir el criterio de 2.º año en adelante y aplicar los modelos.
 - Publicar el tablero y el detalle, y cargar `CMID_DETALLE` y `CMID_TABLERO`.
 - Detectar el rol en Moodle (por grupos).

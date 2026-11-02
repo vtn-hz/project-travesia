@@ -6,6 +6,8 @@
 - **Decisiones relacionadas:** [ADR-002](../decisions/002-main-menu-contenido.md), [ADR-003](../decisions/003-paleta-colores.md)
 - **Última actualización:** 2026-10-16
 
+> **Las tarjetas del Estudiante (EST) de esta spec quedaron reemplazadas** por la vista Mi Trayectoria y la Página Información personal ([spec](vista-estudiante.md), SCRUM-24, 2026-11-02). `section/section_sample` queda como ejemplo anterior y usa bases de otro equipo (no publicar).
+
 ---
 
 ## Propósito

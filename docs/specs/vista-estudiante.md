@@ -100,6 +100,21 @@ Abrir `section/vista_estudiante/content.html` en el navegador. La barra permite 
 
 **Verificado (2026-11-02, Playwright, `file://`):** Mi Trayectoria en los casos de 1.er año, 2.º año y sin información, a 1000 px y 400 px, sin desborde ni errores de consola, sin el subtítulo ni la descripción de la Encuesta Inicial y sin pestañas. Con Santiago: *Cargar información personal* abre la otra Página; sin respuesta y con "No", el formulario queda oculto y Guardar deshabilitado ("No" muestra el aviso de Ingeniería Industrial); con "Sí", aparece precargado con la cuenta; errores de validación; guardado como 1.er año; *Volver a Mi Trayectoria* muestra las secciones de 1.er año con los datos de la base; editar (sin la pregunta de Industrial) y pasar a 2.º año cambia las secciones; *Restablecer datos de prueba* vuelve a deshabilitar todo.
 
+## Documentos relacionados
+
+Actualizados con este cambio:
+
+| Documento | Qué cambia |
+|---|---|
+| [Modelo de datos](../models/datos/MODELO_SIMPLIFICADO_MOODLE.md) | Base 4 (Estudiantes) redefinida, relaciones y privacidad |
+| [Carga de parciales de 1.er año](carga-parciales-primero.md) | El criterio de 2.º año ya se aplica: Mi Trayectoria habilita la carga solo en 1.er año |
+| [Encuesta Inicial](encuesta-inicial.md) | Acceso desde Mi Trayectoria, habilitada desde 2.º año; la encuesta no cambia |
+| [Criticidad de las encuestas](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) | En 1.er año la criticidad sale solo de las notas; revisar la parte laboral de la Inicial |
+| [Entrevistas](entrevistas.md) y su [README](../../section/entrevistas/README.md) | El estudiante llega desde Mi Trayectoria; falta detectar el rol EST |
+| [Detalle del estudiante](detalle-estudiante.md) y [tablero](tablero-estudiantes.md) | Etapa y cohorte salen de la base Estudiantes (`es_primer_anio`, `anio_ingreso`, `cuatrimestre_ingreso`) |
+| [Main menu](main-menu.md) | Las tarjetas EST quedan reemplazadas por Mi Trayectoria |
+| [`DEPLOY.md`](../../DEPLOY.md), [changelog](../changelog.md) y [equipo](../context/EQUIPO_ZHAKYZ.md) | Estado local de las dos Páginas y de la base |
+
 ## Pendientes (cada paso en Moodle, con confirmación)
 
 1. Crear la base Estudiantes en la subsección Database con sus plantillas y cargar sus ids.
