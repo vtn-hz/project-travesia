@@ -541,7 +541,9 @@
           if (i.email) campos.push({ etiqueta: 'Correo', valor: i.email });
           if (i.anio_ingreso) campos.push({ etiqueta: 'Ingreso', valor: textoPeriodo(i.anio_ingreso + '-' + i.cuatrimestre_ingreso) });
           if (i.periodo_paso_superior) campos.push({ etiqueta: 'Pasó a 2.º año', valor: textoPeriodo(i.periodo_paso_superior) });
+          // En Moodle la plantilla de Estudiantes trae la última modificación como texto (_modificada, ##timemodified##); en la vista previa, la fecha de alta
           if (fechaVisible(i.alta)) campos.push({ etiqueta: 'Información personal', valor: 'Cargada el ' + fechaVisible(i.alta) });
+          else if (i._modificada) campos.push({ etiqueta: 'Información personal', valor: 'Última modificación: ' + i._modificada });
         } else {
           campos.push({ etiqueta: 'Información personal', valor: 'Sin cargar: el nombre, la cohorte y el año de la carrera faltan' });
         }
