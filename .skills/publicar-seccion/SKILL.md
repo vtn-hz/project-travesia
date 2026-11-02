@@ -107,6 +107,12 @@ Moodle ordena los campos por orden de creación y no permite reordenarlos ni cam
 
 El script borra todos los campos y los crea de nuevo en el orden del JSON. **Solo funciona si la base está vacía y está dentro de Zhakyz**: si tiene entradas, se niega, porque se perderían datos.
 
+## Mover o renombrar actividades sin desvincularlas
+
+Mover (`mover_actividades.js --subseccion "<nombre>" --cmids <id,id>`) y renombrar (`renombrar_actividades.js --renombrar "<cmid>=<nombre>,…"`) conservan el cmid y el dataid, la configuración, los permisos, las plantillas y las entradas: lo que usa ids (Tools, páginas, plantillas JS) sigue funcionando. Los dos simulan por defecto y escriben con `--confirmar`. Nunca borrar y recrear una actividad para "moverla": cambian los ids.
+
+Antes de mover, revisar que la subsección de destino tenga la misma visibilidad para los estudiantes: una actividad hereda la de su subsección, y las bases donde escriben los estudiantes dejan de funcionar si quedan ocultas. Después, actualizar `moodle.config.json` (`subseccion`), el `nombre` del JSON de la base, `RULES.md` y `DEPLOY.md`.
+
 ## Qué NO hace
 
 - No borra ni oculta actividades.
