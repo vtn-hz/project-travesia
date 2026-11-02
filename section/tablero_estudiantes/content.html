@@ -456,7 +456,9 @@
       var datos = null;
       var filas = [];
       var filtroKpi = '';
-      var modal = null; // { fila, disparador }
+      var modal = null; // { fila, disparador, guardando }
+      var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
+      var ignorarFilasHasta = 0; // después de guardar, el segundo clic de un doble clic no abre la fila de abajo
 
       // UNA FILA POR ESTUDIANTE: LOS DE LA BASE ESTUDIANTES Y LOS QUE SOLO TIENEN ENTRADAS DE CRITICIDAD
       function procesar() {
@@ -635,7 +637,7 @@
               '<span style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 4px 8px !important;">' + o.html + '</span></label>';
           }).join('') + '</div></fieldset>' +
           '<label for="campo-motivo-asignado" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin: 0 0 6px 0 !important;">Motivo (obligatorio)</label>' +
-          '<textarea id="campo-motivo-asignado" rows="3" placeholder="Por ejemplo, el resultado de la entrevista" style="resize: vertical !important; ' + campo + '"></textarea>' +
+          '<textarea id="campo-motivo-asignado" rows="3" aria-required="true" aria-describedby="txt-error-asignacion" placeholder="Por ejemplo, el resultado de la entrevista" style="resize: vertical !important; ' + campo + '"></textarea>' +
           '<div id="txt-error-asignacion" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 8px !important;"></div>' +
           '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
           '<div id="btn-cancelar-asignacion" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important; box-sizing: border-box !important;">Cancelar</div>' +
@@ -646,18 +648,27 @@
         if (primera) primera.focus();
       }
 
-      function cerrarModal() {
-        if (!modal) return;
+      // Mientras guarda no se cierra (la entrada se guardaría igual): solo lo cierra el guardado mismo
+      function cerrarModal(forzar) {
+        if (!modal || (modal.guardando && !forzar)) return;
         $('modal-asignar-tablero').style.setProperty('display', 'none', 'important');
         var disparador = modal.disparador;
         modal = null;
         if (disparador && document.body.contains(disparador)) disparador.focus();
       }
 
-      function mostrarError(texto) {
+      function mostrarError(texto, enMotivo) {
         var error = $('txt-error-asignacion');
         error.textContent = texto;
         error.style.setProperty('display', 'block', 'important');
+        if (enMotivo) $('campo-motivo-asignado').setAttribute('aria-invalid', 'true');
+      }
+
+      function ocultarError() {
+        var error = $('txt-error-asignacion');
+        if (!error) return;
+        error.style.setProperty('display', 'none', 'important');
+        $('campo-motivo-asignado').removeAttribute('aria-invalid');
       }
 
       function guardarAsignacion() {
@@ -665,13 +676,14 @@
         var elegido = document.querySelector('#modal-asignar-tablero input[name="nivel-asignado"]:checked');
         var motivo = $('campo-motivo-asignado').value.trim();
         if (!elegido) return mostrarError('Elegí un estado.');
-        if (!motivo) return mostrarError('Escribí el motivo: queda en el historial del estudiante.');
-        var f = modal.fila;
+        if (!motivo) return mostrarError('Escribí el motivo: queda en el historial del estudiante.', true);
+        var m = modal;
+        var f = m.fila;
         var entrada = {
           id_usuario: f.id, dni: f.dni, periodo: PERIODO_ACTUAL, origen: 'manual', fuente: '', rid_fuente: '', indice: '',
           semaforo: elegido.value, motivo: motivo, created_at: ahoraIso()
         };
-        modal.guardando = true;
+        m.guardando = true;
         var btn = $('btn-guardar-asignacion');
         btn.lastChild.textContent = 'Guardando…';
         var guardado = usaPrueba
@@ -684,11 +696,13 @@
           if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, leerAlmacen(CLAVE_PREVIEW, []).concat([entrada]));
           procesar();
           renderizarTodo();
-          var id = f.id;
-          modal.disparador = document.querySelector('[data-asignar="' + id + '"]');
-          cerrarModal();
+          if (modal !== m) return;
+          m.disparador = document.querySelector('[data-asignar="' + f.id + '"]');
+          cerrarModal(true);
+          ignorarFilasHasta = Date.now() + 500;
         }).catch(function(err) {
-          modal.guardando = false;
+          if (modal !== m) return;
+          m.guardando = false;
           btn.lastChild.textContent = 'Guardar';
           mostrarError('No se pudo guardar: ' + err.message);
         });
@@ -778,7 +792,8 @@
         var t = e.target;
         if (!t.closest || !t.closest('#tablero-estudiantes')) return;
         if (modal) {
-          if (t.id === 'modal-asignar-tablero' || t.closest('#btn-cerrar-modal-asignar') || t.closest('#btn-cancelar-asignacion')) return cerrarModal();
+          var enFondo = t.id === 'modal-asignar-tablero' && pulsadoEn === t;
+          if (enFondo || t.closest('#btn-cerrar-modal-asignar') || t.closest('#btn-cancelar-asignacion')) return cerrarModal();
           if (t.closest('#btn-guardar-asignacion')) return guardarAsignacion();
           return;
         }
@@ -791,17 +806,21 @@
         var asignar = t.closest('[data-asignar]');
         if (asignar) return abrirModal(asignar.getAttribute('data-asignar'), asignar);
         var fila = t.closest('#cuerpo-tabla-estudiantes tr[data-usuario]');
-        if (fila) return abrirDetalle(fila.getAttribute('data-usuario'));
+        if (fila && Date.now() >= ignorarFilasHasta) return abrirDetalle(fila.getAttribute('data-usuario'));
       });
+
+      document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
 
       document.addEventListener('input', function(e) {
         if (e.target.id === 'filtro-busqueda') renderizarTabla();
+        if (e.target.id === 'campo-motivo-asignado') ocultarError();
       });
 
       document.addEventListener('change', function(e) {
         if (e.target.id === 'filtro-semaforo') { filtroKpi = ''; renderizarTodo(); }
         if (e.target.id === 'filtro-tramo' || e.target.id === 'filtro-cohorte') renderizarTabla();
         if (e.target.name === 'nivel-asignado') {
+          ocultarError();
           var opciones = document.querySelectorAll('#modal-asignar-tablero [data-opcion-nivel]');
           for (var i = 0; i < opciones.length; i++) {
             var activa = opciones[i].getAttribute('data-opcion-nivel') === e.target.value;
@@ -814,11 +833,12 @@
       document.addEventListener('keydown', function(e) {
         var t = e.target;
         if (modal && e.key === 'Escape') { e.preventDefault(); return cerrarModal(); }
-        // Tab dentro del modal: no sale de la caja
+        // Tab dentro del modal: no sale de la caja (tampoco si el foco quedó afuera, por un clic en un texto)
         if (modal && e.key === 'Tab') {
           var foco = document.querySelectorAll('#caja-modal-asignar input, #caja-modal-asignar textarea, #caja-modal-asignar [role="button"]');
           var primero = foco[0], ultimo = foco[foco.length - 1];
-          if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+          if (!$('caja-modal-asignar').contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? ultimo : primero).focus(); }
+          else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
           else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
           return;
         }
