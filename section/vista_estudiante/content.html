@@ -1,0 +1,645 @@
+<!-- SECCIÓN: VISTA DEL ESTUDIANTE · MI TRAVESÍA (ROL EST) · SCRUM-24 -->
+<!-- QUÉ ES: la pantalla de entrada del estudiante, con el diseño del detalle del estudiante (perfil a la izquierda). Hasta que el estudiante carga su información personal (entrada en la base Estudiantes), todas las opciones están deshabilitadas y un aviso lo indica. Con la entrada, habilita las de su tramo: 1.er año (Parciales de primer año y Entrevistas y Tutorías) o 2.º año en adelante (Encuesta Inicial, Encuesta Cuatrimestral y Entrevistas y Tutorías). La información personal se carga y se edita en otra Página: section/informacion_personal. Spec: docs/specs/vista-estudiante.md -->
+<!-- DATOS: solo lectura. Lee la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null) y las respuestas propias de la base Respuestas (d=166) para el estado de las encuestas. Antes de cargar la información personal, el perfil muestra los datos de la cuenta de Moodle; después, los de la base -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="vista-estudiante"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- PANTALLA DE CARGA (OVERLAY CON RUEDITA) -->
+  <div id="loader-estudiante"
+    style="position: absolute !important; inset: 0 !important; z-index: 5 !important; display: flex; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 12px !important; background-color: rgba(252, 252, 252, 0.92) !important; border-radius: 10px !important; color: #47536b !important; font-size: 14px !important;">
+    <span style="width: 28px !important; height: 28px !important; border: 3px solid #dadee7 !important; border-top-color: #026bd4 !important; border-radius: 50% !important; animation: zk-girar-estudiante 0.8s linear infinite;"></span>
+    <span>Cargando la información del estudiante…</span>
+  </div>
+
+  <!-- ENCABEZADO -->
+  <div style="margin-bottom: 18px !important;">
+    <div
+      style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+      Proyecto Travesía · SBIRE</div>
+    <h3
+      style="margin: 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+      Mi Trayectoria</h3>
+  </div>
+
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-prueba-estudiante"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos ficticios. La información personal que se carga en la vista previa queda en este navegador; las encuestas se simulan en la memoria.</span>
+  </div>
+
+  <!-- CONTENIDO: PERFIL (IZQUIERDA), INFORMACIÓN PERSONAL Y OPCIONES (DERECHA) -->
+  <div id="contenido-estudiante"
+    style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important; align-items: flex-start !important;">
+    <div id="columna-perfil-estudiante" style="flex: 1 1 220px !important; min-width: 0 !important;"></div>
+    <div style="flex: 999 1 420px !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; gap: 16px !important;">
+      <div id="tarjeta-info-personal"></div>
+      <div id="grilla-opciones-estudiante" style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important;"></div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-vista-estudiante-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-vista-estudiante-style';
+        styleEl.innerHTML =
+          '#vista-estudiante > nolink { display: block; }' +
+          '#vista-estudiante button:focus-visible, #vista-estudiante a:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '@keyframes zk-girar-estudiante { to { transform: rotate(360deg); } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var EN_MOODLE = !ES_VISTA_LOCAL && !!(window.M && M.cfg && M.cfg.wwwroot);
+      // Mismo período que la Página Tools (PERIODO_ACTUAL): con él se guardan las respuestas de la Encuesta Cuatrimestral
+      var PERIODO_ACTUAL = '2026-2';
+      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_ESTUDIANTES = null; // @config bases.estudiantes.dataid
+      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
+      var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
+      var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
+      var CMID_CARGA_NOTAS = 60209; // @config paginas.carga_notas_primero
+      var CMID_ENTREVISTAS = 60198; // @config paginas.entrevistas
+      var CMID_INFO_PERSONAL = null; // @config paginas.informacion_personal
+
+
+      // Tramo que habilita cada opción (null: los dos) y el texto del botón cuando el tramo no la habilita
+      var DISPONIBILIDAD = {
+        inicial: { tramo: 'superior', bloqueo: 'Disponible a partir de 2.º año' },
+        cuatrimestral: { tramo: 'superior', bloqueo: 'Disponible a partir de 2.º año' },
+        parciales: { tramo: 'primero', bloqueo: 'Disponible solo en 1.er año' },
+        entrevistas: { tramo: null, bloqueo: '' }
+      };
+      var BLOQUEO_SIN_INFO = 'Requiere cargar la información personal';
+
+      // Destinos de cada opción. En local, las encuestas se simulan y las páginas son los archivos del repo
+      var DESTINOS_LOCAL = {
+        informacion: '../informacion_personal/content.html',
+        parciales: '../carga_notas_primero/content.html',
+        entrevistas: '../entrevistas/content.html'
+      };
+      var DESTINOS_MOODLE = {
+        informacion: CMID_INFO_PERSONAL ? '/mod/page/view.php?id=' + CMID_INFO_PERSONAL : null,
+        inicial: '/mod/feedback/complete.php?id=' + CMID_INICIAL,
+        cuatrimestral: '/mod/feedback/complete.php?id=' + CMID_CUATRIMESTRAL,
+        parciales: CMID_CARGA_NOTAS ? '/mod/page/view.php?id=' + CMID_CARGA_NOTAS : null,
+        entrevistas: CMID_ENTREVISTAS ? '/mod/page/view.php?id=' + CMID_ENTREVISTAS : null
+      };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>', // warning
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>', // info
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>', // check_circle
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>', // error
+        flecha: '<path d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>', // arrow_forward
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>', // visibility
+        encuestas: '<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-6.49-5.84c.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.6.58 1.73.01 2.57-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c.01-.41-.06-1.08.26-1.66zm-.56 3.79c0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04 0 .58-.44 1.05-1.04 1.05-.58 0-1.05-.47-1.05-1.05z"/>', // quiz
+        importar: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>', // upload_file
+        entrevistas: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM5 7V5h14v2H5zm2 4h10v2H7zm0 4h7v2H7z"/>', // event_note
+        asignado: '<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.22 0 .41.1.55.25.12.13.2.31.2.5 0 .41-.34.75-.75.75s-.75-.34-.75-.75c0-.19.08-.37.2-.5.14-.15.33-.25.55-.25zM19 19H5V5h14v14zM12 6c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-6 6.47V18h12v-1.53c0-2.5-3.97-3.58-6-3.58s-6 1.07-6 3.58zM8.31 16c.69-.56 2.38-1.12 3.69-1.12s3.01.56 3.69 1.12H8.31z"/>' // assignment_ind
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DNI, CORREO Y DATOS FICTICIOS)
+      // ---------------------------------------------------------
+      // Los mismos que section/informacion_personal: cuenta = lo que devolvería la cuenta de Moodle
+      var INTEGRANTES = [
+        { usuario: 3770, cuenta: { dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar' }, caso: '1.er año, información personal cargada' },
+        { usuario: 2806, cuenta: { dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gian.distefano@ejemplo.edu.ar' }, caso: '1.er año; la base tiene otro correo que la cuenta' },
+        { usuario: 3751, cuenta: { dni: '99000004', nombre: 'Santiago Nicolás', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar' }, caso: 'Sin información personal: todo deshabilitado' },
+        { usuario: 3773, cuenta: { dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar' }, caso: '2.º año en adelante, Encuesta Cuatrimestral pendiente' },
+        { usuario: 3623, cuenta: { dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar' }, caso: '2.º año en adelante, encuestas respondidas' },
+        { usuario: 2048, cuenta: { dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar' }, caso: '2.º año en adelante, sin encuestas respondidas' }
+      ];
+      // Entradas de la base Estudiantes (Santiago no tiene). Lo que se carga en la vista previa de section/informacion_personal
+      // queda en localStorage (CLAVE_PREVIEW) y reemplaza estas entradas
+      var ESTUDIANTES_PRUEBA = [
+        { rid: 91001, id_usuario: 3770, dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-08-18T10:10' },
+        { rid: 91002, id_usuario: 2806, dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gldistefano@ejemplo.com.ar', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-04-02T19:35' },
+        { rid: 91003, id_usuario: 3773, dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2024, cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1', modificada: '2026-03-15T09:00' },
+        { rid: 91004, id_usuario: 3623, dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2022, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-08-19T21:00' },
+        { rid: 91005, id_usuario: 2048, dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2023, cuatrimestre_ingreso: '2', periodo_paso_superior: '', modificada: '2026-10-30T18:20' }
+      ];
+      var CLAVE_PREVIEW = 'zk-preview-estudiantes';
+      var USUARIO_INICIAL_PREVIEW = 3751;
+      // Entradas de la base Respuestas: solo importan la encuesta, el período y la fecha
+      var RESPUESTAS_PRUEBA = [
+        { id_usuario: 3773, codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00' },
+        { id_usuario: 3773, codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30' },
+        { id_usuario: 3623, codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40' },
+        { id_usuario: 3623, codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48' }
+      ];
+
+      // ---------------------------------------------------------
+      // ESTADO DE LA VISTA
+      // ---------------------------------------------------------
+      var estado = {
+        usuario: null,     // { id }
+        cuenta: null,      // datos de la cuenta de Moodle (solo se muestran hasta cargar la información personal)
+        estudiante: null,  // entrada propia de Estudiantes (null: sin información personal)
+        respuestas: null,  // entradas propias de Respuestas (null: no se pudieron leer)
+        error: ''          // error al leer la base Estudiantes: todo queda deshabilitado
+      };
+      var respuestasLocales = RESPUESTAS_PRUEBA.slice();
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function $(id) { return document.getElementById(id); }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function mostrar(el, visible, modo) {
+        el.style.setProperty('display', visible ? (modo || 'flex') : 'none', 'important');
+      }
+
+      function ahoraIso() {
+        var d = new Date();
+        var dos = function(n) { return (n < 10 ? '0' : '') + n; };
+        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes());
+      }
+
+      // AAAA-MM-DD(THH:MM) O MARCA UNIX (data-modificada DE MOODLE) → DD/MM/AAAA
+      function fechaVisible(valor) {
+        if (/^\d{9,}$/.test(String(valor))) {
+          var d = new Date(Number(valor) * 1000);
+          return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+        }
+        var m = String(valor || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+      }
+
+      // 2026-2 → 2.º cuatrimestre 2026
+      function periodoVisible(periodo) {
+        var p = String(periodo || '').split('-');
+        return p.length === 2 ? (p[1] === '1' ? '1.er' : '2.º') + ' cuatrimestre ' + p[0] : periodo;
+      }
+
+      function iniciales(nombre, apellido) {
+        return (String(nombre || '').trim().charAt(0) + String(apellido || '').trim().charAt(0)).toUpperCase() || 'E';
+      }
+
+      // TRAMO: es_primer_anio = si → 1.er año; no → 2.º año en adelante
+      function tramoDe(est) {
+        if (!est) return null;
+        return String(est.es_primer_anio).toLowerCase() === 'si' ? 'primero' : 'superior';
+      }
+
+      function textoTramo(tramo) { return tramo === 'primero' ? '1.er año' : '2.º año en adelante'; }
+
+      // DATOS QUE SE MUESTRAN: LOS DE LA BASE ESTUDIANTES SI YA SE CARGARON; SI NO, LOS DE LA CUENTA DE MOODLE
+      function datosPersona() {
+        var e = estado.estudiante, c = estado.cuenta || {};
+        var d = e || c;
+        return { dni: d.dni || '', nombre: d.nombre || '', apellido: d.apellido || '', email: d.email || '' };
+      }
+
+      // LA ENTRADA MÁS RECIENTE (POR created_at Y, SI EMPATAN, POR rid)
+      function masReciente(lista) {
+        return lista.slice().sort(function(a, b) {
+          var fa = String(a.created_at || ''), fb = String(b.created_at || '');
+          if (fa !== fb) return fa < fb ? -1 : 1;
+          return (Number(a.rid) || 0) - (Number(b.rid) || 0);
+        }).pop() || null;
+      }
+
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
+      // ---------------------------------------------------------
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, la próxima llamada vuelve a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE (SOLO LECTURA)
+      // ---------------------------------------------------------
+      // CUENTA DE MOODLE: DNI (nombre de usuario), nombre, apellido y correo (formulario del perfil o, si no, el perfil)
+      function leerCuentaMoodle() {
+        var c = { dni: '', nombre: '', apellido: '', email: '' };
+        var texto = function(url) { return fetch(M.cfg.wwwroot + url, { credentials: 'same-origin' }).then(function(r) { return r.text(); }); };
+        var html = function(t) { return new DOMParser().parseFromString(t, 'text/html'); };
+        var dni = texto('/login/change_password.php').then(function(t) {
+          var el = html(t).querySelector('[data-name="username"]');
+          var v = el ? el.textContent.trim() : '';
+          if (/^\d{7,9}$/.test(v)) c.dni = v;
+        }, function() { /* el DNI solo se muestra */ });
+        var datos = texto('/user/edit.php?id=' + encodeURIComponent(M.cfg.userId)).then(function(t) {
+          var doc = html(t);
+          var valor = function(sel) { var el = doc.querySelector(sel); return el ? String(el.value || '').trim() : ''; };
+          c.nombre = valor('#id_firstname');
+          c.apellido = valor('#id_lastname');
+          c.email = valor('#id_email');
+          if (c.nombre || c.apellido) return;
+          return texto('/user/profile.php').then(function(t2) {
+            var d2 = html(t2);
+            var h = d2.querySelector('.page-context-header .page-header-headings h1, .page-context-header .page-header-headings h2');
+            c.nombre = h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
+            var mail = d2.querySelector('#region-main a[href^="mailto:"]');
+            c.email = mail ? mail.textContent.trim() : '';
+          });
+        }).catch(function() { /* la cuenta solo se muestra */ });
+        return Promise.all([dni, datos]).then(function() { return c; });
+      }
+
+      // ENTRADAS PROPIAS DE UNA BASE CON "REQUIERE APROBACIÓN". El filtro por cuenta evita usar las de otros
+      // si quien abre la página puede verlas todas (un docente)
+      function entradasPropias(Tools, dataid) {
+        return Tools.LeerBase({ dataid: dataid }).then(function(r) {
+          return r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+            c.rid = e.rid ? Number(e.rid) : null;
+            c.modificada = e.modificada || e.alta || '';
+            return c;
+          }).filter(function(c) { return Number(c.id_usuario) === estado.usuario.id; });
+        });
+      }
+
+      function cargarDatosMoodle() {
+        estado.usuario = { id: Number(M.cfg.userId) };
+        return cargarTools().then(function(Tools) {
+          var cuenta = leerCuentaMoodle().then(function(c) { estado.cuenta = c; });
+          // Las respuestas solo informan el estado de las encuestas: si no se leen, la vista sigue
+          var respuestas = entradasPropias(Tools, DATAID_RESPUESTAS).catch(function() { return null; });
+          var estudiante = DATAID_ESTUDIANTES
+            ? entradasPropias(Tools, DATAID_ESTUDIANTES).then(function(lista) {
+              lista.sort(function(a, b) { return (a.rid || 0) - (b.rid || 0); });
+              return lista.length ? lista[lista.length - 1] : null;
+            })
+            : Promise.reject(new Error('La base Estudiantes todavía no está creada en Moodle.'));
+          return Promise.all([estudiante, respuestas, cuenta]).then(function(r) {
+            estado.estudiante = r[0];
+            estado.respuestas = r[1];
+          });
+        });
+      }
+
+      // ---------------------------------------------------------
+      // VISTA PREVIA LOCAL: ENTRADAS DE ESTUDIANTES (DATOS DE PRUEBA + LO CARGADO EN ESTE NAVEGADOR)
+      // ---------------------------------------------------------
+      function estudianteLocal(id) {
+        var guardados = {};
+        try { guardados = JSON.parse(window.localStorage.getItem(CLAVE_PREVIEW) || '{}') || {}; } catch (e) { /* sin almacenamiento: solo los datos de prueba */ }
+        return guardados[id] || ESTUDIANTES_PRUEBA.filter(function(e) { return e.id_usuario === id; })[0] || null;
+      }
+
+      // ---------------------------------------------------------
+      // COMPONENTES
+      // ---------------------------------------------------------
+      var CHIPS = {
+        pendiente: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06' },
+        listo: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f' },
+        neutro: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', texto: '#566481' }
+      };
+
+      // CHIP DE ESTADO: PUNTO + TEXTO
+      function chip(tipo, texto) {
+        var c = CHIPS[tipo];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + c.borde + ' !important; background-color: ' + c.fondo + ' !important; color: ' + c.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + c.punto + ' !important;"></span>' + escapar(texto) + '</span>';
+      }
+
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      // BOTÓN: tipo 'principal', 'secundario' o 'bloqueado' (deshabilitado, con el texto de qué falta)
+      function boton(accion, texto, tipo) {
+        var base = 'width: 100% !important; min-height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important; text-align: center !important; ';
+        if (tipo === 'bloqueado') {
+          return '<button type="button" disabled aria-disabled="true" style="' + base + 'border: 1px dashed #c2c9d6 !important; background-color: #f5f6fa !important; color: #47536b !important; cursor: not-allowed !important;">' + escapar(texto) + '</button>';
+        }
+        var estilo = tipo === 'principal'
+          ? 'border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important;'
+          : 'border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important;';
+        return '<button type="button" data-accion="' + accion + '" style="' + base + estilo + ' cursor: pointer !important;">' + escapar(texto) + icono('flecha', 18) + '</button>';
+      }
+
+      function cajaIcono(nombre, tono) {
+        var colores = tono === 'pendiente'
+          ? 'background-color: #fffbf0 !important; border: 1px solid #fce49c !important; color: #aa8109 !important;'
+          : tono === 'apagado'
+            ? 'background-color: #f5f6fa !important; border: 1px solid #ebeef4 !important; color: #94a0b8 !important;'
+            : 'background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important;';
+        return '<span style="width: 36px !important; height: 36px !important; border-radius: 8px !important; ' + colores + ' display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 auto !important;">' + icono(nombre, 20) + '</span>';
+      }
+
+      // TARJETA DE OPCIÓN (GRILLA 2 × 2): { id, icono, titulo, texto, chip, boton, habilitada, pendiente }
+      function tarjetaOpcion(t) {
+        return '<div id="' + t.id + '"' + (t.habilitada ? '' : ' aria-disabled="true"') + ' style="flex: 1 1 260px !important; min-width: 0 !important; background-color: ' + (t.habilitada ? '#ffffff' : '#fcfcfc') + ' !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; gap: 12px !important; box-sizing: border-box !important;">' +
+          '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: wrap !important; min-height: 36px !important;">' +
+          cajaIcono(t.icono, !t.habilitada ? 'apagado' : t.pendiente ? 'pendiente' : '') + (t.chip || '') + '</div>' +
+          '<div><h4 style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important; color: ' + (t.habilitada ? '#0b0e14' : '#47536b') + ' !important;">' + escapar(t.titulo) + '</h4>' +
+          (t.texto ? '<p style="margin: 4px 0 0 0 !important; font-size: 14px !important; line-height: 1.5 !important; color: #47536b !important;">' + escapar(t.texto) + '</p>' : '') + '</div>' +
+          '<div style="margin-top: auto !important;">' + t.boton + '</div></div>';
+      }
+
+      // AVISO: tipo 'alerta', 'error', 'info' u 'ok'
+      function aviso(tipo, html) {
+        var c = {
+          alerta: { fondo: '#fdf1ce', borde: 'rgba(246, 206, 85, 0.5)', icono: '#aa8109', nombre: 'alerta' },
+          error: { fondo: '#fff0f0', borde: '#fdcece', icono: '#c20a0a', nombre: 'error' },
+          info: { fondo: '#e5f2ff', borde: 'rgba(77, 166, 255, 0.4)', icono: '#026bd4', nombre: 'info' },
+          ok: { fondo: '#f6fef6', borde: '#c5f7c5', icono: '#1f7a1f', nombre: 'ok' }
+        }[tipo];
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: ' + c.fondo + ' !important; border: 1px solid ' + c.borde + ' !important; color: #0b0e14 !important; font-size: 14px !important;">' +
+          '<span style="color: ' + c.icono + ' !important; padding-top: 1px !important;">' + icono(c.nombre, 20) + '</span><span>' + html + '</span></div>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: COLUMNA IZQUIERDA (PERFIL)
+      // ---------------------------------------------------------
+      function renderizarPerfil() {
+        var p = datosPersona(), est = estado.estudiante;
+        var completo = (p.nombre + ' ' + p.apellido).trim() || 'Estudiante';
+        var foto = EN_MOODLE
+          ? '<img id="foto-estudiante" src="' + escapar(M.cfg.wwwroot + '/user/pix.php/' + encodeURIComponent(estado.usuario.id) + '/f1.jpg') + '" alt="Foto de perfil de ' + escapar(completo) + '" style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important;">'
+          : '<span aria-hidden="true">' + escapar(iniciales(p.nombre, p.apellido)) + '</span>';
+        var campos = [
+          { etiqueta: 'Id de usuario (Moodle)', valor: estado.usuario.id },
+          { etiqueta: 'DNI', valor: (p.dni || 'Sin dato') + (EN_MOODLE ? '' : ' (ficticio)') },
+          { etiqueta: 'Correo', valor: p.email || 'Sin dato' },
+          { etiqueta: 'Información personal', valor: est ? 'Cargada el ' + fechaVisible(est.modificada) : 'Sin cargar' }
+        ];
+        $('columna-perfil-estudiante').innerHTML =
+          '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 600 !important; color: #0b0e14 !important; margin-bottom: 12px !important;">' + (est ? 'Perfil del estudiante' : 'Perfil del campus') + '</div>' +
+          '<div style="width: 112px !important; height: 112px !important; border-radius: 50% !important; background-color: #ebeef4 !important; border: 1px solid #dadee7 !important; color: #47536b !important; font-size: 36px !important; font-weight: 600 !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; margin: 0 auto 12px auto !important;">' + foto + '</div>' +
+          '<div style="text-align: center !important; font-size: 18px !important; font-weight: 600 !important; overflow-wrap: anywhere !important;">' + escapar(completo) + '</div>' +
+          '<div style="text-align: center !important; color: #47536b !important; margin-bottom: 8px !important;">' +
+          (est ? textoTramo(tramoDe(est)) + ' · Cohorte ' + escapar(est.anio_ingreso + '-' + est.cuatrimestre_ingreso) : 'Información personal sin cargar') + '</div>' +
+          '<div style="display: flex !important; justify-content: center !important; margin-bottom: 16px !important;">' + chipRol('EST') + '</div>' +
+          campos.map(function(c) {
+            return '<div style="padding: 8px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(c.etiqueta) + '</div>' +
+              '<div style="font-weight: 500 !important; overflow-wrap: anywhere !important;">' + escapar(c.valor) + '</div></div>';
+          }).join('') + '</div>';
+        var img = $('foto-estudiante');
+        if (img) img.onerror = function() { img.parentNode.innerHTML = '<span aria-hidden="true">' + escapar(iniciales(p.nombre, p.apellido)) + '</span>'; };
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: TARJETA DE INFORMACIÓN PERSONAL
+      // ---------------------------------------------------------
+      function renderizarInfoPersonal() {
+        var est = estado.estudiante, cuerpo, chipEstado, accion;
+        var hayPagina = !!destino('informacion');
+        if (estado.error) {
+          chipEstado = '';
+          cuerpo = aviso('error', 'No se pudo leer la información personal: ' + escapar(estado.error) + ' Las secciones quedan deshabilitadas hasta que se pueda leer.');
+          accion = '';
+        } else if (!est) {
+          chipEstado = chip('pendiente', 'Sin cargar');
+          cuerpo = aviso('alerta', '<b style="font-weight: 600 !important;">Para usar todas las secciones se debe cargar la información personal.</b> Mientras tanto, las secciones están deshabilitadas.');
+          accion = boton('informacion', hayPagina ? 'Cargar información personal' : 'La página de información personal todavía no está publicada', hayPagina ? 'principal' : 'bloqueado');
+        } else {
+          chipEstado = chip('listo', 'Cargada');
+          var datos = [
+            ['Ingreso', periodoVisible(est.anio_ingreso + '-' + est.cuatrimestre_ingreso)],
+            ['Año de la carrera', textoTramo(tramoDe(est))]
+          ];
+          cuerpo = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 0 24px !important;">' + datos.map(function(d) {
+            return '<div style="flex: 1 1 160px !important; min-width: 0 !important; padding: 8px 0 0 0 !important;">' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(d[0]) + '</div>' +
+              '<div style="font-weight: 500 !important;">' + escapar(d[1]) + '</div></div>';
+          }).join('') + '</div>';
+          accion = boton('informacion', hayPagina ? 'Editar información personal' : 'La página de información personal todavía no está publicada', hayPagina ? 'secundario' : 'bloqueado');
+        }
+        $('tarjeta-info-personal').innerHTML =
+          '<div id="card-info-personal" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
+          '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: wrap !important;">' +
+          '<div style="display: flex !important; align-items: center !important; gap: 12px !important;">' + cajaIcono('asignado', !est && !estado.error ? 'pendiente' : '') +
+          '<h4 style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Información personal</h4></div>' +
+          chipEstado + '</div>' + cuerpo +
+          (accion ? '<div style="max-width: 320px !important;">' + accion + '</div>' : '') + '</div>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: OPCIONES (ENCUESTAS, PARCIALES Y ENTREVISTAS)
+      // ---------------------------------------------------------
+      // ESTADO DE UNA ENCUESTA: { leida, respondida } (la cuatrimestral, en el período actual)
+      function estadoEncuesta(codigo) {
+        if (!estado.respuestas) return { leida: false, respondida: null };
+        var r = masReciente(estado.respuestas.filter(function(x) {
+          return String(x.codigo_encuesta) === codigo && (codigo !== 'cuatrimestral' || String(x.periodo) === PERIODO_ACTUAL);
+        }));
+        return { leida: true, respondida: r };
+      }
+
+      function chipEncuesta(e) {
+        if (!e.leida) return chip('neutro', 'Sin datos');
+        return e.respondida ? chip('listo', 'Respondida el ' + fechaVisible(e.respondida.created_at)) : chip('pendiente', 'Pendiente');
+      }
+
+      function renderizarOpciones() {
+        var est = estado.estudiante, tramo = tramoDe(est), conInfo = !!est && !estado.error;
+        var inicial = estadoEncuesta('inicial'), cuatri = estadoEncuesta('cuatrimestral');
+        var paraTramo = function(accion) { return !DISPONIBILIDAD[accion].tramo || DISPONIBILIDAD[accion].tramo === tramo; };
+        var habilitada = function(accion) { return conInfo && paraTramo(accion) && !!destino(accion); };
+        // Una sola acción principal: parciales en 1.er año; en 2.º en adelante, la primera encuesta que falte, y si no, entrevistas
+        var principal = !conInfo ? null : tramo === 'primero' ? 'parciales'
+          : inicial.leida && !inicial.respondida ? 'inicial' : cuatri.leida && !cuatri.respondida ? 'cuatrimestral' : 'entrevistas';
+        var botonDe = function(accion, texto) {
+          if (!conInfo) return boton(accion, BLOQUEO_SIN_INFO, 'bloqueado');
+          if (!paraTramo(accion)) return boton(accion, DISPONIBILIDAD[accion].bloqueo, 'bloqueado');
+          if (!destino(accion)) return boton(accion, 'La página todavía no está publicada', 'bloqueado');
+          return boton(accion, texto, principal === accion ? 'principal' : 'secundario');
+        };
+        var opciones = [
+          {
+            id: 'card-encuesta-inicial', icono: 'encuestas', titulo: 'Encuesta Inicial',
+            texto: 'Créditos aprobados, año y cuatrimestre de ingreso y situación laboral.',
+            habilitada: habilitada('inicial'), pendiente: habilitada('inicial') && inicial.leida && !inicial.respondida,
+            chip: habilitada('inicial') ? chipEncuesta(inicial) : '',
+            boton: botonDe('inicial', inicial.respondida ? 'Actualizar la respuesta' : 'Responder la encuesta')
+          },
+          {
+            id: 'card-encuesta-cuatrimestral', icono: 'encuestas', titulo: 'Encuesta Cuatrimestral',
+            texto: 'Actualización de materias, estado laboral, cursadas actualmente y Proyecto Final. Período: ' + periodoVisible(PERIODO_ACTUAL) + '.',
+            habilitada: habilitada('cuatrimestral'), pendiente: habilitada('cuatrimestral') && cuatri.leida && !cuatri.respondida,
+            chip: habilitada('cuatrimestral') ? chipEncuesta(cuatri) : '',
+            boton: botonDe('cuatrimestral', cuatri.respondida ? 'Actualizar la respuesta' : 'Acceder a la encuesta')
+          },
+          {
+            id: 'card-parciales-primero', icono: 'importar', titulo: 'Parciales de primer año',
+            texto: 'Carga de las notas de los parciales de las materias de 1.er año, para el cálculo de la criticidad.',
+            habilitada: habilitada('parciales'),
+            boton: botonDe('parciales', 'Cargar parciales')
+          },
+          {
+            id: 'card-entrevistas', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías',
+            texto: 'Solicitudes recibidas, aceptar o proponer otra fecha y pedir una entrevista con un tutor o asesor par.',
+            habilitada: habilitada('entrevistas'),
+            boton: botonDe('entrevistas', 'Abrir agenda')
+          }
+        ];
+        $('grilla-opciones-estudiante').innerHTML = opciones.map(tarjetaOpcion).join('');
+      }
+
+      function renderizarTodo() {
+        renderizarPerfil();
+        renderizarInfoPersonal();
+        renderizarOpciones();
+      }
+
+      // ---------------------------------------------------------
+      // ACCIONES
+      // ---------------------------------------------------------
+      function destino(accion) {
+        if (!EN_MOODLE) {
+          if (DESTINOS_LOCAL[accion]) return DESTINOS_LOCAL[accion] + (accion === 'informacion' ? '#usuario=' + estado.usuario.id : '');
+          return accion === 'inicial' || accion === 'cuatrimestral' ? 'simulacion' : null;
+        }
+        return DESTINOS_MOODLE[accion] ? M.cfg.wwwroot + DESTINOS_MOODLE[accion] : null;
+      }
+
+      function ejecutar(accion) {
+        var url = destino(accion);
+        if (!url) return;
+        if (url !== 'simulacion') { window.location.href = url; return; }
+        // Vista previa: responder una encuesta registra un envío en la memoria
+        respuestasLocales.push({ id_usuario: estado.usuario.id, codigo_encuesta: accion, periodo: accion === 'cuatrimestral' ? PERIODO_ACTUAL : '', created_at: ahoraIso() });
+        estado.respuestas = respuestasLocales.filter(function(r) { return r.id_usuario === estado.usuario.id; });
+        renderizarTodo();
+      }
+
+      // ---------------------------------------------------------
+      // VISTA PREVIA LOCAL: ESTUDIANTE SIMULADO (#usuario=<id> EN LA DIRECCIÓN, PARA IR Y VOLVER DE LA INFORMACIÓN PERSONAL)
+      // ---------------------------------------------------------
+      function simularEstudiante(usuario) {
+        var x = INTEGRANTES.filter(function(i) { return i.usuario === usuario; })[0] || INTEGRANTES[0];
+        estado.usuario = { id: x.usuario };
+        estado.cuenta = x.cuenta;
+        estado.estudiante = estudianteLocal(x.usuario);
+        estado.respuestas = respuestasLocales.filter(function(r) { return r.id_usuario === x.usuario; });
+        try { history.replaceState(null, '', '#usuario=' + x.usuario); } catch (e) { /* sin historial: solo cambia la vista */ }
+        renderizarTodo();
+        var botones = document.querySelectorAll('[data-preview-usuario]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = Number(botones[i].getAttribute('data-preview-usuario')) === x.usuario;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+        $('txt-caso-preview').textContent = 'Caso: ' + x.caso;
+      }
+
+      // BARRA PARA CAMBIAR DE ESTUDIANTE: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como (EST)</span>' + INTEGRANTES.map(function(x) {
+          return '<button type="button" data-preview-usuario="' + x.usuario + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + escapar(x.cuenta.nombre.split(' ')[0]) + '</button>';
+        }).join('') +
+          '<button type="button" id="btn-restablecer-preview" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 500; font-size: 12px; background: transparent; color: #c2c9d6; margin-left: auto;">Restablecer datos de prueba</button>' +
+          '<span id="txt-caso-preview" style="flex: 1 1 100% !important; font-size: 12px !important; color: #c2c9d6 !important;"></span>';
+        var cont = $('vista-estudiante');
+        var raizContenido = cont.querySelector('nolink') || cont;
+        raizContenido.insertBefore(barra, raizContenido.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#vista-estudiante')) return;
+        var btnUsuario = t.closest('[data-preview-usuario]');
+        if (btnUsuario) return simularEstudiante(Number(btnUsuario.getAttribute('data-preview-usuario')));
+        if (t.closest('#btn-restablecer-preview')) {
+          try { window.localStorage.removeItem(CLAVE_PREVIEW); } catch (err) { /* sin almacenamiento */ }
+          return simularEstudiante(estado.usuario.id);
+        }
+        var btnAccion = t.closest('[data-accion]');
+        if (btnAccion) return ejecutar(btnAccion.getAttribute('data-accion'));
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      // Íconos declarados en el HTML con data-icono
+      var huecos = document.querySelectorAll('#vista-estudiante [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      mostrar($('loader-estudiante'), true);
+
+      if (!EN_MOODLE) {
+        crearBarraPreview();
+        mostrar($('aviso-datos-prueba-estudiante'), true);
+        var m = window.location.hash.match(/usuario=(\d+)/);
+        // Sin #usuario arranca con Santiago, el caso sin información personal (el flujo de carga)
+        simularEstudiante(m ? Number(m[1]) : USUARIO_INICIAL_PREVIEW);
+        mostrar($('loader-estudiante'), false);
+        return;
+      }
+
+      cargarDatosMoodle().catch(function(e) {
+        // Sin la base Estudiantes no se sabe el tramo: todo queda deshabilitado
+        estado.error = String(e && e.message ? e.message : e).replace(/\.?$/, '.');
+      }).then(function() {
+        renderizarTodo();
+        mostrar($('loader-estudiante'), false);
+      });
+    })();
+  </script>
+  </nolink>
+</div>
