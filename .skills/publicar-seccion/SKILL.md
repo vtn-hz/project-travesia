@@ -27,6 +27,10 @@ Sube un `content.html` del repo a Moodle con el script [`publicar.js`](publicar.
 
 **Ítems de un grupo** (`section/<grupo>/<item>/content.html`): el grupo es una subsección de Zhakyz. Si no se pasa `--subseccion`, el script la toma del campo `nombre` de `section/<grupo>/seccion.json` (y la crea si no existe). Después de publicar, anotar el `cmid` del ítem en `moodle.config.json` → `paginas.<clave>` (la clave está en `moodle.config` del ítem en `seccion.json`) y correr `sincronizar_config.js`, así las secciones que enlazan a esa página toman el id.
 
+`--visibilidad mostrar|oculta|sin-mostrar` cambia la disponibilidad de la actividad al publicar. El campus no ofrece `sin-mostrar` ("Disponible pero no mostrado"), y `oculta` deja afuera a quien no puede ver actividades ocultas: para una Página que solo se abre desde una tarjeta del Hub, agregar su cmid a `PAGINAS_SIN_LISTAR` en `section/resumen_zhakyz/content.html` y republicar el resumen.
+
+Para la plantilla de lista de una base (`data/moodle/plantillas/<clave>/`), usar `subir_plantillas.js --clave <clave>` (simula; escribe con `--confirmar`).
+
 Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabla de `RULES.md`) tiene el **cmid**: usar `--cmid` para **actualizar**. No crear un duplicado.
 
 ## Pasos

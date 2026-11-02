@@ -35,6 +35,8 @@ Estas reglas están por encima de todas las demás.
 | Subsección "Database" → Base de datos "Respuestas" (cmid 59940, d=166) | [`data/moodle/BASE_RESPUESTAS.json`](data/moodle/BASE_RESPUESTAS.json) + [plantillas](data/moodle/plantillas/respuestas/) (lista, individual y Javascript personalizado; la de añadir entrada es la de Moodle). Campos del ADR-007 desde el 2026-11-01 |
 | Subsección "Database" → Base de datos "Encuestas" (cmid 60190, d=198) | [`data/moodle/BASE_ENCUESTAS.json`](data/moodle/BASE_ENCUESTAS.json) + [plantillas](data/moodle/plantillas/encuestas/). Sus entradas (rid 20148 Inicial v2 y 20149 Cuatrimestral v3) son [`data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json`](data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json): una versión nueva se agrega primero ahí |
 | Subsección "Database" → Base de datos "Criticidad" (cmid 60191, d=199) | [`data/moodle/BASE_CRITICIDAD.json`](data/moodle/BASE_CRITICIDAD.json) + [plantillas](data/moodle/plantillas/criticidad/). Sus entradas las escriben los scripts (no tienen archivo) |
+| Subsección "Hub" → Página "Entrevistas y Tutorías" (cmid 60198) | [`section/entrevistas/content.html`](section/entrevistas/content.html) |
+| Subsección "Database" → Base de datos "Entrevistas" (cmid 60197, d=202) | [`data/moodle/BASE_ENTREVISTAS.json`](data/moodle/BASE_ENTREVISTAS.json) + [plantilla de lista](data/moodle/plantillas/entrevistas/) |
 | Subsección "Pruebas" (cmid 59499, sección 15701): BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing | — (pruebas creadas por el equipo directamente en Moodle) |
 | Encuesta "asdsad" (cmid 59541), en Zhakyz fuera de las subsecciones | — (parece una prueba creada directamente en Moodle) |
 

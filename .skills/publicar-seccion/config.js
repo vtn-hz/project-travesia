@@ -39,18 +39,21 @@ const MARCA = /^(\s*var\s+\w+\s*=\s*)(.*?);(\s*\/\/\s*@config\s+([\w.]+)\b.*)$/;
 function aplicar(texto, config) {
   const cambios = [];
   const errores = [];
-  const lineas = texto.split('\n').map((linea, i) => {
+  const lineas = texto.split('\n').map((lineaOriginal, i) => {
+    // Archivos con saltos CRLF: el "\r" final no entra en la marca y se conserva
+    const cr = lineaOriginal.endsWith('\r') ? '\r' : '';
+    const linea = cr ? lineaOriginal.slice(0, -1) : lineaOriginal;
     const m = linea.match(MARCA);
-    if (!m) return linea;
+    if (!m) return lineaOriginal;
     const v = valor(config, m[4]);
     if (v === undefined) {
       errores.push(`línea ${i + 1}: la ruta "${m[4]}" no existe en moodle.config.json`);
-      return linea;
+      return lineaOriginal;
     }
     const nuevo = literal(v);
-    if (nuevo === m[2].trim()) return linea;
+    if (nuevo === m[2].trim()) return lineaOriginal;
     cambios.push(`línea ${i + 1}: ${m[4]} ${m[2].trim()} → ${nuevo}`);
-    return m[1] + nuevo + ';' + m[3];
+    return m[1] + nuevo + ';' + m[3] + cr;
   });
   return { texto: lineas.join('\n'), cambios, errores };
 }

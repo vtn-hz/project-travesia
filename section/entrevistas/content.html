@@ -1,5 +1,5 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Entrevistas y Tutorías" (cmid 60198) · 2026-11-01 -->
 <!-- SECCIÓN: ENTREVISTAS Y TUTORÍAS (ROLES ADM, TUT, PAR) · REQ 5 (DASHBOARD ENTREVISTAS) Y REQ 11 (GESTIÓN DE ENTREVISTAS) -->
-<!-- EN REVISIÓN: NO PUBLICADA EN MOODLE (VER section/entrevistas/README.md) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="entrevistas-tutorias"
@@ -11,7 +11,7 @@
   <div id="aviso-datos-prueba-entrevistas"
     style="display: none; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; border-radius: 10px !important; color: #0b0e14 !important;">
     <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
-    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos ficticios, al 19/10/2026. Las bases Acompañamientos y Entrevistas de la sección Zhakyz todavía no están creadas; lo que se guarda queda solo en esta pantalla.</span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos ficticios, al 19/10/2026. Lo que se guarda queda solo en esta pantalla.</span>
   </div>
 
   <!-- ENCABEZADO -->
@@ -142,27 +142,32 @@
       // Fecha de los datos de prueba: así las entrevistas "próximas" y "sin resultado" no cambian con el día
       var AHORA_PRUEBA = '2026-10-19T12:00';
 
-      // Modelo reducido: solo dos bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
-      // Acompañamientos lleva copia del nombre y la cuenta del estudiante, así no hace falta la base Estudiantes.
+      // Una sola base de la sección Zhakyz: cada entrevista guarda a sus involucrados (estudiante y acompañante),
+      // su estado y sus fechas, así no hace falta una base de asignaciones ni la base Estudiantes.
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
-      var CMID_ACOMPANAMIENTOS = null; // @config bases.acompanamientos.cmid · lectura: quién acompaña a cada estudiante
-      var CMID_ENTREVISTAS = null; // @config bases.entrevistas.cmid · lectura y escritura
+      var CMID_ENTREVISTAS = 60197; // @config bases.entrevistas.cmid · lectura y escritura
       // IDs field_<id> de la base Entrevistas (data/moodle/BASE_ENTREVISTAS.json)
       var CAMPOS_ENTREVISTAS = {
-        rid_acompanamiento: null, dni: null, originada_por: null, estado: null, motivo: null,
-        fecha_solicitud: null, fecha_programada: null, fecha_realizada: null, resultado: null,
-        propuestas_json: null, acciones_json: null
+        dni: 1339, id_usuario_estudiante: 1340, nombre_estudiante: 1341, tipo_acompanante: 1342,
+        id_usuario_acompanante: 1343, nombre_acompanante: 1344, originada_por: 1345, estado: 1346, motivo: 1347,
+        fecha_solicitud: 1348, fecha_programada: 1349, fecha_realizada: 1350, resultado: 1351,
+        propuestas_json: 1352, acciones_json: 1353
       };
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
       var CMID_DETALLE = null; // @config paginas.detalle
 
       // usuario: con quién se simula cada rol en la vista previa local (en Moodle, el usuario de la sesión)
+      // tipo: cómo queda el acompañante en las entrevistas que pide (ADM elige en el formulario)
       var ROLES = {
-        ADM: { nombre: 'Administrador', usuario: null, veDetalle: true },
-        TUT: { nombre: 'Tutor / Entrevistador', usuario: '2048', veDetalle: true },
-        PAR: { nombre: 'Asesor Par', usuario: '3623', veDetalle: false }
+        ADM: { nombre: 'Administrador', usuario: '3770', tipo: 'tutor', veDetalle: true },
+        TUT: { nombre: 'Tutor / Entrevistador', usuario: '2048', tipo: 'tutor', veDetalle: true },
+        PAR: { nombre: 'Asesor Par', usuario: '3623', tipo: 'asesor_par', veDetalle: false },
+        EST: { nombre: 'Estudiante', usuario: '3751', tipo: null, veDetalle: false }
       };
+      // Para el estudiante, los estados se nombran desde su lado (lo que el equipo "responde", él lo espera)
+      var TEXTOS_ESTUDIANTE = { responder: 'Esperando al acompañante', esperando: 'Por responder' };
+      var TIPOS_ACOMPANANTE = { tutor: 'Tutor', asesor_par: 'Asesor par' };
 
       // Estado que se muestra (sale del estado guardado, de quién propuso la última fecha y de la fecha)
       var ESTADOS = {
@@ -218,27 +223,21 @@
         '2048': 'Valentino Hernández Pascual', '3773': 'Nicolás Gabriel Zuviria', '3623': 'Nahuel Spikerman'
       };
 
-      // ACOMPAÑAMIENTO DE PRUEBA CON LAS COPIAS DE NOMBRE QUE GUARDA LA BASE
-      function acompanamientoPrueba(rid, estudiante, tipo, acompanante, materia, desde, hasta) {
+      // INVOLUCRADOS DE PRUEBA: LAS COPIAS DE NOMBRE Y CUENTA QUE GUARDA CADA ENTREVISTA
+      function involucrados(estudiante, tipo, acompanante) {
         return {
-          rid: rid, dni: 'prueba-' + estudiante, usuario: estudiante, nombreEstudiante: NOMBRES_PRUEBA[estudiante],
-          tipo: tipo, acompanante: acompanante, nombreAcompanante: NOMBRES_PRUEBA[acompanante], materia: materia, desde: desde, hasta: hasta || ''
+          dni: 'prueba-' + estudiante, usuario: estudiante, nombreEstudiante: NOMBRES_PRUEBA[estudiante],
+          tipo: tipo, acompanante: acompanante, nombreAcompanante: NOMBRES_PRUEBA[acompanante]
         };
       }
+      var CON = {
+        a1: involucrados('3773', 'tutor', '2048'), a2: involucrados('3623', 'tutor', '3770'), a3: involucrados('3751', 'tutor', '2048'),
+        a4: involucrados('2806', 'asesor_par', '3623'), a6: involucrados('3770', 'tutor', '2048')
+      };
 
-      // Base Acompañamientos: quién acompaña a cada estudiante
-      var ACOMPANAMIENTOS_PRUEBA = [
-        acompanamientoPrueba('a1', '3773', 'tutor', '2048', '', '2026-09-01'),
-        acompanamientoPrueba('a2', '3623', 'tutor', '3770', '', '2026-09-01'),
-        acompanamientoPrueba('a3', '3751', 'tutor', '2048', '', '2026-09-15'),
-        acompanamientoPrueba('a4', '2806', 'asesor_par', '3623', 'Análisis Matemático I', '2026-09-20'),
-        acompanamientoPrueba('a5', '2048', 'tutor', '3770', '', '2026-09-01', '2026-10-15'),
-        acompanamientoPrueba('a6', '3770', 'tutor', '2048', '', '2026-10-15')
-      ];
-
-      // Base 12 (Entrevistas). propuestas: cada fecha que propuso una de las partes; la última es la vigente
+      // Base Entrevistas. propuestas: cada fecha que propuso una de las partes; la última es la vigente
       var ENTREVISTAS_PRUEBA = [
-        { rid: 'e1', acompanamiento: 'a1', origen: 'tutor', estado: 'realizada', motivo: 'Alerta por omisión: no respondió la encuesta del período 2026-2.',
+        { rid: 'e1', con: 'a1', origen: 'tutor', estado: 'realizada', motivo: 'Alerta por omisión: no respondió la encuesta del período 2026-2.',
           solicitud: '2026-10-01T09:15', programada: '2026-10-06T10:00', realizada: '2026-10-06T10:00',
           resultado: 'Está por dejar dos materias por el trabajo.',
           propuestas: [{ por: 'acompanante', fecha: '2026-10-06T10:00', creada: '2026-10-01T09:15', mensaje: '' }],
@@ -246,7 +245,7 @@
             { tipo_derivacion: 'reduccion_cursada', descripcion: 'Armar con el estudiante un plan de cursada compatible con el trabajo.', fecha_compromiso: '2026-10-27', estado: 'pendiente' },
             { tipo_derivacion: 'beca', descripcion: 'Averiguar si puede acceder a una beca de ayuda económica.', fecha_compromiso: '2026-10-15', estado: 'cumplida' }
           ] },
-        { rid: 'e2', acompanamiento: 'a2', origen: 'tutor', estado: 'realizada', motivo: 'Entrevista de seguimiento del cuatrimestre.',
+        { rid: 'e2', con: 'a2', origen: 'tutor', estado: 'realizada', motivo: 'Entrevista de seguimiento del cuatrimestre.',
           solicitud: '2026-10-07T11:00', programada: '2026-10-10T14:00', realizada: '2026-10-10T14:00',
           resultado: 'Cursa al día y no reporta dificultades.',
           propuestas: [
@@ -254,39 +253,44 @@
             { por: 'estudiante', fecha: '2026-10-10T14:00', creada: '2026-10-07T19:20', mensaje: 'El jueves rindo un parcial. ¿Puede ser el viernes?' }
           ],
           acciones: [] },
-        { rid: 'e3', acompanamiento: 'a3', origen: 'tutor', estado: 'no_asistio', motivo: 'Riesgo alto: aprobó 1 de 7 materias esperadas.',
+        { rid: 'e3', con: 'a3', origen: 'tutor', estado: 'no_asistio', motivo: 'Riesgo alto: aprobó 1 de 7 materias esperadas.',
           solicitud: '2026-10-08T10:00', programada: '2026-10-13T11:00', realizada: '',
           resultado: 'No se presentó ni avisó.',
           propuestas: [{ por: 'acompanante', fecha: '2026-10-13T11:00', creada: '2026-10-08T10:00', mensaje: '' }],
           acciones: [] },
-        { rid: 'e4', acompanamiento: 'a3', origen: 'tutor', estado: 'solicitada', motivo: 'Reprogramación: no asistió a la entrevista del 13/10.',
+        { rid: 'e4', con: 'a3', origen: 'tutor', estado: 'solicitada', motivo: 'Reprogramación: no asistió a la entrevista del 13/10.',
           solicitud: '2026-10-14T09:00', programada: '', realizada: '', resultado: '',
           propuestas: [
             { por: 'acompanante', fecha: '2026-10-21T15:00', creada: '2026-10-14T09:00', mensaje: '' },
             { por: 'estudiante', fecha: '2026-10-23T16:00', creada: '2026-10-16T20:30', mensaje: 'Los martes curso hasta las 18. ¿Puede ser el jueves?' }
           ],
           acciones: [] },
-        { rid: 'e5', acompanamiento: 'a4', origen: 'estudiante', estado: 'solicitada', motivo: 'Necesito ayuda con Análisis Matemático I antes del segundo parcial.',
+        { rid: 'e5', con: 'a4', origen: 'estudiante', estado: 'solicitada', motivo: 'Necesito ayuda con Análisis Matemático I antes del segundo parcial.',
           solicitud: '2026-10-17T18:40', programada: '', realizada: '', resultado: '',
           propuestas: [{ por: 'estudiante', fecha: '2026-10-24T18:00', creada: '2026-10-17T18:40', mensaje: '' }],
           acciones: [] },
-        { rid: 'e6', acompanamiento: 'a1', origen: 'tutor', estado: 'programada', motivo: 'Seguimiento de las acciones acordadas el 06/10.',
+        { rid: 'e6', con: 'a1', origen: 'tutor', estado: 'programada', motivo: 'Seguimiento de las acciones acordadas el 06/10.',
           solicitud: '2026-10-08T12:00', programada: '2026-10-27T10:00', realizada: '', resultado: '',
           propuestas: [{ por: 'acompanante', fecha: '2026-10-27T10:00', creada: '2026-10-08T12:00', mensaje: '' }],
           acciones: [] },
-        { rid: 'e7', acompanamiento: 'a4', origen: 'tutor', estado: 'programada', motivo: 'Primer encuentro del acompañamiento en Análisis Matemático I.',
+        { rid: 'e7', con: 'a4', origen: 'tutor', estado: 'programada', motivo: 'Primer encuentro del acompañamiento en Análisis Matemático I.',
           solicitud: '2026-10-11T10:30', programada: '2026-10-16T17:00', realizada: '', resultado: '',
           propuestas: [{ por: 'acompanante', fecha: '2026-10-16T17:00', creada: '2026-10-11T10:30', mensaje: '' }],
           acciones: [] },
-        { rid: 'e8', acompanamiento: 'a2', origen: 'estudiante', estado: 'cancelada', motivo: 'Consulta sobre equivalencias del plan 2003.',
+        { rid: 'e8', con: 'a2', origen: 'estudiante', estado: 'cancelada', motivo: 'Consulta sobre equivalencias del plan 2003.',
           solicitud: '2026-09-25T16:10', programada: '', realizada: '', resultado: 'El estudiante resolvió la consulta por correo con el departamento.',
           propuestas: [{ por: 'estudiante', fecha: '2026-09-30T12:00', creada: '2026-09-25T16:10', mensaje: '' }],
           acciones: [] },
-        { rid: 'e9', acompanamiento: 'a6', origen: 'tutor', estado: 'solicitada', motivo: 'Primera entrevista del acompañamiento.',
+        { rid: 'e9', con: 'a6', origen: 'tutor', estado: 'solicitada', motivo: 'Primera entrevista del acompañamiento.',
           solicitud: '2026-10-18T10:00', programada: '', realizada: '', resultado: '',
           propuestas: [{ por: 'acompanante', fecha: '2026-10-22T09:30', creada: '2026-10-18T10:00', mensaje: '' }],
           acciones: [] }
-      ];
+      ].map(function(e) {
+        // Cada entrevista de prueba toma sus involucrados de la pareja estudiante-acompañante indicada
+        var ent = Object.assign({}, CON[e.con], e);
+        delete ent.con;
+        return ent;
+      });
 
       // ---------------------------------------------------------
       // FECHAS (ISO LOCAL: AAAA-MM-DD O AAAA-MM-DDTHH:MM)
@@ -325,7 +329,9 @@
       // ---------------------------------------------------------
       // ACCESO A DATOS
       // ---------------------------------------------------------
-      // LEER UNA BASE DE ZHAKYZ: LA PLANTILLA DE LISTA EXPONE CADA CAMPO COMO data-* EN .zk-registro
+      // LEER UNA BASE DE ZHAKYZ: LA PLANTILLA DE LISTA PONE CADA CAMPO COMO TEXTO EN UN [data-campo]
+      // DENTRO DE .zk-registro (CON data-rid). No van en atributos: Moodle no escapa las comillas
+      // del texto y un JSON o un motivo con comillas cortaría el atributo.
       function leerBaseMoodle(cmid) {
         var url = M.cfg.wwwroot + '/mod/data/view.php?id=' + cmid + '&perpage=1000';
         return fetch(url, { credentials: 'same-origin' })
@@ -333,7 +339,13 @@
           .then(function(html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             return Array.prototype.map.call(doc.querySelectorAll('.zk-registro'), function(el) {
-              return Object.assign({}, el.dataset);
+              var registro = { rid: el.getAttribute('data-rid') };
+              Array.prototype.forEach.call(el.querySelectorAll('[data-campo]'), function(c) {
+                // id_usuario_estudiante → idUsuarioEstudiante (el mismo nombre que usaba dataset)
+                var clave = c.getAttribute('data-campo').replace(/_([a-z])/g, function(m, l) { return l.toUpperCase(); });
+                registro[clave] = c.textContent.trim();
+              });
+              return registro;
             });
           });
       }
@@ -342,47 +354,35 @@
         try { return texto ? JSON.parse(texto) : vacio; } catch (e) { return vacio; }
       }
 
-      // CONVERTIR LAS ENTRADAS DE LAS BASES AL FORMATO INTERNO
-      function normalizarAcompanamiento(r) {
-        return {
-          rid: r.rid, dni: r.dni, usuario: r.idUsuarioEstudiante || '', nombreEstudiante: r.nombreEstudiante,
-          tipo: r.tipo, acompanante: r.idUsuarioAcompanante, nombreAcompanante: r.nombreAcompanante,
-          materia: r.materia || '', desde: r.fechaDesde, hasta: r.fechaHasta || ''
-        };
-      }
-
+      // CONVERTIR UNA ENTRADA DE LA BASE AL FORMATO INTERNO
       function normalizarEntrevista(r) {
         return {
-          rid: r.rid, acompanamiento: r.ridAcompanamiento, origen: r.originadaPor, estado: r.estado,
+          rid: r.rid, dni: r.dni, usuario: r.idUsuarioEstudiante || '', nombreEstudiante: r.nombreEstudiante,
+          tipo: r.tipoAcompanante, acompanante: r.idUsuarioAcompanante, nombreAcompanante: r.nombreAcompanante,
+          origen: r.originadaPor, estado: r.estado,
           motivo: r.motivo || '', solicitud: r.fechaSolicitud, programada: r.fechaProgramada || '',
           realizada: r.fechaRealizada || '', resultado: r.resultado || '',
           propuestas: leerJson(r.propuestasJson, []), acciones: leerJson(r.accionesJson, [])
         };
       }
 
-      // CARGAR ACOMPAÑAMIENTOS Y ENTREVISTAS (BASES PROPIAS O DATOS DE PRUEBA)
+      // CARGAR LAS ENTREVISTAS (BASE PROPIA O DATOS DE PRUEBA)
       function cargarDatos() {
-        if (ES_VISTA_LOCAL || !CMID_ACOMPANAMIENTOS || !CMID_ENTREVISTAS || !window.M) {
+        if (ES_VISTA_LOCAL || !CMID_ENTREVISTAS || !window.M) {
           usandoPrueba = true;
           document.getElementById('aviso-datos-prueba-entrevistas').style.setProperty('display', 'flex', 'important');
-          return Promise.resolve({
-            acompanamientos: ACOMPANAMIENTOS_PRUEBA.map(function(a) { return Object.assign({}, a); }),
-            entrevistas: ENTREVISTAS_PRUEBA.map(function(e) { return JSON.parse(JSON.stringify(e)); })
-          });
+          return Promise.resolve(ENTREVISTAS_PRUEBA.map(function(e) { return JSON.parse(JSON.stringify(e)); }));
         }
         usandoPrueba = false;
-        return Promise.all([leerBaseMoodle(CMID_ACOMPANAMIENTOS), leerBaseMoodle(CMID_ENTREVISTAS)])
-          .then(function(res) {
-            return { acompanamientos: res[0].map(normalizarAcompanamiento), entrevistas: res[1].map(normalizarEntrevista) };
-          });
+        return leerBaseMoodle(CMID_ENTREVISTAS).then(function(res) { return res.map(normalizarEntrevista); });
       }
 
       // GUARDAR UNA ENTREVISTA EN LA BASE DE ZHAKYZ (rid 0 = NUEVA; SI NO, EDITA ESA ENTRADA)
       function guardarEntrevistaMoodle(ent) {
         if (usandoPrueba || !CAMPOS_ENTREVISTAS.estado) return Promise.resolve({ local: true });
-        var acomp = acompanamientoDe(ent);
         var valores = {
-          rid_acompanamiento: ent.acompanamiento, dni: acomp ? acomp.dni : '',
+          dni: ent.dni, id_usuario_estudiante: ent.usuario, nombre_estudiante: ent.nombreEstudiante,
+          tipo_acompanante: ent.tipo, id_usuario_acompanante: ent.acompanante, nombre_acompanante: ent.nombreAcompanante,
           originada_por: ent.origen, estado: ent.estado, motivo: ent.motivo, fecha_solicitud: ent.solicitud,
           fecha_programada: ent.programada, fecha_realizada: ent.realizada, resultado: ent.resultado,
           propuestas_json: JSON.stringify(ent.propuestas), acciones_json: JSON.stringify(ent.acciones)
@@ -404,7 +404,6 @@
       // ESTADO EN MEMORIA
       // ---------------------------------------------------------
       var rolActual = ROL_INICIAL;
-      var acompanamientos = [];
       var entrevistas = [];
       var pestana = 'agenda'; // agenda (activas) | historial
       var filtroKpi = '';
@@ -416,37 +415,50 @@
       // USUARIO ACTUAL: EN LOCAL, EL QUE SIMULA EL ROL; EN MOODLE, EL DE LA SESIÓN
       function usuarioActual() {
         if (ES_VISTA_LOCAL || !window.M || !M.cfg) return ROLES[rolActual].usuario;
-        return rolActual === 'ADM' ? null : String(M.cfg.userId || '');
+        return String(M.cfg.userId || '');
       }
 
-      function acompanamientoDe(ent) {
-        for (var i = 0; i < acompanamientos.length; i++) {
-          if (String(acompanamientos[i].rid) === String(ent.acompanamiento)) return acompanamientos[i];
-        }
-        return null;
+      // NOMBRE DEL USUARIO DE LA SESIÓN: EN MOODLE, EL DEL MENÚ DE USUARIO
+      function nombreUsuarioActual() {
+        if (ES_VISTA_LOCAL || !window.M) return NOMBRES_PRUEBA[usuarioActual()] || 'Usuario ' + usuarioActual();
+        var el = document.querySelector('.usermenu .usertext, #user-menu-toggle');
+        var nombre = el ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+        return nombre || 'Usuario ' + usuarioActual();
       }
 
-      // NOMBRE DE UN ACOMPAÑANTE (COPIA GUARDADA EN SUS ACOMPAÑAMIENTOS)
+      // NOMBRE DE UN ACOMPAÑANTE (COPIA GUARDADA EN SUS ENTREVISTAS)
       function nombreAcompanante(usuario) {
-        for (var i = 0; i < acompanamientos.length; i++) {
-          if (String(acompanamientos[i].acompanante) === String(usuario)) return acompanamientos[i].nombreAcompanante;
+        for (var i = 0; i < entrevistas.length; i++) {
+          if (String(entrevistas[i].acompanante) === String(usuario) && entrevistas[i].nombreAcompanante) return entrevistas[i].nombreAcompanante;
         }
-        return 'Usuario ' + usuario;
+        return NOMBRES_PRUEBA[usuario] || 'Usuario ' + usuario;
       }
 
-      // UN ACOMPAÑAMIENTO ESTÁ VIGENTE SI NO TIENE FECHA DE FIN O TODAVÍA NO LLEGÓ
-      function estaVigente(a) {
-        return !a.hasta || a.hasta >= ahora().slice(0, 10);
+      // NOMBRE NORMALIZADO PARA COMPARAR (SIN TILDES, MAYÚSCULAS NI ESPACIOS DE MÁS)
+      function normalizar(s) {
+        return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
       }
 
-      // ACOMPAÑAMIENTOS QUE VE EL ROL: ADM TODOS; TUT Y PAR SOLO LOS PROPIOS
-      function acompanamientosVisibles() {
-        var yo = usuarioActual();
-        return acompanamientos.filter(function(a) {
-          if (rolActual === 'ADM') return true;
-          var tipo = rolActual === 'PAR' ? 'asesor_par' : 'tutor';
-          return a.tipo === tipo && String(a.acompanante) === String(yo);
-        });
+      // ENTREVISTA ACTIVA (EN COORDINACIÓN O PROGRAMADA) DE UN ESTUDIANTE, PARA NO DUPLICARLA.
+      // Se lo reconoce por DNI, por cuenta del campus o por nombre (las que pide el estudiante no traen DNI)
+      function entrevistaActivaDe(est) {
+        return entrevistas.filter(function(e) {
+          if (!ESTADOS[situacion(e)].activa) return false;
+          return (est.dni && String(e.dni).trim() === est.dni) || (est.usuario && String(e.usuario) === String(est.usuario)) ||
+            (est.nombre && normalizar(e.nombreEstudiante) === normalizar(est.nombre));
+        })[0] || null;
+      }
+
+      // ACOMPAÑANTE CONOCIDO CON ESE NOMBRE (DE OTRAS ENTREVISTAS): DA SU CUENTA Y SU TIPO
+      function acompananteConNombre(nombre) {
+        return entrevistas.filter(function(e) {
+          return e.acompanante && normalizar(e.nombreAcompanante) === normalizar(nombre);
+        })[0] || null;
+      }
+
+      // CLAVE DEL ACOMPAÑANTE PARA EL FILTRO: SU CUENTA O, SI LA PIDIÓ UN ESTUDIANTE Y NO SE CONOCE, SU NOMBRE
+      function claveAcompanante(e) {
+        return e.acompanante ? String(e.acompanante) : 'nombre:' + normalizar(e.nombreAcompanante);
       }
 
       // ESTADO QUE SE MUESTRA (NO SE GUARDA: SALE DEL ESTADO, DE LA ÚLTIMA PROPUESTA Y DE LA FECHA)
@@ -469,16 +481,18 @@
         return { fecha: ent.solicitud, pie: 'solicitada' };
       }
 
-      // FILAS: ENTREVISTAS DE LOS ACOMPAÑAMIENTOS VISIBLES, CON SUS DATOS DERIVADOS
+      // FILAS: EL EQUIPO VE TODAS LAS ENTREVISTAS (ASÍ NO SE ENTREVISTA DOS VECES AL MISMO ESTUDIANTE);
+      // EL ESTUDIANTE, SOLO LAS SUYAS
       function filas() {
-        var elegido = document.getElementById('filtro-acompanante-entrevistas').value;
-        var visibles = acompanamientosVisibles().filter(function(a) { return !elegido || String(a.acompanante) === elegido; });
-        var rids = visibles.map(function(a) { return String(a.rid); });
-        return entrevistas.filter(function(e) { return rids.indexOf(String(e.acompanamiento)) !== -1; }).map(function(e) {
-          var a = acompanamientoDe(e);
+        var elegido = rolActual === 'EST' ? '' : document.getElementById('filtro-acompanante-entrevistas').value;
+        var yo = usuarioActual();
+        return entrevistas.filter(function(e) {
+          if (rolActual === 'EST') return String(e.usuario) === String(yo);
+          return !elegido || claveAcompanante(e) === elegido;
+        }).map(function(e) {
           return {
-            ent: e, acomp: a, situacion: situacion(e), fecha: fechaPrincipal(e),
-            estudiante: a.nombreEstudiante || 'DNI ' + a.dni, acompanante: a.nombreAcompanante || 'Usuario ' + a.acompanante
+            ent: e, situacion: situacion(e), fecha: fechaPrincipal(e),
+            estudiante: e.nombreEstudiante || 'DNI ' + e.dni, acompanante: e.nombreAcompanante || 'Usuario ' + e.acompanante
           };
         });
       }
@@ -498,7 +512,8 @@
 
       // CHIP DE ESTADO DE LA ENTREVISTA: PUNTO DE COLOR + TEXTO
       function chipEstado(clave) {
-        var n = ESTADOS[clave];
+        var n = Object.assign({}, ESTADOS[clave]);
+        if (rolActual === 'EST' && TEXTOS_ESTUDIANTE[clave]) n.texto = TEXTOS_ESTUDIANTE[clave];
         return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + n.borde +
           ' !important; background-color: ' + n.fondo + ' !important; color: ' + n.color + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important; box-sizing: border-box !important;">' +
           '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + n.punto + ' !important;"></span>' + n.texto + '</span>';
@@ -599,10 +614,7 @@
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; height: 52px !important; padding: 8px !important; vertical-align: middle !important;';
         var pie = 'font-size: 12px !important; color: #47536b !important;';
         document.getElementById('cuerpo-tabla-entrevistas').innerHTML = lista.length ? lista.map(function(f) {
-          var detalle = [];
-          if (rolActual === 'ADM') detalle.push('con ' + escapar(f.acompanante) + (f.acomp.tipo === 'asesor_par' ? ' (asesor par)' : ''));
-          if (f.acomp.materia) detalle.push(escapar(f.acomp.materia));
-          if (!estaVigente(f.acomp)) detalle.push('acompañamiento finalizado');
+          var detalle = ['con ' + escapar(f.acompanante) + (f.ent.tipo === 'asesor_par' ? ' (asesor par)' : '')];
           return '<tr data-entrevista="' + escapar(f.ent.rid) + '" tabindex="0" style="cursor: pointer !important; animation: zk-aparecer 0.2s ease both;">' +
             '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(f.estudiante) + '</div>' +
             detalle.filter(Boolean).map(function(d) { return '<div style="' + pie + '">' + d + '</div>'; }).join('') + '</td>' +
@@ -614,21 +626,22 @@
           (pestana === 'agenda' ? 'No hay entrevistas por coordinar con estos filtros.' : 'No hay entrevistas en el historial con estos filtros.') + '</td></tr>';
         var total = filas().length;
         document.getElementById('txt-total-entrevistas').textContent = 'Mostrando ' + lista.length + ' de ' + total + ' entrevistas' +
-          (pestana === 'agenda' ? '. Arriba, las que esperan tu respuesta o el resultado.' : ', de la más reciente a la más vieja.');
+          (pestana !== 'agenda' ? ', de la más reciente a la más antigua.' : rolActual === 'EST' ? '.' : '. Arriba, las que esperan una respuesta o el resultado.');
       }
 
-      // OPCIONES DEL FILTRO DE ACOMPAÑANTE (SOLO ADM VE A TODOS)
+      // OPCIONES DEL FILTRO DE ACOMPAÑANTE (LOS QUE TIENEN ALGUNA ENTREVISTA; EL ESTUDIANTE NO LO USA)
       function renderizarFiltroAcompanante() {
         var select = document.getElementById('filtro-acompanante-entrevistas');
-        mostrar(select, rolActual === 'ADM', 'block');
-        if (rolActual !== 'ADM') { select.value = ''; return; }
+        mostrar(select, rolActual !== 'EST', 'block');
+        if (rolActual === 'EST') { select.value = ''; return; }
         var vistos = {};
-        var opciones = acompanamientos.filter(function(a) {
-          if (vistos[a.acompanante]) return false;
-          vistos[a.acompanante] = true;
+        var opciones = entrevistas.filter(function(e) {
+          var clave = claveAcompanante(e);
+          if (vistos[clave]) return false;
+          vistos[clave] = true;
           return true;
-        }).map(function(a) {
-          return '<option value="' + escapar(a.acompanante) + '">' + escapar(nombreAcompanante(a.acompanante)) + '</option>';
+        }).map(function(e) {
+          return '<option value="' + escapar(claveAcompanante(e)) + '">' + escapar(e.nombreAcompanante || nombreAcompanante(e.acompanante)) + '</option>';
         });
         var actual = select.value;
         select.innerHTML = '<option value="">Todos los acompañantes</option>' + opciones.join('');
@@ -636,9 +649,11 @@
       }
 
       function renderizarTodo() {
-        document.getElementById('txt-subtitulo-entrevistas').textContent = rolActual === 'ADM'
-          ? 'Todas las entrevistas de tutores y asesores pares: solicitudes, agenda y resultados.'
-          : 'Las entrevistas con los estudiantes que acompañás: solicitudes, agenda y resultados.';
+        document.getElementById('txt-subtitulo-entrevistas').textContent = rolActual === 'EST'
+          ? 'Las entrevistas solicitadas con tutores y asesores pares, y su estado.'
+          : 'Todas las entrevistas de tutores y asesores pares: solicitudes, agenda y resultados.';
+        // Las tarjetas de resumen están pensadas para la agenda del equipo
+        mostrar(document.getElementById('grilla-kpi-entrevistas'), rolActual !== 'EST');
         renderizarKpi();
         renderizarPestanas();
         renderizarTabla();
@@ -647,11 +662,13 @@
       // ---------------------------------------------------------
       // PERMISOS
       // ---------------------------------------------------------
-      // GESTIONA EL ACOMPAÑANTE DE LA ENTREVISTA; ADM PUEDE GESTIONAR CUALQUIERA
+      // GESTIONA EL ACOMPAÑANTE DE LA ENTREVISTA; ADM PUEDE GESTIONAR CUALQUIERA. SI LA PIDIÓ UN ESTUDIANTE
+      // Y TODAVÍA NO SE CONOCE LA CUENTA DEL ACOMPAÑANTE, LA GESTIONA EL USUARIO CON ESE NOMBRE
       function puedeGestionar(ent) {
+        if (rolActual === 'EST') return false;
         if (rolActual === 'ADM') return true;
-        var a = acompanamientoDe(ent);
-        return !!a && String(a.acompanante) === String(usuarioActual());
+        if (!ent.acompanante) return normalizar(ent.nombreAcompanante) === normalizar(nombreUsuarioActual());
+        return String(ent.acompanante) === String(usuarioActual());
       }
 
       // ---------------------------------------------------------
@@ -791,8 +808,8 @@
         };
         var resumen = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px 16px !important; padding: 12px 14px !important; background-color: #f5f6fa !important; border-radius: 8px !important;">' +
           dato('Estado', chipEstado(f.situacion)) +
-          dato('Estudiante', escapar(f.estudiante) + '<div style="font-size: 12px !important; font-weight: 400 !important; color: #47536b !important;">DNI ' + escapar(f.acomp.dni) + '</div>') +
-          dato(f.acomp.tipo === 'asesor_par' ? 'Asesor par' : 'Tutor', escapar(f.acompanante) + (f.acomp.materia ? '<div style="font-size: 12px !important; font-weight: 400 !important; color: #47536b !important;">' + escapar(f.acomp.materia) + '</div>' : '')) +
+          dato('Estudiante', escapar(f.estudiante) + (ent.dni ? '<div style="font-size: 12px !important; font-weight: 400 !important; color: #47536b !important;">DNI ' + escapar(ent.dni) + '</div>' : '')) +
+          dato(TIPOS_ACOMPANANTE[ent.tipo] || 'Acompañante', escapar(f.acompanante)) +
           dato('Origen', ORIGENES[ent.origen] + '<div style="font-size: 12px !important; font-weight: 400 !important; color: #47536b !important;">solicitada el ' + fechaCorta(ent.solicitud) + '</div>') + '</div>';
 
         var cuerpo = resumen + bloque('Motivo', '<div style="color: #0b0e14 !important;">' + (ent.motivo ? escapar(ent.motivo) : '<span style="color: #47536b !important;">Sin motivo.</span>') + '</div>');
@@ -805,8 +822,10 @@
         if (ent.propuestas.length) cuerpo += bloque('Fechas propuestas', propuestasHtml(ent, f));
 
         var gestion = '';
-        if (!gestiona && ESTADOS[f.situacion].activa) {
-          gestion = avisoInfo('Solo el acompañante del estudiante o un administrador pueden gestionar esta entrevista.');
+        if (rolActual === 'EST' && ESTADOS[f.situacion].activa) {
+          gestion = avisoInfo('La entrevista la coordina ' + escapar(f.acompanante) + '. Los cambios de fecha y el resultado se registran desde su agenda.');
+        } else if (!gestiona && ESTADOS[f.situacion].activa) {
+          gestion = avisoInfo('Solo el acompañante de la entrevista (' + escapar(f.acompanante) + ') o un administrador pueden gestionarla.');
         } else if (vistaModal === 'contraoferta') gestion = formularioContraoferta();
         else if (vistaModal === 'resultado') gestion = formularioResultado(ent);
         else if (vistaModal) gestion = formularioCierre();
@@ -832,6 +851,8 @@
       // APLICAR UN CAMBIO A LA ENTREVISTA ABIERTA: SE GUARDA PRIMERO Y SOLO SI SALE BIEN SE ACTUALIZA LA PANTALLA
       function aplicarCambio(cambios) {
         var ent = abierta;
+        // La primera vez que el acompañante gestiona una entrevista pedida por un estudiante, queda su cuenta
+        if (!ent.acompanante && rolActual !== 'ADM') cambios = Object.assign({ acompanante: usuarioActual(), tipo: ROLES[rolActual].tipo }, cambios);
         var copia = Object.assign({}, ent, cambios);
         return guardarEntrevistaMoodle(copia).then(function() {
           Object.assign(ent, cambios);
@@ -884,35 +905,57 @@
       }
 
       // ---------------------------------------------------------
-      // MODAL: SOLICITAR ENTREVISTA (REQ 11: EL TUTOR SOLICITA ENTREVISTA A UN ESTUDIANTE CRÍTICO)
+      // MODAL: SOLICITAR ENTREVISTA (REQ 11). EL TUTOR O ASESOR PAR INDICA AL ESTUDIANTE (NOMBRE Y DNI);
+      // EL ESTUDIANTE INDICA AL DESTINATARIO (NOMBRE DEL TUTOR O ASESOR PAR)
       // ---------------------------------------------------------
+      // CAMPOS DE QUIÉN PARTICIPA, SEGÚN QUIÉN PIDE
+      function camposInvolucrados(usuarioPreseleccionado) {
+        var ayuda = 'font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;';
+        if (rolActual === 'EST') {
+          // Sugerencias: los acompañantes que ya figuran en alguna entrevista
+          var vistos = {};
+          var sugerencias = entrevistas.filter(function(e) {
+            var n = normalizar(e.nombreAcompanante);
+            if (!n || vistos[n]) return false;
+            vistos[n] = true;
+            return true;
+          }).map(function(e) { return '<option value="' + escapar(e.nombreAcompanante) + '"></option>'; }).join('');
+          return '<div><label for="campo-destinatario-solicitud" style="' + ETIQUETA + '">Nombre del tutor o asesor par</label>' +
+            '<input id="campo-destinatario-solicitud" type="text" list="lista-acompanantes-solicitud" autocomplete="off" style="height: 40px !important; ' + CAMPO + '">' +
+            '<datalist id="lista-acompanantes-solicitud">' + sugerencias + '</datalist>' +
+            '<div style="' + ayuda + '">La solicitud queda a nombre de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
+        }
+        // Si se llega con #usuario=<id>, se completan los datos que ya figuran en otra entrevista de ese estudiante
+        var previa = usuarioPreseleccionado ? entrevistas.filter(function(e) { return String(e.usuario) === String(usuarioPreseleccionado); })[0] : null;
+        var tipoPropio = ROLES[rolActual].tipo;
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+            '<div style="flex: 1 1 140px !important;"><label for="campo-dni-solicitud" style="' + ETIQUETA + '">DNI del estudiante</label>' +
+            '<input id="campo-dni-solicitud" type="text" inputmode="numeric" value="' + escapar(previa ? previa.dni : '') + '" style="height: 40px !important; ' + CAMPO + '"></div>' +
+            '<div style="flex: 2 1 220px !important;"><label for="campo-nombre-solicitud" style="' + ETIQUETA + '">Nombre y apellido</label>' +
+            '<input id="campo-nombre-solicitud" type="text" value="' + escapar(previa ? previa.nombreEstudiante : '') + '" style="height: 40px !important; ' + CAMPO + '"></div></div>' +
+            '<div><label for="campo-usuario-solicitud" style="' + ETIQUETA + '">Cuenta del campus del estudiante <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
+            '<input id="campo-usuario-solicitud" type="text" inputmode="numeric" value="' + escapar(usuarioPreseleccionado || '') + '" style="height: 40px !important; ' + CAMPO + '">' +
+            '<div style="' + ayuda + '">Número de usuario de Moodle. Se usa para abrir el detalle del estudiante.</div></div>' +
+            '<div><label for="campo-tipo-solicitud" style="' + ETIQUETA + '">Participa como</label>' +
+            '<select id="campo-tipo-solicitud" style="height: 40px !important; ' + CAMPO + '">' +
+            Object.keys(TIPOS_ACOMPANANTE).map(function(k) { return '<option value="' + k + '"' + (k === tipoPropio ? ' selected' : '') + '>' + TIPOS_ACOMPANANTE[k] + '</option>'; }).join('') + '</select>' +
+            '<div style="' + ayuda + '">La entrevista queda a cargo de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
+      }
+
       function abrirSolicitud(usuarioPreseleccionado) {
-        // Solo acompañamientos vigentes: con uno finalizado ya no se piden entrevistas
-        var visibles = acompanamientosVisibles().filter(estaVigente);
-        var cuerpo = document.getElementById('cuerpo-solicitar-entrevista');
-        if (!visibles.length) {
-          cuerpo.innerHTML = avisoInfo('No tenés estudiantes asignados. Las asignaciones se cargan en la base Acompañamientos.');
-        } else {
-          var opciones = visibles.slice().sort(function(a, b) {
-            return String(a.nombreEstudiante).localeCompare(String(b.nombreEstudiante));
-          }).map(function(a) {
-            var texto = (a.nombreEstudiante || 'DNI ' + a.dni) + (a.materia ? ' · ' + a.materia : '') +
-              (rolActual === 'ADM' ? ' · con ' + nombreAcompanante(a.acompanante) : '');
-            return '<option value="' + escapar(a.rid) + '"' + (String(a.usuario) === String(usuarioPreseleccionado) ? ' selected' : '') + '>' + escapar(texto) + '</option>';
-          }).join('');
-          cuerpo.innerHTML = '<div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
-            '<div><label for="campo-acompanamiento-solicitud" style="' + ETIQUETA + '">Estudiante</label>' +
-            '<select id="campo-acompanamiento-solicitud" style="height: 40px !important; ' + CAMPO + '">' + opciones + '</select>' +
-            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;">Solo estudiantes con acompañamiento vigente.' + (rolActual === 'ADM' ? ' La entrevista queda a cargo de su acompañante.' : '') + '</div></div>' +
+        var esEstudiante = rolActual === 'EST';
+        document.getElementById('cuerpo-solicitar-entrevista').innerHTML = '<div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
+            camposInvolucrados(usuarioPreseleccionado) +
             '<div><label for="campo-fecha-solicitud" style="' + ETIQUETA + '">Fecha y hora propuesta</label>' +
             '<input id="campo-fecha-solicitud" type="datetime-local" min="' + ahora() + '" style="height: 40px !important; ' + CAMPO + '">' +
-            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;">El estudiante puede aceptarla o proponer otra.</div></div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;">' +
+            (esEstudiante ? 'El tutor o asesor par puede aceptarla o proponer otra.' : 'El estudiante puede aceptarla o proponer otra.') + '</div></div>' +
             '<div><label for="campo-motivo-solicitud" style="' + ETIQUETA + '">Motivo</label>' +
-            '<textarea id="campo-motivo-solicitud" rows="3" placeholder="Por ejemplo: riesgo alto en el cierre 2026-2" style="resize: vertical !important; ' + CAMPO + '"></textarea></div>' +
+            '<textarea id="campo-motivo-solicitud" rows="3" placeholder="' + (esEstudiante ? 'Por ejemplo: dificultades con Análisis Matemático I' : 'Por ejemplo: riesgo alto en el cierre 2026-2') +
+            '" style="resize: vertical !important; ' + CAMPO + '"></textarea></div>' +
             '<div id="txt-error-solicitud" style="display: none; color: #910808 !important; font-size: 13px !important;"></div>' +
             '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important;">' +
             boton('cancelar-solicitud', 'Cancelar') + boton('enviar-solicitud', 'Enviar solicitud', 'principal', 'flecha') + '</div></div>';
-        }
         mostrar(document.getElementById('modal-solicitar-entrevista'), true);
         document.getElementById('btn-cerrar-solicitar').focus();
       }
@@ -921,17 +964,54 @@
         mostrar(document.getElementById('modal-solicitar-entrevista'), false);
       }
 
+      // INVOLUCRADOS DE LA SOLICITUD SEGÚN QUIÉN LA PIDE (O UN MENSAJE DE ERROR)
+      function involucradosSolicitud() {
+        if (rolActual === 'EST') {
+          var destinatario = document.getElementById('campo-destinatario-solicitud').value.replace(/\s+/g, ' ').trim();
+          if (!destinatario) return { error: 'Completar el nombre del tutor o asesor par.' };
+          // Si el nombre coincide con un acompañante conocido, la entrevista queda con su cuenta y su tipo
+          var conocido = acompananteConNombre(destinatario);
+          return {
+            dni: '', usuario: usuarioActual(), nombreEstudiante: nombreUsuarioActual(),
+            tipo: conocido ? conocido.tipo : 'tutor', acompanante: conocido ? conocido.acompanante : '',
+            nombreAcompanante: conocido ? conocido.nombreAcompanante : destinatario, origen: 'estudiante', por: 'estudiante'
+          };
+        }
+        var dni = document.getElementById('campo-dni-solicitud').value.replace(/[.\s]/g, '');
+        var nombre = document.getElementById('campo-nombre-solicitud').value.trim();
+        var usuario = document.getElementById('campo-usuario-solicitud').value.trim();
+        if (!/^\d{6,9}$/.test(dni)) return { error: 'DNI: "' + dni + '" debe ser un número de 6 a 9 dígitos, sin puntos.' };
+        if (!nombre) return { error: 'Completar el nombre y apellido del estudiante.' };
+        if (usuario && !/^\d+$/.test(usuario)) return { error: 'Cuenta del campus: "' + usuario + '" debe ser un número.' };
+        return {
+          dni: dni, usuario: usuario, nombreEstudiante: nombre,
+          tipo: document.getElementById('campo-tipo-solicitud').value, acompanante: usuarioActual(), nombreAcompanante: nombreUsuarioActual(),
+          origen: 'tutor', por: 'acompanante'
+        };
+      }
+
       function enviarSolicitud() {
-        var rid = document.getElementById('campo-acompanamiento-solicitud').value;
+        var inv = involucradosSolicitud();
+        if (inv.error) return mostrarError('txt-error-solicitud', inv.error);
         var fecha = document.getElementById('campo-fecha-solicitud').value;
         var motivo = document.getElementById('campo-motivo-solicitud').value.trim();
-        if (!fecha || !motivo) return mostrarError('txt-error-solicitud', 'Completá la fecha propuesta y el motivo.');
-        if (fecha <= ahora()) return mostrarError('txt-error-solicitud', 'La fecha tiene que ser posterior a hoy.');
+        if (!fecha || !motivo) return mostrarError('txt-error-solicitud', 'Completar la fecha propuesta y el motivo.');
+        if (fecha <= ahora()) return mostrarError('txt-error-solicitud', 'La fecha debe ser posterior a hoy.');
+        // Un estudiante no puede tener dos entrevistas activas a la vez (con el mismo u otro acompañante)
+        var activa = entrevistaActivaDe({ dni: inv.dni, usuario: inv.usuario, nombre: inv.nombreEstudiante });
+        if (activa) {
+          return mostrarError('txt-error-solicitud', (rolActual === 'EST' ? 'Ya hay una entrevista en curso' : 'El estudiante ' + inv.nombreEstudiante + ' ya tiene una entrevista en curso') +
+            ' con ' + (activa.nombreAcompanante || 'Usuario ' + activa.acompanante) + ' (' +
+            ((rolActual === 'EST' && TEXTOS_ESTUDIANTE[situacion(activa)]) || ESTADOS[situacion(activa)].texto).toLowerCase() + '). ' +
+            (rolActual === 'EST' ? 'Su estado figura en la tabla.' : 'Se gestiona desde la Agenda.'));
+        }
         contadorNuevas++;
         var nueva = {
-          rid: 'nueva-' + contadorNuevas, nueva: true, acompanamiento: rid, origen: 'tutor', estado: 'solicitada', motivo: motivo,
+          rid: 'nueva-' + contadorNuevas, nueva: true, dni: inv.dni, usuario: inv.usuario, nombreEstudiante: inv.nombreEstudiante,
+          tipo: inv.tipo, acompanante: inv.acompanante, nombreAcompanante: inv.nombreAcompanante,
+          origen: inv.origen, estado: 'solicitada', motivo: motivo,
           solicitud: ahora(), programada: '', realizada: '', resultado: '',
-          propuestas: [{ por: 'acompanante', fecha: fecha, creada: ahora(), mensaje: '' }], acciones: []
+          propuestas: [{ por: inv.por, fecha: fecha, creada: ahora(), mensaje: '' }], acciones: []
         };
         guardarEntrevistaMoodle(nueva).then(function(res) {
           cerrarSolicitud();
@@ -951,9 +1031,8 @@
       // DETALLE DEL ESTUDIANTE (SECCIÓN APARTE)
       // ---------------------------------------------------------
       function abrirDetalle() {
-        var a = acompanamientoDe(abierta);
-        if (!a.usuario) return alert('El estudiante no tiene cuenta del campus cargada en su acompañamiento.');
-        var hash = '#usuario=' + encodeURIComponent(a.usuario);
+        if (!abierta.usuario) return alert('La entrevista no tiene cargada la cuenta del campus del estudiante.');
+        var hash = '#usuario=' + encodeURIComponent(abierta.usuario);
         if (ES_VISTA_LOCAL) window.location.href = URL_DETALLE_LOCAL + hash;
         else if (CMID_DETALLE) window.location.href = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_DETALLE + hash;
         else alert('El detalle del estudiante todavía no está publicado.');
@@ -967,7 +1046,7 @@
         var yo = ROLES[rol].usuario;
         document.getElementById('badge-rol-entrevistas').innerHTML =
           '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
-          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + (ES_VISTA_LOCAL && yo ? ' · ' + escapar(nombreAcompanante(yo)) : '') + chipRol(rol);
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + (ES_VISTA_LOCAL && yo ? ' · ' + escapar(nombreUsuarioActual()) : '') + chipRol(rol);
         var botones = document.querySelectorAll('[data-preview-rol]');
         for (var i = 0; i < botones.length; i++) {
           var activo = botones[i].getAttribute('data-preview-rol') === rol;
@@ -1102,8 +1181,7 @@
 
       function iniciarDatos() {
         return cargarDatos().then(function(d) {
-          acompanamientos = d.acompanamientos;
-          entrevistas = d.entrevistas;
+          entrevistas = d;
           aplicarRol(rolActual);
           var usuario = usuarioDelHash();
           if (usuario) abrirSolicitud(usuario);
