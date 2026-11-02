@@ -10,8 +10,8 @@
   - la herramienta `CriticidadNotas` de la [Página Tools](../../section/utils/tools/content.html) ([guía de Utils](../../section/utils/README.md)).
 - **Estado:**
   - **publicado y probado** el 2026-11-01 con el formulario de Moodle (Tools v4, ver [Prueba hecha](#prueba-hecha));
-  - `CriticidadNotas({ rid })`, para una página propia, está en Tools v5, **solo en local**;
-  - la página propia ([Página de carga](#página-de-carga-scrum-22)), **solo en local** (SCRUM-22).
+  - `CriticidadNotas({ rid })`, para una página propia, está en Tools v5, **publicada el 2026-11-02**;
+  - la página propia ([Página de carga](#página-de-carga-scrum-22)), **publicada el 2026-11-02** (SCRUM-22).
 - **Última actualización:** 2026-11-01
 
 ## Qué pasa al guardar una nota
@@ -57,7 +57,7 @@ conTools(function (Tools) {
 
 ### Página de carga (SCRUM-22)
 
-Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carga_notas_primero/content.html), una página con el sistema de diseño para el rol EST. **Solo en local**, todavía sin lugar en Moodle (`paginas.carga_notas_primero` en `moodle.config.json` vale `null`).
+Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carga_notas_primero/content.html), una página con el sistema de diseño para el rol EST. **Publicada el 2026-11-02** como Página "Carga de notas de 1.er año" (cmid 60209, `paginas.carga_notas_primero`) en la subsección Hub, visible en el listado. Los docentes ven todas las notas desde la tarjeta "Notas de 1.er año" del Hub, que abre la base.
 
 **Qué muestra:**
 - **Nueva nota:** Materia, Instancia, Fecha del parcial, Condición y Nota. El DNI y el nombre salen de la cuenta y no se editan.
@@ -93,7 +93,7 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 - **Edición real en el campus** (con confirmación): la misma nota (rid 20154) pasó a nota 8 y fecha 2026-10-28 en 0,7 s. Moodle conservó el rid, actualizó los campos y no creó otra entrada (la base siguió con 15 notas).
 - **Revisión de Valentino con Playwright** (local y campus simulado con Tools v5 real): guardado, edición, ausente, recuperatorios, filtro por DNI y llamada a `CriticidadNotas({ rid })`. Corrigió el separador decimal de la nota.
 - En local, después de la revisión: instancias por materia (Física A con Parcial 3), recuperatorio con el parcial que recupera (obligatorio, guardado en Recupera_a y editable), dos recuperatorios de parciales distintos en el mismo período, recursada en otro período guardada como nota nueva, y rechazados el parcial repetido y el segundo recuperatorio del mismo parcial en el mismo período. Sin errores de consola.
-- **Falta probar en el campus real:** la llamada a `CriticidadNotas`, que necesita Tools v5 publicada.
+- **Prueba de punta a punta en el campus (2026-11-02)**, con la página publicada, Tools v5 y la cuenta de Luca Zuanetti con rol Estudiante: guardó Análisis Matemático I, Parcial 1, 2026-10-20, 6.5, Aprobado como **rid 20213**, con el DNI de la cuenta y **pendiente de aprobación**. `CriticidadNotas({ rid })` agregó su entrada en Criticidad (`fuente` notas_1ro, `rid_fuente` 20213, período 2026-2, índice 10, verde), que coincide con el cálculo de las dos notas del estudiante en el período.
 
 ## Reglas de los campos
 
@@ -112,9 +112,9 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 
 ## Antes de abrirlo a los estudiantes
 
-1. **Configurar la base con "Requiere aprobación"** y no aprobar entradas. **Hoy no la tiene:** con el rol de estudiante se ven las notas de todos, y una nota cargada por un estudiante la ven los demás. Con la aprobación, cada estudiante ve solo las suyas y el equipo sigue viendo todas. Es un cambio en Moodle y requiere confirmación.
+1. **Configurar la base con "Requiere aprobación"** y no aprobar entradas. **Hecho el 2026-11-02** y probado con dos cuentas con el cambio de rol a Estudiante: cada una ve su nota pendiente y no la de la otra; los docentes ven todas. Las entradas cargadas antes quedaron aprobadas, así que las ve cualquier estudiante hasta que se reemplacen los datos de prueba.
 2. **Completar Carga_Materias_Primero** con las 7 materias de 1.er año del Plan 2024. Hoy tiene Análisis Matemático I, Álgebra I- B, Fundamentos de Química y Análisis Matemático II. **Faltan Álgebra II, Física A y Fundamentos de la Programación:** sin ellas, sus notas cuentan como no críticas, con umbral 4.
-3. **Elegir la opción A o la B.** La B necesita publicar la Página Tools v5 (con confirmación).
+3. **Elegir la opción A o la B.** Se eligió la B: la Página Tools v5 y la página propia se publicaron el 2026-11-02.
 4. **Actualizar `PERIODO_ACTUAL`** en Tools si cambia el cuatrimestre.
 5. **Limpiar los datos de prueba** de la base. Tiene personas que no son del equipo (Carlos López, Juan Pérez…), contra la regla 5 de [`RULES.md`](../../RULES.md), y la nota de prueba del 2026-11-01 (rid 20152).
 
