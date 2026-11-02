@@ -255,6 +255,13 @@
         return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
       }
 
+      // FECHA DE UN INSTANTE (MILISEGUNDOS) EN LA HORA LOCAL: toISOString daría el día en UTC (después de las 21 h, el siguiente)
+      function fechaDeTiempo(t) {
+        var d = new Date(t);
+        if (!isFinite(d.getTime())) return '';
+        return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+      }
+
       // INICIO APROXIMADO DE UN PERÍODO AAAA-n (1.er cuatrimestre: marzo; 2.º: agosto)
       function inicioDePeriodo(periodo) {
         var m = String(periodo || '').match(/^(\d{4})-([12])$/);
@@ -646,13 +653,13 @@
             var forma = k === 'notas'
               ? '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#ffffff" stroke="' + s.color + '" stroke-width="2.5"/>'
               : '<rect x="' + (cx - 5) + '" y="' + (cy - 5) + '" width="10" height="10" fill="#ffffff" stroke="' + s.color + '" stroke-width="2.5"/>';
-            svg += '<g data-punto data-serie="' + k + '"><title>' + escapar(fechaVisible(new Date(p.t).toISOString()) + ' · ' + p.texto + ' · índice ' + p.valor) + '</title>' + forma + '</g>';
+            svg += '<g data-punto data-serie="' + k + '"><title>' + escapar(fechaDeTiempo(p.t) + ' · ' + p.texto + ' · índice ' + p.valor) + '</title>' + forma + '</g>';
           });
         });
         // Marcas de los estados asignados (rombo en el centro de su banda)
         marcas.forEach(function(p) {
           var cx = x(p.t), cy = y(p.valor);
-          svg += '<g data-punto data-serie="asignado"><title>' + escapar(fechaVisible(new Date(p.t).toISOString()) + ' · Asignado: ' + NIVELES[p.nivel].texto + ' · ' + p.texto) + '</title>' +
+          svg += '<g data-punto data-serie="asignado"><title>' + escapar(fechaDeTiempo(p.t) + ' · Asignado: ' + NIVELES[p.nivel].texto + ' · ' + p.texto) + '</title>' +
             '<line x1="' + cx + '" x2="' + cx + '" y1="' + m.a + '" y2="' + (H - m.b) + '" stroke="#0b0e14" stroke-width="1" stroke-dasharray="2 3"/>' +
             '<rect x="' + (cx - 6) + '" y="' + (cy - 6) + '" width="12" height="12" transform="rotate(45 ' + cx + ' ' + cy + ')" fill="' + NIVELES[p.nivel].punto + '" stroke="#0b0e14" stroke-width="2"/></g>';
         });
@@ -730,7 +737,7 @@
             '<div style="flex: 1 1 auto !important; min-width: 0 !important;">' +
             '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px 8px !important;"><span style="font-weight: 500 !important;">' + escapar(i.titulo) + '</span>' + i.extra.join('') + '</div>' +
             (i.texto ? '<div style="overflow-wrap: anywhere !important;">' + escapar(i.texto) + '</div>' : '') + '</div>' +
-            '<div style="flex: 0 0 auto !important; font-size: 12px !important; color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (i.t ? fechaVisible(new Date(i.t).toISOString()) : '—') + '</div></div>';
+            '<div style="flex: 0 0 auto !important; font-size: 12px !important; color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (i.t ? fechaDeTiempo(i.t) : '—') + '</div></div>';
         }).join('');
         return filtros + (lista || '<div style="color: #47536b !important;">Sin actividades de este tipo.</div>');
       }
@@ -767,7 +774,7 @@
             var cambio = c.quitado ? '<span style="font-weight: 500 !important;">Quitado</span>' :
               (c.desde ? '<span style="opacity: 0.6 !important;">' + chipNivel(c.desde) + '</span>' : '') +
               (c.desde ? '<span style="color: #47536b !important; display: inline-flex !important; vertical-align: middle !important; margin: 0 2px !important;">' + icono('flecha', 16) + '</span>' : '') + chipNivel(c.hasta);
-            return '<tr><td style="' + td + ' padding-left: 12px !important; white-space: nowrap !important; font-variant-numeric: tabular-nums !important;">' + fechaVisible(new Date(c.t).toISOString()) + '</td>' +
+            return '<tr><td style="' + td + ' padding-left: 12px !important; white-space: nowrap !important; font-variant-numeric: tabular-nums !important;">' + fechaDeTiempo(c.t) + '</td>' +
               '<td style="' + td + '">' + chipNeutro(c.origen) + '</td>' +
               '<td style="' + td + ' white-space: nowrap !important;"><span style="display: inline-flex !important; align-items: center !important; gap: 4px !important;">' + cambio + '</span></td>' +
               '<td style="' + td + '"><div style="font-weight: 500 !important;">' + escapar(c.quien) + '</div><div style="color: #47536b !important;">' + escapar(c.motivo) + '</div></td></tr>';
