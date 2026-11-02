@@ -1,9 +1,9 @@
 {
   "clave": "carga_materias_primero",
-  "nombre": "Carga_Materias_Primero",
+  "nombre": "CargaMateriasPrimero",
   "descripcion": "Materias de 1.er año con su marca de crítica y el umbral de nota que usa el listado de criticidad.",
-  "subseccion": "Hub",
-  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas).",
+  "subseccion": "Database",
+  "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). El 2026-11-02 se movió de la subsección Hub a Database y se renombró (antes Carga_Materias_Primero), sin cambiar el cmid ni el dataid.",
   "plantillas": "data/moodle/plantillas/carga_materias_primero/",
   "campos": [
     { "nombre": "Materia", "tipo": "text", "requerido": true, "descripcion": "" },

@@ -83,14 +83,14 @@
       "cmid": 59521,
       "dataid": 117,
       "definicion": "data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json",
-      "subseccion": "Hub",
+      "subseccion": "Database",
       "importada": "2026-10-18"
     },
     "carga_materias_primero": {
       "cmid": 59522,
       "dataid": 118,
       "definicion": "data/moodle/BASE_CARGA_MATERIAS_PRIMERO.json",
-      "subseccion": "Hub",
+      "subseccion": "Database",
       "importada": "2026-10-18"
     },
     "materias": {
