@@ -205,10 +205,11 @@
         mostrar($('aviso-estado-info'), true, 'block');
       }
 
-      // DIRECCIÓN DE MI TRAVESÍA (null SI LA PÁGINA TODAVÍA NO ESTÁ PUBLICADA)
+      // DIRECCIÓN DE MI TRAYECTORIA (null SI TODAVÍA NO ESTÁ PUBLICADA).
+      // Es un Área de texto y medios, como el Hub: label/view.php lleva a la sección del curso donde se ve, en su posición
       function urlVista() {
         if (!EN_MOODLE) return URL_VISTA_LOCAL + '#usuario=' + estado.usuario.id;
-        return CMID_VISTA_ESTUDIANTE ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_VISTA_ESTUDIANTE : null;
+        return CMID_VISTA_ESTUDIANTE ? M.cfg.wwwroot + '/mod/label/view.php?id=' + CMID_VISTA_ESTUDIANTE : null;
       }
 
       // ---------------------------------------------------------
