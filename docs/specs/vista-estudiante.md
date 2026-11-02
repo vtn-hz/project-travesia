@@ -18,7 +18,7 @@
 |---|---|---|
 | Datos personales | Van en la base **Estudiantes**, una entrada por estudiante que se edita. No son una encuesta | No deben generar historial en Respuestas ni disparar criticidad |
 | Dónde se cargan | En una **Página propia de Moodle** (Información personal), no dentro de Mi Trayectoria | Pedido del equipo |
-| Encuesta Inicial | **No cambia** | Se decidió separar los datos personales en lugar de modificarla |
+| Encuesta Inicial | **No cambia** | Se decidió separar los datos personales en lugar de modificarla. Pregunta abierta: reemplazarla por la Información personal ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md)) |
 | Tramo | Campo `es_primer_anio`. Sale de "¿Cursa o aprobó Proyecto de Ingeniería Industrial I?": No → `si` (1.er año); Sí → `no` (2.º año en adelante) | Criterio de la [spec de la carga de notas](carga-parciales-primero.md); el campo nombra el tramo y no la pregunta |
 | Ingeniería Industrial | La primera vez, antes del formulario: "¿Es estudiante de Ingeniería Industrial?". Con "No" se muestra que por el momento el sistema está limitado a Ingeniería Industrial y no se guarda nada | Filtro de entrada; no hace falta guardarla |
 | Nombre de la sección | **Mi Trayectoria** (la carpeta sigue siendo `section/vista_estudiante`) | Pedido del equipo |
