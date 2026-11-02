@@ -1,0 +1,745 @@
+<!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM, GES, TUT) · DESTINO: TARJETA "INDICADORES DE COHORTE" DEL HUB · SIN PUBLICAR -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- FUENTES: docs/context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md, requerimientos v1.1, base Encuestas (versiones vigentes, leída el 2026-11-01),
+     CargaMateriasPrimero, Tools v5 (cortes del semáforo), docs/models y ADR-007. Lo que queda fuera: docs/models/INDICADORES_NO_IMPLEMENTADOS.md -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="indicadores-cohorte"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <nolink>
+
+  <!-- ENCABEZADO -->
+  <div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>
+      <h3 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Indicadores de Cohorte</h3>
+      <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">Qué mide cada indicador, cómo se calcula, de dónde salen sus datos y en qué estado está.</p>
+    </div>
+    <div id="badge-rol-indicadores"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO: VERSIÓN PROVISORIA -->
+  <div style="display: flex !important; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Versión provisoria.</b> Muestra las definiciones y los cálculos, sin valores por cohorte. Los puntos y umbrales son los vigentes en Moodle al 2026-11-01 y son provisorios. Es de solo lectura: un cambio de puntos se hace cargando una versión nueva en la base Encuestas.</span>
+  </div>
+
+  <!-- PESTAÑAS -->
+  <div id="tabs-indicadores" role="tablist" style="display: flex !important; flex-wrap: wrap !important; gap: 4px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important; margin-bottom: 20px !important;"></div>
+
+  <!-- CONTENIDO -->
+  <div id="contenido-indicadores"></div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-indicadores-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-indicadores-style';
+        styleEl.innerHTML =
+          '#indicadores-cohorte > nolink { display: block; }' +
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      // En Moodle, ENCUESTAS saldría de la base Encuestas (versión vigente de cada código) con LeerBase,
+      // y CORTES de Tools (hoy CORTES_SEMAFORO no se exporta: haría falta exponerlo en Tools v5)
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM. Los tres roles ven lo mismo: la vista es de solo lectura
+      var ROL_INICIAL = 'ADM';
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var ROLES = {
+        ADM: { nombre: 'Administrador' },
+        GES: { nombre: 'Gestor Dpto. Industrial' },
+        TUT: { nombre: 'Tutor / Entrevistador' }
+      };
+      var CORTES = { amarillo: 40, rojo: 70 };
+      var PESOS_ICM = { FP: 0.35, FR: 0.35, FA: 0.15, FAC: 0.15 };
+      var PESOS_ICG = { promedio: 0.6, maximo: 0.4 };
+
+      // COPIA DE LA BASE ENCUESTAS (solo lo que puntúa o se usa en una regla)
+      var ENCUESTAS = {
+        inicial: {
+          titulo: 'Encuesta Inicial', version: 2, puntajeMaximo: 30, porPeriodo: false,
+          preguntas: [
+            { variable: 'creditos_aprobados', pregunta: 'Los créditos obtenidos actualmente son:', max: 70, regla: 'avance_curricular', activa: false },
+            { variable: 'trabaja', pregunta: '¿Trabaja actualmente?', max: 10, opciones: [['Si', 10], ['No', 0]] },
+            { variable: 'inicio_laboral', pregunta: '¿En qué momento de la carrera comenzó su actividad laboral? (solo si trabaja)', max: 20,
+              opciones: [['Antes de ingresar a la carrera', 20], ['En 1.º año', 20]] }
+          ]
+        },
+        cuatrimestral: {
+          titulo: 'Encuesta Cuatrimestral', version: 3, puntajeMaximo: 70, porPeriodo: true,
+          preguntas: [
+            { variable: 'creditos_aprobados', pregunta: 'Los créditos obtenidos actualmente son:', max: 30, regla: 'avance_curricular', activa: false },
+            { variable: 'progreso_proyecto_final', pregunta: '¿En qué estado se encuentra el Proyecto Final de Grado (PFG)?', max: 10,
+              opciones: [['No aplica por el nivel', 0], ['No iniciado', 10], ['Tema propuesto sin avance', 7], ['En desarrollo activo', 3], ['Finalizado, pendiente de defensa', 0]] },
+            { variable: 'trabaja', pregunta: '¿Trabaja actualmente?', max: 5, opciones: [['Si', 5], ['No', 0]] },
+            { variable: 'inicio_laboral', pregunta: '¿En qué momento de la carrera comenzó su actividad laboral? (solo si trabaja)', max: 10,
+              opciones: [['Antes de ingresar', 10], ['En 1.º año', 10], ['En 2.º año', 10], ['En 3.º año', 7], ['En 4.º año', 7], ['En 5.º año', 4], ['Solo adeudando el trabajo final', 4]] },
+            { variable: 'materias_cuatrimestre', pregunta: '¿Qué materias cursó el cuatrimestre anterior? (con primera vez y dificultad de cada una)', max: 35, regla: 'cursada', activa: true },
+            { variable: 'avance_percibido', pregunta: '¿Cómo define su situación actual de avance en el cursado?', max: 10,
+              opciones: [['Al día', 0], ['Demorado', 5], ['Muy demorado', 10]] }
+          ]
+        }
+      };
+
+      // REGLA "cursada" DE LA CUATRIMESTRAL (base Encuestas → regla de materias_cuatrimestre)
+      var CURSADA = { cantidad: [35, 10, 5], recursada: [8, 7], dificultadMax: 10 };
+
+      // MATERIAS CRÍTICAS DE 1.ER AÑO (CargaMateriasPrimero, leída el 2026-11-01)
+      var MATERIAS_PRIMERO = [
+        { nombre: 'Análisis Matemático I', critica: true, umbral: 4.5 },
+        { nombre: 'Álgebra I- B', critica: true, umbral: 6 },
+        { nombre: 'Análisis Matemático II', critica: true, umbral: 5 },
+        { nombre: 'Fundamentos de Química', critica: false, umbral: null }
+      ];
+
+      // CRÉDITOS ESPERADOS DEL PLAN 2024 (propuesta en análisis, sin aplicar)
+      var CREDITOS_ESPERADOS = [14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
+
+      // EJEMPLO DE ÍNDICE TOTAL: INTEGRANTE DE ZHAKYZ CON DATOS FICTICIOS
+      var EJEMPLO_TOTAL = {
+        nombre: 'Nahuel Spikerman',
+        eventos: [
+          { fecha: '2026-09-12', fuente: 'Notas de 1.er año', grupo: 'notas', indice: 22, detalle: 'Carga del Parcial 1 de Álgebra I- B' },
+          { fecha: '2026-10-03', fuente: 'Encuesta Cuatrimestral', grupo: 'encuestas', indice: 64, detalle: 'Envío del período 2026-2' },
+          { fecha: '2026-10-28', fuente: 'Notas de 1.er año', grupo: 'notas', indice: 41, detalle: 'Carga del Parcial 2 de Análisis Matemático I' }
+        ]
+      };
+
+      // ---------------------------------------------------------
+      // CATÁLOGO DE INDICADORES
+      // ---------------------------------------------------------
+      // Estados: en_uso (se calcula en Moodle) · disponible (los datos ya existen, falta la vista) · analisis (definido, con una decisión abierta)
+      //          (los indicadores muy difíciles de implementar en Moodle quedan fuera: ver INDICADORES_DIFICILES_MOODLE.md)
+      var ESTADOS = {
+        en_uso: { texto: 'En uso', punto: '#026bd4', fondo: '#f0f7ff', borde: '#cce4ff', color: '#0a4a8f' },
+        disponible: { texto: 'Datos disponibles', punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' },
+        analisis: { texto: 'En análisis', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
+      };
+
+      var BLOQUES = [
+        { id: 'trayectoria', titulo: 'Seguimiento de trayectoria', ayuda: 'Alerta y monitoreo continuo: detectar el riesgo antes de que se convierta en abandono.' },
+        { id: 'cuellos', titulo: 'Cuellos de botella', ayuda: 'Por qué ocurre el abandono o el rezago: qué materias y qué momentos concentran el riesgo.' },
+        { id: 'criticidad', titulo: 'Criticidad individual', ayuda: 'Índice de 0 a 100 de cada estudiante y su semáforo. Es el que alimenta el Tablero de Criticidad.' }
+      ];
+
+      var INDICADORES = [
+        // Seguimiento de trayectoria
+        { bloque: 'trayectoria', nombre: 'Avance curricular acumulado', estado: 'disponible',
+          formula: 'avance = créditos aprobados ÷ 223 × 100   (Plan 2024; por estudiante y promedio por cohorte)',
+          datos: 'Créditos y materias aprobadas del cuadro de créditos de las encuestas (base Respuestas). Mejor predictor individual: debajo del 38,97 % al 6.º cuatrimestre el riesgo es crítico.',
+          fuente: 'García Lambert et al. (2014)' },
+        { bloque: 'trayectoria', nombre: 'Índice de ritmo', estado: 'analisis',
+          formula: 'ritmo = avance real ÷ avance esperado según los cuatrimestres desde el ingreso\nal día · demorado · muy demorado (bandas a definir)',
+          datos: 'Mismos datos que el avance curricular, más el ingreso. Falta decidir si se mide en créditos o en materias y cómo se cuenta el tiempo. El estudiante también lo declara en la Cuatrimestral (avance percibido).',
+          fuente: 'Chiecher y Moreno (2018)' },
+        { bloque: 'trayectoria', nombre: 'Ubicación en el plan', estado: 'analisis',
+          formula: 'T = cuatrimestres desde el ingreso · A = cuatrimestres completos de carga aprobada\ndiferencia = mín(T, 10) − A · pendientes anteriores y antigüedad de la deuda',
+          datos: 'Materias aprobadas por código (cuadro de créditos) e ingreso. Es un modelo del equipo, descriptivo, todavía sin aplicar.',
+          fuente: 'Modelo Ubicación y atraso (equipo)' },
+        // Cuellos de botella
+        { bloque: 'cuellos', nombre: 'Materias críticas por correlativas', estado: 'disponible',
+          formula: 'S(m) = Σ w(d) sobre las materias d que traba m · w = 2 si d es del cuatrimestre actual o anterior; si no, 1 ÷ distancia\nm es crítica si S(m) ≥ 1',
+          datos: 'Plan 2024 y sus correlativas (base Materias, campo desbloquea). Es un modelo del equipo, todavía sin vista.',
+          fuente: 'Modelo Criticidad por correlativas (equipo), a partir de Paz (2022)' },
+        { bloque: 'cuellos', nombre: 'Dificultad y recursado por materia', estado: 'disponible',
+          formula: '% de recursado = estudiantes que la recursan ÷ estudiantes que la cursaron × 100\ndificultad = promedio de 1 a 5 declarado',
+          datos: 'Selector de materias de la Cuatrimestral (base Respuestas): cada materia cursada con primera vez y dificultad.',
+          fuente: 'Malbernat et al. (2024/2025); García Lambert et al. (2014)' },
+        // Criticidad individual
+        { bloque: 'criticidad', nombre: 'Índice de las encuestas', estado: 'en_uso', detalle: 'encuestas',
+          formula: 'índice = puntos obtenidos ÷ puntaje máximo de la versión × 100',
+          datos: 'Cada envío de la Encuesta Inicial o Cuatrimestral, con los puntos de la base Encuestas.', fuente: 'Modelo Puntaje de criticidad de las encuestas · ADR-007' },
+        { bloque: 'criticidad', nombre: 'Índice de las notas de 1.er año (ICm e ICG)', estado: 'en_uso', detalle: 'notas',
+          formula: 'ICm = (0,35 FP + 0,35 FR + 0,15 FA + 0,15 FAC) × 100 · ICG = 0,6 promedio + 0,4 máximo',
+          datos: 'Notas que carga cada estudiante en CargaParcialesPrimero y materias críticas de CargaMateriasPrimero.', fuente: 'Modelo Índice de las notas de 1.er año (provisorio)' },
+        { bloque: 'criticidad', nombre: 'Índice total y semáforo', estado: 'en_uso', detalle: 'total',
+          formula: 'índice total = promedio del último índice de notas y de encuestas del período\nverde < 40 ≤ amarillo < 70 ≤ rojo',
+          datos: 'Base Criticidad: una entrada por evento. El estado asignado por un tutor se muestra junto al calculado.', fuente: 'ADR-007' }
+      ];
+
+      var PESTANAS = [
+        { id: 'resumen', titulo: 'Resumen', icono: 'tablero' },
+        { id: 'trayectoria', titulo: 'Trayectoria', icono: 'indicadores' },
+        { id: 'cuellos', titulo: 'Cuellos de botella', icono: 'plan' },
+        { id: 'criticidad', titulo: 'Criticidad individual', icono: 'estudiantes' },
+        { id: 'revision', titulo: 'En revisión', icono: 'alerta' }
+      ];
+      var SUBVISTAS_CRITICIDAD = [
+        { id: 'semaforo', titulo: 'Semáforo y registro' },
+        { id: 'encuestas', titulo: 'Encuestas (2.º año en adelante)' },
+        { id: 'notas', titulo: 'Notas de 1.er año' },
+        { id: 'total', titulo: 'Índice total y estado asignado' }
+      ];
+      var pestanaActual = 'resumen';
+      var subCriticidad = 'semaforo';
+      var encuestaActual = 'cuatrimestral';
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — .skills/diseno-ui/iconos.js)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        tablero: '<path d="m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/><path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>',
+        encuestas: '<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>',
+        reportes: '<path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>',
+        estudiantes: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        flecha: '<path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>',
+        indicadores: '<path d="M21 8c-1.45 0-2.26 1.44-1.93 2.51l-3.55 3.56c-.3-.09-.74-.09-1.04 0l-2.55-2.55C12.27 10.45 11.46 9 10 9c-1.45 0-2.27 1.44-1.93 2.52l-4.56 4.55C2.44 15.74 1 16.55 1 18c0 1.1.9 2 2 2 1.45 0 2.26-1.44 1.93-2.51l4.55-4.56c.3.09.74.09 1.04 0l2.55 2.55C12.73 16.55 13.54 18 15 18c1.45 0 2.27-1.44 1.93-2.52l3.56-3.55c1.07.33 2.51-.48 2.51-1.93 0-1.1-.9-2-2-2z"/>',
+        plan: '<path d="M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3h7zM7 9H4V5h3v4zm10 6h3v4h-3v-4zm0-10h3v4h-3V5z"/>',
+        egreso: '<path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // ESTILOS COMPARTIDOS (TOKENS DE diseno-ui)
+      // ---------------------------------------------------------
+      var EST = {
+        tarjeta: 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important; margin-bottom: 16px !important; animation: zk-aparecer 0.25s ease both !important;',
+        h4: 'margin: 0 0 4px 0 !important; font-size: 16px !important; font-weight: 600 !important; color: #0b0e14 !important; line-height: 1.5 !important;',
+        ayuda: 'margin: 0 0 12px 0 !important; font-size: 12px !important; color: #47536b !important; line-height: 1.5 !important;',
+        p: 'margin: 0 0 8px 0 !important; font-size: 14px !important; color: #0b0e14 !important; line-height: 1.5 !important;',
+        tabla: 'width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; margin: 0 !important;',
+        th: 'text-align: left !important; background-color: #f5f6fa !important; color: #47536b !important; font-weight: 500 !important; padding: 8px 12px !important; border: 0 !important;',
+        td: 'padding: 8px 12px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; vertical-align: top !important; color: #0b0e14 !important;',
+        formula: 'display: block !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 10px 14px !important; font-family: Consolas, Menlo, monospace !important; font-size: 13px !important; color: #0b0e14 !important; margin: 8px 0 12px 0 !important; white-space: pre-wrap !important;',
+        input: 'height: 36px !important; padding: 0 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #fcfcfc !important; font-family: inherit !important; font-size: 13px !important; color: #0b0e14 !important; box-sizing: border-box !important; max-width: 100% !important;',
+        label: 'display: block !important; font-size: 12px !important; color: #47536b !important; margin-bottom: 4px !important;',
+        fuente: 'display: flex !important; align-items: center !important; gap: 6px !important; font-size: 12px !important; color: #47536b !important; margin-top: 8px !important;'
+      };
+
+      var SEMAFORO = {
+        rojo: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808', nombre: 'Rojo · criticidad alta' },
+        amarillo: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', nombre: 'Amarillo · riesgo moderado' },
+        verde: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', nombre: 'Verde · riesgo bajo' },
+        neutro: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', texto: '#566481', nombre: 'Sin calcular' }
+      };
+
+      // ---------------------------------------------------------
+      // UTILIDADES DE PRESENTACIÓN
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // CHIP CON PUNTO + TEXTO (NUNCA SOLO COLOR)
+      function chip(estado, texto) {
+        var s = SEMAFORO[estado];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + s.borde + ' !important; background-color: ' + s.fondo + ' !important; color: ' + s.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + s.punto + ' !important;"></span>' + escapar(texto || s.nombre) + '</span>';
+      }
+
+      function chipNeutro(texto) {
+        return '<span style="display: inline-flex !important; align-items: center !important; height: 22px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid #dadee7 !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' + escapar(texto) + '</span>';
+      }
+
+      function semaforoDe(indice) {
+        if (indice === null || indice === undefined || isNaN(indice)) return 'neutro';
+        return indice >= CORTES.rojo ? 'rojo' : indice >= CORTES.amarillo ? 'amarillo' : 'verde';
+      }
+
+      function tarjeta(titulo, ayuda, contenido, fuente) {
+        return '<div style="' + EST.tarjeta + '">' +
+          '<h4 style="' + EST.h4 + '">' + escapar(titulo) + '</h4>' +
+          (ayuda ? '<p style="' + EST.ayuda + '">' + ayuda + '</p>' : '') + contenido +
+          (fuente ? '<div style="' + EST.fuente + '">' + icono('info', 14) + '<span>Fuente: ' + fuente + '</span></div>' : '') +
+          '</div>';
+      }
+
+      function tabla(encabezados, filas) {
+        return '<div style="overflow-x: auto !important;"><table style="' + EST.tabla + '"><thead><tr>' +
+          encabezados.map(function(h) { return '<th style="' + EST.th + '">' + h + '</th>'; }).join('') +
+          '</tr></thead><tbody>' + filas.map(function(f) {
+            return '<tr>' + f.map(function(c) { return '<td style="' + EST.td + '">' + c + '</td>'; }).join('') + '</tr>';
+          }).join('') + '</tbody></table></div>';
+      }
+
+      function redondear(n, d) {
+        var f = Math.pow(10, d || 0);
+        return Math.round(n * f) / f;
+      }
+
+      // ---------------------------------------------------------
+      // BARRA DEL SEMÁFORO (0 A 100)
+      // ---------------------------------------------------------
+      function barraSemaforo(marca) {
+        var a = CORTES.amarillo, r = CORTES.rojo;
+        var marcador = (marca === null || marca === undefined) ? '' :
+          '<div style="position: absolute !important; left: calc(' + marca + '% - 1px) !important; top: -6px !important; width: 2px !important; height: 24px !important; background-color: #0b0e14 !important;"></div>';
+        return '<div style="position: relative !important; margin: 8px 0 4px 0 !important;">' +
+          '<div style="display: flex !important; height: 12px !important; border-radius: 999px !important; overflow: hidden !important;">' +
+          '<div style="width: ' + a + '% !important; background-color: #52bc52 !important;"></div>' +
+          '<div style="width: ' + (r - a) + '% !important; background-color: #c2940a !important;"></div>' +
+          '<div style="width: ' + (100 - r) + '% !important; background-color: #c20a0a !important;"></div>' +
+          '</div>' + marcador + '</div>' +
+          '<div style="position: relative !important; height: 16px !important; font-size: 12px !important; color: #47536b !important;">' +
+          '<span style="position: absolute !important; left: 0 !important;">0</span>' +
+          '<span style="position: absolute !important; left: calc(' + a + '% - 8px) !important;">' + a + '</span>' +
+          '<span style="position: absolute !important; left: calc(' + r + '% - 8px) !important;">' + r + '</span>' +
+          '<span style="position: absolute !important; right: 0 !important;">100</span></div>';
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: RESUMEN
+      // ---------------------------------------------------------
+      function paso(numero, titulo, texto) {
+        return '<div style="flex: 1 1 200px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 14px !important; box-sizing: border-box !important;">' +
+          '<div style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; font-size: 12px !important; font-weight: 600 !important; color: #47536b !important; margin-bottom: 8px !important;">' + numero + '</div>' +
+          '<div style="font-size: 14px !important; font-weight: 600 !important; margin-bottom: 4px !important;">' + titulo + '</div>' +
+          '<div style="font-size: 13px !important; color: #47536b !important; line-height: 1.5 !important;">' + texto + '</div></div>';
+      }
+
+      // CHIP DE ESTADO DE UN INDICADOR (PUNTO + TEXTO)
+      function chipEstado(estado) {
+        var s = ESTADOS[estado];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + s.borde + ' !important; background-color: ' + s.fondo + ' !important; color: ' + s.color + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + s.punto + ' !important;"></span>' + s.texto + '</span>';
+      }
+
+      function indicadoresDe(bloque) {
+        return INDICADORES.filter(function(i) { return i.bloque === bloque; });
+      }
+
+      // TARJETA DE UN INDICADOR: DEFINICIÓN, CÁLCULO, DATOS Y ESTADO
+      function tarjetaIndicador(ind) {
+        var verDetalle = ind.detalle ? '<button data-sub="' + ind.detalle + '" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid #dadee7; border-radius: 8px; background-color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 500; color: #0b0e14; margin-top: 8px;">ver el cálculo completo' + icono('flecha', 16) + '</button>' : '';
+        return '<div style="' + EST.tarjeta + '">' +
+          '<div style="display: flex !important; justify-content: space-between !important; align-items: flex-start !important; gap: 12px !important; flex-wrap: wrap !important;">' +
+          '<h4 style="' + EST.h4 + '">' + escapar(ind.nombre) + '</h4>' + chipEstado(ind.estado) + '</div>' +
+          '<code style="' + EST.formula + '">' + escapar(ind.formula) + '</code>' +
+          '<p style="' + EST.p + ' font-size: 13px !important;"><b style="font-weight: 600 !important;">Datos.</b> ' + escapar(ind.datos) + '</p>' +
+          '<div style="' + EST.fuente + '">' + icono('info', 14) + '<span>' + escapar(ind.fuente) + '</span></div>' + verDetalle + '</div>';
+      }
+
+      function vistaBloque(id) {
+        var b = BLOQUES.filter(function(x) { return x.id === id; })[0];
+        return '<p style="' + EST.ayuda + ' font-size: 13px !important; margin-bottom: 16px !important;">' + escapar(b.ayuda) + '</p>' +
+          indicadoresDe(id).map(tarjetaIndicador).join('');
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: RESUMEN (CATÁLOGO)
+      // ---------------------------------------------------------
+      function vistaResumen() {
+        var cuenta = {};
+        INDICADORES.forEach(function(i) { cuenta[i.estado] = (cuenta[i.estado] || 0) + 1; });
+        var totales = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-bottom: 16px !important;">' +
+          Object.keys(ESTADOS).map(function(e) {
+            return '<div style="flex: 1 1 110px !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 12px !important;">' +
+              '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important;">' + (cuenta[e] || 0) + '</div>' + chipEstado(e) + '</div>';
+          }).join('') + '</div>';
+        var catalogo = BLOQUES.map(function(b) {
+          return tarjeta(b.titulo, escapar(b.ayuda), tabla(['Indicador', 'Datos de entrada', 'Estado'], indicadoresDe(b.id).map(function(i) {
+            return ['<button data-tab="' + b.id + '" style="cursor: pointer; border: 0; background: transparent; padding: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #026bd4; text-align: left;">' + escapar(i.nombre) + '</button>',
+              '<span style="font-size: 12px !important; color: #47536b !important;">' + escapar(i.datos.split('. ')[0]) + '.</span>', chipEstado(i.estado)];
+          })));
+        }).join('');
+        var cohorte = tarjeta('Qué es una cohorte', 'Todos los indicadores de grupo se calculan por cohorte, nunca por año calendario: mezclar generaciones distorsiona los resultados entre 10 y 30 puntos.',
+          '<p style="' + EST.p + '">Una cohorte es el par <b style="font-weight: 600 !important;">año y cuatrimestre de ingreso</b> (por ejemplo, 2026-1 para marzo y 2026-2 para agosto). Los tiempos se cuentan en cuatrimestres desde el ingreso.</p>',
+          'Documento de indicadores de trayectoria y terminalidad · requerimiento de almacenamiento de cohorte');
+        var leyenda = tarjeta('Estados', '', tabla(['Estado', 'Qué significa'], [
+          [chipEstado('en_uso'), 'Se calcula hoy en Moodle y se guarda en la base Criticidad.'],
+          [chipEstado('disponible'), 'Los datos ya se guardan en Moodle; falta la vista que lo calcule.'],
+          [chipEstado('analisis'), 'Está definido, pero tiene una decisión abierta del equipo.'],
+        ]));
+        return totales + cohorte + catalogo + leyenda;
+      }
+
+      // ---------------------------------------------------------
+      // CRITICIDAD INDIVIDUAL: SEMÁFORO Y REGISTRO
+      // ---------------------------------------------------------
+      function vistaSemaforo() {
+        var flujo ='<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
+          paso(1, 'Cada fuente da un índice', '<b>1.er año:</b> las notas de parciales que carga el estudiante (ICm por materia e ICG).<br><b>2.º año en adelante:</b> cada envío de la Encuesta Inicial o Cuatrimestral.') +
+          paso(2, 'Se combinan en el índice total', 'Promedio del último índice de cada grupo de fuentes (notas y encuestas) del estudiante en el período.') +
+          paso(3, 'El índice total define el color', 'Verde, amarillo o rojo según los cortes. Un tutor puede asignar un estado a mano: se muestra junto al calculado, sin reemplazarlo.') +
+          '</div>';
+        var cortes = tarjeta('Semáforo', 'Los mismos cortes valen para todas las fuentes, porque cada índice va de 0 a 100.',
+          barraSemaforo(null) +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' +
+          chip('verde', '0 a ' + (CORTES.amarillo - 1) + ' · riesgo bajo') +
+          chip('amarillo', CORTES.amarillo + ' a ' + (CORTES.rojo - 1) + ' · riesgo moderado') +
+          chip('rojo', CORTES.rojo + ' a 100 · criticidad alta') + '</div>',
+          'Tools v5 (cortes del semáforo de la base Criticidad)');
+        var guardado = tarjeta('Qué se guarda', 'Cada cálculo agrega una entrada a la base Criticidad y no se recalcula después: así se conserva la historia.',
+          tabla(['Evento', 'Fuente', 'Quién lo dispara'], [
+            ['Envío de una encuesta', chipNeutro('respuestas'), 'El estudiante, al enviar'],
+            ['Alta o edición de una nota de 1.er año', chipNeutro('notas_1ro'), 'El estudiante, al guardar la nota'],
+            ['Cambio de umbral o de materia crítica', chipNeutro('materias'), 'El equipo (pendiente)'],
+            ['Encuesta del período sin responder', chipNeutro('omision'), 'El equipo (pendiente)'],
+            ['Estado asignado por un tutor', chipNeutro('manual'), 'Tutor o administrador (pendiente)']
+          ]), 'ADR-007 · base Criticidad');
+        return flujo + cortes + guardado;
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: ENCUESTAS
+      // ---------------------------------------------------------
+      function filaPregunta(p) {
+        var detalle;
+        if (p.regla === 'avance_curricular') {
+          detalle = chip('neutro', 'En análisis: no suma') +
+            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">Compara los créditos aprobados con los esperados según los cuatrimestres desde el ingreso. Está desactivado y no cuenta en el puntaje máximo.</div>';
+        } else if (p.regla === 'cursada') {
+          detalle = '<div style="font-size: 13px !important;">Cantidad cursada: ninguna ' + CURSADA.cantidad[0] + ' · 1 materia ' + CURSADA.cantidad[1] + ' · 2 materias ' + CURSADA.cantidad[2] + ' · 3 o más 0</div>' +
+            '<div style="font-size: 13px !important;">Recursadas: 1.ª ' + CURSADA.recursada[0] + ' · 2.ª ' + CURSADA.recursada[1] + ' · siguientes 0</div>' +
+            '<div style="font-size: 13px !important;">Dificultad: (promedio de 1 a 5 − 1) × 2,5, hasta ' + CURSADA.dificultadMax + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;">No cursar ninguna materia cuenta como inactividad (' + CURSADA.cantidad[0] + ' puntos), salvo con el PFG en desarrollo o finalizado.</div>';
+        } else {
+          detalle = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 6px !important;">' + p.opciones.map(function(o) {
+            return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 2px 8px !important; font-size: 12px !important; background-color: #ffffff !important;">' +
+              escapar(o[0]) + '<b style="font-weight: 600 !important; color: ' + (o[1] > 0 ? '#910808' : '#47536b') + ' !important;">' + o[1] + '</b></span>';
+          }).join('') + '</div>';
+        }
+        var maximo = p.activa === false ? '<span style="color: #94a0b8 !important; text-decoration: line-through !important;">' + p.max + '</span>' : '<b style="font-weight: 600 !important;">' + p.max + '</b>';
+        return [escapar(p.pregunta) + '<div style="font-size: 12px !important; color: #47536b !important; font-family: Consolas, Menlo, monospace !important;">' + escapar(p.variable) + '</div>', detalle, maximo];
+      }
+
+      function selectorEncuesta() {
+        return '<div style="display: inline-flex !important; gap: 4px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 3px !important; margin-bottom: 16px !important;">' +
+          Object.keys(ENCUESTAS).map(function(k) {
+            var activo = k === encuestaActual;
+            return '<button data-encuesta="' + k + '" style="cursor: pointer; border: 0; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 13px; font-weight: 500; background-color: ' + (activo ? '#ffffff' : 'transparent') + '; color: ' + (activo ? '#0b0e14' : '#47536b') + '; box-shadow: ' + (activo ? '0 1px 2px rgba(11,14,20,0.08)' : 'none') + ';">' +
+              ENCUESTAS[k].titulo + '</button>';
+          }).join('') + '</div>';
+      }
+
+      function vistaEncuestas() {
+        var e = ENCUESTAS[encuestaActual];
+        var puntos = tarjeta('Puntos por pregunta',
+          'Cada opción suma los puntos indicados. La peor respuesta de cada pregunta suma su máximo. Año y cuatrimestre de ingreso no suman: se usan para el avance curricular.',
+          tabla(['Pregunta', 'Puntos por respuesta', 'Máximo'], e.preguntas.map(filaPregunta)) +
+          '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; align-items: center !important; margin-top: 10px !important; font-size: 13px !important;">Puntaje máximo de esta versión ' + chipNeutro(String(e.puntajeMaximo)) + '</div>',
+          'base Encuestas · ' + e.titulo + ', versión vigente' + (e.porPeriodo ? ' (una por período)' : ' (una vez, actualizable)'));
+        var indice = tarjeta('Índice del envío',
+          'Se divide por el máximo de la versión para que el índice quede de 0 a 100 aunque haya preguntas desactivadas.',
+          '<code style="' + EST.formula + '">índice = puntos obtenidos ÷ ' + e.puntajeMaximo + ' × 100   (redondeado al entero)</code>');
+        return selectorEncuesta() + puntos + indice + calculadoraEncuesta(e);
+      }
+
+      // CALCULADORA DE UN CASO (CÁLCULO EN EL NAVEGADOR, NO GUARDA NADA)
+      function calculadoraEncuesta(e) {
+        var campos = e.preguntas.filter(function(p) { return p.opciones; }).map(function(p) {
+          return '<div style="flex: 1 1 220px !important;"><label style="' + EST.label + '">' + escapar(p.pregunta) + '</label>' +
+            '<select data-calc-encuesta="' + p.variable + '" style="' + EST.input + ' width: 100% !important;">' +
+            p.opciones.map(function(o, i) { return '<option value="' + i + '">' + escapar(o[0]) + ' (' + o[1] + ')</option>'; }).join('') +
+            '</select></div>';
+        });
+        if (encuestaActual === 'cuatrimestral') {
+          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">Materias cursadas</label><input data-calc-encuesta="cantidad" type="number" min="0" max="10" value="4" style="' + EST.input + ' width: 100% !important;"></div>');
+          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">De ellas, recursadas</label><input data-calc-encuesta="recursadas" type="number" min="0" max="10" value="1" style="' + EST.input + ' width: 100% !important;"></div>');
+          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">Dificultad promedio (1 a 5)</label><input data-calc-encuesta="dificultad" type="number" min="1" max="5" step="0.5" value="3" style="' + EST.input + ' width: 100% !important;"></div>');
+        }
+        return tarjeta('Probar un caso', 'Elija respuestas para ver cuántos puntos suman y qué color resulta. No se guarda nada.',
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 12px !important;">' + campos.join('') + '</div>' +
+          '<div id="resultado-calc-encuesta"></div>');
+      }
+
+      function calcularEncuesta() {
+        var e = ENCUESTAS[encuestaActual];
+        var valor = function(v) { var el = document.querySelector('[data-calc-encuesta="' + v + '"]'); return el ? el.value : null; };
+        var total = 0, detalle = [];
+        var trabaja = null;
+        e.preguntas.forEach(function(p) {
+          if (!p.opciones) return;
+          var o = p.opciones[Number(valor(p.variable))];
+          if (p.variable === 'trabaja') trabaja = o[0] === 'Si';
+          if (p.variable === 'inicio_laboral' && trabaja === false) return detalle.push(['Inicio laboral', 'no aplica (no trabaja)', 0]);
+          total += o[1];
+          detalle.push([p.pregunta.split('?')[0].replace('¿', '') , o[0], o[1]]);
+        });
+        if (encuestaActual === 'cuatrimestral') {
+          var n = Math.max(0, Number(valor('cantidad')) || 0);
+          var rec = Math.min(n, Math.max(0, Number(valor('recursadas')) || 0));
+          var dif = Math.min(5, Math.max(1, Number(valor('dificultad')) || 1));
+          var pfg = ENCUESTAS.cuatrimestral.preguntas[1].opciones[Number(valor('progreso_proyecto_final'))][0];
+          var exceptuado = pfg === 'En desarrollo activo' || pfg === 'Finalizado, pendiente de defensa';
+          var pCant = n === 0 ? (exceptuado ? 0 : CURSADA.cantidad[0]) : (CURSADA.cantidad[n] || 0);
+          var pRec = n === 0 ? 0 : (rec >= 1 ? CURSADA.recursada[0] : 0) + (rec >= 2 ? CURSADA.recursada[1] : 0);
+          var pDif = n === 0 ? 0 : redondear((dif - 1) * 2.5, 1);
+          total += pCant + pRec + pDif;
+          detalle.push(['Cursada: cantidad', n + ' materia(s)', pCant], ['Cursada: recursadas', String(rec), pRec], ['Cursada: dificultad', 'promedio ' + dif, pDif]);
+        }
+        var indice = Math.round(total / e.puntajeMaximo * 100);
+        document.getElementById('resultado-calc-encuesta').innerHTML =
+          tabla(['Pregunta', 'Respuesta', 'Puntos'], detalle.map(function(d) { return [escapar(d[0]), escapar(d[1]), String(d[2])]; })) +
+          '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 12px !important; margin-top: 12px !important;">' +
+          '<span>Puntos: <b style="font-weight: 600 !important;">' + redondear(total, 1) + ' de ' + e.puntajeMaximo + '</b></span>' +
+          '<span>Índice: <b style="font-weight: 600 !important;">' + indice + '</b></span>' + chip(semaforoDe(indice)) + '</div>' + barraSemaforo(Math.min(100, indice));
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: NOTAS DE 1.ER AÑO
+      // ---------------------------------------------------------
+      function vistaNotas() {
+        var factores = tarjeta('Índice por materia (ICm)',
+          'Se calcula por estudiante y materia con las notas del período. Antes, cada recuperatorio reemplaza a la instancia que indica en «Recupera_a».',
+          tabla(['Factor', 'Cálculo', 'Peso'], [
+            ['FP · promedio', '(10 − promedio de las instancias rendidas) ÷ 10. Sin instancias rendidas: 1', (PESOS_ICM.FP * 100) + ' %'],
+            ['FR · reprobación', '1 − aprobadas ÷ rendidas. Sin instancias rendidas: 1', (PESOS_ICM.FR * 100) + ' %'],
+            ['FA · ausentismo', 'ausentes ÷ instancias (sin nota o con estado «Ausente»)', (PESOS_ICM.FA * 100) + ' %'],
+            ['FAC · materia crítica', '1 si la materia es crítica y alguna nota está por debajo de su umbral', (PESOS_ICM.FAC * 100) + ' %']
+          ]) +
+          '<code style="' + EST.formula + '">ICm = (0,35 × FP + 0,35 × FR + 0,15 × FA + 0,15 × FAC) × 100   (máximo 100)</code>',
+          'MODELO_CRITICIDAD_NOTAS_PRIMERO · tool IndiceNotasPrimero (Tools v5)');
+        var icg = tarjeta('Índice del estudiante (ICG)',
+          'Combina todas sus materias, dando peso extra a la peor para que una sola materia muy crítica no quede diluida.',
+          '<code style="' + EST.formula + '">ICG = 0,6 × promedio de sus ICm + 0,4 × su ICm más alto   (redondeado al entero)</code>');
+        var materias = tarjeta('Materias críticas y umbrales', 'Los define el equipo en CargaMateriasPrimero. Una nota menor al umbral en una materia crítica activa el factor FAC.',
+          tabla(['Materia', 'Crítica', 'Umbral'], MATERIAS_PRIMERO.map(function(m) {
+            return [escapar(m.nombre), m.critica ? chip('rojo', 'Sí') : chip('neutro', 'No'), m.umbral === null ? '—' : String(m.umbral).replace('.', ',')];
+          })), 'base CargaMateriasPrimero');
+        return factores + icg + materias + calculadoraNotas();
+      }
+
+      // CALCULADORA DE UNA MATERIA: MISMAS REGLAS QUE IndiceNotasPrimero (Tools v5)
+      // Ausente: estado "Ausente" o sin nota · Aprobada: estado "Aprobado" (no depende de la nota) · El recuperatorio reemplaza la instancia que indica
+      var ESTADOS_NOTA = ['Aprobado', 'Desaprobado', 'Ausente'];
+
+      function filaInstancia(id, titulo, nota, estado, conRecupera) {
+        var sel = function(campo, opciones, valor) {
+          return '<select data-calc-notas="' + id + '-' + campo + '" style="' + EST.input + ' width: 100% !important;">' + opciones.map(function(o) {
+            return '<option value="' + escapar(o[0]) + '"' + (o[0] === valor ? ' selected' : '') + '>' + escapar(o[1]) + '</option>';
+          }).join('') + '</select>';
+        };
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; align-items: flex-end !important; margin-bottom: 8px !important;">' +
+          '<div style="flex: 0 0 120px !important; font-size: 13px !important; font-weight: 500 !important; padding-bottom: 8px !important;">' + titulo + '</div>' +
+          '<div style="flex: 1 1 110px !important;"><label style="' + EST.label + '">Nota (vacía = sin nota)</label><input data-calc-notas="' + id + '-nota" type="number" min="0" max="10" step="0.5" value="' + nota + '" style="' + EST.input + ' width: 100% !important;"></div>' +
+          '<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">Estado</label>' + sel('estado', ESTADOS_NOTA.map(function(e) { return [e, e]; }), estado) + '</div>' +
+          (conRecupera ? '<div style="flex: 1 1 150px !important;"><label style="' + EST.label + '">Recupera a</label>' + sel('recupera', [['', 'No se rindió'], ['p1', 'Parcial 1'], ['p2', 'Parcial 2']], '') + '</div>' : '') +
+          '</div>';
+      }
+
+      function calculadoraNotas() {
+        var opciones = MATERIAS_PRIMERO.map(function(m, i) { return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' + escapar(m.nombre) + '</option>'; }).join('');
+        return tarjeta('Probar una materia', 'Cargue las notas de una materia como figuran en CargaParcialesPrimero para ver su ICm. No se guarda nada.',
+          '<div style="max-width: 320px !important; margin-bottom: 12px !important;"><label style="' + EST.label + '">Materia</label><select data-calc-notas="materia" style="' + EST.input + ' width: 100% !important;">' + opciones + '</select></div>' +
+          filaInstancia('p1', 'Parcial 1', '7', 'Aprobado', false) +
+          filaInstancia('p2', 'Parcial 2', '8', 'Aprobado', false) +
+          filaInstancia('rec', 'Recuperatorio', '', 'Desaprobado', true) +
+          '<div id="resultado-calc-notas" style="margin-top: 12px !important;"></div>');
+      }
+
+      function calcularNotas() {
+        var v = function(id) { var el = document.querySelector('[data-calc-notas="' + id + '"]'); return el ? el.value : ''; };
+        var m = MATERIAS_PRIMERO[Number(v('materia'))];
+        var leer = function(id) { var n = v(id + '-nota'); return { nota: n === '' ? null : Number(n), estado: v(id + '-estado') }; };
+        var instancias = { p1: leer('p1'), p2: leer('p2') };
+        var recupera = v('rec-recupera');
+        if (recupera) instancias[recupera] = leer('rec');
+        var rendidas = 0, ausentes = 0, aprobadas = 0, suma = 0, notasRendidas = [];
+        Object.keys(instancias).forEach(function(k) {
+          var inst = instancias[k];
+          if (inst.estado === 'Ausente' || inst.nota === null) { ausentes++; return; }
+          rendidas++;
+          suma += inst.nota;
+          notasRendidas.push(inst.nota);
+          if (inst.estado === 'Aprobado') aprobadas++;
+        });
+        var total = Object.keys(instancias).length;
+        var promedio = rendidas ? suma / rendidas : null;
+        var umbral = m.umbral || 4;
+        var FP = rendidas ? Math.max(0, (10 - promedio) / 10) : 1;
+        var FR = rendidas ? 1 - aprobadas / rendidas : 1;
+        var FA = ausentes / total;
+        var FAC = m.critica && notasRendidas.some(function(x) { return x < umbral; }) ? 1 : 0;
+        var icm = Math.min(100, (PESOS_ICM.FP * FP + PESOS_ICM.FR * FR + PESOS_ICM.FA * FA + PESOS_ICM.FAC * FAC) * 100);
+        // Como Tools: el ICm se redondea a un decimal y el índice, a entero
+        var icmR = Math.round(Math.round(icm * 10) / 10);
+        document.getElementById('resultado-calc-notas').innerHTML =
+          tabla(['Factor', 'Valor', 'Aporte'], [
+            ['FP · promedio', promedio === null ? 'sin instancias rendidas' : 'promedio ' + redondear(promedio, 2), redondear(PESOS_ICM.FP * FP * 100, 1)],
+            ['FR · reprobación', aprobadas + ' de ' + rendidas + ' rendidas con estado Aprobado', redondear(PESOS_ICM.FR * FR * 100, 1)],
+            ['FA · ausentismo', ausentes + ' de ' + total + ' instancias ausentes', redondear(PESOS_ICM.FA * FA * 100, 1)],
+            ['FAC · materia crítica', FAC ? 'nota por debajo de ' + umbral : (m.critica ? 'sin notas bajo el umbral' : 'materia no crítica'), redondear(PESOS_ICM.FAC * FAC * 100, 1)]
+          ].map(function(f) { return [f[0], escapar(f[1]), String(f[2]).replace('.', ',')]; })) +
+          '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 12px !important; margin-top: 12px !important;">' +
+          '<span>ICm: <b style="font-weight: 600 !important;">' + icmR + '</b></span>' + chip(semaforoDe(icmR)) +
+          '<span style="font-size: 12px !important; color: #47536b !important;">Con una sola materia, el ICG es igual al ICm.</span></div>' + barraSemaforo(icmR);
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: ÍNDICE TOTAL Y ESTADO ASIGNADO
+      // ---------------------------------------------------------
+      function vistaTotal() {
+        var ultimo = {};
+        var filas = EJEMPLO_TOTAL.eventos.map(function(ev) {
+          ultimo[ev.grupo] = ev.indice;
+          var grupos = Object.keys(ultimo);
+          var total = Math.round(grupos.reduce(function(a, g) { return a + ultimo[g]; }, 0) / grupos.length);
+          var calculo = grupos.map(function(g) { return g + ' ' + ultimo[g]; }).join(' + ');
+          return [ev.fecha, escapar(ev.fuente) + '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(ev.detalle) + '</div>', String(ev.indice),
+            total + '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(calculo) + (grupos.length > 1 ? ' ÷ ' + grupos.length : '') + '</div>', chip(semaforoDe(total), semaforoDe(total).charAt(0).toUpperCase() + semaforoDe(total).slice(1))];
+        });
+        var regla = tarjeta('Cómo se combina',
+          'Por cada grupo de fuentes se toma el último índice del período, y se promedian. Si el estudiante solo tiene notas, el total es el de las notas.',
+          '<code style="' + EST.formula + '">índice total = promedio(último índice de notas, último índice de encuestas)   en el período actual</code>' +
+          tabla(['Grupo', 'Fuentes que entran'], [
+            ['notas', chipNeutro('notas_1ro') + ' ' + chipNeutro('materias')],
+            ['encuestas', chipNeutro('respuestas') + ' ' + chipNeutro('omision')]
+          ]), 'ADR-007 · tool registrarCriticidad (Tools v5)');
+        var ejemplo = tarjeta('Ejemplo: ' + EJEMPLO_TOTAL.nombre + ' (datos ficticios)', 'Cada fila es una entrada de la base Criticidad, en orden.',
+          tabla(['Fecha', 'Evento', 'Índice', 'Índice total', 'Semáforo'], filas));
+        var manual = tarjeta('Estado asignado por un tutor',
+          'El tutor puede fijar un estado después de una entrevista o porque conoce la situación (Req 10).',
+          '<ul style="margin: 0 !important; padding-left: 18px !important; font-size: 14px !important; line-height: 1.7 !important;">' +
+          '<li>Vale la última asignación del estudiante, de cualquier período, hasta que se quite con «sin asignar».</li>' +
+          '<li>No reemplaza al calculado: el tablero muestra los dos, y las entradas automáticas se siguen guardando.</li>' +
+          '<li>El motivo es obligatorio en las asignaciones.</li></ul>');
+        return regla + ejemplo + manual;
+      }
+
+      // ---------------------------------------------------------
+      // PESTAÑA: EN REVISIÓN
+      // ---------------------------------------------------------
+      function vistaRevision() {
+        var items = [
+          ['Avance curricular desactivado', 'Compara créditos aprobados con esperados (14, 34, 57 … 223 según los cuatrimestres desde el ingreso). Está apagado mientras se decide si se mide en créditos o en materias y cómo se cuenta el tiempo. Mientras tanto el máximo es 30 en la Inicial y 70 en la Cuatrimestral.'],
+          ['Cortes distintos en otras vistas', 'El Dashboard de 1.er año corta en 40 y 65, y el Detalle del estudiante en 40 y 80. La base Criticidad usa 40 y 70.'],
+          ['Fórmula de 1.er año sin validar', 'Los pesos de ICm e ICG son una propuesta del equipo. El requerimiento propone otro criterio: aprobación menor al 20 % rojo; de 20 % a 60 % amarillo.'],
+          ['Período fijo en el código', 'El período actual está escrito en Tools, y el de una nota se deduce de su fecha (enero a julio, 1; agosto a diciembre, 2).'],
+          ['Texto del avance percibido', '«Demorado» y «Muy demorado» tienen el mismo umbral en la Encuesta Cuatrimestral (retraso mayor al 50 %).'],
+          ['Pregunta del PFG', 'Un estudiante de los primeros años que elige «No iniciado» suma 10. Se propone mostrarla solo con el 70 % de los créditos aprobados.'],
+          ['Tres criterios para 1.er año', 'El Dashboard usa ICm e ICG, el Listado de 1.er año usa alertas por umbral y el requerimiento usa el porcentaje de aprobación.']
+        ];
+        return tarjeta('Puntos abiertos', 'Afectan al resultado y están pendientes de decisión del equipo o del DII.',
+          items.map(function(it) {
+            return '<div style="display: flex !important; gap: 10px !important; padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
+              '<span style="color: #aa8109 !important; padding-top: 2px !important;">' + icono('alerta', 18) + '</span>' +
+              '<div><div style="font-weight: 600 !important;">' + escapar(it[0]) + '</div><div style="font-size: 13px !important; color: #47536b !important;">' + escapar(it[1]) + '</div></div></div>';
+          }).join('') +
+          '<p style="' + EST.ayuda + ' margin-top: 12px !important;">El Índice de Criticidad Estudiantil (ICE) queda como referencia del índice de las encuestas y no se calcula.</p>');
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      function renderizarTabs() {
+        document.getElementById('tabs-indicadores').innerHTML = PESTANAS.map(function(p) {
+          var activa = p.id === pestanaActual;
+          return '<button role="tab" data-tab="' + p.id + '" aria-selected="' + activa + '" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 0; border-bottom: 2px solid ' + (activa ? '#0b0e14' : 'transparent') + '; background: transparent; padding: 8px 10px; margin-bottom: -1px; font-family: inherit; font-size: 13px; font-weight: ' + (activa ? 600 : 500) + '; color: ' + (activa ? '#0b0e14' : '#47536b') + ';">' +
+            icono(p.icono, 16) + escapar(p.titulo) + '</button>';
+        }).join('');
+      }
+
+      // SELECTOR DE LAS SUBVISTAS DE CRITICIDAD INDIVIDUAL
+      function selectorCriticidad() {
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 4px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 3px !important; margin-bottom: 16px !important;">' +
+          SUBVISTAS_CRITICIDAD.map(function(s) {
+            var activo = s.id === subCriticidad;
+            return '<button data-sub="' + s.id + '" style="cursor: pointer; border: 0; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 13px; font-weight: 500; background-color: ' + (activo ? '#ffffff' : 'transparent') + '; color: ' + (activo ? '#0b0e14' : '#47536b') + '; box-shadow: ' + (activo ? '0 1px 2px rgba(11,14,20,0.08)' : 'none') + ';">' + escapar(s.titulo) + '</button>';
+          }).join('') + '</div>';
+      }
+
+      function vistaCriticidad() {
+        var sub = { semaforo: vistaSemaforo, encuestas: vistaEncuestas, notas: vistaNotas, total: vistaTotal };
+        return '<p style="' + EST.ayuda + ' font-size: 13px !important; margin-bottom: 12px !important;">' + escapar(BLOQUES.filter(function(b) { return b.id === 'criticidad'; })[0].ayuda) + '</p>' + selectorCriticidad() + sub[subCriticidad]();
+      }
+
+      function renderizar() {
+        renderizarTabs();
+        var vistas = {
+          resumen: vistaResumen,
+          trayectoria: function() { return vistaBloque('trayectoria'); },
+          cuellos: function() { return vistaBloque('cuellos'); },
+          criticidad: vistaCriticidad,
+          revision: vistaRevision
+        };
+        document.getElementById('contenido-indicadores').innerHTML = vistas[pestanaActual]();
+        if (pestanaActual === 'criticidad' && subCriticidad === 'encuestas') calcularEncuesta();
+        if (pestanaActual === 'criticidad' && subCriticidad === 'notas') calcularNotas();
+      }
+
+      // ---------------------------------------------------------
+      // ROL Y VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      function aplicarRol(rol) {
+        document.getElementById('badge-rol-indicadores').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiantes', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
+        var botones = document.querySelectorAll('#indicadores-cohorte [data-preview-rol]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = botones[i].getAttribute('data-preview-rol') === rol;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+      }
+
+      // BARRA PARA CAMBIAR DE ROL: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' + Object.keys(ROLES).map(function(rol) {
+          return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+        }).join('');
+        var cont = document.querySelector('#indicadores-cohorte > nolink') || document.getElementById('indicadores-cohorte');
+        cont.insertBefore(barra, cont.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#indicadores-cohorte')) return;
+        var btnRol = t.closest('[data-preview-rol]');
+        if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        var tab = t.closest('[data-tab]');
+        if (tab) { pestanaActual = tab.getAttribute('data-tab'); return renderizar(); }
+        var sub = t.closest('[data-sub]');
+        if (sub) { pestanaActual = 'criticidad'; subCriticidad = sub.getAttribute('data-sub'); return renderizar(); }
+        var enc = t.closest('[data-encuesta]');
+        if (enc) { encuestaActual = enc.getAttribute('data-encuesta'); return renderizar(); }
+      });
+
+      document.addEventListener('input', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#indicadores-cohorte')) return;
+        if (t.hasAttribute('data-calc-encuesta')) calcularEncuesta();
+        if (t.hasAttribute('data-calc-notas')) calcularNotas();
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      var huecos = document.querySelectorAll('#indicadores-cohorte [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      aplicarRol(ROL_INICIAL);
+      renderizar();
+    })();
+  </script>
+  </nolink>
+</div>

@@ -4,6 +4,7 @@ Qué calcula cada modelo, de dónde saca los datos y quién lo usa. Se leen en e
 
 ```
 docs/models/
+├── INDICADORES_NO_IMPLEMENTADOS.md ← indicadores que quedan fuera por las limitaciones de Moodle
 ├── datos/          ← cómo se guarda la información
 │   └── MODELO_SIMPLIFICADO_MOODLE.md
 ├── trayectoria/    ← dónde está el alumno y qué lo traba (sale del plan y de las notas)
