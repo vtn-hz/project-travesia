@@ -4,7 +4,8 @@
 // Uso (por defecto SIMULA; solo escribe con --confirmar):
 //   MOODLE_USUARIO=... MOODLE_CLAVE=... NODE_PATH=$(npm root -g) node .skills/publicar-seccion/publicar.js \
 //     --archivo section/<nombre>/content.html --tipo pagina|etiqueta|resumen \
-//     [--cmid <id>] [--nombre "<nombre visible>"] [--subseccion "<subsección de Zhakyz>"] [--confirmar]
+//     [--cmid <id>] [--nombre "<nombre visible>"] [--subseccion "<subsección de Zhakyz>"]
+//     [--visibilidad mostrar|oculta|sin-mostrar] [--confirmar]
 //
 //   tipo pagina   → Página (mod_page). Con --cmid la actualiza; sin --cmid la crea (requiere --nombre).
 //   tipo etiqueta → Área de texto y medios (mod_label). Igual que pagina.
@@ -30,6 +31,8 @@ const TIPOS = {
   etiqueta: { modulo: 'label', campo: 'introeditor[text]', etiqueta: 'Área de texto y medios' },
   resumen: { modulo: null, campo: 'summary_editor[text]', etiqueta: 'Resumen de la sección' }
 };
+// Valor del campo "visible" de modedit.php: sin-mostrar = "Disponible pero no mostrado en la página del curso"
+const VISIBILIDADES = { mostrar: '1', oculta: '0', 'sin-mostrar': '-1' };
 
 // ---------------------------------------------------------
 // ARGUMENTOS
@@ -58,6 +61,7 @@ function leerArgs() {
   const sync = config.aplicar(fs.readFileSync(o.archivo, 'utf8'), CONFIG);
   if (sync.errores.length) salir('Rutas @config inexistentes:\n  ' + sync.errores.join('\n  '));
   if (sync.cambios.length) salir('El archivo no coincide con moodle.config.json. Correr sincronizar_config.js:\n  ' + sync.cambios.join('\n  '));
+  if (o.visibilidad && (o.tipo === 'resumen' || !VISIBILIDADES[o.visibilidad])) salir('--visibilidad debe ser mostrar, oculta o sin-mostrar (no vale para el resumen).');
   return o;
 }
 
@@ -203,9 +207,16 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
     const f = [...document.querySelectorAll('form')].find((x) => x.querySelector('[name^="_qf__"]'));
     if (!f) return null;
     const v = (n) => (f.querySelector(`[name="${n}"]`) || {}).value;
-    return { course: v('course'), section: v('section'), modulename: v('modulename'), id: v('id'), nombre: v('name'), texto: v(campoTexto) };
+    const vis = f.querySelector('select[name="visible"]');
+    return {
+      course: v('course'), section: v('section'), modulename: v('modulename'), id: v('id'), nombre: v('name'), texto: v(campoTexto),
+      visible: vis ? vis.value : null, opcionesVisible: vis ? [...vis.options].map((o) => o.value) : []
+    };
   }, tipo.campo);
   if (!form) salir('No se encontró el formulario (¿permisos o cmid inexistente?).');
+  if (args.visibilidad && !form.opcionesVisible.includes(VISIBILIDADES[args.visibilidad])) {
+    salir(`El campus no ofrece la visibilidad "${args.visibilidad}" para esta actividad (opciones: ${form.opcionesVisible.join(', ') || 'ninguna'}).`);
+  }
   if (args.tipo === 'resumen') {
     if (form.nombre !== SECCION_NOMBRE) salir(`El formulario no es de la sección ${SECCION_NOMBRE}.`);
   } else if (form.course !== CURSO || !seccionesValidas.includes(form.section) || form.modulename !== tipo.modulo) {
@@ -222,6 +233,7 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
     (args.tipo === 'resumen' ? '' : cmidObjetivo ? ` "${form.nombre}" (cmid ${cmidObjetivo}, ACTUALIZAR)` : ` "${args.nombre}" (NUEVA)`));
   console.log(`En Moodle hoy : ${(form.texto || '').length} caracteres, sha ${hash(form.texto || '')}`);
   console.log(`Cambios       : +${dif.agregadas} / -${dif.quitadas} líneas`);
+  if (args.visibilidad) console.log(`Visibilidad   : ${form.visible} → ${VISIBILIDADES[args.visibilidad]} (${args.visibilidad})`);
   if (!args.confirmar) {
     console.log('\nSIMULACIÓN: no se escribió nada. Para publicar, repetir con --confirmar (requiere confirmación explícita del equipo).');
     await browser.close();
@@ -231,7 +243,7 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
   // ESCRIBIR
   async function enviar(html) {
     fase = 'escritura';
-    const r = await page.evaluate(async ({ campoTexto, html, nombre, esResumen, seccionId }) => {
+    const r = await page.evaluate(async ({ campoTexto, html, nombre, esResumen, seccionId, visible }) => {
       const f = [...document.querySelectorAll('form')].find((x) => x.querySelector('[name^="_qf__"]'));
       f.querySelector(`[name="${campoTexto}"]`).value = html;
       const fd = new FormData(f);
@@ -241,6 +253,7 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
       fd.delete('id'); // el selector de grupo de las restricciones también se llama "id"
       if (esResumen) fd.set('id', seccionId);
       if (nombre && !esResumen) fd.set('name', nombre);
+      if (visible !== null) fd.set('visible', visible);
       fd.delete('submitbutton');
       fd.set(esResumen ? 'submitbutton' : 'submitbutton2', 'Guardar cambios');
       const resp = await fetch(f.action, { method: 'POST', body: fd, credentials: 'same-origin' });
@@ -248,7 +261,8 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
       const errores = [...doc.querySelectorAll('.error, .invalid-feedback, .alert-danger, .errormessage')]
         .map((e) => e.textContent.trim()).filter(Boolean);
       return { status: resp.status, url: resp.url, errores };
-    }, { campoTexto: tipo.campo, html, nombre: args.nombre, esResumen: args.tipo === 'resumen', seccionId: SECCION_ID });
+    }, { campoTexto: tipo.campo, html, nombre: args.nombre, esResumen: args.tipo === 'resumen', seccionId: SECCION_ID,
+      visible: args.visibilidad ? VISIBILIDADES[args.visibilidad] : null });
     fase = 'lectura';
     if (r.status !== 200 || r.errores.length || /modedit|editsection/.test(r.url)) {
       salir(`Moodle rechazó el guardado: ${JSON.stringify(r)}`);
@@ -272,6 +286,7 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
   // VERIFICAR LEYENDO LO GUARDADO
   await page.goto(args.tipo === 'resumen' ? `${BASE}/course/editsection.php?id=${SECCION_ID}` : `${BASE}/course/modedit.php?update=${cmidObjetivo}&return=0`, { waitUntil: 'networkidle' });
   const guardado = await page.$eval(`[name="${tipo.campo}"]`, (e) => e.value);
+  const visibleGuardado = await page.$eval('select[name="visible"]', (e) => e.value).catch(() => null);
   const normal = (s) => s.replace(/\s+/g, ' ').trim();
   const identico = normal(guardado) === normal(contenido);
   const conservaScripts = (guardado.match(/<script/g) || []).length === (contenido.match(/<script/g) || []).length;
@@ -283,6 +298,7 @@ const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 1
   console.log(`cmid          : ${cmidObjetivo || '(resumen de sección)'}`);
   console.log(`Ver en Moodle : ${args.tipo === 'resumen' ? `${BASE}/course/section.php?id=${SECCION_ID}` : `${BASE}/mod/${tipo.modulo}/view.php?id=${cmidObjetivo}`}`);
   console.log(`Verificación  : ${identico ? 'el contenido guardado coincide con el local' : 'Moodle modificó el contenido al guardarlo (revisar)'}; scripts ${conservaScripts ? 'conservados' : 'ALTERADOS'}`);
+  if (args.visibilidad) console.log(`Visibilidad   : ${visibleGuardado === VISIBILIDADES[args.visibilidad] ? `${args.visibilidad} (verificada)` : `Moodle guardó "${visibleGuardado}" (revisar)`}`);
   console.log(`Escrituras    : ${JSON.stringify(permitidas)}`);
   console.log(`Fila para RULES.md: | ${tipo.etiqueta}${args.tipo === 'resumen' ? '' : ` "${args.nombre || form.nombre}" (cmid ${cmidObjetivo})`} | \`${args.archivo}\` |`);
   await browser.close();

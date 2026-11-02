@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-10-19 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-11-01 -->
 <!-- SECCIÓN: MENÚ DEL EQUIPO DE SEGUIMIENTO (ROLES ADM, GES, TUT, PAR) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -124,9 +124,11 @@
       // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
+      var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
       var DESTINOS_MOODLE = {
         'btn-plan-estudios': '/mod/page/view.php?id=' + CMID_PAGINA_PLAN
       };
+      if (CMID_PAGINA_ENTREVISTAS) DESTINOS_MOODLE['btn-entrevistas'] = '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS;
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
       // Bloque "Estado del sistema" de ADM (oculto por ahora)
