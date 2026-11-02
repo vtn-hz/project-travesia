@@ -3,15 +3,15 @@
   "nombre": "Estudiantes",
   "descripcion": "Información personal de cada estudiante: una entrada por estudiante, que él mismo carga y edita en la Página Información personal (section/informacion_personal, SCRUM-24). Es la foto vigente, no un historial: editarla modifica la misma entrada y no genera entradas en Respuestas ni en Criticidad. La primera vez el formulario se precarga con la cuenta de Moodle; desde que se guarda, el sistema usa los datos de esta base. Sin entrada, Mi Trayectoria (section/vista_estudiante) deshabilita todas las secciones. Para el equipo es la lista de estudiantes (tramo, cohorte y envíos pendientes).",
   "subseccion": "Database",
-  "origen": "Propuesta del 2026-11-02 (docs/specs/vista-estudiante.md → Base Estudiantes). Reemplaza la base 4 del modelo simplificado con los datos que usa la vista. Sin crear en Moodle.",
-  "estado": "propuesta",
+  "origen": "Propuesta del 2026-11-02 (docs/specs/vista-estudiante.md → Base Estudiantes). Reemplaza la base 4 del modelo simplificado con los datos que usa la vista. Creada en Moodle el 2026-11-02 (cmid 60262, d=206).",
+  "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: con la aprobación, cada estudiante ve y edita solo la suya. El equipo (rol Profesor) ve y edita todas.",
     "Permitir la edición de entradas aprobadas": "No (no se aprueban).",
-    "Número máximo de entradas": "0 (sin límite en Moodle). Una por estudiante: antes de crear, la Página vuelve a leer la base y, si ya hay una entrada propia, edita esa.",
+    "Número máximo de entradas": "1 (aplicado en Moodle: un estudiante no puede crear una segunda entrada; al equipo, rol Profesor, no le aplica). Además, antes de crear, la Página vuelve a leer la base y, si ya hay una entrada propia, edita esa.",
     "Permitir comentarios": "No."
   },
-  "plantillas": "data/moodle/plantillas/estudiantes/ (lista con .zk-registro, data-rid, data-alta, data-modificada y una celda data-campo por campo, para que la lea LeerBase). La de alta es la de Moodle: la Página ubica cada campo por su etiqueta, que tiene que ser igual al nombre del campo.",
+  "plantillas": "data/moodle/plantillas/estudiantes/ (lista con .zk-registro, data-rid, una celda data-campo por campo y la celda _modificada con ##timemodified##, que Moodle entrega como HTML y por eso no va en un atributo, para que la lea LeerBase). La de alta es la de Moodle: la Página ubica cada campo por su etiqueta, que tiene que ser igual al nombre del campo.",
   "campos": [
     {
       "nombre": "id_usuario",
