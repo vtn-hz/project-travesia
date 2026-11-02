@@ -750,7 +750,7 @@
       function historialEstados() {
         var cambios = [];
         // Calculado: cada vez que cambia el nivel, con la fuente que correspondía al tramo de ese período
-        var anterior = null;
+        var anterior = null, ultimoCalculado = 0;
         est.entradas.filter(function(c) {
           if (c.origen !== 'automatica' || numero(c.indice) === null) return false;
           var tipo = tipoDeEntrada(c, est.encuestas);
@@ -758,8 +758,13 @@
         }).sort(function(a, b) { return tiempoDe(a) - tiempoDe(b); }).forEach(function(c) {
           var nivel = nivelDeIndice(numero(c.indice));
           if (nivel !== anterior) cambios.push({ t: tiempoDe(c), origen: 'Calculado', desde: anterior, hasta: nivel, quien: 'Sistema', motivo: TIPOS[tipoDeEntrada(c, est.encuestas)] + ': índice ' + numero(c.indice) });
+          ultimoCalculado = tiempoDe(c);
           anterior = nivel;
         });
+        // Si en el período actual todavía no hay fuente, el calculado vigente pasa a "Sin calcular" al empezar el período
+        if (anterior && anterior !== 'sin_datos' && est.crit.calculado.nivel === 'sin_datos') {
+          cambios.push({ t: Math.max(Date.parse(inicioDePeriodo(PERIODO_ACTUAL)) || 0, ultimoCalculado + 1), origen: 'Calculado', desde: anterior, hasta: 'sin_datos', quien: 'Sistema', motivo: est.crit.calculado.motivo });
+        }
         var previo = null;
         est.entradas.filter(function(c) { return c.origen === 'manual'; }).sort(function(a, b) { return tiempoDe(a) - tiempoDe(b); }).forEach(function(c) {
           var quitado = ASIGNABLES.indexOf(c.semaforo) === -1;
