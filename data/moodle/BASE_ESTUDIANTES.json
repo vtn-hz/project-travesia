@@ -7,7 +7,7 @@
   "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: con la aprobación, cada estudiante ve y edita solo la suya. El equipo (rol Profesor) ve y edita todas.",
-    "Permitir la edición de entradas aprobadas": "No (no se aprueban).",
+    "Permitir la edición de entradas aprobadas": "Sí (desde el 2026-11-02). Nadie aprueba, pero Moodle aprueba solas las entradas de quien puede aprobar (el equipo): con \"No\", al editar con el rol cambiado a Estudiante Moodle no mostraba el formulario (\"No se encontró el formulario de la base Estudiantes\"). Una entrada aprobada la ven todos los estudiantes.",
     "Número máximo de entradas": "1 (aplicado en Moodle: un estudiante no puede crear una segunda entrada; al equipo, rol Profesor, no le aplica). Además, antes de crear, la Página vuelve a leer la base y, si ya hay una entrada propia, edita esa.",
     "Permitir comentarios": "No."
   },
