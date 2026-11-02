@@ -149,6 +149,9 @@
       var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
       // Estados asignados en la vista previa (los comparte con el detalle)
       var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
+      // Espera máxima (milisegundos) de la Página Tools y de cada base
+      var ESPERA_TOOLS = 20000;
+      var ESPERA_BASE = 60000;
 
       var ROLES = {
         ADM: { nombre: 'Administrador', puedeAsignar: true },
@@ -381,17 +384,33 @@
         return window.ZhakyzToolsCarga;
       }
 
-      // TODAS LAS ENTRADAS DE UNA BASE, CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA
-      function leerBase(Tools, dataid) {
-        return Tools.LeerBase({ dataid: dataid }).then(function(r) {
-          return r.entradas.map(function(e) {
+      // ESPERA UNA PROMESA COMO MUCHO "ms": UNA BASE QUE NO RESPONDE NO DEJA LA PÁGINA CARGANDO PARA SIEMPRE
+      function conLimite(promesa, ms, que) {
+        return Promise.race([promesa, new Promise(function(r, rechazar) {
+          setTimeout(function() { rechazar(new Error(que + ' tardó más de ' + (ms / 1000) + ' segundos.')); }, ms);
+        })]);
+      }
+
+      // ENTRADAS DE UNA BASE (opciones de LeerBase), CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA.
+      // Si LeerBase llegó a su tope, la lista queda marcada como incompleta
+      function leerBase(Tools, nombre, opciones) {
+        return conLimite(Tools.LeerBase(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+          var lista = r.entradas.map(function(e) {
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
             c.rid = e.rid ? Number(e.rid) : null;
             c.alta = e.alta || '';
             return c;
           });
+          if (r.completa === false) incompletas.push(nombre);
+          return lista;
         });
+      }
+
+      // De Criticidad, el tablero solo usa el período actual (calculado) y las entradas manuales (asignado)
+      function entradaUtilCriticidad(e) {
+        var c = e.campos || {};
+        return String(c.periodo || '').trim() === PERIODO_ACTUAL || String(c.origen || '').trim() === 'manual';
       }
 
       // AGREGAR UNA ENTRADA (rid=0). Los campos se ubican por su etiqueta en el formulario de alta, como en la Página Tools
@@ -442,8 +461,12 @@
             respuestas: RESPUESTAS_PRUEBA
           });
         }
-        return cargarTools().then(function(Tools) {
-          return Promise.all([leerBase(Tools, DATAID_ESTUDIANTES), leerBase(Tools, DATAID_CRITICIDAD), leerBase(Tools, DATAID_RESPUESTAS)]);
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          return Promise.all([
+            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad }),
+            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS })
+          ]);
         }).then(function(r) {
           return { estudiantes: r[0], criticidad: r[1], respuestas: r[2] };
         });
@@ -456,6 +479,7 @@
       var datos = null;
       var filas = [];
       var filtroKpi = '';
+      var incompletas = []; // bases que LeerBase no leyó enteras
       var modal = null; // { fila, disparador, guardando }
       var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
       var ignorarFilasHasta = 0; // después de guardar, el segundo clic de un doble clic no abre la fila de abajo
@@ -857,11 +881,18 @@
       $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
+      $('cuerpo-tabla-estudiantes').innerHTML =
+        '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
       cargarDatos().then(function(d) {
         datos = d;
         procesar();
         renderizarCohortes();
         renderizarTodo();
+        if (incompletas.length) {
+          $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
+            ': la base tiene más entradas que las que lee la Página Tools, así que algunos estados pueden estar desactualizados.';
+          $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
+        }
       }).catch(function(e) {
         $('cuerpo-tabla-estudiantes').innerHTML =
           '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';

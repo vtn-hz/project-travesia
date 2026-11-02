@@ -87,6 +87,10 @@
       var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Fecha', 'Nota', 'Estado', 'Recupera_a'];
       var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
       var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
+      // Espera máxima (milisegundos) de la Página Tools, de cada base y de las bases que solo completan la cronología
+      var ESPERA_TOOLS = 20000;
+      var ESPERA_BASE = 60000;
+      var ESPERA_OPCIONAL = 20000;
 
       var ROLES = {
         ADM: { nombre: 'Administrador', puedeAsignar: true },
@@ -351,16 +355,26 @@
         return window.ZhakyzToolsCarga;
       }
 
-      // ENTRADAS DE UNA BASE (opciones de LeerBase) CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA
-      function leerBase(Tools, opciones) {
-        return Tools.LeerBase(opciones).then(function(r) {
-          return r.entradas.map(function(e) {
+      // ESPERA UNA PROMESA COMO MUCHO "ms": UNA BASE QUE NO RESPONDE NO DEJA LA PÁGINA CARGANDO PARA SIEMPRE
+      function conLimite(promesa, ms, que) {
+        return Promise.race([promesa, new Promise(function(r, rechazar) {
+          setTimeout(function() { rechazar(new Error(que + ' tardó más de ' + (ms / 1000) + ' segundos.')); }, ms);
+        })]);
+      }
+
+      // ENTRADAS DE UNA BASE (opciones de LeerBase) CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA.
+      // Si LeerBase llegó a su tope, la lista queda marcada como incompleta
+      function leerBase(Tools, nombre, opciones, espera) {
+        return conLimite(Tools.LeerBase(opciones), espera || ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+          var lista = r.entradas.map(function(e) {
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
             c.rid = e.rid ? Number(e.rid) : null;
             c.alta = e.alta || '';
             return c;
           });
+          if (r.completa === false) incompletas.push(nombre);
+          return lista;
         });
       }
 
@@ -435,15 +449,15 @@
             entrevistas: ENTREVISTAS_PRUEBA
           });
         }
-        return cargarTools().then(function(Tools) {
-          // Las notas y las entrevistas solo completan la cronología: si no se leen, el detalle sigue
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          // Las notas y las entrevistas solo completan la cronología: si no se leen (o tardan), el detalle sigue sin ellas
           var opcional = function(p) { return p.catch(function() { return []; }); };
           return Promise.all([
-            leerBase(Tools, { dataid: DATAID_ESTUDIANTES }),
-            leerBase(Tools, { dataid: DATAID_CRITICIDAD }),
-            leerBase(Tools, { dataid: DATAID_RESPUESTAS }),
-            DATAID_PARCIALES ? opcional(leerBase(Tools, { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES })) : [],
-            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, { dataid: DATAID_ENTREVISTAS })) : []
+            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD }),
+            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS }),
+            DATAID_PARCIALES ? opcional(leerBase(Tools, 'CargaParcialesPrimero', { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES }, ESPERA_OPCIONAL)) : [],
+            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: DATAID_ENTREVISTAS }, ESPERA_OPCIONAL)) : []
           ]);
         }).then(function(r) {
           return { estudiantes: r[0], criticidad: r[1], respuestas: r[2], parciales: r[3], entrevistas: r[4] };
@@ -455,6 +469,7 @@
       // ---------------------------------------------------------
       var rolActual = ROL_INICIAL;
       var datos = null;
+      var incompletas = []; // bases que LeerBase no leyó enteras
       var usuario = null;
       var est = null; // { id, dni, nombre, info (entrada de Estudiantes o null), tramo, cohorte, entradas, crit, encuestas }
       var perfil = null; // datos del campus (Moodle) o null
@@ -1056,6 +1071,11 @@
       aplicarRol(ROL_INICIAL);
       cargarDatos().then(function(d) {
         datos = d;
+        if (incompletas.length) {
+          $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
+            ': la base tiene más entradas que las que lee la Página Tools, así que puede faltar parte de la trayectoria.';
+          $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
+        }
         mostrarUsuario();
       }).catch(function(e) {
         $('contenido-detalle').innerHTML = '<div style="padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</div>';
