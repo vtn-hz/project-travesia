@@ -71,7 +71,7 @@
 
   <!-- TABLA DE ESTUDIANTES -->
   <div style="position: relative !important; overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
-    <table id="tabla-estudiantes"
+    <table id="tabla-estudiantes" tabindex="-1"
       style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 720px !important; margin: 0 !important;">
       <thead>
         <tr style="background-color: #f5f6fa !important;">
@@ -728,7 +728,8 @@
           procesar();
           renderizarTodo();
           if (modal !== m) return;
-          m.disparador = document.querySelector('[data-asignar="' + f.id + '"]');
+          // Si la fila salió de los filtros, el foco va a la tabla
+          m.disparador = document.querySelector('[data-asignar="' + f.id + '"]') || $('tabla-estudiantes');
           cerrarModal(true);
           ignorarFilasHasta = Date.now() + 500;
         }).catch(function(err) {
@@ -826,6 +827,9 @@
         filtroKpi = filtroKpi === id ? '' : id;
         $('filtro-semaforo').value = '';
         renderizarTodo();
+        // La grilla se vuelve a armar: el foco vuelve a la misma tarjeta
+        var nueva = document.querySelector('[data-kpi="' + id + '"]');
+        if (nueva) nueva.focus();
       }
 
       document.addEventListener('click', function(e) {
