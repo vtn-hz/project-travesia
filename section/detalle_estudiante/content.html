@@ -584,7 +584,8 @@
       // ---------------------------------------------------------
       function puntosDeSerie(serie) {
         return est.entradas.filter(function(c) {
-          if (c.origen !== 'automatica' || numero(c.indice) === null) return false;
+          // Sin fecha válida no se puede ubicar en el eje (quedaría en 1970)
+          if (c.origen !== 'automatica' || numero(c.indice) === null || !tiempoDe(c)) return false;
           var tipo = tipoDeEntrada(c, est.encuestas);
           return serie === 'notas' ? tipo === 'notas' : tipo && tipo !== 'notas';
         }).sort(function(a, b) { return tiempoDe(a) - tiempoDe(b); }).map(function(c) {
@@ -595,7 +596,7 @@
 
       function graficoCriticidad(anchoDisponible) {
         var series = { notas: puntosDeSerie('notas'), encuestas: puntosDeSerie('encuestas') };
-        var marcas = est.entradas.filter(function(c) { return c.origen === 'manual' && ASIGNABLES.indexOf(c.semaforo) !== -1; }).map(function(c) {
+        var marcas = est.entradas.filter(function(c) { return c.origen === 'manual' && ASIGNABLES.indexOf(c.semaforo) !== -1 && tiempoDe(c); }).map(function(c) {
           return { t: tiempoDe(c), valor: VALOR_ASIGNADO[c.semaforo], nivel: c.semaforo, texto: c.motivo + ' (' + (c.autor || 'sin autor') + ')' };
         });
         var paso = est.info && est.info.periodo_paso_superior ? Date.parse(inicioDePeriodo(est.info.periodo_paso_superior)) : NaN;
@@ -605,14 +606,15 @@
             '<span style="color: #94a0b8 !important;">' + icono('tablero', 32) + '</span>Todavía no hay criticidad calculada: faltan notas de parciales o encuestas.</div>';
         }
         // Se dibuja al ancho real del contenedor para que el texto no se achique en pantallas angostas
-        var W = Math.max(280, Math.round(anchoDisponible || 640)), H = W < 480 ? 220 : 260, m = { i: 36, d: 16, a: 12, b: 32 };
+        var W = Math.max(200, Math.round(anchoDisponible || 640)), H = W < 480 ? 220 : 260, m = { i: 36, d: 16, a: 12, b: 32 };
         var ancho = W - m.i - m.d, alto = H - m.a - m.b;
         var tiempos = todas.map(function(p) { return p.t; });
         if (isFinite(paso)) tiempos.push(paso);
         var t0 = Math.min.apply(null, tiempos), t1 = Math.max.apply(null, tiempos);
         if (t0 === t1) { t0 -= 15 * 864e5; t1 += 15 * 864e5; }
         var x = function(t) { return m.i + (t - t0) / (t1 - t0) * ancho; };
-        var y = function(v) { return m.a + (100 - v) / 100 * alto; };
+        // Un índice fuera de 0 a 100 (dato anómalo) se dibuja en el borde, no fuera del gráfico
+        var y = function(v) { return m.a + (100 - Math.min(100, Math.max(0, v))) / 100 * alto; };
         var svg = '<svg id="grafico-criticidad" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Evolución de la criticidad de 0 a 100: parciales y encuestas" style="display: block !important; overflow: visible !important; font-family: inherit !important;">';
         // Bandas del semáforo (40 y 70)
         [[100, CORTES.rojo, 'rojo'], [CORTES.rojo, CORTES.amarillo, 'amarillo'], [CORTES.amarillo, 0, 'verde']].forEach(function(b) {
@@ -777,7 +779,7 @@
             return '<tr><td style="' + td + ' padding-left: 12px !important; white-space: nowrap !important; font-variant-numeric: tabular-nums !important;">' + fechaDeTiempo(c.t) + '</td>' +
               '<td style="' + td + '">' + chipNeutro(c.origen) + '</td>' +
               '<td style="' + td + ' white-space: nowrap !important;"><span style="display: inline-flex !important; align-items: center !important; gap: 4px !important;">' + cambio + '</span></td>' +
-              '<td style="' + td + '"><div style="font-weight: 500 !important;">' + escapar(c.quien) + '</div><div style="color: #47536b !important;">' + escapar(c.motivo) + '</div></td></tr>';
+              '<td style="' + td + ' overflow-wrap: anywhere !important;"><div style="font-weight: 500 !important;">' + escapar(c.quien) + '</div><div style="color: #47536b !important;">' + escapar(c.motivo) + '</div></td></tr>';
           }).join('') + '</tbody></table></div>';
       }
 
