@@ -38,6 +38,9 @@ Estas reglas están por encima de todas las demás.
 | Subsección "Database" → Base de datos "Criticidad" (cmid 60191, d=199) | [`data/moodle/BASE_CRITICIDAD.json`](data/moodle/BASE_CRITICIDAD.json) + [plantillas](data/moodle/plantillas/criticidad/). Sus entradas las escriben los scripts (no tienen archivo) |
 | Subsección "Hub" → Página "Entrevistas y Tutorías" (cmid 60198) | [`section/entrevistas/content.html`](section/entrevistas/content.html) |
 | Subsección "Database" → Base de datos "Entrevistas" (cmid 60197, d=202) | [`data/moodle/BASE_ENTREVISTAS.json`](data/moodle/BASE_ENTREVISTAS.json) + [plantilla de lista](data/moodle/plantillas/entrevistas/) |
+| Subsección "Database" → Base de datos "Estudiantes" (cmid 60262, d=206) | [`data/moodle/BASE_ESTUDIANTES.json`](data/moodle/BASE_ESTUDIANTES.json) + [plantilla de lista](data/moodle/plantillas/estudiantes/). Con "Aprobación requerida" (nadie aprueba: cada estudiante ve y edita solo su entrada), máximo 1 entrada por estudiante y sin comentarios |
+| Subsección "Estudiantes" (cmid 60263, sección 15791) → Área de texto y medios "Mi Trayectoria" (cmid 60264), visible sin entrar | [`section/vista_estudiante/content.html`](section/vista_estudiante/content.html) |
+| Subsección "Estudiantes" → Página "Información personal" (cmid 60265) | [`section/informacion_personal/content.html`](section/informacion_personal/content.html) |
 | Subsección "Pruebas" (cmid 59499, sección 15701): BD_Prueba, Prueba_Cuestionario, Prueba_Encuesta, Prueba2, database testing | — (pruebas creadas por el equipo directamente en Moodle) |
 | Encuesta "asdsad" (cmid 59541), en Zhakyz fuera de las subsecciones | — (parece una prueba creada directamente en Moodle) |
 

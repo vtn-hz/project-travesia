@@ -29,6 +29,10 @@
     "Utils": {
       "id": 15749,
       "cmid": 59931
+    },
+    "Estudiantes": {
+      "id": 15791,
+      "cmid": 60263
     }
   },
   "paginas": {
@@ -41,8 +45,8 @@
     "carga_notas_primero": 60209,
     "plan_estudios": 59718,
     "utils_widgets": 59932,
-    "vista_estudiante": null,
-    "informacion_personal": null,
+    "vista_estudiante": 60264,
+    "informacion_personal": 60265,
     "utils_tools": 59941
   },
   "encuestas": {
@@ -64,10 +68,11 @@
       "creada": "2026-10-25"
     },
     "estudiantes": {
-      "cmid": null,
-      "dataid": null,
+      "cmid": 60262,
+      "dataid": 206,
       "definicion": "data/moodle/BASE_ESTUDIANTES.json",
-      "subseccion": "Database"
+      "subseccion": "Database",
+      "creada": "2026-11-02"
     },
     "encuestas": {
       "cmid": 60190,

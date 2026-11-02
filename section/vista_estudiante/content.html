@@ -1,3 +1,4 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Mi Trayectoria" (cmid 60264) · 2026-11-02 -->
 <!-- SECCIÓN: VISTA DEL ESTUDIANTE · MI TRAVESÍA (ROL EST) · SCRUM-24 -->
 <!-- QUÉ ES: la pantalla de entrada del estudiante, con el diseño del detalle del estudiante (perfil a la izquierda). Hasta que el estudiante carga su información personal (entrada en la base Estudiantes), todas las opciones están deshabilitadas y un aviso lo indica. Con la entrada, habilita las de su tramo: 1.er año (Parciales de primer año y Entrevistas y Tutorías) o 2.º año en adelante (Encuesta Inicial, Encuesta Cuatrimestral y Entrevistas y Tutorías). La información personal se carga y se edita en otra Página: section/informacion_personal. Spec: docs/specs/vista-estudiante.md -->
 <!-- DATOS: solo lectura. Lee la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null) y las respuestas propias de la base Respuestas (d=166) para el estado de las encuestas. Antes de cargar la información personal, el perfil muestra los datos de la cuenta de Moodle; después, los de la base -->
@@ -77,13 +78,13 @@
       var PERIODO_ACTUAL = '2026-2';
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
-      var DATAID_ESTUDIANTES = null; // @config bases.estudiantes.dataid
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
       var CMID_CARGA_NOTAS = 60209; // @config paginas.carga_notas_primero
       var CMID_ENTREVISTAS = 60198; // @config paginas.entrevistas
-      var CMID_INFO_PERSONAL = null; // @config paginas.informacion_personal
+      var CMID_INFO_PERSONAL = 60265; // @config paginas.informacion_personal
 
 
       // Tramo que habilita cada opción (null: los dos) y el texto del botón cuando el tramo no la habilita

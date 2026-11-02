@@ -1,3 +1,4 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Información personal" (cmid 60265) · 2026-11-02 -->
 <!-- SECCIÓN: INFORMACIÓN PERSONAL DEL ESTUDIANTE (ROL EST) · SCRUM-24 -->
 <!-- QUÉ ES: Página propia donde el estudiante carga y edita su información personal. Se abre desde Mi Trayectoria (section/vista_estudiante), que deshabilita todas las secciones hasta que exista esta entrada. La primera vez pregunta si es estudiante de Ingeniería Industrial: con "No" muestra que por el momento el sistema está limitado a Ingeniería Industrial y no guarda nada. Spec: docs/specs/vista-estudiante.md -->
 <!-- DATOS: lee y escribe la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null). La primera vez precarga nombre, apellido, correo y DNI con la cuenta de Moodle; después, con los datos de la base. No genera entradas en Respuestas ni en Criticidad -->
@@ -92,8 +93,8 @@
       var ANIO_INGRESO_MINIMO = 2000;
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
-      var DATAID_ESTUDIANTES = null; // @config bases.estudiantes.dataid
-      var CMID_VISTA_ESTUDIANTE = null; // @config paginas.vista_estudiante
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
+      var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
       var URL_VISTA_LOCAL = '../vista_estudiante/content.html';
 
       // Campos de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json), en el orden de la plantilla de lista
