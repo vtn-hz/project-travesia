@@ -104,8 +104,10 @@
       };
       var DESTINOS_MOODLE = {
         informacion: CMID_INFO_PERSONAL ? '/mod/page/view.php?id=' + CMID_INFO_PERSONAL : null,
-        inicial: '/mod/feedback/complete.php?id=' + CMID_INICIAL,
-        cuatrimestral: '/mod/feedback/complete.php?id=' + CMID_CUATRIMESTRAL,
+        // Portada de la encuesta (view.php): al estudiante le muestra el botón para responder. complete.php da error a quien
+        // no puede responder (el equipo, con rol de profesor)
+        inicial: '/mod/feedback/view.php?id=' + CMID_INICIAL,
+        cuatrimestral: '/mod/feedback/view.php?id=' + CMID_CUATRIMESTRAL,
         parciales: CMID_CARGA_NOTAS ? '/mod/page/view.php?id=' + CMID_CARGA_NOTAS : null,
         entrevistas: CMID_ENTREVISTAS ? '/mod/page/view.php?id=' + CMID_ENTREVISTAS : null
       };
@@ -205,7 +207,8 @@
           return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
         }
         var m = String(valor || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+        // En Moodle llega como texto ("2 nov 2026", columna Modificada de la plantilla de Estudiantes): se muestra tal cual
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : String(valor || '').replace(/\s+/g, ' ').trim();
       }
 
       // 2026-2 → 2.º cuatrimestre 2026
@@ -310,7 +313,7 @@
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
             c.rid = e.rid ? Number(e.rid) : null;
-            c.modificada = e.modificada || e.alta || '';
+            c.modificada = e.modificada || e.alta || c._modificada || '';
             return c;
           }).filter(function(c) { return Number(c.id_usuario) === estado.usuario.id; });
         });
