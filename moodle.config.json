@@ -41,6 +41,8 @@
     "carga_notas_primero": 60209,
     "plan_estudios": 59718,
     "utils_widgets": 59932,
+    "vista_estudiante": null,
+    "informacion_personal": null,
     "utils_tools": 59941
   },
   "encuestas": {
@@ -63,7 +65,9 @@
     },
     "estudiantes": {
       "cmid": null,
-      "dataid": null
+      "dataid": null,
+      "definicion": "data/moodle/BASE_ESTUDIANTES.json",
+      "subseccion": "Database"
     },
     "encuestas": {
       "cmid": 60190,
