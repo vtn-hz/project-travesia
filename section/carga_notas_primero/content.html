@@ -1,0 +1,906 @@
+<!-- SECCIÓN: CARGA DE NOTAS DE 1.ER AÑO (ROL EST) · SCRUM-22 -->
+<!-- QUÉ ES: cada estudiante carga y edita las notas de sus parciales de las materias de 1.er año del Plan 2024. Spec: docs/specs/carga-parciales-primero.md (opción B: página propia) -->
+<!-- DATOS: escribe en Carga_Parciales_Primero (d=117) y lee las materias de la base Materias (d=152). Después de guardar, llama a CriticidadNotas({ rid }) de la Página Tools (necesita Tools v5) -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="carga-notas-primero"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- PANTALLA DE CARGA (OVERLAY CON RUEDITA) -->
+  <div id="loader-notas"
+    style="position: absolute !important; inset: 0 !important; z-index: 5 !important; display: flex; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 12px !important; background-color: rgba(252, 252, 252, 0.92) !important; border-radius: 10px !important; color: #47536b !important; font-size: 14px !important;">
+    <span style="width: 28px !important; height: 28px !important; border: 3px solid #dadee7 !important; border-top-color: #026bd4 !important; border-radius: 50% !important; animation: zk-girar-notas 0.8s linear infinite;"></span>
+    <span>Cargando las notas registradas…</span>
+  </div>
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · SBIRE</div>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Carga de notas de 1.er año</h3>
+      <p
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Registro de las notas de los parciales de las materias de 1.er año del Plan 2024. Cada estudiante ve y edita solo sus propias notas.</p>
+    </div>
+    <div id="badge-rol-notas"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-prueba-notas"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con DNI y notas ficticios. Las notas se guardan solo en la memoria del navegador y la criticidad se simula.</span>
+  </div>
+
+  <!-- AVISO: RESULTADO DE LA ÚLTIMA ACCIÓN -->
+  <div id="aviso-estado-notas" role="status" aria-live="polite"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important; font-size: 14px !important; color: #0b0e14 !important;">
+  </div>
+
+  <!-- TARJETA: FORMULARIO DE NOTA -->
+  <form id="form-nota-notas" novalidate
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin: 0 0 20px 0 !important; box-sizing: border-box !important;">
+    <div
+      style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; flex-wrap: wrap !important; margin-bottom: 14px !important;">
+      <div style="display: flex !important; align-items: center !important; gap: 12px !important;">
+        <span data-icono="importar"
+          style="width: 36px !important; height: 36px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;"></span>
+        <div>
+          <h4 id="titulo-form-notas"
+            style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important; color: #0b0e14 !important; line-height: 1.4 !important;">
+            Nueva nota</h4>
+          <div id="datos-estudiante-notas" style="font-size: 12px !important; color: #47536b !important;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPOS -->
+    <div style="display: flex !important; flex-wrap: wrap !important; gap: 12px 16px !important;">
+      <label for="campo-materia-notas" style="flex: 2 1 240px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Materia
+        <select id="campo-materia-notas" name="materia" data-zk-campo></select>
+      </label>
+      <label for="campo-instancia-notas" style="flex: 1 1 200px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Instancia
+        <select id="campo-instancia-notas" name="instancia" data-zk-campo></select>
+      </label>
+      <!-- Solo con la instancia Recuperatorio -->
+      <label id="grupo-recupera-notas" for="campo-recupera-notas" style="display: none; flex: 1 1 150px !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Parcial que recupera
+        <select id="campo-recupera-notas" name="recupera_a" data-zk-campo></select>
+      </label>
+      <label for="campo-fecha-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Fecha del parcial
+        <input id="campo-fecha-notas" name="fecha" type="date" data-zk-campo>
+      </label>
+      <label for="campo-condicion-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Condición
+        <select id="campo-condicion-notas" name="condicion" data-zk-campo></select>
+      </label>
+      <label for="campo-nota-notas" style="flex: 0 1 110px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Nota
+        <!-- type="text": con type="number" el navegador descarta la coma ("1,0" llegaba como 10). Sin inputmode="decimal", que en teclados en español solo ofrece la coma -->
+        <input id="campo-nota-notas" name="nota" type="text" autocomplete="off" placeholder="Ej.: 4.5" data-zk-campo>
+      </label>
+    </div>
+    <p id="ayuda-form-notas" style="margin: 10px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">
+      La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial que recupera: si se recuperó más de un parcial, cargar un recuperatorio por cada uno. Con la condición Ausente, la nota no se completa.
+      Al recursar una materia, cargar las notas nuevas con su fecha: las de la cursada anterior se conservan.</p>
+
+    <!-- ERRORES DEL FORMULARIO -->
+    <div id="errores-form-notas"
+      style="display: none; margin: 12px 0 0 0 !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid #fdcece !important; color: #0b0e14 !important; font-size: 14px !important;">
+    </div>
+
+    <!-- ACCIONES -->
+    <div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 16px !important;">
+      <button id="btn-guardar-notas" type="submit"
+        style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important;">
+        <span data-icono="guardar"></span><span id="texto-guardar-notas">Guardar nota</span></button>
+      <button id="btn-cancelar-notas" type="button"
+        style="display: none; height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-transform: none !important; cursor: pointer !important;">
+        Cancelar la edición</button>
+    </div>
+  </form>
+
+  <!-- TARJETA: NOTAS REGISTRADAS -->
+  <div
+    style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 12px !important;">
+      <h4 style="margin: 0 !important; font-size: 16px !important; font-weight: 600 !important; color: #0b0e14 !important; line-height: 1.4 !important;">
+        Notas registradas</h4>
+      <span id="contador-notas" style="font-size: 12px !important; color: #47536b !important;"></span>
+    </div>
+    <div id="tabla-notas" style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;"></div>
+  </div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-notas-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-notas-style';
+        styleEl.innerHTML =
+          '#carga-notas-primero > nolink { display: block; }' +
+          '#carga-notas-primero [data-zk-campo]:focus-visible, #carga-notas-primero button:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5) !important; outline-offset: 2px !important; }' +
+          '#carga-notas-primero [data-zk-campo]:disabled { background-color: #f5f6fa !important; color: #94a0b8 !important; cursor: not-allowed !important; }' +
+          '#carga-notas-primero tbody tr:hover { background-color: rgba(218, 222, 231, 0.2) !important; }' +
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
+          '@keyframes zk-girar-notas { to { transform: rotate(360deg); } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var EN_MOODLE = !ES_VISTA_LOCAL && !!(window.M && M.cfg && M.cfg.wwwroot);
+      // Ids de Moodle: las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_PARCIALES = 117; // @config bases.carga_parciales_primero.dataid
+      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
+      // CriticidadNotas({ rid }) existe desde Tools v5. Con una versión anterior la nota se guarda igual, sin criticidad
+      var VERSION_MINIMA_TOOLS = 5;
+
+      // Columnas de la plantilla de lista de Carga_Parciales_Primero (data/moodle/plantillas/carga_parciales_primero/listtemplate.html), en orden
+      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
+
+      // Cantidad de parciales de cada materia (docs/specs/carga-parciales-primero.md → Reglas de los campos). Los recuperatorios no se
+      // configuran: cada uno indica qué parcial recupera. Provisorio, según lo que recuerda el equipo: pasa a Carga_Materias_Primero
+      // cuando se confirme. Los finales quedan fuera del alcance
+      var PARCIALES_POR_DEFECTO = 2;
+      var PARCIALES = [
+        { materia: 'Física A', parciales: 3 }
+      ];
+      var CONDICIONES = ['Aprobado', 'Desaprobado', 'Ausente'];
+      // El campo Nota es obligatorio en Moodle: con la condición Ausente se guarda 0, que el cálculo no usa (cuenta como ausencia)
+      var NOTA_AUSENTE = '0';
+      // Primer año del Plan 2024: ninguna nota puede ser anterior
+      var FECHA_MINIMA = '2024-01-01';
+
+      // Materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2). En Moodle se leen de la base Materias; esta lista es el respaldo
+      // y la vista local. Los nombres coinciden con Carga_Materias_Primero, que el cálculo usa para cruzar el umbral
+      var MATERIAS_PRIMERO = [
+        { nombre: 'Análisis Matemático I', cuatrimestre: 1 },
+        { nombre: 'Álgebra I- B', cuatrimestre: 1 },
+        { nombre: 'Fundamentos de Química', cuatrimestre: 1 },
+        { nombre: 'Análisis Matemático II', cuatrimestre: 2 },
+        { nombre: 'Álgebra II', cuatrimestre: 2 },
+        { nombre: 'Física A', cuatrimestre: 2 },
+        { nombre: 'Fundamentos de la Programación', cuatrimestre: 2 }
+      ];
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>',
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        importar: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>',
+        guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
+        editar: '<path d="m14.06 9.02.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DNI Y NOTAS FICTICIOS)
+      // ---------------------------------------------------------
+      var INTEGRANTES = [
+        { usuario: 3770, dni: '99000005', nombre: 'Luca Zuanetti' },
+        { usuario: 2806, dni: '99000001', nombre: 'Gian Luca Distefano' },
+        { usuario: 3751, dni: '99000004', nombre: 'Santiago Nicolás Yanosky' },
+        { usuario: 3773, dni: '99000006', nombre: 'Nicolás Gabriel Zuviria' },
+        { usuario: 3623, dni: '99000003', nombre: 'Nahuel Spikerman' },
+        { usuario: 2048, dni: '99000002', nombre: 'Valentino Hernández Pascual' }
+      ];
+      // Notas de todos los integrantes: la vista solo muestra las del estudiante simulado (igual que en Moodle)
+      var NOTAS_PRUEBA = [
+        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2025-05-13', '2', 'Desaprobado', ''],
+        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '7', 'Aprobado', ''],
+        ['99000005', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '3', 'Desaprobado', ''],
+        ['99000005', 'Álgebra I- B', 'Recuperatorio', '2026-06-09', '6.5', 'Aprobado', 'Parcial 1'],
+        ['99000005', 'Fundamentos de Química', 'Parcial 1', '2026-05-26', '0', 'Ausente', ''],
+        ['99000005', 'Análisis Matemático II', 'Parcial 1', '2026-09-22', '8', 'Aprobado', ''],
+        ['99000001', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '4', 'Desaprobado', ''],
+        ['99000001', 'Análisis Matemático I', 'Parcial 2', '2026-06-23', '5', 'Aprobado', ''],
+        ['99000004', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '2', 'Desaprobado', ''],
+        ['99000006', 'Física A', 'Parcial 1', '2026-09-29', '9', 'Aprobado', ''],
+        ['99000006', 'Física A', 'Parcial 2', '2026-10-20', '5', 'Aprobado', ''],
+        ['99000003', 'Fundamentos de la Programación', 'Parcial 1', '2026-10-06', '7.5', 'Aprobado', '']
+      ];
+
+      // ---------------------------------------------------------
+      // ESTADO DE LA VISTA
+      // ---------------------------------------------------------
+      var estado = {
+        usuario: null,       // { id, dni, nombre }
+        materias: [],        // nombres de las materias de 1.er año
+        notas: [],           // notas propias: { rid, dni, estudiante, materia, instancia, fecha, nota, estado, recupera_a }
+        editando: null,      // rid de la nota en edición (null: nota nueva)
+        guardando: false
+      };
+      var memoriaLocal = { notas: [], proximoRid: 90001 };
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function $(id) { return document.getElementById(id); }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      // NOMBRE DE MATERIA COMPARABLE (COMO EL CÁLCULO DE TOOLS: SIN MAYÚSCULAS, ESPACIOS, GUIONES NI GUIONES BAJOS)
+      function claveMateria(m) { return String(m || '').toLowerCase().replace(/[\s\-_]/g, ''); }
+
+      // FECHA DE HOY EN AAAA-MM-DD (HORA LOCAL)
+      function hoyIso() {
+        var d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+
+      // AAAA-MM-DD → DD-MM-AAAA (LO QUE SE MUESTRA)
+      function fechaVisible(iso) {
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '').trim());
+        return m ? m[3] + '-' + m[2] + '-' + m[1] : String(iso || '');
+      }
+
+      function esAusente(n) { return String(n.estado || '').toLowerCase().indexOf('ausente') !== -1; }
+
+      // PERÍODO DE UNA FECHA, IGUAL QUE periodoDeFecha DE TOOLS: ENERO A JULIO → AAAA-1, AGOSTO A DICIEMBRE → AAAA-2
+      function periodoDeFecha(fecha) {
+        var m = /^(\d{4})-(\d{2})/.exec(String(fecha || ''));
+        return m ? m[1] + '-' + (Number(m[2]) <= 7 ? 1 : 2) : '';
+      }
+
+      // AAAA-1 → "1.º 2026" (LO QUE SE MUESTRA)
+      function periodoVisible(periodo) {
+        var m = /^(\d{4})-([12])$/.exec(periodo);
+        return m ? m[2] + '.º ' + m[1] : '—';
+      }
+
+      function parcialesDe(materia) {
+        var p = PARCIALES.filter(function(e) { return claveMateria(e.materia) === claveMateria(materia); })[0];
+        return p ? p.parciales : PARCIALES_POR_DEFECTO;
+      }
+
+      // INSTANCIAS DE UNA MATERIA: { valor, etiqueta, recupera }. "valor" se guarda en Instancia y "recupera" en Recupera_a.
+      // Un solo "Recuperatorio" con recupera = null: el estudiante elige qué parcial recupera. Sirve igual si la materia tiene
+      // 1 recuperatorio o uno por parcial (se carga uno por cada parcial recuperado)
+      function instanciasDe(materia) {
+        var lista = [];
+        for (var p = 1; p <= parcialesDe(materia); p++) lista.push({ valor: 'Parcial ' + p, etiqueta: 'Parcial ' + p, recupera: '' });
+        lista.push({ valor: 'Recuperatorio', etiqueta: 'Recuperatorio', recupera: null });
+        return lista;
+      }
+
+      // Una instancia que no está en la lista de la materia (nota anterior a este cambio) se edita igual: un recuperatorio pide qué parcial recupera
+      function instanciaDe(materia, valor) {
+        var inst = instanciasDe(materia).filter(function(i) { return i.valor === valor; })[0];
+        if (inst || !valor) return inst || null;
+        return { valor: valor, etiqueta: valor, recupera: /^recuperatorio/i.test(valor) ? null : '' };
+      }
+
+      // INSTANCIA COMO SE MUESTRA EN LA TABLA Y LOS AVISOS: "Recuperatorio (del Parcial 2)"
+      function etiquetaNota(n) {
+        return n.recupera_a ? n.instancia + ' (del ' + n.recupera_a + ')' : n.instancia;
+      }
+
+      // ESPERA UN TIEMPO (SOLO PARA SIMULAR MOODLE EN LOCAL)
+      function esperar(ms, valor) { return new Promise(function(ok) { setTimeout(function() { ok(valor); }, ms); }); }
+
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
+      // ---------------------------------------------------------
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, la próxima llamada vuelve a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE
+      // ---------------------------------------------------------
+      // USUARIO DE LA SESIÓN: id, DNI (nombre de usuario del campus) y nombre completo (encabezado del perfil)
+      function leerUsuarioMoodle() {
+        var u = { id: Number(M.cfg.userId), dni: '', nombre: '' };
+        var dni = fetch(M.cfg.wwwroot + '/login/change_password.php', { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var el = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-name="username"]');
+            var t = el ? el.textContent.trim() : '';
+            if (/^\d{7,9}$/.test(t)) u.dni = t;
+          }, function() { /* sin DNI: la vista lo informa */ });
+        var nombre = fetch(M.cfg.wwwroot + '/user/profile.php', { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var el = new DOMParser().parseFromString(html, 'text/html').querySelector('.page-context-header .page-header-headings h1, .page-context-header .page-header-headings h2');
+            u.nombre = el ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+          }, function() { /* el nombre es solo para mostrar */ });
+        return Promise.all([dni, nombre]).then(function() { return u; });
+      }
+
+      // MATERIAS DE 1.ER AÑO DEL PLAN 2024 DESDE LA BASE MATERIAS (LA VERSIÓN VIGENTE DE CADA CÓDIGO, SIN BAJAS)
+      function leerMateriasMoodle(Tools) {
+        return Tools.LeerBase({ dataid: DATAID_MATERIAS }).then(function(r) {
+          var ultima = {};
+          r.entradas.forEach(function(e, i) {
+            var c = e.campos;
+            if (String(c.plan).trim() !== '2024') return;
+            var orden = /^\d+$/.test(e.rid || '') ? Number(e.rid) : i;
+            if (!ultima[c.codigo] || orden >= ultima[c.codigo].orden) ultima[c.codigo] = { orden: orden, c: c };
+          });
+          var lista = Object.keys(ultima).map(function(k) { return ultima[k].c; })
+            .filter(function(c) { return c.estado !== 'baja' && (String(c.cuatrimestre) === '1' || String(c.cuatrimestre) === '2'); })
+            .map(function(c) { return { nombre: String(c.nombre).trim(), cuatrimestre: Number(c.cuatrimestre) }; });
+          if (!lista.length) throw new Error('La base Materias no contiene materias de 1.er año del Plan 2024.');
+          return lista;
+        });
+      }
+
+      // NOTAS PROPIAS DESDE Carga_Parciales_Primero. Con "requiere aprobación", Moodle ya devuelve solo las del estudiante;
+      // el filtro por DNI evita mostrar las de otros a quien tenga permiso de verlas todas
+      function leerNotasMoodle(Tools, dni) {
+        return Tools.LeerBase({
+          dataid: DATAID_PARCIALES,
+          filas: 'tr[data-tipo="entrada_parcial"]',
+          columnas: COLUMNAS_PARCIALES,
+          filtro: function(e) { return String(e.campos.dni || '').trim() === dni; }
+        }).then(function(r) {
+          return r.entradas.map(function(e) {
+            var n = { rid: e.rid ? Number(e.rid) : null };
+            COLUMNAS_PARCIALES.forEach(function(k) { n[k] = String(e.campos[k] || '').trim(); });
+            return n;
+          });
+        });
+      }
+
+      // GUARDAR UNA NOTA (rid = null: NUEVA; rid: EDICIÓN) → PROMESA DEL rid.
+      // Usa el formulario de Moodle de la base: los campos se ubican por su etiqueta y Moodle redirige a view.php?d=…&rid=<rid>
+      function guardarNotaMoodle(registro, rid) {
+        var urlForm = M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_PARCIALES + (rid ? '&rid=' + rid : '');
+        return fetch(urlForm, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de la base Carga_Parciales_Primero.');
+            // Moodle agrega "Campo obligatorio" a la etiqueta de los campos obligatorios (por ejemplo, "Estado Campo obligatorio")
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              var etiqueta = l.textContent.replace(/\s+/g, ' ').trim().toLowerCase().replace(/\s*campo obligatorio$/, '');
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[etiqueta] = ctrl;
+            });
+            var fd = new FormData(form);
+            COLUMNAS_PARCIALES.forEach(function(k) {
+              var ctrl = porCampo[k];
+              if (!ctrl) throw new Error('Falta el campo "' + k + '" en la base Carga_Parciales_Primero.');
+              // Estado es un menú de selección múltiple: se deja una sola opción
+              fd.delete(ctrl.name);
+              fd.append(ctrl.name, registro[k] === null || registro[k] === undefined ? '' : String(registro[k]));
+            });
+            fd.set('d', String(DATAID_PARCIALES));
+            fd.set('rid', String(rid || 0));
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió HTTP ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              if (!errores.length && rid) return rid;
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la nota guardada.');
+            });
+          });
+      }
+
+      // CRITICIDAD DE LAS NOTAS (Tools v5): NO BLOQUEA NI SE INFORMA AL ESTUDIANTE. Si falla, Tools la deja pendiente y la reintenta
+      function registrarCriticidad(rid) {
+        cargarTools().then(function(Tools) {
+          if (!(Tools.version >= VERSION_MINIMA_TOOLS)) {
+            console.warn('[Carga de notas] La Página Tools publicada es la v' + Tools.version + ': la nota ' + rid + ' se guardó sin criticidad (requiere v' + VERSION_MINIMA_TOOLS + ').');
+            return;
+          }
+          return Tools.CriticidadNotas({ rid: rid });
+        }).catch(function(e) {
+          console.warn('[Carga de notas] Criticidad pendiente de la nota ' + rid + ': ' + (e && e.message ? e.message : e));
+        });
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS: MOODLE O VISTA LOCAL
+      // ---------------------------------------------------------
+      function cargarDatosIniciales() {
+        if (!EN_MOODLE) {
+          $('aviso-datos-prueba-notas').style.setProperty('display', 'flex', 'important');
+          memoriaLocal.notas = NOTAS_PRUEBA.map(function(f) {
+            var n = { rid: memoriaLocal.proximoRid++ };
+            ['dni', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'].forEach(function(k, i) { n[k] = f[i]; });
+            var integrante = INTEGRANTES.filter(function(x) { return x.dni === n.dni; })[0];
+            n.estudiante = integrante ? integrante.nombre : '';
+            return n;
+          });
+          return esperar(300).then(function() { return { materias: MATERIAS_PRIMERO.slice() }; });
+        }
+        return Promise.all([leerUsuarioMoodle(), cargarTools()]).then(function(res) {
+          var u = res[0], Tools = res[1];
+          estado.usuario = u;
+          if (!u.dni) throw new Error('No se pudo leer el DNI de la cuenta del campus. La carga de notas necesita el DNI como nombre de usuario.');
+          var materias = leerMateriasMoodle(Tools).catch(function(e) {
+            console.warn('[Carga de notas] Materias desde la lista de respaldo: ' + e.message);
+            return MATERIAS_PRIMERO.slice();
+          });
+          return Promise.all([materias, leerNotasMoodle(Tools, u.dni)]).then(function(r) {
+            estado.notas = r[1];
+            return { materias: r[0] };
+          });
+        });
+      }
+
+      // NOTAS DEL ESTUDIANTE SIMULADO (VISTA LOCAL)
+      function notasLocalesDe(dni) {
+        return memoriaLocal.notas.filter(function(n) { return n.dni === dni; }).map(function(n) { return Object.assign({}, n); });
+      }
+
+      function guardarNota(registro, rid) {
+        if (EN_MOODLE) return guardarNotaMoodle(registro, rid);
+        return esperar(400).then(function() {
+          if (rid) {
+            var n = memoriaLocal.notas.filter(function(x) { return x.rid === rid; })[0];
+            Object.assign(n, registro);
+            return rid;
+          }
+          var nueva = Object.assign({ rid: memoriaLocal.proximoRid++ }, registro);
+          memoriaLocal.notas.push(nueva);
+          return nueva.rid;
+        });
+      }
+
+      // ---------------------------------------------------------
+      // VALIDACIÓN
+      // ---------------------------------------------------------
+      // LEE EL FORMULARIO → { registro, errores }
+      function leerFormulario() {
+        var materia = $('campo-materia-notas').value;
+        var instancia = instanciaDe(materia, $('campo-instancia-notas').value);
+        var recupera = instancia && instancia.recupera === null ? $('campo-recupera-notas').value : (instancia ? instancia.recupera : '');
+        var fecha = $('campo-fecha-notas').value;
+        var condicion = $('campo-condicion-notas').value;
+        var notaTexto = $('campo-nota-notas').value.trim();
+        var errores = [];
+
+        if (!materia) errores.push('Materia: seleccionar una materia de la lista.');
+        if (!instancia) errores.push('Instancia: seleccionar una instancia de la lista.');
+        else if (instancia.recupera === null && !recupera) errores.push('Parcial que recupera: seleccionar el parcial que se recuperó.');
+        if (!fecha) errores.push('Fecha del parcial: completar la fecha.');
+        else if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) errores.push('Fecha del parcial: "' + fecha + '" no es una fecha válida.');
+        else if (fecha > hoyIso()) errores.push('Fecha del parcial: ' + fechaVisible(fecha) + ' es posterior a la fecha de hoy.');
+        else if (fecha < FECHA_MINIMA) errores.push('Fecha del parcial: ' + fechaVisible(fecha) + ' es anterior al inicio del Plan 2024.');
+        if (CONDICIONES.indexOf(condicion) === -1) errores.push('Condición: seleccionar Aprobado, Desaprobado o Ausente.');
+
+        var nota = NOTA_AUSENTE;
+        if (condicion && condicion !== 'Ausente') {
+          // Punto como separador decimal y hasta dos decimales: "4.5" sí, "4,5" no
+          if (notaTexto === '') errores.push('Nota: completar la nota (con la condición ' + condicion + ').');
+          else if (/^\d{1,2},\d+$/.test(notaTexto)) errores.push('Nota: "' + notaTexto + '" debe usar punto como separador decimal (por ejemplo, ' + notaTexto.replace(',', '.') + ').');
+          else if (!/^\d{1,2}(\.\d{1,2})?$/.test(notaTexto) || Number(notaTexto) > 10) errores.push('Nota: "' + notaTexto + '" debe ser un número de 0 a 10, con hasta dos decimales y punto como separador (por ejemplo, 4.5).');
+          else nota = String(Number(notaTexto));
+        }
+
+        return {
+          errores: errores,
+          registro: {
+            dni: estado.usuario.dni,
+            estudiante: estado.usuario.nombre,
+            materia: materia,
+            instancia: instancia ? instancia.valor : '',
+            fecha: fecha,
+            nota: nota,
+            estado: condicion,
+            recupera_a: recupera || ''
+          }
+        };
+      }
+
+      // NOTA YA REGISTRADA DE LA MISMA MATERIA EN EL MISMO PERÍODO (SIN CONTAR LA QUE SE ESTÁ EDITANDO): un parcial se repite por su
+      // instancia y un recuperatorio, por el parcial que recupera. En otro período es una recursada: se guarda como nota nueva
+      function notaRepetida(registro) {
+        return estado.notas.filter(function(n) {
+          if (n.rid === estado.editando || claveMateria(n.materia) !== claveMateria(registro.materia) ||
+            periodoDeFecha(n.fecha) !== periodoDeFecha(registro.fecha)) return false;
+          var recupera = String(n.recupera_a || '').trim();
+          if (registro.recupera_a) return recupera === registro.recupera_a;
+          return !recupera && String(n.instancia).trim().toLowerCase() === registro.instancia.toLowerCase();
+        })[0] || null;
+      }
+
+      // ---------------------------------------------------------
+      // UTILIDADES DE PRESENTACIÓN
+      // ---------------------------------------------------------
+      var ESTILO_CAMPO = 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid #c2c9d6 !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 400 !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
+
+      var COLORES_CONDICION = {
+        Aprobado: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f' },
+        Desaprobado: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808' },
+        Ausente: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', texto: '#566481' }
+      };
+
+      // CHIP DE CONDICIÓN: PUNTO + TEXTO
+      function chipCondicion(texto) {
+        var c = COLORES_CONDICION[texto] || COLORES_CONDICION.Ausente;
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + c.borde + ' !important; background-color: ' + c.fondo + ' !important; color: ' + c.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + c.punto + ' !important;"></span>' + escapar(texto || 'Sin condición') + '</span>';
+      }
+
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      // AVISO DE RESULTADO: tipo 'ok', 'error' o 'alerta'; accion: botón opcional { texto, rid }
+      function mostrarAviso(tipo, mensaje, accion) {
+        var colores = {
+          ok: { fondo: '#f6fef6', borde: '#c5f7c5', icono: '#1f7a1f' },
+          error: { fondo: '#fff0f0', borde: '#fdcece', icono: '#c20a0a' },
+          alerta: { fondo: '#fdf1ce', borde: 'rgba(246, 206, 85, 0.5)', icono: '#aa8109' }
+        }[tipo];
+        var aviso = $('aviso-estado-notas');
+        aviso.style.setProperty('background-color', colores.fondo, 'important');
+        aviso.style.setProperty('border', '1px solid ' + colores.borde, 'important');
+        aviso.innerHTML = '<span style="color: ' + colores.icono + ' !important; padding-top: 1px !important;">' + icono(tipo === 'ok' ? 'ok' : tipo === 'error' ? 'error' : 'alerta', 20) + '</span>' +
+          '<span style="flex: 1 1 auto !important;">' + escapar(mensaje) +
+          (accion ? ' <button type="button" data-editar-rid="' + accion.rid + '" style="margin-left: 4px !important; padding: 0 !important; border: 0 !important; background: none !important; color: #026bd4 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-decoration: underline !important; cursor: pointer !important;">' + escapar(accion.texto) + '</button>' : '') +
+          '</span>';
+        aviso.style.setProperty('display', 'flex', 'important');
+      }
+
+      function ocultarAviso() { $('aviso-estado-notas').style.setProperty('display', 'none'); }
+
+      function mostrarErrores(errores) {
+        var caja = $('errores-form-notas');
+        if (!errores.length) { caja.style.setProperty('display', 'none'); caja.innerHTML = ''; return; }
+        caja.innerHTML = '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important;"><span style="color: #c20a0a !important; padding-top: 1px !important;">' + icono('error', 20) + '</span><div>' +
+          '<b style="font-weight: 600 !important;">La nota no se guardó.</b>' +
+          '<ul style="margin: 4px 0 0 0 !important; padding: 0 0 0 18px !important;">' + errores.map(function(e) { return '<li style="margin: 2px 0 !important;">' + escapar(e) + '</li>'; }).join('') + '</ul></div></div>';
+        caja.style.setProperty('display', 'block', 'important');
+      }
+
+      function ocultarCargando() { $('loader-notas').style.setProperty('display', 'none'); }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      function renderizarOpciones(materias) {
+        var porCuatrimestre = { 1: [], 2: [] };
+        materias.forEach(function(m) { (porCuatrimestre[m.cuatrimestre] || porCuatrimestre[2]).push(m.nombre); });
+        $('campo-materia-notas').innerHTML = '<option value="">Seleccionar una materia</option>' +
+          [1, 2].map(function(c) {
+            return '<optgroup label="' + (c === 1 ? '1.er' : '2.º') + ' cuatrimestre">' + porCuatrimestre[c].map(function(n) {
+              return '<option value="' + escapar(n) + '">' + escapar(n) + '</option>';
+            }).join('') + '</optgroup>';
+          }).join('');
+        actualizarInstancias();
+        $('campo-condicion-notas').innerHTML = '<option value="">Seleccionar la condición</option>' + CONDICIONES.map(function(c) {
+          return '<option value="' + c + '">' + c + '</option>';
+        }).join('');
+        $('campo-fecha-notas').setAttribute('max', hoyIso());
+        $('campo-fecha-notas').setAttribute('min', FECHA_MINIMA);
+        var campos = document.querySelectorAll('#carga-notas-primero [data-zk-campo]');
+        for (var i = 0; i < campos.length; i++) campos[i].setAttribute('style', ESTILO_CAMPO);
+      }
+
+      function renderizarUsuario() {
+        var u = estado.usuario;
+        $('badge-rol-notas').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + escapar(u.nombre || 'Estudiante') + chipRol('EST');
+        $('datos-estudiante-notas').textContent = 'DNI ' + (u.dni || 'sin leer') + (u.nombre ? ' · ' + u.nombre : '') + ' (de la cuenta del campus)';
+      }
+
+      function renderizarTabla() {
+        var notas = estado.notas.slice().sort(function(a, b) {
+          return a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : claveMateria(a.materia) < claveMateria(b.materia) ? -1 : 1;
+        });
+        $('contador-notas').textContent = notas.length === 1 ? '1 nota' : notas.length + ' notas';
+        if (!notas.length) {
+          $('tabla-notas').innerHTML = '<div style="padding: 24px 16px !important; text-align: center !important; color: #47536b !important; font-size: 14px !important;">No hay notas registradas. Las notas guardadas con el formulario Nueva nota se muestran en esta tabla.</div>';
+          return;
+        }
+        var th = 'text-align: left !important; padding: 0 16px !important; height: 52px !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 14px !important; font-weight: 500 !important; border: 0 !important; white-space: nowrap !important;';
+        var td = 'padding: 0 16px !important; height: 52px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 14px !important; color: #0b0e14 !important; vertical-align: middle !important;';
+        $('tabla-notas').innerHTML = '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
+          '<thead><tr>' +
+          '<th style="' + th + '">Materia</th><th style="' + th + '">Instancia</th><th style="' + th + '">Fecha</th><th style="' + th + '">Cuatrimestre</th>' +
+          '<th style="' + th + ' text-align: right !important;">Nota</th><th style="' + th + '">Condición</th><th style="' + th + '"><span style="position: absolute !important; left: -9999px !important;">Acciones</span></th>' +
+          '</tr></thead><tbody>' +
+          notas.map(function(n) {
+            var enEdicion = n.rid === estado.editando;
+            return '<tr style="border: 0 !important;' + (enEdicion ? ' background-color: #e5f2ff !important;' : '') + ' animation: zk-aparecer 0.25s ease both !important;">' +
+              '<td style="' + td + '">' + escapar(n.materia) + '</td>' +
+              '<td style="' + td + '">' + escapar(etiquetaNota(n)) + '</td>' +
+              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(fechaVisible(n.fecha)) + '</td>' +
+              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(periodoVisible(periodoDeFecha(n.fecha))) + '</td>' +
+              '<td style="' + td + ' text-align: right !important; font-variant-numeric: tabular-nums !important;">' + (esAusente(n) ? '<span style="color: #47536b !important;">—</span>' : escapar(n.nota)) + '</td>' +
+              '<td style="' + td + '">' + chipCondicion(n.estado) + '</td>' +
+              '<td style="' + td + ' text-align: right !important;">' +
+              '<button type="button" data-editar-rid="' + n.rid + '" aria-label="Editar la nota de ' + escapar(n.materia) + ', ' + escapar(n.instancia) + '" style="height: 32px !important; padding: 0 10px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">' +
+              icono('editar', 16) + 'Editar</button></td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+
+      // MODO DEL FORMULARIO: NOTA NUEVA O EDICIÓN DE UNA EXISTENTE
+      function prepararFormulario(nota) {
+        estado.editando = nota ? nota.rid : null;
+        $('titulo-form-notas').textContent = nota ? 'Editar nota' : 'Nueva nota';
+        $('texto-guardar-notas').textContent = nota ? 'Guardar cambios' : 'Guardar nota';
+        $('btn-cancelar-notas').style.setProperty('display', nota ? 'inline-flex' : 'none', nota ? 'important' : '');
+        $('campo-materia-notas').value = nota ? nota.materia : '';
+        // Una materia que ya no está en la lista se agrega para no perderla al editar
+        if (nota && $('campo-materia-notas').value !== nota.materia) {
+          var op = document.createElement('option');
+          op.value = nota.materia;
+          op.textContent = nota.materia;
+          $('campo-materia-notas').appendChild(op);
+          $('campo-materia-notas').value = nota.materia;
+        }
+        actualizarInstancias(nota ? nota.instancia : '');
+        actualizarRecupera(nota ? String(nota.recupera_a || '') : '');
+        $('campo-fecha-notas').value = nota ? nota.fecha : '';
+        var condicion = nota ? CONDICIONES.filter(function(c) { return String(nota.estado).indexOf(c) !== -1; })[0] || '' : '';
+        $('campo-condicion-notas').value = condicion;
+        $('campo-nota-notas').value = nota && condicion !== 'Ausente' ? nota.nota : '';
+        actualizarCampoNota();
+        mostrarErrores([]);
+        renderizarTabla();
+      }
+
+      // CON LA CONDICIÓN AUSENTE NO SE COMPLETA LA NOTA
+      function actualizarCampoNota() {
+        var ausente = $('campo-condicion-notas').value === 'Ausente';
+        var campo = $('campo-nota-notas');
+        campo.disabled = ausente;
+        if (ausente) campo.value = '';
+        campo.setAttribute('placeholder', ausente ? 'No corresponde' : 'Ej.: 4.5');
+      }
+
+      // INSTANCIAS DE LA MATERIA ELEGIDA; valor: la que queda seleccionada (por defecto, la actual si sigue en la lista)
+      function actualizarInstancias(valor) {
+        var materia = $('campo-materia-notas').value;
+        var select = $('campo-instancia-notas');
+        var elegido = valor === undefined ? select.value : valor;
+        if (!materia) {
+          select.innerHTML = '<option value="">Seleccionar primero la materia</option>';
+        } else {
+          var lista = instanciasDe(materia);
+          var extra = elegido && !lista.some(function(i) { return i.valor === elegido; }) ? [instanciaDe(materia, elegido)] : [];
+          select.innerHTML = '<option value="">Seleccionar una instancia</option>' + lista.concat(extra).map(function(i) {
+            return '<option value="' + escapar(i.valor) + '">' + escapar(i.etiqueta) + '</option>';
+          }).join('');
+          select.value = elegido || '';
+        }
+        actualizarRecupera();
+      }
+
+      // "PARCIAL QUE RECUPERA": SOLO CON UN RECUPERATORIO QUE NO TIENE UN PARCIAL FIJO
+      function actualizarRecupera(valor) {
+        var materia = $('campo-materia-notas').value;
+        var inst = instanciaDe(materia, $('campo-instancia-notas').value);
+        var grupo = $('grupo-recupera-notas');
+        var select = $('campo-recupera-notas');
+        var elegido = valor === undefined ? select.value : valor;
+        if (!inst || inst.recupera !== null) {
+          grupo.style.setProperty('display', 'none');
+          select.innerHTML = '';
+          return;
+        }
+        var parciales = instanciasDe(materia).filter(function(i) { return i.recupera === ''; }).map(function(i) { return i.valor; });
+        if (elegido && parciales.indexOf(elegido) === -1) parciales.push(elegido);
+        select.innerHTML = '<option value="">Seleccionar un parcial</option>' + parciales.map(function(p) {
+          return '<option value="' + escapar(p) + '">' + escapar(p) + '</option>';
+        }).join('');
+        select.value = elegido || '';
+        grupo.style.setProperty('display', 'flex', 'important');
+      }
+
+      function bloquearFormulario(bloquear) {
+        estado.guardando = bloquear;
+        var controles = document.querySelectorAll('#form-nota-notas [data-zk-campo], #form-nota-notas button');
+        for (var i = 0; i < controles.length; i++) controles[i].disabled = bloquear;
+        if (!bloquear) actualizarCampoNota();
+        $('texto-guardar-notas').textContent = bloquear ? 'Guardando…' : (estado.editando ? 'Guardar cambios' : 'Guardar nota');
+      }
+
+      // ---------------------------------------------------------
+      // GUARDAR
+      // ---------------------------------------------------------
+      function alGuardar() {
+        if (estado.guardando) return;
+        ocultarAviso();
+        var leido = leerFormulario();
+        mostrarErrores(leido.errores);
+        if (leido.errores.length) return;
+        var registro = leido.registro;
+        var repetida = notaRepetida(registro);
+        if (repetida) {
+          mostrarAviso('alerta', 'Ya existe una nota de ' + repetida.materia + ', ' + etiquetaNota(repetida) +
+            ', del ' + fechaVisible(repetida.fecha) + ', en el mismo cuatrimestre (' + periodoVisible(periodoDeFecha(repetida.fecha)) + '). Para corregirla, editar la nota registrada.', { texto: 'Editar la nota registrada', rid: repetida.rid });
+          return;
+        }
+        var ridEdicion = estado.editando;
+        bloquearFormulario(true);
+        guardarNota(registro, ridEdicion).then(function(rid) {
+          var nota = Object.assign({ rid: rid }, registro);
+          estado.notas = estado.notas.filter(function(n) { return n.rid !== rid; }).concat([nota]);
+          if (EN_MOODLE) registrarCriticidad(rid);
+          else console.info('[Carga de notas] Vista local: en Moodle se llamaría a CriticidadNotas({ rid: ' + rid + ' }).');
+          bloquearFormulario(false);
+          prepararFormulario(null);
+          mostrarAviso('ok', (ridEdicion ? 'Nota actualizada: ' : 'Nota guardada: ') + registro.materia + ', ' + etiquetaNota(registro) +
+            ', ' + (registro.estado === 'Ausente' ? 'ausente' : registro.nota + ' (' + registro.estado.toLowerCase() + ')') + '.' +
+            (EN_MOODLE ? '' : ' Vista local: la nota se guardó solo en la memoria del navegador.'));
+        }).catch(function(e) {
+          bloquearFormulario(false);
+          mostrarAviso('error', 'La nota no se guardó: ' + String(e && e.message ? e.message : e).replace(/\.?$/, '.') + ' Los datos del formulario se conservan para volver a intentarlo.');
+        });
+      }
+
+      // ---------------------------------------------------------
+      // VISTA PREVIA LOCAL: ESTUDIANTE SIMULADO
+      // ---------------------------------------------------------
+      function simularEstudiante(usuario) {
+        var integrante = INTEGRANTES.filter(function(x) { return x.usuario === usuario; })[0];
+        estado.usuario = { id: integrante.usuario, dni: integrante.dni, nombre: integrante.nombre };
+        estado.notas = notasLocalesDe(integrante.dni);
+        ocultarAviso();
+        prepararFormulario(null);
+        renderizarUsuario();
+        var botones = document.querySelectorAll('[data-preview-usuario]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = Number(botones[i].getAttribute('data-preview-usuario')) === usuario;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+      }
+
+      // BARRA PARA CAMBIAR DE ESTUDIANTE: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como (EST)</span>' + INTEGRANTES.map(function(x) {
+          return '<button type="button" data-preview-usuario="' + x.usuario + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + escapar(x.nombre.split(' ')[0]) + '</button>';
+        }).join('');
+        var cont = $('carga-notas-primero');
+        var raizContenido = cont.querySelector('nolink') || cont;
+        raizContenido.insertBefore(barra, raizContenido.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#carga-notas-primero')) return;
+        var btnUsuario = t.closest('[data-preview-usuario]');
+        if (btnUsuario) return simularEstudiante(Number(btnUsuario.getAttribute('data-preview-usuario')));
+        var btnEditar = t.closest('[data-editar-rid]');
+        if (btnEditar && !estado.guardando) {
+          var rid = Number(btnEditar.getAttribute('data-editar-rid'));
+          var nota = estado.notas.filter(function(n) { return n.rid === rid; })[0];
+          if (!nota) return;
+          ocultarAviso();
+          prepararFormulario(nota);
+          $('form-nota-notas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          $('campo-materia-notas').focus({ preventScroll: true });
+          return;
+        }
+        if (t.closest('#btn-cancelar-notas') && !estado.guardando) {
+          ocultarAviso();
+          prepararFormulario(null);
+        }
+      });
+
+      document.addEventListener('submit', function(e) {
+        if (e.target.id !== 'form-nota-notas') return;
+        e.preventDefault();
+        alGuardar();
+      });
+
+      document.addEventListener('change', function(e) {
+        if (e.target.id === 'campo-condicion-notas') actualizarCampoNota();
+        if (e.target.id === 'campo-materia-notas') actualizarInstancias();
+        if (e.target.id === 'campo-instancia-notas') actualizarRecupera();
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      // Íconos declarados en el HTML con data-icono
+      var huecos = document.querySelectorAll('#carga-notas-primero [data-icono]');
+      for (var h = 0; h < huecos.length; h++) {
+        huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      }
+      $('loader-notas').style.setProperty('display', 'flex', 'important');
+      if (!EN_MOODLE) crearBarraPreview();
+
+      cargarDatosIniciales().then(function(datos) {
+        estado.materias = datos.materias;
+        renderizarOpciones(datos.materias);
+        if (EN_MOODLE) {
+          renderizarUsuario();
+          prepararFormulario(null);
+        } else {
+          simularEstudiante(INTEGRANTES[0].usuario);
+        }
+        ocultarCargando();
+      }).catch(function(e) {
+        ocultarCargando();
+        renderizarOpciones(MATERIAS_PRIMERO);
+        bloquearFormulario(true);
+        $('texto-guardar-notas').textContent = 'Guardar nota';
+        $('tabla-notas').innerHTML = '';
+        mostrarAviso('error', 'No se pudieron cargar los datos de la carga de notas: ' + String(e && e.message ? e.message : e).replace(/\.?$/, '.') + ' Volver a abrir la página en unos minutos.');
+      });
+    })();
+  </script>
+</nolink>
+</div>
