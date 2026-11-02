@@ -19,6 +19,7 @@ docs/
 │       └── MOODLE_SECCIONES_Y_HERRAMIENTAS.md
 ├── models/                ← Modelos propios: datos, trayectoria y criticidad
 │   ├── README.md          ← Mapa: qué calcula cada modelo, con qué datos y quién lo usa
+│   ├── INDICADORES_NO_IMPLEMENTADOS.md ← Indicadores que quedan fuera por las limitaciones de Moodle
 │   ├── datos/             ← Cómo se guarda la información
 │   │   └── MODELO_SIMPLIFICADO_MOODLE.md ← Modelo de datos: 12 bases de Moodle
 │   ├── trayectoria/       ← Dónde está el alumno y qué lo traba (sale del plan y de las notas)
@@ -44,7 +45,8 @@ docs/
 │   ├── encuesta-inicial.md
 │   ├── copia-encuestas.md
 │   ├── carga-parciales-primero.md
-│   └── entrevistas.md
+│   ├── entrevistas.md
+│   └── indicadores-cohorte.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 
@@ -99,6 +101,8 @@ Sirve como vista rápida de la historia del proyecto.
 - [Índice de Criticidad Estudiantil (ICE)](models/criticidad/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md) — 10 preguntas de la encuesta cuatrimestral y la fórmula de 0 a 100
 - [Puntaje de criticidad de las encuestas](models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) — Versión vigente: los puntos de cada respuesta, de 0 a 100
 - [Índice de las notas de 1.er año](models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) — ICm por materia e ICG por estudiante
+- [Indicadores no implementados](models/INDICADORES_NO_IMPLEMENTADOS.md) — Qué indicadores quedan fuera por las limitaciones de Moodle y qué haría falta
+- [Indicadores de Cohorte](specs/indicadores-cohorte.md) — Sección provisoria con la definición y el cálculo de cada indicador
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [Carga de parciales de 1.er año](specs/carga-parciales-primero.md) — Guía para el apartado donde los estudiantes suben sus notas, y cómo se calcula su criticidad
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
