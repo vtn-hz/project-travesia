@@ -75,8 +75,18 @@ if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOOD
     return page.evaluate((id) => {
       const raiz = document.querySelector(`li.section[data-id="${id}"]`);
       if (!raiz) return null;
+      // Visibilidad tal como la muestra el curso: clase "hidden" y texto de restricciones de acceso (si los hay)
       const subs = [...raiz.querySelectorAll('li.section.delegated-section[data-id]')]
-        .map((s) => ({ id: s.getAttribute('data-id'), nombre: s.getAttribute('data-sectionname') }));
+        .map((s) => {
+          const info = s.querySelector('[data-for="sectioninfo"] .availabilityinfo, .section_availability .availabilityinfo');
+          const insignias = [...s.querySelectorAll('[data-for="sectionbadges"] .badge, .section-header .badge')].map((b) => b.innerText.trim()).filter(Boolean);
+          return {
+            id: s.getAttribute('data-id'), nombre: s.getAttribute('data-sectionname'),
+            oculta: s.classList.contains('hidden'),
+            restriccion: info ? info.innerText.replace(/\s+/g, ' ').trim() : '',
+            insignias: insignias.join(', ')
+          };
+        });
       const cms = [...raiz.querySelectorAll('[data-for="cmitem"][data-id]')].map((c) => ({
         id: c.getAttribute('data-id'),
         nombre: ((c.querySelector('.instancename, .activityname') || c).innerText || '').split('\n')[0].trim(),
@@ -96,6 +106,10 @@ if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOOD
   console.log('──────────────── MOVER ACTIVIDADES ────────────────');
   console.log(`Destino : sección ${SECCION_NOMBRE} (id ${SECCION_ID}) → subsección "${nombreSub}" ${sub ? `(existe, id ${sub.id})` : '(SE CREA)'}`);
   aMover.forEach((c) => console.log(`Mueve   : ${c.nombre} (cm ${c.id}, hoy en sección ${c.seccion})`));
+  // Una actividad hereda la visibilidad de su subsección: comparar origen y destino antes de confirmar
+  const verVis = (s) => (s ? `${s.oculta ? 'OCULTA' : 'visible'}${s.restriccion ? ` · restricción: ${s.restriccion}` : ''}${s.insignias ? ` · ${s.insignias}` : ''}` : 'no es una subsección');
+  [...new Set(aMover.map((c) => c.seccion))].forEach((id) => console.log(`Origen  : sección ${id} → ${verVis(z.subs.find((s) => s.id === id))}`));
+  console.log(`Destino : ${sub ? verVis(sub) : '(se crea, visible)'}`);
   if (!confirmar) {
     console.log('\nSIMULACIÓN: no se escribió nada. Para aplicar, repetir con --confirmar (requiere confirmación explícita del equipo).');
     await browser.close();
