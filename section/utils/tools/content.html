@@ -1194,7 +1194,7 @@
       //   FP = (10 − promedio de lo rendido) ÷ 10 · FR = 1 − aprobados ÷ rendidos · FA = ausentes ÷ instancias · FAC = 1 si la materia es
       //   crítica y alguna nota está debajo de su umbral (4 si no tiene).
       // Por estudiante, ICG = 60 % el promedio de sus ICm + 40 % el ICm más alto. Un recuperatorio (recupera_a) reemplaza la instancia que indica.
-      // parciales: [{ materia, instancia, nota, estado, recupera_a }]; materias: [{ materia, es_critica, umbral }] (Carga_Materias_Primero)
+      // parciales: [{ materia, instancia, nota, estado, recupera_a }]; materias: [{ materia, es_critica, umbral }] (CargaMateriasPrimero)
       function normalizarMateria(s) {
         return String(s || '').toLowerCase().replace(/[\s_-]/g, '');
       }
@@ -1245,12 +1245,12 @@
       }
 
       // =========================================================
-      // HERRAMIENTA CriticidadNotas: AL GUARDAR UNA NOTA EN Carga_Parciales_Primero, AGREGA LA CRITICIDAD DE LAS NOTAS A CRITICIDAD
+      // HERRAMIENTA CriticidadNotas: AL GUARDAR UNA NOTA EN CargaParcialesPrimero, AGREGA LA CRITICIDAD DE LAS NOTAS A CRITICIDAD
       // =========================================================
-      // La llama la plantilla "Javascript personalizado" de Carga_Parciales_Primero (data/moodle/plantillas/carga_parciales_primero/jstemplate.js),
+      // La llama la plantilla "Javascript personalizado" de CargaParcialesPrimero (data/moodle/plantillas/carga_parciales_primero/jstemplate.js),
       // que Moodle carga también en el formulario de alta y edición (mod/data/edit.php). Desde el 2026-11-01 cada estudiante carga sus notas.
       //   CriticidadNotas({ form, boton }) → guarda la nota con fetch (el DNI vacío se completa con el de la cuenta), lee las notas del
-      //     estudiante en el período y los umbrales de Carga_Materias_Primero, agrega la entrada (fuente notas_1ro, rid_fuente = la nota)
+      //     estudiante en el período y los umbrales de CargaMateriasPrimero, agrega la entrada (fuente notas_1ro, rid_fuente = la nota)
       //     y sigue a la página que muestra Moodle. Si la nota no se guardó (error de validación), repite el envío normal para que Moodle
       //     muestre el error. Si falla la criticidad, queda pendiente y se reintenta en la próxima página de la base.
       //   CriticidadNotas({ rid }) → para una página propia que guarda la nota por su cuenta (sin el formulario de Moodle): con el rid de
@@ -1550,13 +1550,13 @@
           carga: 'Tools.IndiceNotasPrimero(parciales, materias) → { indice, materias }'
         },
         CriticidadNotas: {
-          descripcion: 'Al guardar una nota en Carga_Parciales_Primero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Una página propia que guarda la nota por su cuenta la llama con el rid de la nota. Reintenta las entradas pendientes.',
-          uso: 'Plantilla Javascript personalizado de Carga_Parciales_Primero, y páginas propias de carga de notas',
+          descripcion: 'Al guardar una nota en CargaParcialesPrimero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Una página propia que guarda la nota por su cuenta la llama con el rid de la nota. Reintenta las entradas pendientes.',
+          uso: 'Plantilla Javascript personalizado de CargaParcialesPrimero, y páginas propias de carga de notas',
           carga: 'Tools.CriticidadNotas({ form, boton }) desde la plantilla · Tools.CriticidadNotas({ rid }) desde una página propia, después de guardar'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
-          uso: 'CopiaRespuestas y CriticidadNotas (bases Encuestas, Respuestas, Criticidad, Carga_Parciales_Primero y Carga_Materias_Primero)',
+          uso: 'CopiaRespuestas y CriticidadNotas (bases Encuestas, Respuestas, Criticidad, CargaParcialesPrimero y CargaMateriasPrimero)',
           carga: 'Tools.LeerBase({ dataid: … }) desde el código de la vista, con el cargador de tools en TOOL = null'
         }
       };

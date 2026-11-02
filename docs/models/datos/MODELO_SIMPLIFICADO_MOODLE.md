@@ -51,7 +51,7 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
 | 12 | Entrevistas | `Entrevista`, `Accion_Acordada` | entrevista | Editable (estado) | Equipo |
 | — | (sin base) | `Docente` | — | — | Usuarios y grupos de Moodle |
 
-**Mínimo para el tablero y el detalle del estudiante:** Criticidad (el semáforo y su historial), más Respuestas y Carga_Parciales_Primero (lo que explica cada valor). El resto se suma con los módulos de alertas, tutorías y configuración.
+**Mínimo para el tablero y el detalle del estudiante:** Criticidad (el semáforo y su historial), más Respuestas y CargaParcialesPrimero (lo que explica cada valor). El resto se suma con los módulos de alertas, tutorías y configuración.
 
 ## Bases y campos
 
@@ -195,7 +195,7 @@ Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) gua
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
 | `id_usuario` | number | (cuenta del campus) | Quien responde siempre tiene cuenta (`M.cfg.userId`) |
-| `dni` | text | `Envio_Encuesta.id_estudiante` | El nombre de usuario del campus. La clave que comparte con Carga_Parciales_Primero |
+| `dni` | text | `Envio_Encuesta.id_estudiante` | El nombre de usuario del campus. La clave que comparte con CargaParcialesPrimero |
 | `codigo_encuesta` | menu (`inicial`, `cuatrimestral`) | `Envio_Encuesta.id_encuesta` | |
 | `version` | number | `Encuesta.version` | Con `codigo_encuesta`, apunta a su definición en Encuestas |
 | `periodo` | text | `Envio_Encuesta.id_periodo` | Vacío en la inicial |
@@ -206,7 +206,7 @@ No se guardan envíos pendientes: un envío **pendiente** es un estudiante del t
 
 ### 9. Criticidad
 
-Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md). Creada el 2026-11-01 (cmid 60191, d=199). **Una entrada por evento:** cada envío de una encuesta, cada nota guardada en Carga_Parciales_Primero, cada recálculo, cada omisión y cada estado asignado a mano (Req 10). El gráfico de evolución del detalle del estudiante lee solo esta base.
+Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) por el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md). Creada el 2026-11-01 (cmid 60191, d=199). **Una entrada por evento:** cada envío de una encuesta, cada nota guardada en CargaParcialesPrimero, cada recálculo, cada omisión y cada estado asignado a mano (Req 10). El gráfico de evolución del detalle del estudiante lee solo esta base.
 
 | Campo | Tipo | Vacío | Notas |
 |---|---|---|---|
@@ -215,7 +215,7 @@ Definida en [`BASE_CRITICIDAD.json`](../../../data/moodle/BASE_CRITICIDAD.json) 
 | `periodo` | text | no | En las manuales, cuándo se asignó: no limita su vigencia |
 | `origen` | menu (`automatica`, `manual`) | no | `manual` = un tutor asigna el estado |
 | `fuente` | menu (`notas_1ro`, `respuestas`, `materias`, `omision`) | sí | Qué la disparó. Vacía en las manuales |
-| `rid_fuente` | number | sí | El `rid` de la entrada que la disparó (Respuestas, Carga_Parciales_Primero o Carga_Materias_Primero). Vacío en `omision` y en las manuales |
+| `rid_fuente` | number | sí | El `rid` de la entrada que la disparó (Respuestas, CargaParcialesPrimero o CargaMateriasPrimero). Vacío en `omision` y en las manuales |
 | `indice` | number | sí | De 0 a 100, el de esa fuente. Vacío en las manuales |
 | `indice_total` | number | sí | Promedio del último índice de cada grupo de fuentes del período (*notas*: `notas_1ro` y `materias`; *encuestas*: `respuestas` y `omision`). Vacío en las manuales |
 | `semaforo` | menu (`verde`, `amarillo`, `rojo`, `sin_asignar`) | no | En las automáticas, el del `indice_total` (40 y 70). En las manuales, el asignado; `sin_asignar` lo quita |
@@ -290,7 +290,7 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 | Situación académica, Respuestas, Criticidad, Alertas, Acompañamientos, Entrevistas | Estudiantes | `dni` |
 | Situación académica | Plan de estudios | `materia` (código) dentro del JSON |
 | Respuestas | Encuestas | `codigo_encuesta` + `version`; `item_id` dentro del JSON |
-| Criticidad | Respuestas, Carga_Parciales_Primero o Carga_Materias_Primero | `rid_fuente`, según `fuente` |
+| Criticidad | Respuestas, CargaParcialesPrimero o CargaMateriasPrimero | `rid_fuente`, según `fuente` |
 | Alertas | Criticidad | `rid_situacion` |
 | Entrevistas | Acompañamientos | `rid_acompanamiento` |
 | Entrevistas | Alertas | `rid_alerta` |

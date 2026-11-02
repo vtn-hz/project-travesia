@@ -60,5 +60,5 @@ Usa el formulario nativo de `mod/data/edit.php?d=<dataid>` (igual que Preguntas)
 ## Pendientes
 
 - Crear la base Materias en Moodle con `crear_base.js`, cargarle las plantillas de `data/moodle/plantillas/materias/` y sincronizar `bases.materias.dataid`. Mientras sea `null`, la carga solo se simula.
-- Reemplazar `Carga_Materias_Primero` (d=118): decidir dónde va su `Umbral` y la marca `esCritica`.
+- Reemplazar `CargaMateriasPrimero` (d=118): decidir dónde va su `Umbral` y la marca `esCritica`.
 - Plan 2003: falta el documento oficial.

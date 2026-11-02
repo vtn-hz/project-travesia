@@ -1,8 +1,8 @@
 # Índice de las notas de 1.er año
 
 - **Estado:** provisorio. Es la fórmula que el equipo armó en Moodle para la Página "Dashboard Estudiantes de Primero" (cmid 60035, [`section/dashboard_estudiantes_primero`](../../../section/dashboard_estudiantes_primero/content.html)), que la calcula al abrirse y no la guarda. Se documenta el 2026-11-01 con el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md), que la usa para la base Criticidad.
-- **Dónde se usa:** la tool `IndiceNotasPrimero` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que llama `CriticidadNotas` cuando un estudiante guarda una nota en Carga_Parciales_Primero. Cada nota guardada agrega una entrada a Criticidad con `fuente = notas_1ro` y `rid_fuente` = la nota.
-- **Datos:** las notas del estudiante en el período (Carga_Parciales_Primero, d=117) y la marca de materia crítica con su umbral (Carga_Materias_Primero, d=118).
+- **Dónde se usa:** la tool `IndiceNotasPrimero` de la [biblioteca de Tools](../../../section/utils/tools/content.html), que llama `CriticidadNotas` cuando un estudiante guarda una nota en CargaParcialesPrimero. Cada nota guardada agrega una entrada a Criticidad con `fuente = notas_1ro` y `rid_fuente` = la nota.
+- **Datos:** las notas del estudiante en el período (CargaParcialesPrimero, d=117) y la marca de materia crítica con su umbral (CargaMateriasPrimero, d=118).
 - **Qué calcula:** un índice de **0 a 100**. 0 es sin señales de riesgo.
 
 ## Por materia: ICm
@@ -44,4 +44,4 @@ Los resultados coinciden con los del Dashboard, que redondea a un decimal.
 
 - **Validar la fórmula y los pesos** con el equipo: no tienen fundamento en `docs/context/research`. El requerimiento de 1.er año propone otro criterio (aprobación < 20 % rojo; de 20 % a 60 % amarillo).
 - **Semáforo:** el Dashboard corta en 40 y 65; la base Criticidad usa 40 y 70 para el `indice_total`, igual que las encuestas.
-- **Materias por nombre:** Carga_Parciales_Primero identifica la materia por su nombre ("Álgebra I- B"), y Materias y Respuestas, por su código. Para cruzarlas hace falta el código en las notas.
+- **Materias por nombre:** CargaParcialesPrimero identifica la materia por su nombre ("Álgebra I- B"), y Materias y Respuestas, por su código. Para cruzarlas hace falta el código en las notas.

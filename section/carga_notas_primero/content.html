@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Carga de notas de 1.er año" (cmid 60209) · 2026-11-02 -->
 <!-- SECCIÓN: CARGA DE NOTAS DE 1.ER AÑO (ROL EST) · SCRUM-22 -->
 <!-- QUÉ ES: cada estudiante carga y edita las notas de sus parciales de las materias de 1.er año del Plan 2024. Spec: docs/specs/carga-parciales-primero.md (opción B: página propia) -->
-<!-- DATOS: escribe en Carga_Parciales_Primero (d=117) y lee las materias de la base Materias (d=152). Después de guardar, llama a CriticidadNotas({ rid }) de la Página Tools (necesita Tools v5) -->
+<!-- DATOS: escribe en CargaParcialesPrimero (d=117) y lee las materias de la base Materias (d=152). Después de guardar, llama a CriticidadNotas({ rid }) de la Página Tools (necesita Tools v5) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="carga-notas-primero"
@@ -165,11 +165,11 @@
       // CriticidadNotas({ rid }) existe desde Tools v5. Con una versión anterior la nota se guarda igual, sin criticidad
       var VERSION_MINIMA_TOOLS = 5;
 
-      // Columnas de la plantilla de lista de Carga_Parciales_Primero (data/moodle/plantillas/carga_parciales_primero/listtemplate.html), en orden
+      // Columnas de la plantilla de lista de CargaParcialesPrimero (data/moodle/plantillas/carga_parciales_primero/listtemplate.html), en orden
       var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
 
       // Cantidad de parciales de cada materia (docs/specs/carga-parciales-primero.md → Reglas de los campos). Los recuperatorios no se
-      // configuran: cada uno indica qué parcial recupera. Provisorio, según lo que recuerda el equipo: pasa a Carga_Materias_Primero
+      // configuran: cada uno indica qué parcial recupera. Provisorio, según lo que recuerda el equipo: pasa a CargaMateriasPrimero
       // cuando se confirme. Los finales quedan fuera del alcance
       var PARCIALES_POR_DEFECTO = 2;
       var PARCIALES = [
@@ -182,7 +182,7 @@
       var FECHA_MINIMA = '2024-01-01';
 
       // Materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2). En Moodle se leen de la base Materias; esta lista es el respaldo
-      // y la vista local. Los nombres coinciden con Carga_Materias_Primero, que el cálculo usa para cruzar el umbral
+      // y la vista local. Los nombres coinciden con CargaMateriasPrimero, que el cálculo usa para cruzar el umbral
       var MATERIAS_PRIMERO = [
         { nombre: 'Análisis Matemático I', cuatrimestre: 1 },
         { nombre: 'Álgebra I- B', cuatrimestre: 1 },
@@ -394,7 +394,7 @@
         });
       }
 
-      // NOTAS PROPIAS DESDE Carga_Parciales_Primero. Con "requiere aprobación", Moodle ya devuelve solo las del estudiante;
+      // NOTAS PROPIAS DESDE CargaParcialesPrimero. Con "requiere aprobación", Moodle ya devuelve solo las del estudiante;
       // el filtro por DNI evita mostrar las de otros a quien tenga permiso de verlas todas
       function leerNotasMoodle(Tools, dni) {
         return Tools.LeerBase({
@@ -420,7 +420,7 @@
           .then(function(html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
-            if (!form) throw new Error('No se encontró el formulario de la base Carga_Parciales_Primero.');
+            if (!form) throw new Error('No se encontró el formulario de la base CargaParcialesPrimero.');
             // Moodle agrega "Campo obligatorio" a la etiqueta de los campos obligatorios (por ejemplo, "Estado Campo obligatorio")
             var porCampo = {};
             form.querySelectorAll('label[for]').forEach(function(l) {
@@ -431,7 +431,7 @@
             var fd = new FormData(form);
             COLUMNAS_PARCIALES.forEach(function(k) {
               var ctrl = porCampo[k];
-              if (!ctrl) throw new Error('Falta el campo "' + k + '" en la base Carga_Parciales_Primero.');
+              if (!ctrl) throw new Error('Falta el campo "' + k + '" en la base CargaParcialesPrimero.');
               // Estado es un menú de selección múltiple: se deja una sola opción
               fd.delete(ctrl.name);
               fd.append(ctrl.name, registro[k] === null || registro[k] === undefined ? '' : String(registro[k]));

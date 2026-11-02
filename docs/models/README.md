@@ -24,7 +24,7 @@ docs/models/
 | Trayectoria | [Criticidad por correlativas](trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md) | Qué materias pendientes traban más (puntaje S por materia) | Plan de estudios y correlativas | Nada publicado todavía | Propuesta |
 | Criticidad | [Índice de Criticidad Estudiantil (ICE)](criticidad/MODELO_INDICE_CRITICIDAD_ESTUDIANTIL.md) | Fundamento y versión objetivo: 10 preguntas y 4 subíndices ponderados | Encuesta cuatrimestral y notas | Nadie: es la referencia del modelo de encuestas | Propuesta, sin calibrar |
 | Criticidad | [Puntaje de criticidad de las encuestas](criticidad/MODELO_CRITICIDAD_ENCUESTAS.md) | **Versión vigente:** índice de 0 a 100 de cada envío | Respuestas de las Encuestas Inicial y Cuatrimestral, con los puntos de la base Encuestas | `CriticidadEncuesta` (Tools v4, base Criticidad, [ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md)) | **En uso en Moodle**, con valores provisorios |
-| Criticidad | [Índice de las notas de 1.er año](criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) | ICm por materia e ICG de 0 a 100 por estudiante | Carga_Parciales_Primero y Carga_Materias_Primero | Dashboard de 1.er año (sin guardar) e `IndiceNotasPrimero` con `CriticidadNotas` (Tools v4, base Criticidad, fuente `notas_1ro`) | Provisorio: fórmula del equipo, sin validar |
+| Criticidad | [Índice de las notas de 1.er año](criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) | ICm por materia e ICG de 0 a 100 por estudiante | CargaParcialesPrimero y CargaMateriasPrimero | Dashboard de 1.er año (sin guardar) e `IndiceNotasPrimero` con `CriticidadNotas` (Tools v4, base Criticidad, fuente `notas_1ro`) | Provisorio: fórmula del equipo, sin validar |
 
 ## Solapamientos conocidos
 

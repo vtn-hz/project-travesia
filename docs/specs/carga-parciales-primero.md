@@ -2,7 +2,7 @@
 
 > Documento vivo: se actualiza a medida que se refinan los requerimientos. Es la guía para el equipo que arme el apartado donde los estudiantes de 1.er año suben sus parciales.
 
-- **Base:** Carga_Parciales_Primero (cmid 59521, d=117), subsección Hub ([`BASE_CARGA_PARCIALES_PRIMERO.json`](../../data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json)). Los umbrales y las materias críticas están en Carga_Materias_Primero (cmid 59522, d=118).
+- **Base:** CargaParcialesPrimero (cmid 59521, d=117), subsección Hub ([`BASE_CARGA_PARCIALES_PRIMERO.json`](../../data/moodle/BASE_CARGA_PARCIALES_PRIMERO.json)). Los umbrales y las materias críticas están en CargaMateriasPrimero (cmid 59522, d=118).
 - **Requerimiento (2026-11-01):** cada estudiante de 1.er año carga sus propias notas de parciales.
 - **Criticidad:** cada nota guardada agrega una entrada a la base **Criticidad** (cmid 60191, d=199) con `fuente = notas_1ro` y `rid_fuente` = la nota ([ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md)). El índice es el ICG de las notas del estudiante en el período ([modelo](../models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md)), y el `indice_total` lo promedia con el de su última encuesta.
 - **Código:**
@@ -21,7 +21,7 @@ Con el formulario de alta o edición de Moodle de la base (`mod/data/edit.php?d=
 1. Toma el envío ("Guardar" o "Guardar y añadir otro").
 2. Si el DNI está vacío, lo completa con el de la cuenta: el nombre de usuario del campus.
 3. Guarda la nota con el mismo formulario y lee su `rid` nuevo.
-4. Lee las notas de ese DNI en el período actual y los umbrales de Carga_Materias_Primero, y calcula el índice.
+4. Lee las notas de ese DNI en el período actual y los umbrales de CargaMateriasPrimero, y calcula el índice.
 5. Lee las entradas propias del estudiante en Criticidad, calcula `indice_total` y agrega la entrada.
 6. Muestra la nota guardada, como Moodle. Si eligió "Guardar y añadir otro", abre un formulario vacío.
 
@@ -70,7 +70,7 @@ Es la opción B: [`section/carga_notas_primero/content.html`](../../section/carg
 | DNI | Nombre de usuario de la cuenta (`/login/change_password.php`), como en Tools. Sin DNI no se puede cargar |
 | Estudiante | Encabezado del perfil (`/user/profile.php`). Si no se lee, queda vacío |
 | Materia | Lista con las materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2) de la base Materias (d=152), con la versión vigente de cada código y sin bajas. Si la base no se puede leer, usa la lista de respaldo `MATERIAS_PRIMERO` con los mismos 7 nombres |
-| Instancia | `Parcial 1` a `Parcial N` según la materia, más `Recuperatorio` (como indica la descripción del campo en Moodle). La cantidad de parciales sale de `PARCIALES`: 2 por defecto y 3 en Física A. Es el único dato por materia: la cantidad de recuperatorios no se configura, porque cada recuperatorio indica qué parcial recupera (se carga uno por cada parcial recuperado). **Provisorio:** son los datos que recuerda el equipo, sin confirmar con las cátedras. Cuando se confirmen, pueden pasar a un campo "Parciales" en Carga_Materias_Primero (cambio en Moodle, con confirmación). Si una materia tiene de más, sobra una opción; si tiene de menos, no se puede cargar un parcial. Los finales quedan fuera del alcance por ahora |
+| Instancia | `Parcial 1` a `Parcial N` según la materia, más `Recuperatorio` (como indica la descripción del campo en Moodle). La cantidad de parciales sale de `PARCIALES`: 2 por defecto y 3 en Física A. Es el único dato por materia: la cantidad de recuperatorios no se configura, porque cada recuperatorio indica qué parcial recupera (se carga uno por cada parcial recuperado). **Provisorio:** son los datos que recuerda el equipo, sin confirmar con las cátedras. Cuando se confirmen, pueden pasar a un campo "Parciales" en CargaMateriasPrimero (cambio en Moodle, con confirmación). Si una materia tiene de más, sobra una opción; si tiene de menos, no se puede cargar un parcial. Los finales quedan fuera del alcance por ahora |
 | Fecha | Selector de fecha del navegador. Se guarda en `AAAA-MM-DD`. No puede ser posterior a hoy ni anterior a 2024-01-01. El formato que se ve en el selector depende del idioma del navegador: en español, `dd/mm/aaaa` |
 | Nota | De 0 a 10, con hasta dos decimales y **punto** como separador (`4.5`; `4,5` se rechaza con un error que indica el formato). Es un campo de texto: con `type="number"` el navegador descartaba la coma y "1,0" se guardaba como 10. Con la condición Ausente no se completa y se guarda `0`, porque el campo es obligatorio en Moodle. El cálculo cuenta la nota como ausencia por la condición, no por el número |
 | Estado | Una sola opción entre Aprobado, Desaprobado y Ausente (en la página se llama "Condición") |
@@ -103,7 +103,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 |---|---|---|
 | DNI | El de la cuenta del estudiante (el nombre de usuario). **No dejarlo editable** | El índice se calcula con las notas de ese DNI. Si el estudiante escribe otro, su nota no cuenta y ensucia la de otro |
 | Estudiante | Nombre y apellido, de la cuenta | Solo para mostrar |
-| Materia | **Exactamente el nombre de Carga_Materias_Primero** (por ejemplo, `Análisis Matemático I`, `Álgebra I- B`). Ofrecerlo como lista, no como texto libre | Las notas se agrupan por materia y se cruzan con su umbral por nombre. Se ignoran mayúsculas, espacios, guiones y guiones bajos, pero no las tildes |
+| Materia | **Exactamente el nombre de CargaMateriasPrimero** (por ejemplo, `Análisis Matemático I`, `Álgebra I- B`). Ofrecerlo como lista, no como texto libre | Las notas se agrupan por materia y se cruzan con su umbral por nombre. Se ignoran mayúsculas, espacios, guiones y guiones bajos, pero no las tildes |
 | Instancia | `Parcial N` (según los parciales de la materia) o `Recuperatorio` | Cada parcial cuenta como una evaluación |
 | Fecha | `AAAA-MM-DD` | Define el período: de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`. Solo cuentan las notas del período actual (`PERIODO_ACTUAL` en Tools) |
 | Nota | Número de 0 a 10. Vacío si estuvo ausente | Promedio y umbral |
@@ -113,7 +113,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 ## Antes de abrirlo a los estudiantes
 
 1. **Configurar la base con "Requiere aprobación"** y no aprobar entradas. **Hecho el 2026-11-02** y probado con dos cuentas con el cambio de rol a Estudiante: cada una ve su nota pendiente y no la de la otra; los docentes ven todas. Las entradas cargadas antes quedaron aprobadas, así que las ve cualquier estudiante hasta que se reemplacen los datos de prueba.
-2. **Completar Carga_Materias_Primero** con las 7 materias de 1.er año del Plan 2024. Hoy tiene Análisis Matemático I, Álgebra I- B, Fundamentos de Química y Análisis Matemático II. **Faltan Álgebra II, Física A y Fundamentos de la Programación:** sin ellas, sus notas cuentan como no críticas, con umbral 4.
+2. **Completar CargaMateriasPrimero** con las 7 materias de 1.er año del Plan 2024. Hoy tiene Análisis Matemático I, Álgebra I- B, Fundamentos de Química y Análisis Matemático II. **Faltan Álgebra II, Física A y Fundamentos de la Programación:** sin ellas, sus notas cuentan como no críticas, con umbral 4.
 3. **Elegir la opción A o la B.** Se eligió la B: la Página Tools v5 y la página propia se publicaron el 2026-11-02.
 4. **Actualizar `PERIODO_ACTUAL`** en Tools si cambia el cuatrimestre.
 5. **Limpiar los datos de prueba** de la base. Tiene personas que no son del equipo (Carlos López, Juan Pérez…), contra la regla 5 de [`RULES.md`](../../RULES.md), y la nota de prueba del 2026-11-01 (rid 20152).
@@ -123,7 +123,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 - **Borrar una nota no agrega una entrada en Criticidad.** El índice se corrige con la próxima nota que guarde el estudiante.
 - **La importación por CSV de Moodle no calcula la criticidad,** porque no carga la plantilla JS.
 - **Editar una nota agrega otra entrada,** con el mismo `rid_fuente`. Es correcto: cada entrada es una foto del momento.
-- **Un cambio de umbral en Carga_Materias_Primero** se refleja recién en la próxima nota del estudiante. El recálculo de todos (`fuente = materias`) está pendiente ([ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md#publicación-y-pendientes)).
+- **Un cambio de umbral en CargaMateriasPrimero** se refleja recién en la próxima nota del estudiante. El recálculo de todos (`fuente = materias`) está pendiente ([ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md#publicación-y-pendientes)).
 - **Las notas cargadas antes del 2026-11-01** no tienen entrada en Criticidad.
 
 ## Prueba hecha
