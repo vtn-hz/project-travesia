@@ -974,19 +974,28 @@
       // ---------------------------------------------------------
       // CARGA SEGÚN #usuario
       // ---------------------------------------------------------
+      // "usuario=<número>" entero, en el hash o en la consulta. Devuelve null si no está y '' si está pero no es un número
       function usuarioDeUrl() {
-        var m = window.location.hash.match(/usuario=(\d+)/) || window.location.search.match(/[?&]usuario=(\d+)/);
-        return m ? m[1] : null;
+        var texto = window.location.hash.replace(/^#/, '') + '&' + window.location.search.replace(/^\?/, '');
+        var hallado = null;
+        texto.split('&').forEach(function(par) {
+          var kv = par.split('=');
+          if (kv[0] !== 'usuario' || hallado) return;
+          hallado = /^\d+$/.test(kv[1] || '') ? kv[1] : '';
+        });
+        return hallado;
       }
 
       function mostrarUsuario() {
         // Un modal abierto es del estudiante anterior
         if (modal) cerrarModal(true);
-        usuario = usuarioDeUrl() || (ES_VISTA_LOCAL ? '3773' : null);
+        var deUrl = usuarioDeUrl();
+        // En la vista previa, sin parámetro se muestra un estudiante de ejemplo; un parámetro inválido no se reemplaza
+        usuario = deUrl === null ? (ES_VISTA_LOCAL ? '3773' : null) : deUrl || null;
         filtroActividad = '';
         perfil = null;
         var selector = $('selector-estudiante-prueba');
-        if (selector && usuario) selector.value = usuario;
+        if (selector) selector.value = usuario || '';
         armarEstudiante();
         renderizar();
         // En el campus: foto y datos del perfil del curso
