@@ -752,6 +752,14 @@
       // ---------------------------------------------------------
       // EXPORTAR CSV
       // ---------------------------------------------------------
+      // Un valor que empieza con = + - @ (o tabulación) Excel lo toma como fórmula: se le antepone un apóstrofo.
+      // Nombre, apellido y motivos los cargan otras personas, así que no se exportan tal cual
+      function celdaCsv(v) {
+        var texto = String(v === null || v === undefined ? '' : v);
+        if (/^[=+\-@\t\r]/.test(texto)) texto = "'" + texto;
+        return '"' + texto.replace(/"/g, '""') + '"';
+      }
+
       function exportarCsv() {
         var columnas = ['Estudiante', 'DNI', 'Año de la carrera', 'Cohorte', 'Estado calculado', 'Índice calculado', 'Origen del calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
         var lineas = filasFiltradas().map(function(f) {
@@ -759,15 +767,16 @@
             NIVELES[f.calculado.nivel].texto, f.calculado.indice === null ? '' : f.calculado.indice, f.calculado.motivo,
             f.asignado ? NIVELES[f.asignado.semaforo].texto : '', f.asignado ? f.asignado.autor : '', f.asignado ? f.asignado.motivo : '',
             NIVELES[f.vigente].texto
-          ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';');
+          ].map(celdaCsv).join(';');
         });
-        var blob = new Blob(['﻿' + columnas.join(';') + '\n' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+        var blob = new Blob(['\ufeff' + columnas.join(';') + '\n' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
         var a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'tablero_criticidad_' + PERIODO_ACTUAL + '.csv';
         document.body.appendChild(a);
         a.click();
         a.remove();
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
       }
 
       // ---------------------------------------------------------
