@@ -57,6 +57,7 @@ Estilo: tinta japonesa (sumi-e) en blanco y negro, con un samurái en guardia y 
 | Pieza | Archivo |
 |---|---|
 | Menú del equipo de seguimiento (ADM, GES, TUT, PAR) | [`section/menu_inicial/content.html`](../../section/menu_inicial/content.html) |
+| Vista del estudiante: Mi Trayectoria e Información personal (SCRUM-24, local) | [`section/vista_estudiante/content.html`](../../section/vista_estudiante/content.html) y [`section/informacion_personal/content.html`](../../section/informacion_personal/content.html) |
 | Sección de ejemplo del alumno | [`section/section_sample/content.html`](../../section/section_sample/content.html) |
 | Modelos de cálculo | [`docs/models/`](../models/) |
 | Plan de estudios 2024 | [`data/plan_estudios/`](../../data/plan_estudios/README.md) |

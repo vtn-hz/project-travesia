@@ -4,7 +4,7 @@
 
 - **Archivo:** `section/entrevistas/content.html`
 - **Acceso:** tarjeta "Entrevistas y Tutorías" del [menú inicial](../../section/menu_inicial/content.html) (en local, `btn-entrevistas`). Con `#usuario=<id de Moodle>` abre la solicitud con ese estudiante elegido (para enlazarla desde el tablero o el detalle).
-- **Roles:** ADM, TUT y PAR. GES no entra. La vista del estudiante (pedir entrevista, aceptar o contraofertar desde su lado) es otra sección y queda fuera del modelo reducido (ver Pendientes).
+- **Roles:** ADM, TUT y PAR. GES no entra. La vista del estudiante (pedir entrevista, aceptar o contraofertar desde su lado) es otra sección y queda fuera del modelo reducido (ver Pendientes). Desde SCRUM-24 (local), [Mi Trayectoria](vista-estudiante.md) enlaza a esta Página con la tarjeta *Entrevistas y Tutorías* para todos los estudiantes; hasta que se detecte el rol EST, en Moodle se abre como ADM.
 - **Requerimientos:** Req 5 (Dashboard Entrevistas: solicitudes, registro de realizadas e histórico), Req 11 (gestión de entrevistas) y RNF 1 (proactividad: programar antes de que el estudiante abandone).
 - **Estado:** **en revisión**, desarrollado en local con datos de prueba. **No publicado en Moodle** y no se publica hasta terminar la revisión ([`README` de la sección](../../section/entrevistas/README.md)).
 

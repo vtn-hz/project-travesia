@@ -40,7 +40,7 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
 | 1 | Plan de estudios | `Plan_Estudio`, `Materia`, `Materia_Plan`, `Correlatividad` | materia de un plan | Editable | Equipo |
 | 2 | Períodos | `Periodo_Lectivo`, `Cohorte` | cuatrimestre | Editable | Equipo |
 | 3 | Indicadores | `Indicador` | regla y versión | Editable (versiona) | Equipo |
-| 4 | Estudiantes | `Estudiante`, `Trabajo_Final` | estudiante | Editable | Equipo |
+| 4 | Estudiantes | `Estudiante` | estudiante | Editable | Cada estudiante ve y edita la suya |
 | 5 | Situación académica | `Cursada`, `Evaluacion`, `Lote_Importacion` | estudiante y período | Solo agrega | Equipo |
 | 6 | Preguntas (descartada) | `Pregunta` | — | — | Las preguntas van dentro de Encuestas |
 | 7 | Encuestas | `Encuesta`, `Pregunta` | encuesta y versión | Solo agrega | Todos (la leen los navegadores de los estudiantes) |
@@ -107,22 +107,22 @@ Cambiar una regla agrega una versión nueva; la vigente es la de mayor `version`
 
 ### 4. Estudiantes
 
+> **Definida en [`BASE_ESTUDIANTES.json`](../../../data/moodle/BASE_ESTUDIANTES.json)** (2026-11-02, SCRUM-24, [spec](../../specs/vista-estudiante.md)), todavía sin crear en Moodle. Es la información personal que cada estudiante carga en la Página Información personal: una entrada por estudiante que se edita, sin historial y sin criticidad. Se configura con "requiere aprobación" sin aprobar entradas, así cada estudiante ve y edita solo la suya. Sin entrada, la vista Mi Trayectoria deshabilita todas las secciones.
+
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
-| `dni` | text | `Estudiante.dni` | **Clave del estudiante.** Único |
-| `legajo` | text | `Estudiante.legajo` | Opcional |
-| `nombre` | text | `Estudiante.nombre` | El de la cuenta del campus |
-| `apellido` | text | `Estudiante.apellido` | El de la cuenta del campus |
-| `email` | text | `Estudiante.email` | Opcional |
-| `id_usuario_moodle` | number | `Estudiante.id_usuario_moodle` | Obligatorio: todo estudiante tiene cuenta, porque carga sus propias notas. Con él se muestran la foto y los datos del campus |
-| `cohorte` | text | `Estudiante.id_cohorte` | Período de ingreso (`AAAA-n`) |
-| `plan` | menu (`Plan 2003`, `Plan 2024`) | `Estudiante.id_plan` | |
-| `fecha_consentimiento` | text (fecha) | `Estudiante.fecha_consentimiento` | Opcional |
-| `periodo_egreso` | text | `Estudiante.id_periodo_egreso` | Opcional |
-| `periodo_titulacion` | text | `Estudiante.id_periodo_titulacion` | Opcional |
-| `tf_tema` | text | `Trabajo_Final.tema` | Opcional |
-| `tf_periodo_inicio` | text | `Trabajo_Final.id_periodo_inicio` | Opcional |
-| `tf_periodo_aprobacion` | text | `Trabajo_Final.id_periodo_aprobacion` | Opcional |
+| `id_usuario` | number | `Estudiante.id_usuario_moodle` | Obligatorio: todo estudiante tiene cuenta. Con él, cada página encuentra la entrada propia |
+| `dni` | text | `Estudiante.dni` | **Clave del estudiante.** Único (lo controla la página). Nombre de usuario del campus, no se edita |
+| `nombre` | text | `Estudiante.nombre` | Se precarga con la cuenta del campus; desde que se guarda, se usa el de la base |
+| `apellido` | text | `Estudiante.apellido` | Igual que `nombre` |
+| `email` | text | `Estudiante.email` | Opcional. Se precarga con la cuenta |
+| `es_primer_anio` | menu (`si`, `no`) | (nuevo) | Tramo: `si` si todavía no cursa ni aprobó Proyecto de Ingeniería Industrial I |
+| `anio_ingreso` | number | `Estudiante.id_cohorte` | Con `cuatrimestre_ingreso` forma la cohorte (`AAAA-n`) |
+| `cuatrimestre_ingreso` | menu (`1`, `2`) | `Estudiante.id_cohorte` | |
+| `periodo_paso_superior` | text | (nuevo) | Período en que `es_primer_anio` pasó de `si` a `no` (cuándo pasó a 2.º año). Opcional |
+
+- **No se guardan:** el plan (solo Plan 2024), la situación laboral (la preguntan las encuestas, en Respuestas) y si es de Ingeniería Industrial (con "No" no se crea la entrada).
+- **Quedan fuera por ahora** (los campos de la propuesta anterior que ninguna pantalla usa): `legajo`, `fecha_consentimiento`, `periodo_egreso`, `periodo_titulacion` y los del trabajo final (`tf_tema`, `tf_periodo_inicio`, `tf_periodo_aprobacion`). Se suman cuando haya una pantalla que los cargue.
 
 ### 5. Situación académica
 
@@ -285,8 +285,7 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 
 | Desde | Hacia | Por |
 |---|---|---|
-| Estudiantes | Plan de estudios | `plan` |
-| Estudiantes | Períodos | `cohorte`, `periodo_egreso`, `periodo_titulacion` |
+| Estudiantes | Períodos | `anio_ingreso` + `cuatrimestre_ingreso` (cohorte), `periodo_paso_superior` |
 | Situación académica, Respuestas, Criticidad, Alertas, Acompañamientos, Entrevistas | Estudiantes | `dni` |
 | Situación académica | Plan de estudios | `materia` (código) dentro del JSON |
 | Respuestas | Encuestas | `codigo_encuesta` + `version`; `item_id` dentro del JSON |
@@ -314,6 +313,7 @@ Ninguna se garantiza en Moodle: la página valida antes de guardar.
 - **Acompañamientos:** exactamente uno entre tutor y asesor par (`tipo`).
 - **Privacidad:**
   - **Respuestas** y **Criticidad** con "Requiere aprobación" y sin aprobar entradas (cada estudiante ve las suyas, incluido su índice);
+  - **Estudiantes**, igual: cada estudiante ve y edita solo su información personal;
   - **Encuestas**, legible por todos: la leen los navegadores de los estudiantes;
   - el resto, con acceso restringido al equipo por grupo o rol. Ocultar la actividad no alcanza, porque se puede entrar por URL.
 - **Criticidad:** toda entrada automática tiene `fuente` e `indice`; toda manual tiene `motivo`.

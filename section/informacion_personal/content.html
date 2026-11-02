@@ -1,0 +1,622 @@
+<!-- SECCIÓN: INFORMACIÓN PERSONAL DEL ESTUDIANTE (ROL EST) · SCRUM-24 -->
+<!-- QUÉ ES: Página propia donde el estudiante carga y edita su información personal. Se abre desde Mi Trayectoria (section/vista_estudiante), que deshabilita todas las secciones hasta que exista esta entrada. La primera vez pregunta si es estudiante de Ingeniería Industrial: con "No" muestra que por el momento el sistema está limitado a Ingeniería Industrial y no guarda nada. Spec: docs/specs/vista-estudiante.md -->
+<!-- DATOS: lee y escribe la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null). La primera vez precarga nombre, apellido, correo y DNI con la cuenta de Moodle; después, con los datos de la base. No genera entradas en Respuestas ni en Criticidad -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="informacion-personal"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- PANTALLA DE CARGA (OVERLAY CON RUEDITA) -->
+  <div id="loader-info"
+    style="position: absolute !important; inset: 0 !important; z-index: 5 !important; display: flex; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 12px !important; background-color: rgba(252, 252, 252, 0.92) !important; border-radius: 10px !important; color: #47536b !important; font-size: 14px !important;">
+    <span style="width: 28px !important; height: 28px !important; border: 3px solid #dadee7 !important; border-top-color: #026bd4 !important; border-radius: 50% !important; animation: zk-girar-info 0.8s linear infinite;"></span>
+    <span>Cargando la información personal…</span>
+  </div>
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · Mi Trayectoria</div>
+      <h3 id="titulo-info"
+        style="margin: 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Información personal</h3>
+    </div>
+    <a id="link-volver-info" href="#"
+      style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 14px !important; font-weight: 500 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; box-sizing: border-box !important;"><span data-icono="volver"></span>Volver a Mi Trayectoria</a>
+  </div>
+
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-prueba-info"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos ficticios. Lo que se guarda en la vista previa queda en este navegador y Mi Trayectoria lo muestra.</span>
+  </div>
+
+  <!-- AVISO: ESTADO O ERROR -->
+  <div id="aviso-estado-info" role="status" aria-live="polite" style="display: none; margin-bottom: 20px !important;"></div>
+
+  <!-- TARJETA: FORMULARIO -->
+  <form id="form-info-personal" novalidate
+    style="margin: 0 !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div id="ayuda-form-info" style="font-size: 14px !important; color: #47536b !important; margin-bottom: 16px !important;"></div>
+    <div id="cuerpo-form-info" style="display: flex !important; flex-direction: column !important; gap: 16px !important;"></div>
+    <div id="errores-form-info" role="alert"
+      style="display: none; margin: 16px 0 0 0 !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: #fff0f0 !important; border: 1px solid #fdcece !important; font-size: 14px !important; color: #0b0e14 !important;"></div>
+    <div id="pie-form-info" style="display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; padding-top: 16px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">
+      <button type="button" id="btn-cancelar-info"
+        style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; cursor: pointer !important;">Cancelar</button>
+      <button type="submit" id="btn-guardar-info"
+        style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important;"><span data-icono="guardar"></span><span id="txt-guardar-info">Guardar información</span></button>
+    </div>
+  </form>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-informacion-personal-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-informacion-personal-style';
+        styleEl.innerHTML =
+          '#informacion-personal > nolink { display: block; }' +
+          '#informacion-personal button:focus-visible, #informacion-personal a:focus-visible, #informacion-personal input:focus-visible, #informacion-personal select:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '@keyframes zk-girar-info { to { transform: rotate(360deg); } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var EN_MOODLE = !ES_VISTA_LOCAL && !!(window.M && M.cfg && M.cfg.wwwroot);
+      // Mismo período que la Página Tools (PERIODO_ACTUAL)
+      var PERIODO_ACTUAL = '2026-2';
+      var ANIO_ACTUAL = Number(PERIODO_ACTUAL.split('-')[0]);
+      var ANIO_INGRESO_MINIMO = 2000;
+      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_ESTUDIANTES = null; // @config bases.estudiantes.dataid
+      var CMID_VISTA_ESTUDIANTE = null; // @config paginas.vista_estudiante
+      var URL_VISTA_LOCAL = '../vista_estudiante/content.html';
+
+      // Campos de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json), en el orden de la plantilla de lista
+      var CAMPOS_ESTUDIANTES = ['id_usuario', 'dni', 'nombre', 'apellido', 'email', 'es_primer_anio', 'anio_ingreso', 'cuatrimestre_ingreso',
+        'periodo_paso_superior'];
+
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>', // warning
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>', // info
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>', // check_circle
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>', // error
+        flecha: '<path d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>', // arrow_forward
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>', // visibility
+        volver: '<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>', // arrow_back
+        guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>' // save
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DNI, CORREO Y DATOS FICTICIOS)
+      // ---------------------------------------------------------
+      // Los mismos que section/vista_estudiante: cuenta = lo que devolvería la cuenta de Moodle
+      var INTEGRANTES = [
+        { usuario: 3770, cuenta: { dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar' } },
+        { usuario: 2806, cuenta: { dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gian.distefano@ejemplo.edu.ar' } },
+        { usuario: 3751, cuenta: { dni: '99000004', nombre: 'Santiago Nicolás', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar' } },
+        { usuario: 3773, cuenta: { dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar' } },
+        { usuario: 3623, cuenta: { dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar' } },
+        { usuario: 2048, cuenta: { dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar' } }
+      ];
+      var ESTUDIANTES_PRUEBA = [
+        { rid: 91001, id_usuario: 3770, dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-08-18T10:10' },
+        { rid: 91002, id_usuario: 2806, dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gldistefano@ejemplo.com.ar', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-04-02T19:35' },
+        { rid: 91003, id_usuario: 3773, dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2024, cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1', modificada: '2026-03-15T09:00' },
+        { rid: 91004, id_usuario: 3623, dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2022, cuatrimestre_ingreso: '1', periodo_paso_superior: '', modificada: '2026-08-19T21:00' },
+        { rid: 91005, id_usuario: 2048, dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: 2023, cuatrimestre_ingreso: '2', periodo_paso_superior: '', modificada: '2026-10-30T18:20' }
+      ];
+      // Lo que se guarda en la vista previa (por id de usuario): Mi Trayectoria lo lee con la misma clave
+      var CLAVE_PREVIEW = 'zk-preview-estudiantes';
+
+      // ---------------------------------------------------------
+      // ESTADO
+      // ---------------------------------------------------------
+      var estado = {
+        usuario: null,     // { id }
+        cuenta: null,      // { dni, nombre, apellido, email } de la cuenta de Moodle (precarga la primera vez)
+        estudiante: null,  // entrada propia de Estudiantes (null: todavía no la cargó)
+        industrial: '',    // respuesta a "¿Es estudiante de Ingeniería Industrial?" ('', 'si' o 'no')
+        error: '',
+        guardando: false
+      };
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function $(id) { return document.getElementById(id); }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function mostrar(el, visible, modo) {
+        el.style.setProperty('display', visible ? (modo || 'flex') : 'none', 'important');
+      }
+
+      function ahoraIso() {
+        var d = new Date();
+        var dos = function(n) { return (n < 10 ? '0' : '') + n; };
+        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes());
+      }
+
+      // AAAA-MM-DD(THH:MM) O MARCA UNIX (data-modificada DE MOODLE) → DD/MM/AAAA
+      function fechaVisible(valor) {
+        if (/^\d{9,}$/.test(String(valor))) {
+          var d = new Date(Number(valor) * 1000);
+          return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+        }
+        var m = String(valor || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+      }
+
+      // AVISO: tipo 'alerta', 'error', 'info' u 'ok'
+      function aviso(tipo, html) {
+        var c = {
+          alerta: { fondo: '#fdf1ce', borde: 'rgba(246, 206, 85, 0.5)', icono: '#aa8109', nombre: 'alerta' },
+          error: { fondo: '#fff0f0', borde: '#fdcece', icono: '#c20a0a', nombre: 'error' },
+          info: { fondo: '#e5f2ff', borde: 'rgba(77, 166, 255, 0.4)', icono: '#026bd4', nombre: 'info' },
+          ok: { fondo: '#f6fef6', borde: '#c5f7c5', icono: '#1f7a1f', nombre: 'ok' }
+        }[tipo];
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: ' + c.fondo + ' !important; border: 1px solid ' + c.borde + ' !important; color: #0b0e14 !important; font-size: 14px !important;">' +
+          '<span style="color: ' + c.icono + ' !important; padding-top: 1px !important;">' + icono(c.nombre, 20) + '</span><span>' + html + '</span></div>';
+      }
+
+      function mostrarAviso(tipo, html) {
+        $('aviso-estado-info').innerHTML = aviso(tipo, html);
+        mostrar($('aviso-estado-info'), true, 'block');
+      }
+
+      // DIRECCIÓN DE MI TRAVESÍA (null SI LA PÁGINA TODAVÍA NO ESTÁ PUBLICADA)
+      function urlVista() {
+        if (!EN_MOODLE) return URL_VISTA_LOCAL + '#usuario=' + estado.usuario.id;
+        return CMID_VISTA_ESTUDIANTE ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_VISTA_ESTUDIANTE : null;
+      }
+
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
+      // ---------------------------------------------------------
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta página
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        // Si falla, la próxima llamada vuelve a intentarlo
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE
+      // ---------------------------------------------------------
+      // CUENTA DE MOODLE (SOLO LECTURA): DNI (nombre de usuario), nombre, apellido y correo.
+      // Nombre, apellido y correo salen del formulario de edición del perfil (/user/edit.php); si el campus no lo deja ver,
+      // del perfil (/user/profile.php): el nombre completo va entero en "nombre" y el estudiante lo separa al guardar
+      function leerCuentaMoodle() {
+        var c = { dni: '', nombre: '', apellido: '', email: '' };
+        var texto = function(url) { return fetch(M.cfg.wwwroot + url, { credentials: 'same-origin' }).then(function(r) { return r.text(); }); };
+        var html = function(t) { return new DOMParser().parseFromString(t, 'text/html'); };
+        var dni = texto('/login/change_password.php').then(function(t) {
+          var el = html(t).querySelector('[data-name="username"]');
+          var v = el ? el.textContent.trim() : '';
+          if (/^\d{7,9}$/.test(v)) c.dni = v;
+        }, function() { /* sin DNI: el formulario lo informa al guardar */ });
+        var datos = texto('/user/edit.php?id=' + encodeURIComponent(M.cfg.userId)).then(function(t) {
+          var doc = html(t);
+          var valor = function(sel) { var el = doc.querySelector(sel); return el ? String(el.value || '').trim() : ''; };
+          c.nombre = valor('#id_firstname');
+          c.apellido = valor('#id_lastname');
+          c.email = valor('#id_email');
+          if (c.nombre || c.apellido) return;
+          return texto('/user/profile.php').then(function(t2) {
+            var d2 = html(t2);
+            var h = d2.querySelector('.page-context-header .page-header-headings h1, .page-context-header .page-header-headings h2');
+            c.nombre = h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
+            var mail = d2.querySelector('#region-main a[href^="mailto:"]');
+            c.email = mail ? mail.textContent.trim() : '';
+          });
+        }).catch(function() { /* la cuenta solo precarga el formulario */ });
+        return Promise.all([dni, datos]).then(function() { return c; });
+      }
+
+      // ENTRADA PROPIA DE ESTUDIANTES (SI HAY MÁS DE UNA, LA DE rid MÁS ALTO) O null.
+      // Con "requiere aprobación", Moodle ya devuelve solo la propia; el filtro por cuenta evita tomar la de otro si quien abre puede verlas todas
+      function leerEstudianteMoodle(Tools) {
+        if (!DATAID_ESTUDIANTES) return Promise.reject(new Error('La base Estudiantes todavía no está creada en Moodle.'));
+        return Tools.LeerBase({ dataid: DATAID_ESTUDIANTES }).then(function(r) {
+          var lista = r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+            c.rid = e.rid ? Number(e.rid) : null;
+            c.modificada = e.modificada || e.alta || '';
+            return c;
+          }).filter(function(c) { return Number(c.id_usuario) === estado.usuario.id; });
+          lista.sort(function(a, b) { return (a.rid || 0) - (b.rid || 0); });
+          return lista.length ? lista[lista.length - 1] : null;
+        });
+      }
+
+      // GUARDAR LA ENTRADA PROPIA (rid = null: NUEVA; rid: EDICIÓN) → PROMESA DEL rid.
+      // Usa el formulario de Moodle de la base: los campos se ubican por su etiqueta y Moodle redirige a view.php?d=…&rid=<rid>
+      function guardarEstudianteMoodle(registro, rid) {
+        var urlForm = M.cfg.wwwroot + '/mod/data/edit.php?d=' + DATAID_ESTUDIANTES + (rid ? '&rid=' + rid : '');
+        return fetch(urlForm, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de la base Estudiantes.');
+            // Moodle agrega "Campo obligatorio" a la etiqueta de los campos obligatorios
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              var etiqueta = l.textContent.replace(/\s+/g, ' ').trim().toLowerCase().replace(/\s*campo obligatorio$/, '');
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[etiqueta] = ctrl;
+            });
+            var fd = new FormData(form);
+            CAMPOS_ESTUDIANTES.forEach(function(k) {
+              var ctrl = porCampo[k];
+              if (!ctrl) throw new Error('Falta el campo "' + k + '" en la base Estudiantes.');
+              fd.delete(ctrl.name);
+              fd.append(ctrl.name, registro[k] === null || registro[k] === undefined ? '' : String(registro[k]));
+            });
+            fd.set('d', String(DATAID_ESTUDIANTES));
+            fd.set('rid', String(rid || 0));
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió HTTP ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              if (!errores.length && rid) return rid;
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la información guardada.');
+            });
+          });
+      }
+
+      function cargarDatosMoodle() {
+        estado.usuario = { id: Number(M.cfg.userId) };
+        return cargarTools().then(function(Tools) {
+          return Promise.all([leerEstudianteMoodle(Tools), leerCuentaMoodle()]).then(function(r) {
+            estado.estudiante = r[0];
+            estado.cuenta = r[1];
+          });
+        });
+      }
+
+      // ---------------------------------------------------------
+      // GUARDAR (MOODLE O, EN LA VISTA PREVIA, localStorage)
+      // ---------------------------------------------------------
+      function leerPreview() {
+        try { return JSON.parse(window.localStorage.getItem(CLAVE_PREVIEW) || '{}') || {}; } catch (e) { return {}; }
+      }
+
+      function guardarEstudiante(registro, rid) {
+        if (EN_MOODLE) {
+          // Antes de crear, se vuelve a leer la base: si ya hay una entrada propia (otra pestaña), se edita esa
+          var previa = rid ? Promise.resolve(rid) : cargarTools().then(function(Tools) {
+            return leerEstudianteMoodle(Tools).then(function(e) { return e ? e.rid : null; });
+          });
+          return previa.then(function(r) { return guardarEstudianteMoodle(registro, r); });
+        }
+        var nuevoRid = rid || 92000 + estado.usuario.id;
+        var guardados = leerPreview();
+        guardados[estado.usuario.id] = Object.assign({ rid: nuevoRid }, registro, { modificada: ahoraIso() });
+        try { window.localStorage.setItem(CLAVE_PREVIEW, JSON.stringify(guardados)); } catch (e) { /* sin almacenamiento: queda solo en esta pantalla */ }
+        return Promise.resolve(nuevoRid);
+      }
+
+      // ---------------------------------------------------------
+      // FORMULARIO
+      // ---------------------------------------------------------
+      var ETIQUETA = 'display: block !important; font-size: 14px !important; font-weight: 600 !important; color: #0b0e14 !important; margin: 0 0 6px 0 !important; padding: 0 !important;';
+      var CAMPO = 'width: 100% !important; height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid #c2c9d6 !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important;';
+      var AYUDA = 'font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;';
+
+      function subtitulo(texto) {
+        return '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; padding-top: 4px !important;">' + escapar(texto) + '</div>';
+      }
+
+      function campoTexto(id, nombre, etiqueta, valor, extra) {
+        var e = extra || {};
+        return '<div style="flex: 1 1 200px !important; min-width: 0 !important;"><label for="' + id + '" style="' + ETIQUETA + '">' + escapar(etiqueta) + '</label>' +
+          '<input id="' + id + '" name="' + nombre + '" type="' + (e.tipo || 'text') + '"' + (e.soloLectura ? ' readonly' : '') + (e.inputmode ? ' inputmode="' + e.inputmode + '"' : '') + (e.maxlength ? ' maxlength="' + e.maxlength + '"' : '') +
+          ' autocomplete="off" value="' + escapar(valor) + '" style="' + CAMPO + (e.soloLectura ? ' background-color: #f5f6fa !important; color: #47536b !important;' : '') + '">' +
+          (e.ayuda ? '<div style="' + AYUDA + '">' + escapar(e.ayuda) + '</div>' : '') + '</div>';
+      }
+
+      // GRUPO DE OPCIONES SÍ / NO (RADIO)
+      function grupoSiNo(nombre, pregunta, valor, ayuda) {
+        return '<fieldset id="grupo-' + nombre + '-info" style="border: 0 !important; margin: 0 !important; padding: 0 !important; min-width: 0 !important;">' +
+          '<legend style="' + ETIQUETA + '">' + escapar(pregunta) + '</legend>' +
+          '<div style="display: flex !important; gap: 8px !important; flex-wrap: wrap !important;">' + [['si', 'Sí'], ['no', 'No']].map(function(o) {
+            return '<label style="flex: 1 1 120px !important; display: flex !important; align-items: center !important; gap: 8px !important; margin: 0 !important; padding: 8px 12px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; cursor: pointer !important; font-size: 14px !important; color: #0b0e14 !important;">' +
+              '<input type="radio" name="' + nombre + '" value="' + o[0] + '"' + (valor === o[0] ? ' checked' : '') + ' style="margin: 0 !important;">' + o[1] + '</label>';
+          }).join('') + '</div>' +
+          (ayuda ? '<div style="' + AYUDA + '">' + escapar(ayuda) + '</div>' : '') + '</fieldset>';
+      }
+
+      // es_primer_anio GUARDADO → RESPUESTA A "¿CURSA O APROBÓ PROYECTO DE INGENIERÍA INDUSTRIAL I?" ('' SI TODAVÍA NO HAY DATO)
+      function cursaPiiDe(esPrimerAnio) {
+        var v = String(esPrimerAnio || '').toLowerCase();
+        return v === 'si' ? 'no' : v === 'no' ? 'si' : '';
+      }
+
+      // DATOS QUE PRECARGAN EL FORMULARIO: LOS DE LA BASE (SI YA SE GUARDÓ) O LOS DE LA CUENTA DE MOODLE (LA PRIMERA VEZ)
+      function renderizarFormulario() {
+        var est = estado.estudiante, c = estado.cuenta || {};
+        var p = est || { dni: c.dni, nombre: c.nombre, apellido: c.apellido, email: c.email, es_primer_anio: '', anio_ingreso: '', cuatrimestre_ingreso: '' };
+        $('titulo-info').textContent = est ? 'Editar información personal' : 'Cargar información personal';
+        $('ayuda-form-info').textContent = est
+          ? 'Datos guardados el ' + fechaVisible(est.modificada) + '.'
+          : 'Para usar todas las secciones de Mi Trayectoria se debe cargar esta información. Los datos personales están precargados con la cuenta de Moodle: verificarlos antes de guardar.';
+        $('cuerpo-form-info').innerHTML =
+          (est ? '' : grupoSiNo('industrial', '¿Es estudiante de Ingeniería Industrial?', estado.industrial)) +
+          '<div id="aviso-industrial-info" style="display: none;"></div>' +
+          '<div id="campos-info" style="display: ' + (est || estado.industrial === 'si' ? 'flex' : 'none') + '; flex-direction: column !important; gap: 16px !important;">' +
+          subtitulo('Datos personales') +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          campoTexto('campo-nombre-info', 'nombre', 'Nombre', p.nombre) +
+          campoTexto('campo-apellido-info', 'apellido', 'Apellido', p.apellido) + '</div>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          campoTexto('campo-dni-info', 'dni', 'DNI', p.dni, { soloLectura: true, ayuda: 'Nombre de usuario de la cuenta del campus. No se edita.' }) +
+          campoTexto('campo-email-info', 'email', 'Correo electrónico', p.email, { tipo: 'email', inputmode: 'email' }) + '</div>' +
+          subtitulo('Carrera') +
+          grupoSiNo('cursa_pii', '¿Cursa o aprobó Proyecto de Ingeniería Industrial I?', cursaPiiDe(p.es_primer_anio)) +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          campoTexto('campo-anio-ingreso', 'anio_ingreso', 'Año de ingreso a la facultad', p.anio_ingreso, { inputmode: 'numeric', maxlength: 4 }) +
+          '<div style="flex: 1 1 200px !important; min-width: 0 !important;"><label for="campo-cuatrimestre-ingreso" style="' + ETIQUETA + '">Cuatrimestre de ingreso</label>' +
+          '<select id="campo-cuatrimestre-ingreso" name="cuatrimestre_ingreso" style="' + CAMPO + '"><option value="">Seleccionar</option>' +
+          ['1', '2'].map(function(x) { return '<option value="' + x + '"' + (String(p.cuatrimestre_ingreso) === x ? ' selected' : '') + '>' + (x === '1' ? '1.er cuatrimestre' : '2.º cuatrimestre') + '</option>'; }).join('') +
+          '</select></div></div></div>';
+        mostrarErrores([]);
+        actualizarIndustrial();
+      }
+
+      // "¿ES ESTUDIANTE DE INGENIERÍA INDUSTRIAL?": CON "NO", EL MENSAJE Y NADA MÁS; CON "SÍ", EL RESTO DEL FORMULARIO
+      function actualizarIndustrial() {
+        var nuevo = !estado.estudiante;
+        var no = nuevo && estado.industrial === 'no';
+        var avisoEl = $('aviso-industrial-info');
+        avisoEl.innerHTML = no ? aviso('info', 'Por el momento, el Proyecto Travesía está limitado a estudiantes de Ingeniería Industrial.') : '';
+        mostrar(avisoEl, no, 'block');
+        mostrar($('campos-info'), !nuevo || estado.industrial === 'si');
+        // Sin respuesta o con "No" no hay nada para guardar
+        var puedeGuardar = !nuevo || estado.industrial === 'si';
+        $('btn-guardar-info').disabled = !puedeGuardar;
+        $('btn-guardar-info').style.setProperty('opacity', puedeGuardar ? '1' : '0.5');
+        $('btn-guardar-info').style.setProperty('cursor', puedeGuardar ? 'pointer' : 'not-allowed', 'important');
+        if (no) mostrarErrores([]);
+      }
+
+      function valorRadio(nombre) {
+        var el = document.querySelector('#form-info-personal input[name="' + nombre + '"]:checked');
+        return el ? el.value : '';
+      }
+
+      function mostrarErrores(errores) {
+        var caja = $('errores-form-info');
+        if (!errores.length) { mostrar(caja, false); caja.innerHTML = ''; return; }
+        caja.innerHTML = '<b style="font-weight: 600 !important;">La información no se guardó.</b>' +
+          '<ul style="margin: 4px 0 0 0 !important; padding: 0 0 0 18px !important;">' + errores.map(function(e) { return '<li style="margin: 2px 0 !important;">' + escapar(e) + '</li>'; }).join('') + '</ul>';
+        mostrar(caja, true, 'block');
+      }
+
+      // LEER Y VALIDAR EL FORMULARIO → { registro } | { errores }
+      function leerFormulario() {
+        var errores = [];
+        var limpio = function(id) { return $(id).value.replace(/\s+/g, ' ').trim(); };
+        var nombre = limpio('campo-nombre-info'), apellido = limpio('campo-apellido-info');
+        var email = limpio('campo-email-info'), dni = limpio('campo-dni-info');
+        var cursa = valorRadio('cursa_pii');
+        var anio = limpio('campo-anio-ingreso');
+        var cuatri = $('campo-cuatrimestre-ingreso').value;
+        if (!nombre) errores.push('Nombre: completar el nombre.');
+        if (!apellido) errores.push('Apellido: completar el apellido.');
+        if (!/^\d{7,9}$/.test(dni)) errores.push('DNI: no se pudo leer de la cuenta del campus. Volver a abrir la página; si persiste, avisar al equipo de seguimiento.');
+        if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errores.push('Correo electrónico: "' + email + '" debe tener el formato nombre@dominio.com.');
+        if (!cursa) errores.push('Proyecto de Ingeniería Industrial I: seleccionar "Sí" o "No".');
+        if (!/^\d{4}$/.test(anio) || Number(anio) < ANIO_INGRESO_MINIMO || Number(anio) > ANIO_ACTUAL) {
+          errores.push('Año de ingreso: "' + anio + '" debe ser un año de ' + ANIO_INGRESO_MINIMO + ' a ' + ANIO_ACTUAL + ', con cuatro dígitos.');
+        }
+        if (!cuatri) errores.push('Cuatrimestre de ingreso: seleccionar el 1.er o el 2.º cuatrimestre.');
+        else if (Number(anio) === ANIO_ACTUAL && Number(cuatri) > Number(PERIODO_ACTUAL.split('-')[1])) {
+          errores.push('Cuatrimestre de ingreso: el ' + (cuatri === '1' ? '1.er' : '2.º') + ' cuatrimestre de ' + anio + ' todavía no empezó.');
+        }
+        if (errores.length) return { errores: errores };
+        var previo = estado.estudiante;
+        // La respuesta se guarda como es_primer_anio: no cursa ni aprobó Proyecto de Ingeniería Industrial I = 1.er año
+        var primerAnio = cursa === 'no' ? 'si' : 'no';
+        // Período en que pasó a 2.º año: se completa cuando es_primer_anio pasa de "si" a "no" (no se guarda un historial)
+        var paso = primerAnio === 'si' ? '' : previo && String(previo.es_primer_anio) === 'si' ? PERIODO_ACTUAL : (previo ? previo.periodo_paso_superior || '' : '');
+        return { registro: {
+          id_usuario: estado.usuario.id, dni: dni, nombre: nombre, apellido: apellido, email: email,
+          es_primer_anio: primerAnio, anio_ingreso: Number(anio), cuatrimestre_ingreso: cuatri,
+          periodo_paso_superior: paso
+        } };
+      }
+
+      function alGuardar() {
+        if (estado.guardando) return;
+        if (!estado.estudiante && estado.industrial !== 'si') return;
+        var r = leerFormulario();
+        if (r.errores) return mostrarErrores(r.errores);
+        estado.guardando = true;
+        $('btn-guardar-info').disabled = true;
+        $('txt-guardar-info').textContent = 'Guardando…';
+        var nuevo = !estado.estudiante;
+        var rid = nuevo ? null : estado.estudiante.rid;
+        guardarEstudiante(r.registro, rid).then(function(nuevoRid) {
+          estado.estudiante = Object.assign({ rid: nuevoRid }, r.registro, { modificada: ahoraIso() });
+          estado.guardando = false;
+          renderizarFormulario();
+          var volver = urlVista();
+          mostrarAviso('ok', '<b style="font-weight: 600 !important;">La información personal se guardó.</b> ' +
+            (nuevo ? 'Las secciones de Mi Trayectoria quedaron habilitadas.' : 'Mi Trayectoria ya muestra los datos nuevos.') +
+            (volver ? ' <a href="' + escapar(volver) + '" style="color: #026bd4 !important; font-weight: 500 !important;">Volver a Mi Trayectoria</a>' : ''));
+          $('aviso-estado-info').scrollIntoView({ block: 'nearest' });
+        }).catch(function(e) {
+          estado.guardando = false;
+          mostrarErrores(['No se pudo guardar en Moodle: ' + String(e && e.message ? e.message : e)]);
+        }).then(function() {
+          $('txt-guardar-info').textContent = 'Guardar información';
+          actualizarIndustrial();
+        });
+      }
+
+      function volverAVista() {
+        var url = urlVista();
+        if (url) window.location.href = url;
+      }
+
+      // ---------------------------------------------------------
+      // VISTA PREVIA LOCAL: ESTUDIANTE SIMULADO (#usuario=<id>, EL MISMO QUE EN MI TRAVESÍA)
+      // ---------------------------------------------------------
+      function simularEstudiante(usuario) {
+        var x = INTEGRANTES.filter(function(i) { return i.usuario === usuario; })[0] || INTEGRANTES[0];
+        estado.usuario = { id: x.usuario };
+        estado.cuenta = x.cuenta;
+        estado.estudiante = leerPreview()[x.usuario] || ESTUDIANTES_PRUEBA.filter(function(e) { return e.id_usuario === x.usuario; })[0] || null;
+        estado.industrial = '';
+        try { history.replaceState(null, '', '#usuario=' + x.usuario); } catch (e) { /* sin historial */ }
+        mostrar($('aviso-estado-info'), false);
+        renderizarFormulario();
+        $('link-volver-info').setAttribute('href', urlVista());
+        var botones = document.querySelectorAll('[data-preview-usuario]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = Number(botones[i].getAttribute('data-preview-usuario')) === x.usuario;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+      }
+
+      // BARRA PARA CAMBIAR DE ESTUDIANTE: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como (EST)</span>' + INTEGRANTES.map(function(x) {
+          return '<button type="button" data-preview-usuario="' + x.usuario + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + escapar(x.cuenta.nombre.split(' ')[0]) + '</button>';
+        }).join('');
+        var cont = $('informacion-personal');
+        var raizContenido = cont.querySelector('nolink') || cont;
+        raizContenido.insertBefore(barra, raizContenido.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#informacion-personal')) return;
+        var btnUsuario = t.closest('[data-preview-usuario]');
+        if (btnUsuario) return simularEstudiante(Number(btnUsuario.getAttribute('data-preview-usuario')));
+        if (t.closest('#btn-cancelar-info') && !estado.guardando) return volverAVista();
+        if (t.closest('#link-volver-info') && !urlVista()) e.preventDefault();
+      });
+
+      document.addEventListener('submit', function(e) {
+        if (e.target.id !== 'form-info-personal') return;
+        e.preventDefault();
+        alGuardar();
+      });
+
+      document.addEventListener('change', function(e) {
+        if (!e.target.closest || !e.target.closest('#form-info-personal')) return;
+        if (e.target.name === 'industrial') {
+          estado.industrial = e.target.value;
+          actualizarIndustrial();
+        }
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      // Íconos declarados en el HTML con data-icono
+      var huecos = document.querySelectorAll('#informacion-personal [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      mostrar($('loader-info'), true);
+
+      if (!EN_MOODLE) {
+        crearBarraPreview();
+        mostrar($('aviso-datos-prueba-info'), true);
+        var m = window.location.hash.match(/usuario=(\d+)/);
+        simularEstudiante(m ? Number(m[1]) : 3751); // sin #usuario, Santiago (sin información personal)
+        mostrar($('loader-info'), false);
+        return;
+      }
+
+      var volver = urlVista();
+      if (volver) $('link-volver-info').setAttribute('href', volver);
+      else mostrar($('link-volver-info'), false);
+      cargarDatosMoodle().then(function() {
+        renderizarFormulario();
+      }).catch(function(e) {
+        mostrar($('form-info-personal'), false);
+        mostrarAviso('error', 'No se pudo leer la información personal: ' + escapar(String(e && e.message ? e.message : e).replace(/\.?$/, '.')) + ' Volver a abrir la página en unos minutos.');
+      }).then(function() {
+        mostrar($('loader-info'), false);
+      });
+    })();
+  </script>
+  </nolink>
+</div>

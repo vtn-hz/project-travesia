@@ -105,5 +105,6 @@ Sirve como vista rápida de la historia del proyecto.
 - [Indicadores de Cohorte](specs/indicadores-cohorte.md) — Sección provisoria con la definición y el cálculo de cada indicador
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [Carga de parciales de 1.er año](specs/carga-parciales-primero.md) — Guía para el apartado donde los estudiantes suben sus notas, y cómo se calcula su criticidad
+- [Vista del estudiante](specs/vista-estudiante.md) — Mi Trayectoria e Información personal (SCRUM-24): base Estudiantes, secciones deshabilitadas hasta cargarla y habilitadas por tramo (`es_primer_anio`)
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar
 - [Reglas de desarrollo](../RULES.md) — Convenciones de código
