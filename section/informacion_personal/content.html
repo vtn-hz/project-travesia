@@ -95,6 +95,7 @@
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
+      var SECCION_ZHAKYZ = 15647; // @config seccion.id
       var URL_VISTA_LOCAL = '../vista_estudiante/content.html';
 
       // Campos de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json), en el orden de la plantilla de lista
@@ -179,14 +180,15 @@
         return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes());
       }
 
-      // AAAA-MM-DD(THH:MM) O MARCA UNIX (data-modificada DE MOODLE) → DD/MM/AAAA
+      // AAAA-MM-DD(THH:MM) O MARCA UNIX → DD/MM/AAAA. En Moodle la fecha llega como texto ("2 nov 2026", columna
+      // Modificada de la plantilla de lista, porque ##timemodified## es HTML y no entra en un atributo): se muestra tal cual
       function fechaVisible(valor) {
         if (/^\d{9,}$/.test(String(valor))) {
           var d = new Date(Number(valor) * 1000);
           return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
         }
         var m = String(valor || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : String(valor || '').replace(/\s+/g, ' ').trim();
       }
 
       // AVISO: tipo 'alerta', 'error', 'info' u 'ok'
@@ -207,10 +209,11 @@
       }
 
       // DIRECCIÓN DE MI TRAYECTORIA (null SI TODAVÍA NO ESTÁ PUBLICADA).
-      // Es un Área de texto y medios, como el Hub: label/view.php lleva a la sección del curso donde se ve, en su posición
+      // Es un Área de texto y medios, como el Hub: se vuelve a la sección Zhakyz, en su posición. label/view.php no sirve:
+      // lleva a la portada del curso, donde Zhakyz no se muestra
       function urlVista() {
         if (!EN_MOODLE) return URL_VISTA_LOCAL + '#usuario=' + estado.usuario.id;
-        return CMID_VISTA_ESTUDIANTE ? M.cfg.wwwroot + '/mod/label/view.php?id=' + CMID_VISTA_ESTUDIANTE : null;
+        return CMID_VISTA_ESTUDIANTE ? M.cfg.wwwroot + '/course/section.php?id=' + SECCION_ZHAKYZ + '#module-' + CMID_VISTA_ESTUDIANTE : null;
       }
 
       // ---------------------------------------------------------
@@ -284,7 +287,7 @@
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
             c.rid = e.rid ? Number(e.rid) : null;
-            c.modificada = e.modificada || e.alta || '';
+            c.modificada = e.modificada || e.alta || c._modificada || '';
             return c;
           }).filter(function(c) { return Number(c.id_usuario) === estado.usuario.id; });
           lista.sort(function(a, b) { return (a.rid || 0) - (b.rid || 0); });
@@ -420,7 +423,7 @@
           campoTexto('campo-nombre-info', 'nombre', 'Nombre', p.nombre) +
           campoTexto('campo-apellido-info', 'apellido', 'Apellido', p.apellido) + '</div>' +
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
-          campoTexto('campo-dni-info', 'dni', 'DNI', p.dni, { soloLectura: true, ayuda: 'Nombre de usuario de la cuenta del campus. No se edita.' }) +
+          campoTexto('campo-dni-info', 'dni', 'DNI', p.dni, { inputmode: 'numeric', maxlength: 9 }) +
           campoTexto('campo-email-info', 'email', 'Correo electrónico', p.email, { tipo: 'email', inputmode: 'email' }) + '</div>' +
           subtitulo('Carrera') +
           grupoSiNo('cursa_pii', '¿Cursa o aprobó Proyecto de Ingeniería Industrial I?', cursaPiiDe(p.es_primer_anio)) +
@@ -474,7 +477,7 @@
         var cuatri = $('campo-cuatrimestre-ingreso').value;
         if (!nombre) errores.push('Nombre: completar el nombre.');
         if (!apellido) errores.push('Apellido: completar el apellido.');
-        if (!/^\d{7,9}$/.test(dni)) errores.push('DNI: no se pudo leer de la cuenta del campus. Volver a abrir la página; si persiste, avisar al equipo de seguimiento.');
+        if (!/^\d{7,9}$/.test(dni)) errores.push('DNI: "' + dni + '" debe tener entre 7 y 9 números, sin puntos.');
         if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errores.push('Correo electrónico: "' + email + '" debe tener el formato nombre@dominio.com.');
         if (!cursa) errores.push('Proyecto de Ingeniería Industrial I: seleccionar "Sí" o "No".');
         if (!/^\d{4}$/.test(anio) || Number(anio) < ANIO_INGRESO_MINIMO || Number(anio) > ANIO_ACTUAL) {
