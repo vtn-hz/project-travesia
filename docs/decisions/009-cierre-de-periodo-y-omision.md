@@ -94,7 +94,7 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 
 Pasos, cada uno simulado y con confirmación:
 1. **Hecho el 2026-11-03.** Crear la base Períodos con `crear_base.js` (cmid 60292, d=207), configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada: `2026-2`, con inicio el 2026-08-18 (el 17 fue feriado) y sin fecha límite, que se define más adelante. Primera entrada: rid 20287. En Moodle los campos quedaron no obligatorios.
-2. **Hecho el 2026-11-03:** publicar la Página Tools v6 (verificada en la vista previa de la Cuatrimestral). Falta probar un envío real de la Cuatrimestral.
+2. **Hecho el 2026-11-03:** publicar la Página Tools v6 (verificada en la vista previa de la Cuatrimestral). Probada con un envío real de la Cuatrimestral el 2026-11-03 (Luca, rol cambiado a Estudiante): Respuestas rid 20289 (versión 4, período 2026-2) y Criticidad rid 20290 (índice 50, índice total 30, período 2026-2).
 3. Crear la subsección oculta "Configuración" con la Página "Configuración del Sistema".
 4. Republicar Mi Trayectoria, Información personal, el Tablero, el Detalle y el Hub.
 5. Simular el cierre sobre las bases reales. El cierre real, solo con un pedido aparte.
