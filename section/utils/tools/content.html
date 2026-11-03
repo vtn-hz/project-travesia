@@ -69,6 +69,9 @@
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
       var DATAID_PARCIALES_PRIMERO = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_MATERIAS_PRIMERO = 118; // @config bases.carga_materias_primero.dataid
+      var SECCION_ZHAKYZ = 15647; // @config seccion.id
+      var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
+      var SEGUNDOS_VOLVER = 5; // después de enviar la encuesta, segundos hasta volver a Mi Trayectoria
       var ESPERA_MAXIMA = 8000; // milisegundos que se espera la copia antes de dejar seguir el envío a Moodle
       var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
       var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
@@ -87,9 +90,10 @@
       var ENCUESTAS = {};
       ENCUESTAS[CMID_INICIAL] = { clave: 'inicial', titulo: 'Encuesta inicial' };
       ENCUESTAS[CMID_CUATRIMESTRAL] = { clave: 'cuatrimestral', titulo: 'Encuesta cuatrimestral' };
-      // Dependencias entre preguntas (no van en la base Encuestas: las define la Encuesta de Moodle). Por variable:
-      // la pregunta solo cuenta si la otra tiene ese número de opción. Moodle muestra "Página siguiente" aunque las páginas que siguen
-      // queden vacías por una dependencia, y en ese caso guarda al pasar de página: con esto el script reconoce ese envío final.
+      // Dependencias entre preguntas (no van en la base Encuestas). Por variable: la pregunta solo cuenta si la otra tiene ese número de opción.
+      // Desde el 2026-11-03 las encuestas tienen una sola página y Moodle no aplica dependencias dentro de una página: este script
+      // muestra la pregunta solo cuando se cumple la condición y, si es obligatoria en la base Encuestas, no deja enviar sin responderla.
+      // Con varias páginas (versiones anteriores) también reconoce el envío final con "Página siguiente" cuando lo que sigue queda vacío.
       var DEPENDENCIAS = { inicio_laboral: { variable: 'trabaja', opcion: 1 } };
 
       // ---------------------------------------------------------
@@ -354,6 +358,89 @@
         }
         return false;
       }
+
+      // ---------------------------------------------------------
+      // DEPENDENCIAS EN LA MISMA PÁGINA: MOSTRAR U OCULTAR LA PREGUNTA SEGÚN LA RESPUESTA DE LA OTRA
+      // ---------------------------------------------------------
+      // Contenedor de un ítem de opción múltiple en el formulario de Moodle (y en el simulador, que usa el mismo marcado)
+      function contenedorItem(form, id) {
+        return form.querySelector('#fgroup_id_group_multichoice_' + id) || form.querySelector('#fitem_id_multichoice_' + id) ||
+          form.querySelector('#fgroup_id_group_numeric_' + id) || form.querySelector('#fitem_id_numeric_' + id) ||
+          form.querySelector('#fitem_id_textarea_' + id) || form.querySelector('#fitem_id_textfield_' + id);
+      }
+
+      // DEPENDENCIAS DE LA VERSIÓN VIGENTE CON SUS DOS ÍTEMS EN ESTE FORMULARIO: [{ pregunta, de, opcion }]
+      function dependenciasEnPantalla(form, def) {
+        if (!def) return [];
+        return Object.keys(DEPENDENCIAS).map(function(variable) {
+          var p = preguntaPorVariable(def, variable), de = preguntaPorVariable(def, DEPENDENCIAS[variable].variable);
+          if (!p || !de || !contenedorItem(form, p.item_id) || !form.querySelector('[name="multichoice_' + de.item_id + '"]')) return null;
+          return { pregunta: p, de: de, opcion: DEPENDENCIAS[variable].opcion };
+        }).filter(Boolean);
+      }
+
+      function opcionElegida(form, id) {
+        var marcada = form.querySelector('input[type="radio"][name="multichoice_' + id + '"]:checked');
+        if (marcada) return Number(marcada.value);
+        var sel = form.querySelector('select[name="multichoice_' + id + '"]');
+        return sel ? Number(sel.value) : 0;
+      }
+
+      // Oculta la pregunta si no se cumple su condición y borra lo que tuviera marcado (así no viaja a Moodle)
+      function aplicarDependencias(form) {
+        var cmid = Number((form.querySelector('input[name="id"]') || {}).value);
+        var def = ENCUESTAS[cmid] ? definicionCargada[ENCUESTAS[cmid].clave] : null;
+        dependenciasEnPantalla(form, def).forEach(function(d) {
+          var visible = opcionElegida(form, d.de.item_id) === d.opcion;
+          var cont = contenedorItem(form, d.pregunta.item_id);
+          cont.style.setProperty('display', visible ? '' : 'none', visible ? '' : 'important');
+          if (!visible) {
+            Array.prototype.forEach.call(cont.querySelectorAll('input[type="radio"], input[type="checkbox"]'), function(c) { c.checked = false; });
+            var sel = cont.querySelector('select');
+            if (sel) sel.value = '0';
+            var error = cont.querySelector('[data-zk-error-dependencia]');
+            if (error) error.remove();
+          }
+        });
+      }
+
+      // PREGUNTAS DEPENDIENTES VISIBLES, OBLIGATORIAS EN LA BASE ENCUESTAS Y SIN RESPONDER (Moodle ya no las controla)
+      function dependientesSinResponder(form) {
+        var cmid = Number((form.querySelector('input[name="id"]') || {}).value);
+        var def = ENCUESTAS[cmid] ? definicionCargada[ENCUESTAS[cmid].clave] : null;
+        return dependenciasEnPantalla(form, def).filter(function(d) {
+          return d.pregunta.obligatoria && opcionElegida(form, d.de.item_id) === d.opcion && !opcionElegida(form, d.pregunta.item_id);
+        });
+      }
+
+      function marcarSinResponder(form, lista) {
+        lista.forEach(function(d, k) {
+          var cont = contenedorItem(form, d.pregunta.item_id);
+          if (!cont.querySelector('[data-zk-error-dependencia]')) {
+            var error = document.createElement('div');
+            error.setAttribute('data-zk-error-dependencia', '');
+            error.setAttribute('role', 'alert');
+            error.className = 'form-control-feedback invalid-feedback d-block';
+            error.style.setProperty('color', '#910808', 'important');
+            error.textContent = 'Esta pregunta es obligatoria.';
+            cont.appendChild(error);
+          }
+          if (k === 0) {
+            var primera = cont.querySelector('input:not([type="hidden"]), select');
+            if (primera) primera.focus();
+            if (cont.scrollIntoView) cont.scrollIntoView({ block: 'center' });
+          }
+        });
+      }
+
+      document.addEventListener('change', function(e) {
+        var form = e.target.form;
+        if (!form || form !== formularioEncuesta(document)) return;
+        if (/^multichoice_/.test(e.target.name || '')) aplicarDependencias(form);
+        var cont = e.target.closest && e.target.closest('[id^="fgroup_id_group_"], [id^="fitem_id_"]');
+        var error = cont && cont.querySelector('[data-zk-error-dependencia]');
+        if (error) error.remove();
+      });
 
       // ÍTEMS Y SALTOS DE PÁGINA TAL COMO LOS MUESTRA "EDITAR PREGUNTAS" O LA VISTA PREVIA: [[ids de la página 1], …]
       // Los ítems con el cargador de tools no cuentan: van en todas las páginas y su id no está en la base Encuestas
@@ -679,13 +766,18 @@
         if (!final) return; // página siguiente o anterior: Moodle sigue solo
         if (faltantes(actual).length) return; // Moodle va a rechazar el envío: no se copia
         e.preventDefault();
+        // Pregunta dependiente obligatoria (la controla este script, no Moodle): sin responderla no se envía
+        var sinResponder = dependientesSinResponder(form);
+        if (sinResponder.length) return marcarSinResponder(form, sinResponder);
+        var pendiente = false;
         copiar(cmid, paginas, actual).then(function() {
           escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
         }, function() {
           escribirAlmacen(window.sessionStorage, CLAVE_SESION + cmid, null);
+          pendiente = true;
           avisar('La respuesta se guarda en Moodle, pero su copia en el historial quedó pendiente. Se reintenta al volver a abrir la encuesta.', 'alerta');
         }).then(function() {
-          adaptador.continuar(form, boton);
+          adaptador.continuar(form, boton, pendiente);
         });
       });
 
@@ -715,8 +807,11 @@
             escribirAlmacen(window.localStorage, CLAVE_PENDIENTES, p);
           },
           pendienteCriticidad: agregarCriticidadPendiente,
-          // Sigue el envío original: el botón presionado viaja como campo oculto para que Moodle sepa que es el envío final
-          continuar: function(form, boton) {
+          // Sigue el envío original: el botón presionado viaja como campo oculto para que Moodle sepa que es el envío final.
+          // El envío final se manda con fetch: si Moodle lo guarda, se muestra el aviso y a los SEGUNDOS_VOLVER se vuelve a Mi Trayectoria
+          // ("Página después de enviar" no puede redirigir: Moodle le limpia el script). Si Moodle devuelve el formulario (por ejemplo,
+          // un error de validación) o la red falla, se hace el envío normal para que Moodle muestre lo que corresponda
+          continuar: function(form, boton, pendiente) {
             if (boton && boton.name) {
               var h = document.createElement('input');
               h.type = 'hidden';
@@ -724,11 +819,59 @@
               h.value = boton.value;
               form.appendChild(h);
             }
-            reanudando = true;
-            form.dataset.formSubmitted = 'true'; // el detector de cambios de Moodle no pregunta "salir sin guardar"
-            HTMLFormElement.prototype.submit.call(form);
+            var envioNormal = function() {
+              reanudando = true;
+              form.dataset.formSubmitted = 'true'; // el detector de cambios de Moodle no pregunta "salir sin guardar"
+              HTMLFormElement.prototype.submit.call(form);
+            };
+            if (!boton || boton.name !== 'savevalues') return envioNormal();
+            form.dataset.formSubmitted = 'true';
+            fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' }).then(function(r) {
+              return r.text().then(function(html) { return { ok: r.ok, url: r.url || '', html: html }; });
+            }).then(function(res) {
+              var doc = new DOMParser().parseFromString(res.html, 'text/html');
+              var guardado = res.ok && !/\/login\//.test(res.url) && !formularioEncuesta(doc) && !doc.querySelector('#region-main .alert-danger');
+              if (!guardado) {
+                // Moodle no guardó (devolvió el formulario o un error): el envío normal muestra su mensaje
+                if (formularioEncuesta(doc) || !res.ok) return envioNormal();
+                document.open(); document.write(res.html); document.close();
+                return;
+              }
+              mostrarEnviado(form, pendiente);
+            }).catch(envioNormal);
           }
         };
+      }
+
+      // DIRECCIÓN DE MI TRAYECTORIA (SECCIÓN ZHAKYZ CON EL ANCLA DEL ÁREA DE TEXTO Y MEDIOS)
+      function urlMiTrayectoria() {
+        return M.cfg.wwwroot + '/course/section.php?id=' + SECCION_ZHAKYZ + '#module-' + CMID_VISTA_ESTUDIANTE;
+      }
+
+      // EN LUGAR DEL FORMULARIO: EL MISMO AVISO QUE "PÁGINA DESPUÉS DE ENVIAR", CON LA CUENTA REGRESIVA Y EL LINK PARA VOLVER YA
+      function mostrarEnviado(form, pendiente) {
+        var destino = urlMiTrayectoria();
+        var caja = document.createElement('div');
+        caja.setAttribute('data-zk-enviado', '');
+        caja.setAttribute('role', 'status');
+        caja.style.cssText = 'display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 14px 16px !important; margin: 16px 0 !important; border-radius: 10px !important; background-color: #f6fef6 !important; border: 1px solid #c5f7c5 !important; box-sizing: border-box !important; font-family: Inter, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;';
+        caja.innerHTML = '<span style="color: #1f7a1f !important; padding-top: 1px !important;">' + icono('ok', 20) + '</span>' +
+          '<div><div style="font-weight: 600 !important;">Sus respuestas han sido guardadas. Gracias.</div>' +
+          '<div data-zk-cuenta style="color: #47536b !important; margin-top: 2px !important;"></div>' +
+          (pendiente ? '<div style="color: #7a5d06 !important; margin-top: 2px !important;">La copia en el historial quedó pendiente: se reintenta al volver a abrir la encuesta.</div>' : '') +
+          '<a href="' + escapar(destino) + '" style="display: inline-block !important; margin-top: 6px !important; color: #026bd4 !important; font-weight: 500 !important;">Volver ahora a Mi Trayectoria</a></div>';
+        form.parentNode.replaceChild(caja, form);
+        var cuenta = caja.querySelector('[data-zk-cuenta]');
+        var quedan = SEGUNDOS_VOLVER;
+        var pintar = function() {
+          cuenta.textContent = quedan > 0 ? 'En ' + quedan + (quedan === 1 ? ' segundo' : ' segundos') + ' vuelve a Mi Trayectoria.' : 'Volviendo a Mi Trayectoria…';
+        };
+        pintar();
+        var reloj = setInterval(function() {
+          quedan -= 1;
+          pintar();
+          if (quedan <= 0) { clearInterval(reloj); window.location.href = destino; }
+        }, 1000);
       }
 
       // ---------------------------------------------------------
@@ -740,28 +883,24 @@
       var REQ = '<i class="icon fa fa-circle-exclamation text-danger ms-2 fa-fw" aria-hidden="true" title="Campo obligatorio"><\/i><span class="visually-hidden">(Campo obligatorio)</span>';
       var SIMULACION = {};
       SIMULACION[CMID_INICIAL] = {
-        // Páginas de la Encuesta Inicial tal como están en Moodle (tres saltos de página)
-        paginas: [
-          [{ tipo: 'cuadro' }, { id: 8253, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 223', req: true }],
-          [{ id: 8257, tipo: 'numeric', texto: '¿En qué año ingresaste a la facultad?', rango: '2000 - 3000', req: true },
-            { id: 8258, tipo: 'multichoice', texto: '¿En cuál cuatrimestre ingresaste?', opciones: ['1', '2'], req: true }],
-          [{ id: 8259, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true }],
-          [{ id: 8260, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año'], depende: [8259, 1] }]
-        ]
+        // La Encuesta Inicial tal como está en Moodle desde el 2026-11-03: una sola página. La 8260 la muestra el script si 8259 = Si
+        paginas: [[
+          { tipo: 'cuadro' }, { id: 8253, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 223', req: true },
+          { id: 8257, tipo: 'numeric', texto: '¿En qué año ingresaste a la facultad?', rango: '2000 - 3000', req: true },
+          { id: 8258, tipo: 'multichoice', texto: '¿En cuál cuatrimestre ingresaste?', opciones: ['1', '2'], req: true },
+          { id: 8259, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true },
+          { id: 8260, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año'] }
+        ]]
       };
       SIMULACION[CMID_CUATRIMESTRAL] = {
-        // Páginas de la Encuesta Cuatrimestral tal como están en Moodle desde el 2026-10-31 (cuatro saltos de página):
-        // cuadro de créditos (8261) y selector de materias (8270), que escribe su JSON en la 8768
+        // La Encuesta Cuatrimestral tal como está en Moodle desde el 2026-11-03: una sola página, con el cuadro de créditos (8261) y el
+        // selector de materias (8270), que escribe su JSON en la 8768. La 8266 la muestra el script si 8265 = Si, y es obligatoria por script
         paginas: [[
           { tipo: 'cuadro' },
-          { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true }
-        ], [
-          { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true }
-        ], [
-          { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true }
-        ], [
-          { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'], req: true, depende: [8265, 1] }
-        ], [
+          { id: 8262, tipo: 'numeric', texto: 'Los créditos obtenidos actualmente son:', rango: '0 - 235,5', req: true },
+          { id: 8264, tipo: 'multichoice', texto: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', opciones: ['No aplico por nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado pendiente de defensa'], req: true },
+          { id: 8265, tipo: 'multichoice', texto: '¿Trabaja actualmente?', opciones: ['Si', 'No'], req: true },
+          { id: 8266, tipo: 'multichoice', texto: '¿En qué momento de la carrera comenzaste tu actividad laboral?', opciones: ['Comencé antes de ingresar a la carrera', 'Comencé en 1.º año', 'Comencé en 2.º año', 'Comencé en 3.º año', 'Comencé en 4.º año', 'Comencé en 5.º año', 'Comencé solo adeudando trabajo final'] },
           { id: 8768, tipo: 'textarea', texto: '¿Qué materias cursaste el anterior cuatrimestre?', ejemplo: JSON.stringify({ plan: '2024', ninguna: false, materias: [
             { codigo: 'INGM102', nombre: 'Análisis Matemático II', primera_vez: false, dificultad: 4 },
             { codigo: 'INGF101', nombre: 'Física A', primera_vez: true, dificultad: 2 }] }) },
@@ -829,6 +968,10 @@
           (hayMas ? '<button type="submit" name="gonextpage" value="Página siguiente" style="' + btn + '">Página siguiente</button>'
             : '<button type="submit" name="savevalues" value="Enviar respuestas" style="' + principal + '">Enviar respuestas</button>') +
           '<button type="submit" name="cancel" value="Cancelar" style="' + btn + '">Cancelar</button></div></form>';
+        // Como en el campus: con la versión vigente leída, la pregunta dependiente se muestra solo si se cumple su condición
+        var form = document.querySelector('#formulario-simulado form');
+        if (definicionCargada[ENCUESTAS[sim.cmid].clave]) aplicarDependencias(form);
+        else definicionVigente(ENCUESTAS[sim.cmid].clave).then(function() { aplicarDependencias(document.querySelector('#formulario-simulado form')); }, function() {});
       }
 
       // VALORES DE LA PÁGINA EN EL "SERVIDOR" SIMULADO (MOODLE LOS GUARDA AL CAMBIAR DE PÁGINA Y LOS PRECARGA)
@@ -1002,7 +1145,8 @@
           adaptador = adaptadorMoodle();
           // La versión vigente se pide al abrir la encuesta: el envío final con "Página siguiente" se decide sin esperar
           var abierta = ENCUESTAS[Number((formularioEncuesta(document).querySelector('input[name="id"]') || {}).value)];
-          if (abierta) definicionVigente(abierta.clave).catch(function() { /* se vuelve a pedir al enviar */ });
+          // Con la versión leída se aplican las dependencias de la página (la pregunta que depende de otra empieza oculta)
+          if (abierta) definicionVigente(abierta.clave).then(function() { aplicarDependencias(formularioEncuesta(document)); }, function() { /* se vuelve a pedir al enviar */ });
           reintentarPendientes();
         }
       }
