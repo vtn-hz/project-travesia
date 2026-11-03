@@ -33,12 +33,16 @@
     "Vista Estudiante": {
       "id": 15791,
       "cmid": 60263
+    },
+    "Tablero de Criticidad": {
+      "id": 15796,
+      "cmid": 60286
     }
   },
   "paginas": {
     "hub": 59511,
-    "tablero": null,
-    "detalle": null,
+    "tablero": 60287,
+    "detalle": 60288,
     "listado_criticidad_primero": 59523,
     "entrevistas": 60198,
     "dashboard_estudiantes_primero": 60035,
