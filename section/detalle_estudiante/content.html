@@ -71,8 +71,19 @@
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      // Mismo período que la Página Tools (PERIODO_ACTUAL) y el tablero
-      var PERIODO_ACTUAL = '2026-2';
+      // Período (ADR-009): el vigente de la base Períodos (PeriodoVigente de la Página Tools). El calculado sale de las entradas
+      // automáticas de ese período y, si el estudiante no tiene ninguna, de las del período anterior (por ejemplo, la omisión que
+      // agrega el cierre del período). En la vista previa, los mismos períodos de prueba que la Página Tools más los que agregó la
+      // Página Configuración del Sistema. Hasta leerlo vale PERIODO_POR_DEFECTO
+      var PERIODO_POR_DEFECTO = '2026-2';
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-10', fecha_limite_encuesta: '2026-11-30' }
+      ];
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
+      var CLAVE_PREVIEW_CIERRE = 'zk-preview-criticidad-cierre'; // omisiones de la vista previa de la Página Configuración del Sistema
+      var PERIODO_ACTUAL = PERIODO_POR_DEFECTO;
+      var PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
@@ -301,6 +312,39 @@
         return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
       }
 
+      // OMISIONES QUE AGREGÓ LA VISTA PREVIA DE LA PÁGINA CONFIGURACIÓN DEL SISTEMA
+      function cierrePreview() {
+        var v = leerAlmacen(CLAVE_PREVIEW_CIERRE, []);
+        return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
+      }
+
+      // ---------------------------------------------------------
+      // PERÍODO VIGENTE
+      // ---------------------------------------------------------
+      // 2026-2 → 2026-1; 2027-1 → 2026-2
+      function periodoAnterior(p) {
+        var x = String(p).split('-');
+        return x[1] === '2' ? x[0] + '-1' : (Number(x[0]) - 1) + '-2';
+      }
+
+      // VISTA PREVIA: LA MISMA REGLA QUE PeriodoVigente (LA ENTRADA DE rid MAYOR)
+      function periodoDePrueba() {
+        var agregados = leerAlmacen(CLAVE_PREVIEW_PERIODOS, []);
+        var lista = PERIODOS_PRUEBA.concat(Array.isArray(agregados) ? agregados : []).filter(function(p) { return p && /^\d{4}-[12]$/.test(String(p.periodo)); })
+          .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+        return lista[lista.length - 1] || null;
+      }
+
+      function fijarPeriodo(p) {
+        PERIODO_ACTUAL = p && p.periodo ? String(p.periodo) : PERIODO_POR_DEFECTO;
+        PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
+      }
+
+      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
+      function leerPeriodo(Tools) {
+        return (typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null)).then(fijarPeriodo);
+      }
+
       function escribirAlmacen(clave, valor) {
         try { window.localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) { /* sin almacenamiento: queda en memoria */ }
       }
@@ -338,19 +382,24 @@
       }
 
       function criticidadDe(tramo, entradas, encuestas) {
-        var candidatas = entradas.filter(function(c) {
-          if (c.origen !== 'automatica' || String(c.periodo) !== PERIODO_ACTUAL || numero(c.indice) === null) return false;
-          var tipo = tipoDeEntrada(c, encuestas);
-          return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
-        });
-        var ultima = masReciente(candidatas);
+        var delPeriodo = function(periodo) {
+          return entradas.filter(function(c) {
+            if (c.origen !== 'automatica' || String(c.periodo) !== periodo || numero(c.indice) === null) return false;
+            var tipo = tipoDeEntrada(c, encuestas);
+            return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+          });
+        };
+        // Sin entradas en el período vigente vale la última del anterior, marcada con su período (ADR-009)
+        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || masReciente(delPeriodo(PERIODO_ANTERIOR));
         var calculado;
         if (ultima) {
           var indice = numero(ultima.indice);
+          var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
           calculado = { nivel: nivelDeIndice(indice), indice: indice, tipo: tipoDeEntrada(ultima, encuestas), fecha: ultima.created_at, entrada: ultima,
-            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
+            periodo: String(ultima.periodo), anterior: anterior,
+            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
         } else {
-          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null,
+          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
             motivo: tramo === 'primero' ? 'Sin notas de parciales en ' + PERIODO_ACTUAL + '.' : 'Sin Encuesta Cuatrimestral en ' + PERIODO_ACTUAL + '.' };
         }
         var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
@@ -481,9 +530,10 @@
       function cargarDatos() {
         if (usaPrueba) {
           if (!ES_VISTA_LOCAL) $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
+          fijarPeriodo(periodoDePrueba());
           return Promise.resolve({
             estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview()),
+            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview()),
             respuestas: RESPUESTAS_PRUEBA,
             parciales: PARCIALES_PRUEBA,
             entrevistas: ENTREVISTAS_PRUEBA,
@@ -491,6 +541,8 @@
           });
         }
         return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          return leerPeriodo(Tools).then(function() { return Tools; });
+        }).then(function(Tools) {
           // Las notas y las entrevistas solo completan la cronología: si no se leen (o tardan), el detalle sigue sin ellas
           var opcional = function(p) { return p.catch(function() { return []; }); };
           return Promise.all([
@@ -981,8 +1033,8 @@
           : '<div style="font-size: 12px !important; color: #47536b !important;">Solo tutores y administradores pueden asignar estados.</div>';
         var tarjetas = [
           ['Criticidad calculada', c.indice !== null ? c.indice + '<span style="font-size: 14px !important; color: #47536b !important; font-weight: 400 !important; margin-left: 4px !important;">/ 100</span>' : '—',
-            c.indice !== null ? escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha) : escapar(c.motivo)],
-          ['Estado calculado', chipNivel(c.nivel), est.tramo === 'primero' ? 'notas de parciales de ' + PERIODO_ACTUAL : 'última Encuesta Cuatrimestral de ' + PERIODO_ACTUAL],
+            c.indice !== null ? escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha) + (c.anterior ? ' · período ' + escapar(c.periodo) : '') : escapar(c.motivo)],
+          ['Estado calculado', chipNivel(c.nivel), (est.tramo === 'primero' ? 'notas de parciales de ' : 'última Encuesta Cuatrimestral de ') + escapar(c.periodo || PERIODO_ACTUAL)],
           ['Estado asignado', a ? chipNivel(a.semaforo) : '<span style="color: #94a0b8 !important;">—</span>', a ? 'por ' + escapar(a.autor || 'sin autor') + ' · ' + fechaVisible(a.created_at) : 'manda el calculado', accion]
         ];
         return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' + tarjetas.map(function(k) {
