@@ -83,6 +83,9 @@
       var CLAVE_PERIODO = 'zk-periodo-vigente'; // último período leído de la base Períodos (localStorage): se usa si la base no responde
       var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos'; // vista previa local: períodos que agregó la Página Configuración del Sistema
       var ESPERA_PERIODO = 4000; // milisegundos que se espera la base Períodos al enviar una encuesta o guardar una nota
+      // Hasta leer la base vale el último período leído en este navegador: si al enviar la base no responde a tiempo, se usa ese
+      var periodoGuardado = ES_VISTA_LOCAL ? null : leerAlmacen(window.localStorage, CLAVE_PERIODO, null);
+      if (periodoGuardado && /^\d{4}-[12]$/.test(String(periodoGuardado.periodo))) PERIODO_ACTUAL = String(periodoGuardado.periodo);
       // En local (Live Server): entradas de la base Encuestas, desde la Página Tools del repo (section/utils/tools/content.html).
       // Cuando la biblioteca la ejecuta un cargador, data-base es la dirección de la Página Tools
       var RUTA_LOCAL_ENCUESTAS = '../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json';
