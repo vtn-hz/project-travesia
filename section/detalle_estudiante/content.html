@@ -40,6 +40,14 @@
     </div>
   </div>
 
+  <!-- MODAL: PREGUNTAS Y RESPUESTAS DE UNA ENCUESTA (SE ARMA AL ABRIRLO) -->
+  <div id="modal-respuestas-detalle" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-respuestas"
+    style="display: none; position: fixed !important; inset: 0 !important; z-index: 10000 !important; background-color: rgba(5, 7, 10, 0.5) !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div id="caja-modal-respuestas"
+      style="width: 100% !important; max-width: 560px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
+    </div>
+  </div>
+
   <!-- SCRIPT DE MANEJO DE EVENTOS -->
   <script>
     (function() {
@@ -52,7 +60,8 @@
         styleEl.innerHTML =
           '#detalle-estudiante > nolink { display: block; }' +
           '#detalle-estudiante [role="button"]:focus-visible, #detalle-estudiante select:focus-visible, #detalle-estudiante textarea:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
-          '#grafico-criticidad [data-punto] { cursor: pointer; }' +
+          '#grafico-criticidad [data-punto] { cursor: pointer; outline: none; }' +
+          '#grafico-criticidad [data-ref-punto]:focus-visible circle, #grafico-criticidad [data-ref-punto]:focus-visible rect { stroke-width: 4; stroke: #026bd4; }' +
           '#grafico-criticidad [data-punto]:hover circle, #grafico-criticidad [data-punto]:hover rect { stroke-width: 4; }' +
           '#detalle-estudiante [data-filtro-actividad]:hover, #detalle-estudiante [data-opcion-nivel]:hover { border-color: #c2c9d6 !important; }' +
           '#detalle-estudiante [data-opcion-nivel]:focus-within { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
@@ -75,6 +84,7 @@
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       var DATAID_PARCIALES = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
+      var DATAID_ENCUESTAS = 198; // @config bases.encuestas.dataid
       // Tablero de Criticidad: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_TABLERO_LOCAL = '../tablero_estudiantes/content.html';
       var CMID_TABLERO = 60287; // @config paginas.tablero
@@ -170,13 +180,13 @@
       ];
 
       var RESPUESTAS_PRUEBA = [
-        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00:00-03:00' },
-        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1', created_at: '2025-04-15T10:20:00-03:00' },
-        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-10T15:00:00-03:00' },
-        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30:00-03:00' },
-        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40:00-03:00' },
-        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00' },
-        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00' }
+        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103"]}]}, {"item_id": 8257, "respuestas": [2024]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
+        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1', created_at: '2025-04-15T10:20:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [48]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [1]}]' },
+        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-10T15:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [62]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' },
+        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [70]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' },
+        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103"]}]}, {"item_id": 8257, "respuestas": [2022]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
+        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [120]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [3]}, {"item_id": 8265, "respuestas": [2]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [1]}]' },
+        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [136]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [4]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' }
       ];
 
       function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha, motivo) {
@@ -212,6 +222,12 @@
       ];
 
       // Base CargaParcialesPrimero (las notas que dispararon cada entrada de Criticidad)
+      // Base Encuestas: definiciones de las versiones vigentes (texto de cada pregunta y de cada opción), de data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json
+      var ENCUESTAS_PRUEBA = [
+        {"codigo_encuesta": "inicial", "version": 2, "json_preguntas": [{"item_id": 8254, "tipo": "label", "pregunta": "Cuadro de créditos (widget CuadroCreditos de Utils)"}, {"item_id": 8253, "tipo": "numeric", "pregunta": "Los créditos obtenidos actualmente son:"}, {"item_id": 8774, "tipo": "textarea", "pregunta": "Materias aprobadas (lo completa el cuadro de créditos)", "formato": "seleccion_creditos"}, {"item_id": 8257, "tipo": "numeric", "pregunta": "¿En qué año ingresaste a la facultad?"}, {"item_id": 8258, "tipo": "multichoice", "pregunta": "¿En cuál cuatrimestre ingresaste?", "opciones": [{"opcion": 1, "texto": "1"}, {"opcion": 2, "texto": "2"}]}, {"item_id": 8259, "tipo": "multichoice", "pregunta": "¿Trabaja actualmente?", "opciones": [{"opcion": 1, "texto": "Si"}, {"opcion": 2, "texto": "No"}]}, {"item_id": 8260, "tipo": "multichoice", "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?", "opciones": [{"opcion": 1, "texto": "Comencé antes de ingresar a la carrera"}, {"opcion": 2, "texto": "Comencé en 1.º año"}]}]},
+        {"codigo_encuesta": "cuatrimestral", "version": 3, "json_preguntas": [{"item_id": 8261, "tipo": "label", "pregunta": "Cuadro de créditos (widget CuadroCreditos de Utils)"}, {"item_id": 8262, "tipo": "numeric", "pregunta": "Los créditos obtenidos actualmente son:"}, {"item_id": 8775, "tipo": "textarea", "pregunta": "Materias aprobadas (lo completa el cuadro de créditos)", "formato": "seleccion_creditos"}, {"item_id": 8264, "tipo": "multichoice", "pregunta": "¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?", "opciones": [{"opcion": 1, "texto": "No aplico por nivel"}, {"opcion": 2, "texto": "No iniciado"}, {"opcion": 3, "texto": "Tema propuesto sin avance"}, {"opcion": 4, "texto": "En desarrollo activo"}, {"opcion": 5, "texto": "Finalizado pendiente de defensa"}]}, {"item_id": 8265, "tipo": "multichoice", "pregunta": "¿Trabaja actualmente?", "opciones": [{"opcion": 1, "texto": "Si"}, {"opcion": 2, "texto": "No"}]}, {"item_id": 8266, "tipo": "multichoice", "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?", "opciones": [{"opcion": 1, "texto": "Comencé antes de ingresar a la carrera"}, {"opcion": 2, "texto": "Comencé en 1.º año"}, {"opcion": 3, "texto": "Comencé en 2.º año"}, {"opcion": 4, "texto": "Comencé en 3.º año"}, {"opcion": 5, "texto": "Comencé en 4.º año"}, {"opcion": 6, "texto": "Comencé en 5.º año"}, {"opcion": 7, "texto": "Comencé solo adeudando trabajo final"}]}, {"item_id": 8270, "tipo": "label", "pregunta": "Selector de materias (widget SelectorMaterias de Utils)"}, {"item_id": 8768, "tipo": "textarea", "pregunta": "¿Qué materias cursaste el anterior cuatrimestre?", "formato": "selector_materias"}, {"item_id": 8271, "tipo": "multichoice", "pregunta": "Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?", "opciones": [{"opcion": 1, "texto": "Al día (cursando las materias del año que me corresponde)"}, {"opcion": 2, "texto": "Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)"}, {"opcion": 3, "texto": "Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)"}]}]}
+      ];
+
       var PARCIALES_PRUEBA = [
         { rid: 501, DNI: '99000005', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Fecha: '2026-05-08', Nota: '3', Estado: 'Desaprobado' },
         { rid: 502, DNI: '99000005', Materia: 'Álgebra I- B', Instancia: 'Parcial 1', Fecha: '2026-07-10', Nota: '7', Estado: 'Aprobado' },
@@ -408,8 +424,11 @@
             doc.querySelectorAll('li.contentnode').forEach(function(li) {
               var dt = li.querySelector('dt');
               var dd = li.querySelector('dd');
-              // Se omiten el código QR de la app de Moodle y la zona horaria: no son datos del estudiante que sirvan al seguimiento
-              if (dt && dd && !/c[oó]digo qr|zona horaria/i.test(dt.textContent)) campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').trim() });
+              // Se omiten el código QR de la app de Moodle, la zona horaria y la lista de cursos: no sirven al seguimiento.
+              // Moodle agrega al correo "(Oculto a todo el mundo excepto…)": se quita (con [(] y no con barra y paréntesis, que activa el filtro TeX)
+              if (dt && dd && !/c[oó]digo qr|zona horaria|perfiles de curso/i.test(dt.textContent)) {
+                campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').replace(/\s*[(]Oculto a todo el mundo[^)]*[)]/gi, '').trim() });
+              }
             });
             return { campos: campos };
           });
@@ -466,7 +485,8 @@
             criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview()),
             respuestas: RESPUESTAS_PRUEBA,
             parciales: PARCIALES_PRUEBA,
-            entrevistas: ENTREVISTAS_PRUEBA
+            entrevistas: ENTREVISTAS_PRUEBA,
+            encuestas: ENCUESTAS_PRUEBA
           });
         }
         return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
@@ -477,10 +497,12 @@
             leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD }),
             leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS }),
             DATAID_PARCIALES ? opcional(leerBase(Tools, 'CargaParcialesPrimero', { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES }, ESPERA_OPCIONAL)) : [],
-            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: DATAID_ENTREVISTAS }, ESPERA_OPCIONAL)) : []
+            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: DATAID_ENTREVISTAS }, ESPERA_OPCIONAL)) : [],
+            // Textos de las preguntas para el detalle de cada encuesta
+            DATAID_ENCUESTAS ? opcional(leerBase(Tools, 'Encuestas', { dataid: DATAID_ENCUESTAS }, ESPERA_OPCIONAL)) : []
           ]);
         }).then(function(r) {
-          return { estudiantes: r[0], criticidad: r[1], respuestas: r[2], parciales: r[3], entrevistas: r[4] };
+          return { estudiantes: r[0], criticidad: r[1], respuestas: r[2], parciales: r[3], entrevistas: r[4], encuestas: r[5] };
         });
       }
 
@@ -495,6 +517,8 @@
       var perfil = null; // datos del campus (Moodle) o null
       var filtroActividad = '';
       var modal = null; // { id, disparador, guardando }
+      var modalRespuestas = null; // { disparador }
+      var resaltado = null; // referencia del punto del gráfico seleccionado
       var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
 
       // ARMAR EL ESTUDIANTE DE LA URL CON SUS ENTRADAS
@@ -583,7 +607,14 @@
         } else {
           campos.push({ etiqueta: 'Información personal', valor: 'Sin cargar: el nombre, la cohorte y el año de la carrera faltan' });
         }
-        if (perfil && perfil.campos.length) campos = campos.concat(perfil.campos);
+        // El correo del campus solo si la información personal no tiene uno (sin repetirlo), y con la misma etiqueta
+        if (perfil && perfil.campos.length) {
+          perfil.campos.forEach(function(c) {
+            if (/^direcci[oó]n de correo/i.test(c.etiqueta)) {
+              if (!(i && i.email)) campos.push({ etiqueta: 'Correo', valor: c.valor });
+            } else campos.push(c);
+          });
+        }
         var lista = campos.map(function(c) {
           return '<div style="padding: 8px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
             '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(c.etiqueta) + '</div>' +
@@ -603,14 +634,14 @@
           return serie === 'notas' ? tipo === 'notas' : tipo && tipo !== 'notas';
         }).sort(function(a, b) { return tiempoDe(a) - tiempoDe(b); }).map(function(c) {
           var tipo = tipoDeEntrada(c, est.encuestas);
-          return { t: tiempoDe(c), valor: numero(c.indice), texto: TIPOS[tipo] + (c.motivo ? ' · ' + c.motivo : '') };
+          return { t: tiempoDe(c), valor: numero(c.indice), ref: refDe(c), texto: TIPOS[tipo] + (c.motivo ? ' · ' + c.motivo : '') };
         });
       }
 
       function graficoCriticidad(anchoDisponible) {
         var series = { notas: puntosDeSerie('notas'), encuestas: puntosDeSerie('encuestas') };
         var marcas = est.entradas.filter(function(c) { return c.origen === 'manual' && ASIGNABLES.indexOf(c.semaforo) !== -1 && tiempoDe(c); }).map(function(c) {
-          return { t: tiempoDe(c), valor: VALOR_ASIGNADO[c.semaforo], nivel: c.semaforo, texto: c.motivo + ' (' + (c.autor || 'sin autor') + ')' };
+          return { t: tiempoDe(c), valor: VALOR_ASIGNADO[c.semaforo], nivel: c.semaforo, ref: refDe(c), texto: c.motivo + ' (' + (c.autor || 'sin autor') + ')' };
         });
         var paso = est.info && est.info.periodo_paso_superior ? Date.parse(inicioDePeriodo(est.info.periodo_paso_superior)) : NaN;
         var todas = series.notas.concat(series.encuestas, marcas);
@@ -668,13 +699,15 @@
             var forma = k === 'notas'
               ? '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#ffffff" stroke="' + s.color + '" stroke-width="2.5"/>'
               : '<rect x="' + (cx - 5) + '" y="' + (cy - 5) + '" width="10" height="10" fill="#ffffff" stroke="' + s.color + '" stroke-width="2.5"/>';
-            svg += '<g data-punto data-serie="' + k + '"><title>' + escapar(fechaDeTiempo(p.t) + ' · ' + p.texto + ' · índice ' + p.valor) + '</title>' + forma + '</g>';
+            var etiqueta = fechaDeTiempo(p.t) + ' · ' + p.texto + ' · índice ' + p.valor;
+            svg += '<g data-punto data-ref-punto="' + escapar(p.ref) + '" data-serie="' + k + '" role="button" tabindex="0" aria-label="' + escapar(etiqueta + '. Resaltar en la trayectoria') + '"><title>' + escapar(etiqueta) + '</title>' + forma + '</g>';
           });
         });
         // Marcas de los estados asignados (rombo en el centro de su banda)
         marcas.forEach(function(p) {
           var cx = x(p.t), cy = y(p.valor);
-          svg += '<g data-punto data-serie="asignado"><title>' + escapar(fechaDeTiempo(p.t) + ' · Asignado: ' + NIVELES[p.nivel].texto + ' · ' + p.texto) + '</title>' +
+          var etiqueta = fechaDeTiempo(p.t) + ' · Asignado: ' + NIVELES[p.nivel].texto + ' · ' + p.texto;
+          svg += '<g data-punto data-ref-punto="' + escapar(p.ref) + '" data-serie="asignado" role="button" tabindex="0" aria-label="' + escapar(etiqueta + '. Resaltar en la trayectoria') + '"><title>' + escapar(etiqueta) + '</title>' +
             '<line x1="' + cx + '" x2="' + cx + '" y1="' + m.a + '" y2="' + (H - m.b) + '" stroke="#0b0e14" stroke-width="1" stroke-dasharray="2 3"/>' +
             '<rect x="' + (cx - 6) + '" y="' + (cy - 6) + '" width="12" height="12" transform="rotate(45 ' + cx + ' ' + cy + ')" fill="' + NIVELES[p.nivel].punto + '" stroke="#0b0e14" stroke-width="2"/></g>';
         });
@@ -694,6 +727,11 @@
       // ---------------------------------------------------------
       // CRONOLOGÍA (LO QUE FUE HACIENDO EL ESTUDIANTE)
       // ---------------------------------------------------------
+      // REFERENCIA DE UNA ENTRADA DE CRITICIDAD: UNE EL PUNTO DEL GRÁFICO CON SU EVENTO EN LA TRAYECTORIA
+      function refDe(c) {
+        return c.rid !== null && c.rid !== undefined && c.rid !== '' ? 'c' + c.rid : 't' + tiempoDe(c);
+      }
+
       function itemsCronologia() {
         var items = [];
         var parcialPorRid = {};
@@ -705,24 +743,24 @@
           var extra = indice !== null ? [chipNivel(nivelDeIndice(indice)), chipNeutro('Índice ' + indice)] : [];
           if (c.origen === 'manual') {
             var quita = ASIGNABLES.indexOf(c.semaforo) === -1;
-            items.push({ t: tiempoDe(c), grupo: 'asignado', titulo: quita ? 'Quitó el estado asignado' : 'Asignó un estado',
+            items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'asignado', titulo: quita ? 'Quitó el estado asignado' : 'Asignó un estado',
               texto: c.motivo, extra: [quita ? chipNeutro('Vuelve el calculado') : chipNivel(c.semaforo), chipNeutro(c.autor || 'Sin autor')] });
           } else if (tipo === 'notas') {
             var p = parcialPorRid[String(c.rid_fuente)];
             var texto = c.fuente === 'materias' ? (c.motivo || 'Recálculo por un cambio en las materias de 1.er año.')
               : p ? p.Materia + ' · ' + p.Instancia + ' · ' + (p.Nota ? 'nota ' + p.Nota : 'sin nota') + (p.Estado ? ' (' + p.Estado + ')' : '') : 'Nota de un parcial de 1.er año.';
-            items.push({ t: tiempoDe(c), grupo: 'notas', titulo: c.fuente === 'materias' ? 'Recálculo de las notas' : 'Cargó una nota', texto: texto, extra: extra });
+            items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'notas', titulo: c.fuente === 'materias' ? 'Recálculo de las notas' : 'Cargó una nota', texto: texto, extra: extra });
           } else if (tipo === 'omision') {
-            items.push({ t: tiempoDe(c), grupo: 'encuesta', titulo: 'No respondió la encuesta', texto: c.motivo || 'Encuesta Cuatrimestral ' + c.periodo, extra: extra });
+            items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'encuesta', titulo: 'No respondió la encuesta', texto: c.motivo || 'Encuesta Cuatrimestral ' + c.periodo, extra: extra });
           } else if (tipo) {
             respuestaConEntrada[String(c.rid_fuente)] = true;
-            items.push({ t: tiempoDe(c), grupo: 'encuesta', titulo: 'Respondió la ' + TIPOS[tipo], texto: tipo === 'cuatrimestral' ? 'Período ' + c.periodo : tipo === 'inicial' ? 'No entra en el calculado (se ve como referencia).' : '', extra: extra });
+            items.push({ t: tiempoDe(c), ref: refDe(c), respuesta: String(c.rid_fuente), grupo: 'encuesta', titulo: 'Respondió la ' + TIPOS[tipo], texto: tipo === 'cuatrimestral' ? 'Período ' + c.periodo : tipo === 'inicial' ? 'No entra en el calculado (se ve como referencia).' : '', extra: extra });
           }
         });
         // Envíos de encuestas sin entrada de Criticidad (el índice no se pudo calcular)
         est.respuestas.forEach(function(r) {
           if (respuestaConEntrada[String(r.rid)]) return;
-          items.push({ t: tiempoDe(r), grupo: 'encuesta', titulo: 'Respondió la ' + (TIPOS[r.codigo_encuesta] || 'encuesta'), texto: 'Sin índice de criticidad registrado.', extra: [] });
+          items.push({ t: tiempoDe(r), respuesta: String(r.rid), grupo: 'encuesta', titulo: 'Respondió la ' + (TIPOS[r.codigo_encuesta] || 'encuesta'), texto: 'Sin índice de criticidad registrado.', extra: [] });
         });
         est.entrevistas.forEach(function(x) {
           var fecha = x.fecha_realizada || x.fecha_programada || x.fecha_solicitud;
@@ -747,14 +785,143 @@
               (k ? ACTIVIDADES[k].texto : 'Todo') + ' · ' + cantidad + '</span>';
           }).join('') + '</div>';
         var lista = items.filter(function(i) { return !filtroActividad || i.grupo === filtroActividad; }).map(function(i) {
-          return '<div data-item-cronologia="' + i.grupo + '" style="display: flex !important; gap: 12px !important; padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
+          var verDetalle = i.respuesta && respuestaPorRid(i.respuesta)
+            ? '<div data-ver-respuesta="' + escapar(i.respuesta) + '" role="button" tabindex="0" style="display: inline-flex !important; align-items: center !important; gap: 4px !important; margin-top: 4px !important; color: #026bd4 !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">' + icono('ver', 16) + 'Ver detalle</div>'
+            : '';
+          return '<div data-item-cronologia="' + i.grupo + '"' + (i.ref ? ' data-ref="' + escapar(i.ref) + '"' : '') + ' style="display: flex !important; gap: 12px !important; padding: 10px 8px !important; margin: 0 -8px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 6px !important; transition: background-color 0.2s ease, box-shadow 0.2s ease !important;">' +
             '<span style="width: 32px !important; height: 32px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 auto !important;">' + icono(ACTIVIDADES[i.grupo].icono, 18) + '</span>' +
             '<div style="flex: 1 1 auto !important; min-width: 0 !important;">' +
             '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px 8px !important;"><span style="font-weight: 500 !important;">' + escapar(i.titulo) + '</span>' + i.extra.join('') + '</div>' +
-            (i.texto ? '<div style="overflow-wrap: anywhere !important;">' + escapar(i.texto) + '</div>' : '') + '</div>' +
+            (i.texto ? '<div style="overflow-wrap: anywhere !important;">' + escapar(i.texto) + '</div>' : '') + verDetalle + '</div>' +
             '<div style="flex: 0 0 auto !important; font-size: 12px !important; color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (i.t ? fechaDeTiempo(i.t) : '—') + '</div></div>';
         }).join('');
         return filtros + (lista || '<div style="color: #47536b !important;">Sin actividades de este tipo.</div>');
+      }
+
+
+      // ---------------------------------------------------------
+      // DETALLE DE UNA ENCUESTA: PREGUNTA Y RESPUESTA (BASES RESPUESTAS Y ENCUESTAS)
+      // ---------------------------------------------------------
+      function respuestaPorRid(rid) {
+        return est.respuestas.filter(function(r) { return String(r.rid) === String(rid); })[0] || null;
+      }
+
+      function json(texto, defecto) {
+        if (texto && typeof texto === 'object') return texto;
+        try { return JSON.parse(texto); } catch (e) { return defecto; }
+      }
+
+      // PREGUNTAS DE UNA VERSIÓN DE ENCUESTA (json_preguntas llega como texto desde la base)
+      function preguntasDe(codigo, version) {
+        var def = (datos.encuestas || []).filter(function(e) { return e.codigo_encuesta === codigo && String(e.version) === String(version); })[0];
+        var lista = def ? json(def.json_preguntas, []) : [];
+        return Array.isArray(lista) ? lista : [];
+      }
+
+      // TEXTO DE UNA RESPUESTA SEGÚN EL TIPO DE PREGUNTA
+      function textoRespuesta(p, respuestas) {
+        if (!Array.isArray(respuestas) || !respuestas.length) return 'Sin respuesta';
+        if (p && p.formato === 'seleccion_creditos') {
+          var sel = respuestas[0] || {};
+          return 'Plan ' + (sel.plan || '—') + ' · ' + (Array.isArray(sel.materias) ? sel.materias.length : 0) + ' materias marcadas' +
+            (Array.isArray(sel.materias) && sel.materias.length ? ': ' + sel.materias.join(', ') : '');
+        }
+        if (p && p.formato === 'selector_materias') {
+          return respuestas.map(function(m) {
+            if (!m || typeof m !== 'object') return String(m);
+            var extra = [];
+            if (m.primera_vez === true) extra.push('primera vez');
+            if (m.primera_vez === false) extra.push('recursa');
+            if (typeof m.dificultad === 'number') extra.push('dificultad ' + m.dificultad);
+            return m.materia + (extra.length ? ' (' + extra.join(', ') + ')' : '');
+          }).join(' · ');
+        }
+        if (p && Array.isArray(p.opciones)) {
+          return respuestas.map(function(o) {
+            var op = p.opciones.filter(function(x) { return Number(x.opcion) === Number(o); })[0];
+            return op ? op.texto : String(o);
+          }).join(' · ');
+        }
+        return respuestas.map(function(v) { return v && typeof v === 'object' ? JSON.stringify(v) : String(v); }).join(' · ');
+      }
+
+      // PARES PREGUNTA / RESPUESTA DE UN ENVÍO, EN EL ORDEN DE LA ENCUESTA
+      function paresDeEnvio(r) {
+        var preguntas = preguntasDe(r.codigo_encuesta, r.version);
+        var porId = {};
+        preguntas.forEach(function(p) { porId[String(p.item_id)] = p; });
+        var orden = {};
+        preguntas.forEach(function(p, k) { orden[String(p.item_id)] = k; });
+        var lista = json(r.json_respuesta, []);
+        if (!Array.isArray(lista)) return [];
+        return lista.slice().sort(function(a, b) {
+          var oa = orden[String(a.item_id)], ob = orden[String(b.item_id)];
+          return (oa === undefined ? 1e6 : oa) - (ob === undefined ? 1e6 : ob);
+        }).map(function(x) {
+          var p = porId[String(x.item_id)];
+          return { pregunta: p ? p.pregunta : 'Pregunta ' + x.item_id + ' (no está en la versión ' + r.version + ')', respuesta: textoRespuesta(p, x.respuestas) };
+        });
+      }
+
+      function abrirRespuestas(rid, disparador) {
+        var r = respuestaPorRid(rid);
+        if (!r) return;
+        modalRespuestas = { disparador: disparador };
+        var pares = paresDeEnvio(r);
+        var titulo = (TIPOS[r.codigo_encuesta] || 'Encuesta') + (r.periodo ? ' ' + r.periodo : '');
+        var fecha = fechaDeTiempo(tiempoDe(r));
+        $('caja-modal-respuestas').innerHTML =
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
+          '<h5 id="titulo-modal-respuestas" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">' + escapar(titulo) + '</h5>' +
+          '<div id="btn-cerrar-modal-respuestas" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div style="color: #47536b !important; margin-bottom: 16px !important;"><b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(est.nombre) + '</b>' + (fecha ? ' · respondida el ' + fecha : '') + (r.version ? ' · versión ' + escapar(r.version) : '') + '</div>' +
+          (pares.length
+            ? '<dl style="margin: 0 !important; padding: 0 !important;">' + pares.map(function(x) {
+                return '<div style="padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
+                  '<dt style="font-size: 13px !important; color: #47536b !important; margin: 0 0 2px 0 !important; font-weight: 400 !important;">' + escapar(x.pregunta) + '</dt>' +
+                  '<dd style="margin: 0 !important; font-weight: 500 !important; color: #0b0e14 !important; overflow-wrap: anywhere !important;">' + escapar(x.respuesta) + '</dd></div>';
+              }).join('') + '</dl>'
+            : '<div style="color: #47536b !important;">' + ((datos.encuestas || []).length ? 'Este envío no tiene respuestas guardadas.' : 'No se pudo leer la base Encuestas: faltan los textos de las preguntas.') + '</div>');
+        $('modal-respuestas-detalle').style.setProperty('display', 'flex', 'important');
+        $('btn-cerrar-modal-respuestas').focus();
+      }
+
+      function cerrarRespuestas() {
+        if (!modalRespuestas) return;
+        $('modal-respuestas-detalle').style.setProperty('display', 'none', 'important');
+        var d = modalRespuestas.disparador;
+        modalRespuestas = null;
+        if (d && document.body.contains(d)) d.focus();
+      }
+
+      // ---------------------------------------------------------
+      // RESALTADO: UN PUNTO DEL GRÁFICO ILUMINA SU EVENTO EN LA TRAYECTORIA
+      // ---------------------------------------------------------
+      function aplicarResaltado() {
+        var items = document.querySelectorAll('#detalle-estudiante [data-item-cronologia]');
+        for (var k = 0; k < items.length; k++) {
+          var activo = !!resaltado && items[k].getAttribute('data-ref') === resaltado;
+          items[k].style.setProperty('background-color', activo ? '#e5f2ff' : 'transparent', 'important');
+          items[k].style.setProperty('box-shadow', activo ? 'inset 3px 0 0 #026bd4' : 'none', 'important');
+        }
+        var puntos = document.querySelectorAll('#grafico-criticidad [data-ref-punto]');
+        for (var j = 0; j < puntos.length; j++) {
+          var marcado = !!resaltado && puntos[j].getAttribute('data-ref-punto') === resaltado;
+          puntos[j].setAttribute('aria-pressed', marcado ? 'true' : 'false');
+          puntos[j].style.filter = marcado ? 'drop-shadow(0 0 4px rgba(2, 107, 212, 0.9))' : '';
+        }
+      }
+
+      function resaltar(ref) {
+        resaltado = resaltado === ref ? null : ref;
+        // Si el filtro de la trayectoria lo esconde, se vuelve a "Todo"
+        if (resaltado && !document.querySelector('#detalle-estudiante [data-item-cronologia][data-ref="' + resaltado + '"]')) {
+          filtroActividad = '';
+          renderizar();
+        }
+        aplicarResaltado();
+        var item = resaltado && document.querySelector('#detalle-estudiante [data-item-cronologia][data-ref="' + resaltado + '"]');
+        if (item && item.scrollIntoView) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
       // ---------------------------------------------------------
@@ -840,10 +1007,11 @@
           '<div style="flex: 999 1 420px !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; gap: 16px !important;">' +
           resumen() +
           tarjeta('Evolución de la criticidad <span style="font-weight: 400 !important; color: #47536b !important;">(0 sin riesgo · 100 máximo riesgo)</span>', '<div id="contenedor-grafico"></div>') +
-          tarjeta('Trayectoria <span style="font-weight: 400 !important; color: #47536b !important;">(de lo más reciente a lo más viejo)</span>', cronologia()) +
+          tarjeta('Trayectoria', cronologia()) +
           tarjeta('Historial de cambios de estado', historialEstados()) +
           '</div></div>';
         dibujarGrafico();
+        aplicarResaltado();
         var foto = $('foto-perfil');
         if (foto) foto.onerror = function() { foto.parentNode.innerHTML = est.info ? '<span aria-hidden="true">' + escapar(iniciales(est.nombre)) + '</span>' : icono('estudiante', 56); };
       }
@@ -855,6 +1023,7 @@
         if (!c || !est) return;
         anchoGrafico = c.clientWidth;
         c.innerHTML = graficoCriticidad(anchoGrafico);
+        aplicarResaltado();
       }
 
       window.addEventListener('resize', function() {
@@ -1008,6 +1177,8 @@
       function mostrarUsuario() {
         // Un modal abierto es del estudiante anterior
         if (modal) cerrarModal(true);
+        cerrarRespuestas();
+        resaltado = null;
         var deUrl = usuarioDeUrl();
         // En la vista previa, sin parámetro se muestra un estudiante de ejemplo; un parámetro inválido no se reemplaza
         usuario = deUrl === null ? (ES_VISTA_LOCAL ? '3773' : null) : deUrl || null;
@@ -1040,6 +1211,10 @@
       document.addEventListener('click', function(e) {
         var t = e.target;
         if (!t.closest || !t.closest('#detalle-estudiante')) return;
+        if (modalRespuestas) {
+          if ((t.id === 'modal-respuestas-detalle' && pulsadoEn === t) || t.closest('#btn-cerrar-modal-respuestas')) cerrarRespuestas();
+          return;
+        }
         if (modal) {
           var enFondo = t.id === 'modal-asignar-detalle' && pulsadoEn === t;
           if (enFondo || t.closest('#btn-cerrar-modal-asignar') || t.closest('#btn-cancelar-asignacion')) return cerrarModal();
@@ -1050,6 +1225,10 @@
         if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
         if (t.closest('#btn-volver-tablero')) return volverAlTablero();
         if (t.closest('#btn-abrir-asignacion')) return abrirModal(t.closest('#btn-abrir-asignacion'));
+        var verRespuesta = t.closest('[data-ver-respuesta]');
+        if (verRespuesta) return abrirRespuestas(verRespuesta.getAttribute('data-ver-respuesta'), verRespuesta);
+        var punto = t.closest('[data-ref-punto]');
+        if (punto) return resaltar(punto.getAttribute('data-ref-punto'));
         var filtro = t.closest('[data-filtro-actividad]');
         if (filtro) {
           filtroActividad = filtro.getAttribute('data-filtro-actividad');
@@ -1080,6 +1259,9 @@
 
       document.addEventListener('keydown', function(e) {
         var t = e.target;
+        if (modalRespuestas && e.key === 'Escape') { e.preventDefault(); return cerrarRespuestas(); }
+        // El popup de respuestas solo tiene el botón de cerrar: el foco no sale de ahí
+        if (modalRespuestas && e.key === 'Tab') { e.preventDefault(); return $('btn-cerrar-modal-respuestas').focus(); }
         if (modal && e.key === 'Escape') { e.preventDefault(); return cerrarModal(); }
         // Tab dentro del modal: no sale de la caja (tampoco si el foco quedó afuera, por un clic en un texto)
         if (modal && e.key === 'Tab') {
@@ -1089,6 +1271,10 @@
           else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
           else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
           return;
+        }
+        if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('[data-ref-punto]')) {
+          e.preventDefault();
+          return resaltar(t.closest('[data-ref-punto]').getAttribute('data-ref-punto'));
         }
         if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('#detalle-estudiante') && t.getAttribute('role') === 'button') {
           e.preventDefault();
