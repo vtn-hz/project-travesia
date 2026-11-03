@@ -544,11 +544,53 @@
             if (p.respuesta) aplicadas[p.respuesta] = true;
             if (p.aceptada) aplicadas[p.aceptada] = true;
           });
+          // sinGuardar: respuestas aplicadas que la entrada de Entrevistas todavía no tiene (las guarda actualizarBase)
+          var sinGuardar = 0;
           respuestas.filter(function(r) {
             return String(r.entrevista) === String(ent.rid) && !aplicadas[r.rid] && respuestaValida(ent, r);
-          }).sort(function(a, b) { return Number(a.rid) - Number(b.rid); }).forEach(function(r) { aplicarRespuesta(ent, r); });
+          }).sort(function(a, b) { return Number(a.rid) - Number(b.rid); }).forEach(function(r) { if (aplicarRespuesta(ent, r)) sinGuardar++; });
+          Object.defineProperty(ent, 'sinGuardar', { value: sinGuardar, enumerable: false, writable: true });
           return ent;
         });
+      }
+
+      // ACTUALIZACIÓN AUTOMÁTICA DE LA BASE ENTREVISTAS: al abrir la página, el autor de cada entrevista (o ADM) guarda en su
+      // entrada las respuestas de la otra parte que ya se aplicaron. Así la base muestra el estado real (por ejemplo,
+      // "programada" cuando el estudiante aceptó) sin esperar a que el autor haga otro cambio. Las respuestas quedan
+      // incorporadas en propuestas_json (marcas respuesta y aceptada) y no se vuelven a aplicar.
+      // Se hace una vez por carga, de a una entrevista; si una falla, la pantalla sigue mostrando el estado combinado.
+      var actualizandoBase = false;
+      function actualizarBase() {
+        if (actualizandoBase) return Promise.resolve();
+        var pendientes = entrevistas.filter(function(e) { return e.sinGuardar > 0 && editaEntrada(e); });
+        if (!pendientes.length) return Promise.resolve();
+        actualizandoBase = true;
+        var guardadas = 0;
+        return pendientes.reduce(function(p, ent) {
+          return p.then(function() {
+            var copia = JSON.parse(JSON.stringify(ent));
+            return guardarEntrevistaMoodle(copia).then(function(res) {
+              if (res.local) entradas = entradas.map(function(e) { return String(e.rid) === String(copia.rid) ? copia : e; });
+              guardadas++;
+            }, function(err) {
+              if (window.console) console.warn('Entrevistas: no se pudo actualizar la entrada ' + ent.rid + ': ' + err.message);
+            });
+          });
+        }, Promise.resolve()).then(function() {
+          if (!guardadas) return;
+          // En Moodle se vuelve a leer, para mostrar lo que quedó guardado
+          return (usandoPrueba ? Promise.resolve(null) : cargarDatos()).then(function(datos) {
+            if (datos) { entradas = datos.entradas; respuestas = datos.respuestas; }
+            // Sin cerrar ni vaciar un formulario que se esté completando en la ventana de una entrevista
+            var rid = abierta ? abierta.rid : null;
+            combinar();
+            if (rid !== null) abierta = entrevistas.filter(function(e) { return String(e.rid) === String(rid); })[0] || abierta;
+            renderizarTodo();
+            if (abierta && !vistaModal) renderizarModal();
+          });
+        }).catch(function(err) {
+          if (window.console) console.warn('Entrevistas: no se pudo actualizar la base: ' + err.message);
+        }).then(function() { actualizandoBase = false; });
       }
 
       // ---------------------------------------------------------
@@ -1854,6 +1896,8 @@
           // Solo quien pide entrevistas a estudiantes (ADM, TUT y PAR); el estudiante no
           var estudiante = estudianteDelHash();
           if (estudiante && rolActual !== 'EST') abrirSolicitud(estudiante);
+          // Guarda en Entrevistas las respuestas ya aplicadas de las entrevistas que este usuario puede editar
+          actualizarBase();
         }).catch(function(e) {
           document.getElementById('cuerpo-tabla-entrevistas').innerHTML =
             '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
