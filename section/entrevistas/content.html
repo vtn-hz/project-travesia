@@ -1090,7 +1090,12 @@
       // ALTERNATIVA: LOS GRUPOS QUE MUESTRA EL PERFIL DEL USUARIO EN EL CURSO (BLOQUE "GRUPOS")
       function gruposPorPerfil() {
         return leerPerfilCurso().then(function(doc) {
-          var texto = doc.body.textContent.replace(/\s+/g, ' ');
+          // Texto de cada nodo separado por un espacio: con textContent, el nombre del último grupo queda
+          // pegado a la palabra del bloque siguiente ("Zhakyz_AsesorParÚltimo acceso") y no se reconoce
+          var partes = [];
+          var recorrido = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+          while (recorrido.nextNode()) partes.push(recorrido.currentNode.nodeValue);
+          var texto = ' ' + partes.join(' ').replace(/\s+/g, ' ') + ' ';
           return GRUPOS_ROL.map(function(g) { return g.grupo; }).filter(function(nombre) {
             return new RegExp('(^|[^A-Za-z0-9_])' + nombre + '($|[^A-Za-z0-9_])').test(texto);
           });
