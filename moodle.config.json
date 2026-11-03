@@ -5,6 +5,11 @@
     "id": 15647,
     "nombre": "Zhakyz"
   },
+  "grupos": {
+    "tutor": 4316,
+    "asesor_par": 4318,
+    "estudiante": 4317
+  },
   "subsecciones": {
     "Hub": {
       "id": 15706,
@@ -125,6 +130,14 @@
       "definicion": "data/moodle/BASE_ENTREVISTAS.json",
       "subseccion": "Database",
       "creada": "2026-11-01"
+    },
+    "respuestas_entrevistas": {
+      "cmid": 60299,
+      "dataid": 208,
+      "definicion": "data/moodle/BASE_RESPUESTAS_ENTREVISTAS.json",
+      "subseccion": "Database",
+      "propuesta": "2026-11-03",
+      "creada": "2026-11-03"
     },
     "periodos": {
       "cmid": 60292,

@@ -147,6 +147,16 @@
         { grupo: 'Zhakyz_AsesorPar', rol: 'PAR' },
         { grupo: 'Zhakyz_Estudiante', rol: 'EST' }
       ];
+      // Grupos de donde sale la lista de destinatarios del estudiante (tutores y asesores pares): id del grupo en el
+      // curso, para filtrar la lista de participantes (/user/index.php?group=<id>)
+      var GRUPO_TUTOR = 4316; // @config grupos.tutor
+      var GRUPO_ASESOR_PAR = 4318; // @config grupos.asesor_par
+      var GRUPOS_ACOMPANANTES = [
+        { id: GRUPO_TUTOR, grupo: 'Zhakyz_Tutor', tipo: 'tutor', titulo: 'Tutores' },
+        { id: GRUPO_ASESOR_PAR, grupo: 'Zhakyz_AsesorPar', tipo: 'asesor_par', titulo: 'Asesores pares' }
+      ];
+      // Vista previa local: quiénes están en cada grupo (integrantes de Zhakyz)
+      var ACOMPANANTES_PRUEBA = { tutor: ['2048', '3770'], asesor_par: ['3623'] };
       // Rol del curso → rol, en orden de prioridad. nombres: cómo lo muestra el perfil (sin tildes ni mayúsculas);
       // roleid: el id estándar de Moodle, por si el campus le cambió el nombre.
       // "Profesor sin permiso de edición" va antes que "Profesor" para no confundirlos.
@@ -170,6 +180,15 @@
         id_usuario_acompanante: 1343, nombre_acompanante: 1344, originada_por: 1345, estado: 1346, motivo: 1347,
         fecha_solicitud: 1348, fecha_programada: 1349, fecha_realizada: 1350, resultado: 1351,
         propuestas_json: 1352, acciones_json: 1353
+      };
+      // Base RespuestasEntrevistas: Moodle solo deja editar una entrada a su autor y a los profesores. Cuando
+      // acepta o reprograma alguien que no es el autor (el estudiante, en una entrevista que pidió el tutor o el
+      // asesor par, o al revés), su respuesta se guarda como una entrada propia en esta base y la página la aplica
+      // a la entrevista al leerla. null hasta crear la base: mientras tanto, en Moodle solo responde el autor.
+      var CMID_RESPUESTAS_ENTREVISTAS = 60299; // @config bases.respuestas_entrevistas.cmid · lectura y escritura
+      // IDs field_<id> de RespuestasEntrevistas (data/moodle/BASE_RESPUESTAS_ENTREVISTAS.json), creada el 2026-11-03
+      var CAMPOS_RESPUESTAS_ENTREVISTAS = {
+        rid_entrevista: 1398, por: 1399, accion: 1400, fecha: 1401, mensaje: 1402, creada: 1403
       };
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
@@ -364,6 +383,10 @@
                 // id_usuario_estudiante → idUsuarioEstudiante (el mismo nombre que usaba dataset)
                 var clave = c.getAttribute('data-campo').replace(/_([a-z])/g, function(m, l) { return l.toUpperCase(); });
                 registro[clave] = c.textContent.trim();
+                // ##user## (autor de la entrada) es un link al perfil: su cuenta queda en <clave>Id
+                var perfil = c.querySelector('a[href*="/user/view.php"]');
+                var cuenta = perfil ? perfil.getAttribute('href').match(/[?&]id=(\d+)/) : null;
+                if (cuenta) registro[clave + 'Id'] = cuenta[1];
               });
               return registro;
             });
@@ -386,15 +409,48 @@
         };
       }
 
-      // CARGAR LAS ENTREVISTAS (BASE PROPIA O DATOS DE PRUEBA)
+      // CONVERTIR UNA ENTRADA DE RespuestasEntrevistas AL FORMATO INTERNO. autor: la cuenta del campus que la
+      // escribió, según Moodle (##user##), no un campo del formulario: así nadie responde a nombre de otro
+      function normalizarRespuesta(r) {
+        return {
+          rid: r.rid, entrevista: r.ridEntrevista, por: r.por, accion: r.accion, fecha: r.fecha || '',
+          mensaje: r.mensaje || '', creada: r.creada || '', autor: r.autorId || '', nombreAutor: r.autor || ''
+        };
+      }
+
+      // LEER LAS RESPUESTAS (SIN LA BASE CREADA, NINGUNA)
+      function leerRespuestasMoodle() {
+        if (!CMID_RESPUESTAS_ENTREVISTAS) return Promise.resolve([]);
+        return leerBaseMoodle(CMID_RESPUESTAS_ENTREVISTAS).then(function(res) { return res.map(normalizarRespuesta); });
+      }
+
+      // CARGAR LAS ENTREVISTAS Y SUS RESPUESTAS (BASES PROPIAS O DATOS DE PRUEBA)
       function cargarDatos() {
         if (ES_VISTA_LOCAL || !CMID_ENTREVISTAS || !window.M) {
           usandoPrueba = true;
           document.getElementById('aviso-datos-prueba-entrevistas').style.setProperty('display', 'flex', 'important');
-          return Promise.resolve(ENTREVISTAS_PRUEBA.map(function(e) { return JSON.parse(JSON.stringify(e)); }));
+          return Promise.resolve({ entradas: JSON.parse(JSON.stringify(ENTREVISTAS_PRUEBA)), respuestas: [] });
         }
         usandoPrueba = false;
-        return leerBaseMoodle(CMID_ENTREVISTAS).then(function(res) { return res.map(normalizarEntrevista); });
+        return Promise.all([leerBaseMoodle(CMID_ENTREVISTAS), leerRespuestasMoodle()]).then(function(r) {
+          return { entradas: r[0].map(normalizarEntrevista), respuestas: r[1] };
+        });
+      }
+
+      // ENVIAR EL FORMULARIO DE UNA ENTRADA DE UNA BASE DE ZHAKYZ (rid 0 = NUEVA; SI NO, EDITA ESA ENTRADA)
+      function enviarEntradaMoodle(cmid, campos, valores, rid) {
+        var fd = new FormData();
+        fd.append('id', cmid);
+        fd.append('rid', rid || 0);
+        fd.append('sesskey', M.cfg.sesskey);
+        fd.append('saveanddisplay', 'Guardar');
+        Object.keys(valores).forEach(function(k) {
+          fd.append('field_' + campos[k], valores[k] === null || valores[k] === undefined ? '' : valores[k]);
+        });
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
+          });
       }
 
       // GUARDAR UNA ENTREVISTA EN LA BASE DE ZHAKYZ (rid 0 = NUEVA; SI NO, EDITA ESA ENTRADA)
@@ -407,24 +463,84 @@
           fecha_programada: ent.programada, fecha_realizada: ent.realizada, resultado: ent.resultado,
           propuestas_json: JSON.stringify(ent.propuestas), acciones_json: JSON.stringify(ent.acciones)
         };
-        var fd = new FormData();
-        fd.append('id', CMID_ENTREVISTAS);
-        fd.append('rid', ent.nueva ? 0 : ent.rid);
-        fd.append('sesskey', M.cfg.sesskey);
-        fd.append('saveanddisplay', 'Guardar');
-        Object.keys(valores).forEach(function(k) { fd.append('field_' + CAMPOS_ENTREVISTAS[k], valores[k]); });
-        return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
-          .then(function(r) {
-            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
-            return { local: false };
+        return enviarEntradaMoodle(CMID_ENTREVISTAS, CAMPOS_ENTREVISTAS, valores, ent.nueva ? 0 : ent.rid)
+          .then(function() { return { local: false }; });
+      }
+
+      // GUARDAR UNA RESPUESTA (ENTRADA NUEVA, A NOMBRE DE QUIEN RESPONDE)
+      function guardarRespuestaMoodle(r) {
+        if (usandoPrueba) return Promise.resolve({ local: true });
+        var faltan = !CMID_RESPUESTAS_ENTREVISTAS || Object.keys(CAMPOS_RESPUESTAS_ENTREVISTAS).some(function(k) { return !CAMPOS_RESPUESTAS_ENTREVISTAS[k]; });
+        if (faltan) {
+          return Promise.reject(new Error('la base RespuestasEntrevistas todavía no está creada en Moodle. Mientras tanto, la fecha la acepta o la cambia quien pidió la entrevista.'));
+        }
+        var valores = { rid_entrevista: r.entrevista, por: r.por, accion: r.accion, fecha: r.fecha, mensaje: r.mensaje, creada: r.creada };
+        return enviarEntradaMoodle(CMID_RESPUESTAS_ENTREVISTAS, CAMPOS_RESPUESTAS_ENTREVISTAS, valores, 0)
+          .then(function() { return { local: false }; });
+      }
+
+      // ---------------------------------------------------------
+      // RESPUESTAS: SE APLICAN A LA ENTREVISTA AL LEERLA
+      // ---------------------------------------------------------
+      // AUTOR DE LA ENTRADA DE ENTREVISTAS: QUIEN LA PIDIÓ. MOODLE SOLO LE DEJA EDITARLA A ÉL Y A LOS PROFESORES
+      function autorEntrada(ent) { return ent.origen === 'estudiante' ? ent.usuario : ent.acompanante; }
+
+      // ¿LA RESPUESTA LA ESCRIBIÓ LA PARTE QUE DICE SER? SE COMPARA LA CUENTA DEL AUTOR (DE MOODLE) CON LA DE LA ENTREVISTA.
+      // Si la pidió un estudiante y la cuenta del acompañante no se conoce, se compara el nombre
+      function respuestaValida(ent, r) {
+        if (r.por === 'estudiante') return !!ent.usuario && String(r.autor) === String(ent.usuario);
+        if (r.por !== 'acompanante') return false;
+        if (ent.acompanante) return String(r.autor) === String(ent.acompanante);
+        return !!r.nombreAutor && normalizar(r.nombreAutor) === normalizar(ent.nombreAcompanante);
+      }
+
+      // APLICAR UNA RESPUESTA. Solo vale si todavía tiene sentido: aceptar, si la fecha vigente es la que se aceptó y la
+      // propuso la otra parte; proponer, si la entrevista sigue activa. Si la entrevista cambió antes, se ignora.
+      // La propuesta (respuesta) o la aceptación (aceptada) guarda el rid de la respuesta: así no se aplica dos veces
+      // cuando el autor vuelve a guardar la entrevista con la respuesta incorporada.
+      function aplicarRespuesta(ent, r) {
+        var ultima = ent.propuestas[ent.propuestas.length - 1];
+        if (r.accion === 'proponer') {
+          if ((ent.estado !== 'solicitada' && ent.estado !== 'programada') || !r.fecha) return false;
+          ent.propuestas.push({ por: r.por, fecha: r.fecha, creada: r.creada, mensaje: r.mensaje, respuesta: r.rid });
+          ent.estado = 'solicitada';
+          ent.programada = '';
+          return true;
+        }
+        if (r.accion === 'aceptar') {
+          if (ent.estado !== 'solicitada' || !ultima || ultima.por === r.por || ultima.fecha !== r.fecha) return false;
+          ultima.aceptada = r.rid;
+          ent.estado = 'programada';
+          ent.programada = r.fecha;
+          return true;
+        }
+        return false;
+      }
+
+      // ENTREVISTAS QUE SE MUESTRAN: CADA ENTRADA CON SUS RESPUESTAS PENDIENTES APLICADAS, EN EL ORDEN EN QUE SE GUARDARON
+      function combinar() {
+        entrevistas = entradas.map(function(original) {
+          var ent = JSON.parse(JSON.stringify(original));
+          var aplicadas = {};
+          ent.propuestas.forEach(function(p) {
+            if (p.respuesta) aplicadas[p.respuesta] = true;
+            if (p.aceptada) aplicadas[p.aceptada] = true;
           });
+          respuestas.filter(function(r) {
+            return String(r.entrevista) === String(ent.rid) && !aplicadas[r.rid] && respuestaValida(ent, r);
+          }).sort(function(a, b) { return Number(a.rid) - Number(b.rid); }).forEach(function(r) { aplicarRespuesta(ent, r); });
+          return ent;
+        });
       }
 
       // ---------------------------------------------------------
       // ESTADO EN MEMORIA
       // ---------------------------------------------------------
       var rolActual = ROL_INICIAL;
-      var entrevistas = [];
+      var entradas = []; // entradas de la base Entrevistas, tal como están guardadas
+      var respuestas = []; // entradas de RespuestasEntrevistas
+      var entrevistas = []; // las entradas con sus respuestas aplicadas (combinar): es lo que se muestra
+      var contadorRespuestas = 0;
       var pestana = 'agenda'; // agenda (activas) | historial
       var filtroKpi = '';
       var abierta = null; // entrevista del modal
@@ -692,6 +808,12 @@
         return String(ent.acompanante) === String(usuarioActual());
       }
 
+      // ¿EDITA LA ENTRADA DE ENTREVISTAS? SOLO EL AUTOR (QUIEN LA PIDIÓ) Y ADM, QUE TIENE EL PERMISO DE PROFESOR.
+      // Los demás involucrados aceptan o reprograman con una entrada propia en RespuestasEntrevistas
+      function editaEntrada(ent) {
+        return rolActual === 'ADM' || (!!autorEntrada(ent) && String(autorEntrada(ent)) === String(usuarioActual()));
+      }
+
       // PARTE DE LA ENTREVISTA DEL USUARIO DE LA SESIÓN (COMO EN propuestas[].por)
       function miParte() { return rolActual === 'EST' ? 'estudiante' : 'acompanante'; }
 
@@ -830,25 +952,29 @@
         if (rolActual === 'EST') return accionesEstudiante(ent, f);
         var s = f.situacion;
         var ultima = ent.propuestas[ent.propuestas.length - 1];
+        // Rechazar, cancelar y registrar el resultado editan la entrada: si no es el autor, solo acepta o reprograma
+        var edita = editaEntrada(ent);
+        var fila = function(botones) {
+          return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' + botones + '</div>';
+        };
+        var soloAutor = edita ? '' : '<div style="margin-top: 8px !important; font-size: 12px !important; color: #47536b !important;">La entrevista la solicitó ' + escapar(f.estudiante) +
+          ': rechazarla, cancelarla o registrar el resultado lo hace un administrador.</div>';
         if (s === 'responder') {
-          return avisoInfo(escapar(f.estudiante) + ' propuso el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Aceptá la fecha o proponé otra.') +
-            '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' +
-            boton('aceptar', 'Aceptar fecha', 'principal', 'ok') + boton('contraoferta', 'Proponer otra fecha', 'secundario', 'calendario') + boton('rechazo', 'Rechazar', 'peligro') + '</div>';
+          return avisoInfo(escapar(f.estudiante) + ' propuso el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Aceptar la fecha o proponer otra.') +
+            fila(boton('aceptar', 'Aceptar fecha', 'principal', 'ok') + boton('contraoferta', 'Proponer otra fecha', 'secundario', 'calendario') + (edita ? boton('rechazo', 'Rechazar', 'peligro') : '')) + soloAutor;
         }
         if (s === 'esperando') {
-          return avisoInfo('Le propusiste el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Falta que ' + escapar(f.estudiante) + ' acepte o proponga otra fecha.') +
-            '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' +
-            (ES_VISTA_LOCAL ? boton('simular-aceptacion', 'Vista previa: el estudiante acepta', 'secundario', 'ver') : '') +
-            boton('contraoferta', 'Cambiar la fecha', 'secundario', 'calendario') + boton('cancelacion', 'Cancelar solicitud', 'peligro') + '</div>';
+          return avisoInfo('Se propuso el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Falta que ' + escapar(f.estudiante) + ' acepte o proponga otra fecha.') +
+            fila((ES_VISTA_LOCAL ? boton('simular-aceptacion', 'Vista previa: el estudiante acepta', 'secundario', 'ver') : '') +
+              boton('contraoferta', 'Cambiar la fecha', 'secundario', 'calendario') + (edita ? boton('cancelacion', 'Cancelar solicitud', 'peligro') : '')) + soloAutor;
         }
         if (s === 'proxima') {
-          return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">' +
-            boton('resultado', 'Registrar resultado', 'principal', 'guardar') + boton('contraoferta', 'Reprogramar', 'secundario', 'calendario') + boton('cancelacion', 'Cancelar', 'peligro') + '</div>';
+          return fila((edita ? boton('resultado', 'Registrar resultado', 'principal', 'guardar') : '') + boton('contraoferta', 'Reprogramar', 'secundario', 'calendario') +
+            (edita ? boton('cancelacion', 'Cancelar', 'peligro') : '')) + soloAutor;
         }
         if (s === 'sin_resultado') {
-          return avisoInfo('La entrevista estaba acordada para el ' + fechaLarga(ent.programada) + '. Registrá cómo salió.') +
-            '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' +
-            boton('resultado', 'Registrar resultado', 'principal', 'guardar') + boton('no_asistio', 'No asistió', 'peligro') + '</div>';
+          return avisoInfo('La entrevista estaba acordada para el ' + fechaLarga(ent.programada) + '. Registrar cómo salió.') +
+            (edita ? fila(boton('resultado', 'Registrar resultado', 'principal', 'guardar') + boton('no_asistio', 'No asistió', 'peligro')) : soloAutor);
         }
         return '';
       }
@@ -874,7 +1000,8 @@
         if (ent.estado === 'realizada' || ent.estado === 'no_asistio' || ent.estado === 'rechazada' || ent.estado === 'cancelada') {
           var titulo = ent.estado === 'realizada' ? 'Resultado · ' + fechaLarga(ent.realizada) : 'Comentario';
           cuerpo += bloque(titulo, '<div>' + (ent.resultado ? escapar(ent.resultado) : '<span style="color: #47536b !important;">Sin comentario.</span>') + '</div>');
-          if (ent.estado === 'realizada') cuerpo += bloque('Acciones acordadas', accionesHtml(ent, gestiona));
+          // El estado de las acciones lo actualiza el acompañante, y solo si puede editar la entrada
+          if (ent.estado === 'realizada') cuerpo += bloque('Acciones acordadas', accionesHtml(ent, gestiona && rolActual !== 'EST' && editaEntrada(ent)));
         }
         if (ent.propuestas.length) cuerpo += bloque('Fechas propuestas', propuestasHtml(ent, f));
 
@@ -905,24 +1032,113 @@
         mostrar(el, true, 'block');
       }
 
-      // APLICAR UN CAMBIO A LA ENTREVISTA ABIERTA: SE GUARDA PRIMERO Y SOLO SI SALE BIEN SE ACTUALIZA LA PANTALLA
+      // VOLVER A MOSTRAR TODO DESPUÉS DE UN CAMBIO EN LAS ENTRADAS O LAS RESPUESTAS (LA ENTREVISTA ABIERTA SE BUSCA POR rid)
+      function refrescar() {
+        var rid = abierta ? abierta.rid : null;
+        combinar();
+        abierta = rid === null ? null : entrevistas.filter(function(e) { return String(e.rid) === String(rid); })[0] || null;
+        vistaModal = '';
+        renderizarTodo();
+        if (abierta) renderizarModal();
+      }
+
+      // APLICAR UN CAMBIO A LA ENTREVISTA ABIERTA EDITANDO SU ENTRADA (AUTOR O ADM). Se guarda la entrevista con las
+      // respuestas ya aplicadas, que quedan incorporadas. En Moodle se vuelve a leer la base para verificar el cambio
       function aplicarCambio(cambios) {
         var ent = abierta;
-        // La primera vez que el acompañante gestiona una entrevista pedida por un estudiante, queda su cuenta
-        if (!ent.acompanante && rolActual !== 'ADM' && rolActual !== 'EST') cambios = Object.assign({ acompanante: usuarioActual(), tipo: ROLES[rolActual].tipo }, cambios);
-        var copia = Object.assign({}, ent, cambios);
-        return guardarEntrevistaMoodle(copia).then(function() {
-          Object.assign(ent, cambios);
-          vistaModal = '';
-          renderizarTodo();
-          renderizarModal();
+        if (!editaEntrada(ent)) {
+          mostrarError('txt-error-modal', 'Solo quien solicitó la entrevista o un administrador puede hacer este cambio.');
+          return Promise.resolve(false);
+        }
+        var copia = JSON.parse(JSON.stringify(Object.assign({}, ent, cambios)));
+        return guardarEntrevistaMoodle(copia).then(function(res) {
+          if (res.local) {
+            entradas = entradas.map(function(e) { return String(e.rid) === String(copia.rid) ? copia : e; });
+            refrescar();
+            return true;
+          }
+          return cargarDatos().then(function(datos) {
+            entradas = datos.entradas;
+            respuestas = datos.respuestas;
+            var guardada = entradas.filter(function(e) { return String(e.rid) === String(copia.rid); })[0];
+            refrescar();
+            if (!guardada || guardada.estado !== copia.estado || guardada.programada !== copia.programada || guardada.propuestas.length !== copia.propuestas.length) {
+              throw new Error('Moodle no aplicó el cambio en la base Entrevistas. Verificar el permiso para editar la entrada.');
+            }
+            return true;
+          });
         }).catch(function(err) {
           mostrarError('txt-error-modal', 'No se pudo guardar: ' + err.message);
+          return false;
         });
       }
 
-      function proponer(por, fecha, mensaje) {
-        return abierta.propuestas.concat([{ por: por, fecha: fecha, creada: ahora(), mensaje: mensaje || '' }]);
+      // RESPONDER SIN EDITAR LA ENTRADA (NO ES EL AUTOR): ENTRADA NUEVA EN RespuestasEntrevistas. En Moodle se vuelve a
+      // leer la base y se verifica que la respuesta esté guardada y se haya aplicado
+      function guardarRespuesta(accion, fecha, mensaje) {
+        var ent = abierta;
+        var r = {
+          rid: '', entrevista: ent.rid, por: miParte(), accion: accion, fecha: fecha, mensaje: mensaje || '',
+          creada: ahora(), autor: usuarioActual(), nombreAutor: nombreUsuarioActual()
+        };
+        var previas = {};
+        respuestas.forEach(function(x) { previas[x.rid] = true; });
+        return guardarRespuestaMoodle(r).then(function(res) {
+          if (res.local) {
+            contadorRespuestas++;
+            r.rid = String(900000 + contadorRespuestas);
+            respuestas.push(r);
+            refrescar();
+            return true;
+          }
+          return leerRespuestasMoodle().then(function(lista) {
+            respuestas = lista;
+            var nueva = lista.filter(function(x) {
+              return !previas[x.rid] && String(x.entrevista) === String(ent.rid) && x.accion === accion && String(x.autor) === String(usuarioActual());
+            })[0];
+            refrescar();
+            if (!nueva) throw new Error('Moodle no guardó la respuesta en la base RespuestasEntrevistas.');
+            var aplicada = abierta && abierta.propuestas.some(function(p) { return p.respuesta === nueva.rid || p.aceptada === nueva.rid; });
+            if (!aplicada) throw new Error('la entrevista cambió mientras se respondía. Revisar su estado actual.');
+            return true;
+          });
+        }).catch(function(err) {
+          mostrarError('txt-error-modal', 'No se pudo guardar: ' + err.message);
+          return false;
+        });
+      }
+
+      // MENSAJE DEL CAMPUS A LA OTRA PARTE CUANDO SE ACEPTA O SE CAMBIA LA FECHA
+      function avisarOtraParte(ent, accion, fecha, mensaje) {
+        var deEstudiante = miParte() === 'estudiante';
+        var destinatario = deEstudiante ? ent.acompanante : ent.usuario;
+        if (!destinatario) return;
+        var quien = deEstudiante ? ent.nombreEstudiante + ' (estudiante)' : ent.nombreAcompanante + ' (' + (TIPOS_ACOMPANANTE[ent.tipo] || 'Acompañante').toLowerCase() + ')';
+        var enlace = CMID_PAGINA_ENTREVISTAS && window.M && M.cfg ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS : '';
+        var texto = (accion === 'aceptar' ? 'Entrevista confirmada' : 'Nueva fecha propuesta para la entrevista') + '\n\n' +
+          quien + (accion === 'aceptar' ? ' aceptó la fecha: ' : ' propuso otra fecha: ') + fechaLarga(fecha) + '.\n' +
+          (mensaje ? 'Mensaje: ' + mensaje + '\n' : '') + '\n' +
+          (accion === 'aceptar' ? 'La entrevista figura en Entrevistas y Tutorías' : 'La fecha se acepta o se cambia en Entrevistas y Tutorías') + (enlace ? ': ' + enlace : '.');
+        enviarMensajeMoodle(destinatario, texto).catch(function(err) {
+          alert('El cambio se guardó, pero no se pudo enviar el mensaje del campus: ' + err.message);
+        });
+      }
+
+      // ACEPTAR O PROPONER UNA FECHA: EDITANDO LA ENTRADA (AUTOR O ADM) O CON UNA RESPUESTA (LA OTRA PARTE)
+      var guardandoFecha = false;
+      function responderFecha(accion, fecha, mensaje) {
+        if (guardandoFecha) return;
+        guardandoFecha = true;
+        var ent = abierta;
+        var guardado = editaEntrada(ent)
+          ? aplicarCambio(accion === 'aceptar'
+            ? { estado: 'programada', programada: fecha }
+            : { estado: 'solicitada', programada: '', propuestas: ent.propuestas.concat([{ por: miParte(), fecha: fecha, creada: ahora(), mensaje: mensaje || '' }]) })
+          : guardarRespuesta(accion, fecha, mensaje);
+        guardado.then(function(ok) {
+          guardandoFecha = false;
+          if (ok) avisarOtraParte(ent, accion, fecha, mensaje);
+        });
       }
 
       function enviarContraoferta() {
@@ -931,15 +1147,14 @@
         if (!fecha) return mostrarError('txt-error-modal', 'Elegir la nueva fecha y hora.');
         if (fecha <= ahora()) return mostrarError('txt-error-modal', 'La fecha debe ser posterior a hoy.');
         // La fecha nueva queda como propuesta de quien reprograma: la otra parte es la que la acepta
-        aplicarCambio({ estado: 'solicitada', programada: '', propuestas: proponer(miParte(), fecha, mensaje) });
+        responderFecha('proponer', fecha, mensaje);
       }
 
       function aceptarFecha() {
         if (!puedeAceptar(abierta)) {
           return mostrarError('txt-error-modal', 'La fecha vigente la propuso usted: la acepta la otra parte o se espera su contraoferta.');
         }
-        var ultima = abierta.propuestas[abierta.propuestas.length - 1];
-        aplicarCambio({ estado: 'programada', programada: ultima.fecha });
+        responderFecha('aceptar', abierta.propuestas[abierta.propuestas.length - 1].fecha, '');
       }
 
       function confirmarCierre() {
@@ -973,34 +1188,46 @@
       function camposInvolucrados(usuarioPreseleccionado) {
         var ayuda = 'font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;';
         if (rolActual === 'EST') {
-          // Sugerencias: los acompañantes que ya figuran en alguna entrevista
-          var vistos = {};
-          var sugerencias = entrevistas.filter(function(e) {
-            var n = normalizar(e.nombreAcompanante);
-            if (!n || vistos[n]) return false;
-            vistos[n] = true;
-            return true;
-          }).map(function(e) { return '<option value="' + escapar(e.nombreAcompanante) + '"></option>'; }).join('');
-          return '<div><label for="campo-destinatario-solicitud" style="' + ETIQUETA + '">Nombre del tutor o asesor par</label>' +
-            '<input id="campo-destinatario-solicitud" type="text" list="lista-acompanantes-solicitud" autocomplete="off" style="height: 40px !important; ' + CAMPO + '">' +
-            '<datalist id="lista-acompanantes-solicitud">' + sugerencias + '</datalist>' +
-            '<div style="' + ayuda + '">Se busca entre los participantes del curso y se le envía un mensaje del campus con la solicitud. La solicitud queda a nombre de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
+          // Lista de los integrantes de los grupos de tutores y asesores pares: se completa al abrir (cargarDestinatarios)
+          return '<div id="bloque-destinatario-solicitud"><label for="campo-destinatario-solicitud" style="' + ETIQUETA + '">Tutor o asesor par</label>' +
+            '<select id="campo-destinatario-solicitud" disabled style="height: 40px !important; ' + CAMPO + '"><option value="">Cargando tutores y asesores pares…</option></select>' +
+            '<div id="txt-ayuda-destinatario-solicitud" style="' + ayuda + '">Integrantes de los grupos ' + GRUPOS_ACOMPANANTES.map(function(g) { return g.grupo; }).join(' y ') +
+            ' del curso. Se le envía un mensaje del campus con la solicitud, que queda a nombre de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
         }
-        // Si se llega con #usuario=<id>, se completan los datos que ya figuran en otra entrevista de ese estudiante
-        var previa = usuarioPreseleccionado ? entrevistas.filter(function(e) { return String(e.usuario) === String(usuarioPreseleccionado); })[0] : null;
         var tipoPropio = ROLES[rolActual].tipo;
-        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
-            '<div style="flex: 1 1 140px !important;"><label for="campo-dni-solicitud" style="' + ETIQUETA + '">DNI del estudiante</label>' +
-            '<input id="campo-dni-solicitud" type="text" inputmode="numeric" value="' + escapar(previa ? previa.dni : '') + '" style="height: 40px !important; ' + CAMPO + '"></div>' +
-            '<div style="flex: 2 1 220px !important;"><label for="campo-nombre-solicitud" style="' + ETIQUETA + '">Nombre y apellido</label>' +
-            '<input id="campo-nombre-solicitud" type="text" value="' + escapar(previa ? previa.nombreEstudiante : '') + '" style="height: 40px !important; ' + CAMPO + '"></div></div>' +
-            '<div><label for="campo-usuario-solicitud" style="' + ETIQUETA + '">Cuenta del campus del estudiante <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
-            '<input id="campo-usuario-solicitud" type="text" inputmode="numeric" value="' + escapar(usuarioPreseleccionado || '') + '" style="height: 40px !important; ' + CAMPO + '">' +
-            '<div style="' + ayuda + '">Número de usuario de Moodle. Si se indica, el estudiante se busca por este número; si no, por nombre y apellido entre los participantes del curso. Se le envía un mensaje del campus con la solicitud.</div></div>' +
-            '<div><label for="campo-tipo-solicitud" style="' + ETIQUETA + '">Participa como</label>' +
+        var participaComo = '<div><label for="campo-tipo-solicitud" style="' + ETIQUETA + '">Participa como</label>' +
             '<select id="campo-tipo-solicitud" style="height: 40px !important; ' + CAMPO + '">' +
             Object.keys(TIPOS_ACOMPANANTE).map(function(k) { return '<option value="' + k + '"' + (k === tipoPropio ? ' selected' : '') + '>' + TIPOS_ACOMPANANTE[k] + '</option>'; }).join('') + '</select>' +
             '<div style="' + ayuda + '">La entrevista queda a cargo de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
+        var pre = usuarioPreseleccionado || {};
+        // Desde el Detalle del estudiante llegan el nombre, el DNI y la cuenta: el estudiante queda fijo y solo se
+        // completan la fecha, el motivo y cómo participa quien la pide
+        if (pre.usuario && pre.dni && pre.nombre) {
+          var activa = entrevistaActivaDe({ dni: pre.dni, usuario: pre.usuario, nombre: pre.nombre });
+          return '<div style="padding: 12px 14px !important; background-color: #f5f6fa !important; border-radius: 8px !important;">' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">Estudiante</div>' +
+              '<div style="font-weight: 500 !important;">' + escapar(pre.nombre) + '</div>' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">DNI ' + escapar(pre.dni) + ' · cuenta del campus ' + escapar(pre.usuario) + '</div>' +
+              '<input id="campo-dni-solicitud" type="hidden" value="' + escapar(pre.dni) + '">' +
+              '<input id="campo-nombre-solicitud" type="hidden" value="' + escapar(pre.nombre) + '">' +
+              '<input id="campo-usuario-solicitud" type="hidden" value="' + escapar(pre.usuario) + '"></div>' +
+            (activa ? avisoInfo('El estudiante ya tiene una entrevista en curso con ' + escapar(activa.nombreAcompanante || 'Usuario ' + activa.acompanante) +
+              ' (' + ESTADOS[situacion(activa)].texto.toLowerCase() + '). No se puede solicitar otra hasta que termine.') : '') +
+            participaComo;
+        }
+        // Si se llega solo con la cuenta (#usuario=<id>), se completan los datos que ya figuran en otra entrevista de ese estudiante
+        var previa = pre.usuario ? entrevistas.filter(function(e) { return String(e.usuario) === String(pre.usuario); })[0] : null;
+        var dniInicial = pre.dni || (previa ? previa.dni : '');
+        var nombreInicial = pre.nombre || (previa ? previa.nombreEstudiante : '');
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+            '<div style="flex: 1 1 140px !important;"><label for="campo-dni-solicitud" style="' + ETIQUETA + '">DNI del estudiante</label>' +
+            '<input id="campo-dni-solicitud" type="text" inputmode="numeric" value="' + escapar(dniInicial) + '" style="height: 40px !important; ' + CAMPO + '"></div>' +
+            '<div style="flex: 2 1 220px !important;"><label for="campo-nombre-solicitud" style="' + ETIQUETA + '">Nombre y apellido</label>' +
+            '<input id="campo-nombre-solicitud" type="text" value="' + escapar(nombreInicial) + '" style="height: 40px !important; ' + CAMPO + '"></div></div>' +
+            '<div><label for="campo-usuario-solicitud" style="' + ETIQUETA + '">Cuenta del campus del estudiante <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
+            '<input id="campo-usuario-solicitud" type="text" inputmode="numeric" value="' + escapar(pre.usuario || '') + '" style="height: 40px !important; ' + CAMPO + '">' +
+            '<div style="' + ayuda + '">Número de usuario de Moodle. Si se indica, el estudiante se busca por este número; si no, por nombre y apellido entre los participantes del curso. Se le envía un mensaje del campus con la solicitud.</div></div>' +
+            participaComo;
       }
 
       function abrirSolicitud(usuarioPreseleccionado) {
@@ -1019,6 +1246,83 @@
             boton('cancelar-solicitud', 'Cancelar') + boton('enviar-solicitud', 'Enviar solicitud', 'principal', 'flecha') + '</div></div>';
         mostrar(document.getElementById('modal-solicitar-entrevista'), true);
         document.getElementById('btn-cerrar-solicitar').focus();
+        if (esEstudiante) cargarDestinatarios();
+      }
+
+      // ---------------------------------------------------------
+      // DESTINATARIOS DEL ESTUDIANTE: INTEGRANTES DE LOS GRUPOS DE TUTORES Y ASESORES PARES
+      // ---------------------------------------------------------
+      // INTEGRANTES DE UN GRUPO: LA LISTA DE PARTICIPANTES FILTRADA POR EL GRUPO. Se leen solo las filas de la tabla
+      // (fuera de ella, el menú tiene un link a la propia cuenta). Si la tabla tiene la columna Grupos, cada fila
+      // debe nombrar al grupo: así, si Moodle no aplicara el filtro, no se lista a todo el curso
+      function integrantesGrupo(g) {
+        if (usandoPrueba) {
+          return Promise.resolve((ACOMPANANTES_PRUEBA[g.tipo] || []).map(function(id) { return { id: id, nombre: NOMBRES_PRUEBA[id] }; }));
+        }
+        return fetch(M.cfg.wwwroot + '/user/index.php?id=' + CURSO + '&perpage=5000&group=' + g.id, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status + ' al leer el grupo ' + g.grupo);
+            return r.text();
+          })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var tabla = doc.querySelector('table#participants');
+            if (!tabla) {
+              // Sin tabla: Moodle muestra "Sin participantes" (grupo vacío) o no deja ver la lista
+              if (doc.querySelector('[data-region="participants-filter"], #participantsform, .userlist')) return [];
+              throw new Error('No se pudo leer la lista de participantes del grupo ' + g.grupo);
+            }
+            var filas = Array.prototype.filter.call(tabla.querySelectorAll('tbody tr'), function(tr) { return !tr.classList.contains('emptyrow'); });
+            var conColumnaGrupos = /zhakyz_/i.test(tabla.textContent);
+            var lista = [];
+            filas.forEach(function(tr) {
+              var a = tr.querySelector('a[href*="/user/view.php?id="]');
+              var m = a ? a.getAttribute('href').match(/[?&]id=(\d+)/) : null;
+              if (!m) return;
+              if (conColumnaGrupos && tr.textContent.indexOf(g.grupo) === -1) return;
+              var copia = a.cloneNode(true);
+              Array.prototype.forEach.call(copia.querySelectorAll('.userinitials, img'), function(x) { x.parentNode.removeChild(x); });
+              var nombre = copia.textContent.replace(/\s+/g, ' ').trim();
+              if (nombre) lista.push({ id: m[1], nombre: nombre });
+            });
+            if (!conColumnaGrupos && lista.length > 30) throw new Error('No se pudo filtrar la lista de participantes por el grupo ' + g.grupo);
+            return lista;
+          });
+      }
+
+      // COMPLETAR LA LISTA DEL FORMULARIO (TUTORES Y ASESORES PARES, SIN LA PROPIA CUENTA). Si no se puede leer,
+      // el campo vuelve a ser de texto y el destinatario se busca por nombre entre los participantes
+      function cargarDestinatarios() {
+        var yo = String(usuarioActual());
+        Promise.all(GRUPOS_ACOMPANANTES.map(integrantesGrupo)).then(function(listas) {
+          var select = document.getElementById('campo-destinatario-solicitud');
+          if (!select) return;
+          var total = 0;
+          var html = GRUPOS_ACOMPANANTES.map(function(g, i) {
+            var personas = listas[i].filter(function(p) { return p.id !== yo; })
+              .sort(function(a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
+            total += personas.length;
+            if (!personas.length) return '';
+            return '<optgroup label="' + escapar(g.titulo) + '">' + personas.map(function(p) {
+              return '<option value="' + escapar(p.id + '|' + g.tipo) + '" data-nombre="' + escapar(p.nombre) + '">' + escapar(p.nombre) + '</option>';
+            }).join('') + '</optgroup>';
+          }).join('');
+          if (!total) {
+            select.innerHTML = '<option value="">No hay tutores ni asesores pares disponibles</option>';
+            document.getElementById('txt-ayuda-destinatario-solicitud').textContent =
+              'Los grupos ' + GRUPOS_ACOMPANANTES.map(function(g) { return g.grupo; }).join(' y ') + ' no tienen integrantes. Los agrega el equipo docente del curso.';
+            return;
+          }
+          select.innerHTML = '<option value="">Seleccionar un tutor o asesor par</option>' + html;
+          select.disabled = false;
+        }).catch(function(err) {
+          var bloque = document.getElementById('bloque-destinatario-solicitud');
+          if (!bloque) return;
+          bloque.innerHTML = '<label for="campo-destinatario-solicitud" style="' + ETIQUETA + '">Nombre y apellido del tutor o asesor par</label>' +
+            '<input id="campo-destinatario-solicitud" type="text" autocomplete="off" style="height: 40px !important; ' + CAMPO + '">' +
+            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 4px !important;">No se pudo leer la lista de tutores y asesores pares (' + escapar(err.message) +
+            '). El nombre se busca entre los participantes del curso.</div>';
+        });
       }
 
       function cerrarSolicitud() {
@@ -1028,7 +1332,18 @@
       // INVOLUCRADOS DE LA SOLICITUD SEGÚN QUIÉN LA PIDE (O UN MENSAJE DE ERROR)
       function involucradosSolicitud() {
         if (rolActual === 'EST') {
-          var destinatario = document.getElementById('campo-destinatario-solicitud').value.replace(/\s+/g, ' ').trim();
+          var campoDestinatario = document.getElementById('campo-destinatario-solicitud');
+          // Elegido de la lista: cuenta, nombre y tipo salen del grupo
+          if (campoDestinatario.tagName === 'SELECT') {
+            var opcion = campoDestinatario.options[campoDestinatario.selectedIndex];
+            if (!campoDestinatario.value || !opcion) return { error: 'Seleccionar el tutor o asesor par.' };
+            var partes = campoDestinatario.value.split('|');
+            return {
+              dni: '', usuario: usuarioActual(), nombreEstudiante: nombreUsuarioActual(),
+              tipo: partes[1], acompanante: partes[0], nombreAcompanante: opcion.getAttribute('data-nombre'), origen: 'estudiante', por: 'estudiante'
+            };
+          }
+          var destinatario = campoDestinatario.value.replace(/\s+/g, ' ').trim();
           if (!destinatario) return { error: 'Completar el nombre del tutor o asesor par.' };
           // Si el nombre coincide con un acompañante conocido, la entrevista queda con su cuenta y su tipo
           var conocido = acompananteConNombre(destinatario);
@@ -1208,7 +1523,8 @@
                 // En Moodle se vuelve a leer la base para tener el rid de la entrada nueva
                 var listo = res.local ? Promise.resolve().then(function() {
                   delete nueva.nueva;
-                  entrevistas.push(nueva);
+                  entradas.push(nueva);
+                  combinar();
                   pestana = 'agenda';
                   filtroKpi = '';
                   renderizarTodo();
@@ -1400,10 +1716,16 @@
         if (accion === 'enviar-contraoferta') return enviarContraoferta();
         if (accion === 'confirmar-cierre') return confirmarCierre();
         if (accion === 'guardar-resultado') return guardarResultado();
-        // Vista previa local: acepta como si fuera el estudiante (el acompañante no acepta su propia propuesta)
+        // Vista previa local: el estudiante acepta con una respuesta propia, como lo haría en Moodle
+        // (el acompañante no acepta su propia propuesta)
         if (accion === 'simular-aceptacion') {
           var vigente = abierta.propuestas[abierta.propuestas.length - 1];
-          return aplicarCambio({ estado: 'programada', programada: vigente.fecha });
+          contadorRespuestas++;
+          respuestas.push({
+            rid: String(900000 + contadorRespuestas), entrevista: abierta.rid, por: 'estudiante', accion: 'aceptar', fecha: vigente.fecha,
+            mensaje: '', creada: ahora(), autor: String(abierta.usuario), nombreAutor: abierta.nombreEstudiante
+          });
+          return refrescar();
         }
         if (accion === 'agregar-accion') {
           accionesBorrador.push({ tipo_derivacion: 'asesor_par', descripcion: '', fecha_compromiso: '' });
@@ -1485,18 +1807,28 @@
       // ---------------------------------------------------------
       // INICIO
       // ---------------------------------------------------------
-      // #usuario=<id> (desde el tablero o el detalle) abre la solicitud con ese estudiante elegido
-      function usuarioDelHash() {
-        var m = window.location.hash.match(/usuario=([^&]+)/);
-        return m ? decodeURIComponent(m[1]) : null;
+      // #solicitar&usuario=<id>&dni=<dni>&nombre=<nombre> (desde el Detalle del estudiante) o #usuario=<id> abre la
+      // solicitud con ese estudiante. Después se quita de la dirección, para que no se vuelva a abrir al recargar
+      function estudianteDelHash() {
+        var dato = function(clave) {
+          var m = window.location.hash.match(new RegExp('[#&]' + clave + '=([^&]*)'));
+          return m ? decodeURIComponent(m[1]).trim() : '';
+        };
+        var estudiante = { usuario: dato('usuario'), dni: dato('dni').replace(/[.\s]/g, ''), nombre: dato('nombre') };
+        if (!estudiante.usuario) return null;
+        if (window.history && history.replaceState) history.replaceState(null, '', window.location.pathname + window.location.search);
+        return estudiante;
       }
 
       function iniciarDatos() {
         return Promise.all([cargarDatos(), detectarRol()]).then(function(r) {
-          entrevistas = r[0];
+          entradas = r[0].entradas;
+          respuestas = r[0].respuestas;
+          combinar();
           aplicarRol(r[1]);
-          var usuario = usuarioDelHash();
-          if (usuario) abrirSolicitud(usuario);
+          // Solo quien pide entrevistas a estudiantes (ADM, TUT y PAR); el estudiante no
+          var estudiante = estudianteDelHash();
+          if (estudiante && rolActual !== 'EST') abrirSolicitud(estudiante);
         }).catch(function(e) {
           document.getElementById('cuerpo-tabla-entrevistas').innerHTML =
             '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
