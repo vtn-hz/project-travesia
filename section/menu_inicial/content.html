@@ -120,7 +120,8 @@
         'btn-tablero-criticidad': '../tablero_estudiantes/content.html',
         'btn-plan-estudios': '../plan_estudios/content.html',
         'btn-entrevistas': '../entrevistas/content.html',
-        'btn-indicadores': '../indicadores_cohorte/content.html'
+        'btn-indicadores': '../indicadores_cohorte/content.html',
+        'btn-configuracion': '../configuracion/content.html'
       };
       // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
@@ -128,6 +129,7 @@
       var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
       var CMID_PAGINA_INDICADORES = 60283; // @config paginas.indicadores_cohorte
+      var CMID_PAGINA_CONFIGURACION = null; // @config paginas.configuracion
       // Notas de 1.er año: la tarjeta abre la base, donde los docentes ven las notas de todos (los estudiantes cargan en su propia Página)
       var CMID_BASE_PARCIALES_PRIMERO = 59521; // @config bases.carga_parciales_primero.cmid
       var DESTINOS_MOODLE = {
@@ -137,6 +139,7 @@
       if (CMID_PAGINA_TABLERO) DESTINOS_MOODLE['btn-tablero-criticidad'] = '/mod/page/view.php?id=' + CMID_PAGINA_TABLERO;
       if (CMID_PAGINA_ENTREVISTAS) DESTINOS_MOODLE['btn-entrevistas'] = '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS;
       if (CMID_PAGINA_INDICADORES) DESTINOS_MOODLE['btn-indicadores'] = '/mod/page/view.php?id=' + CMID_PAGINA_INDICADORES;
+      if (CMID_PAGINA_CONFIGURACION) DESTINOS_MOODLE['btn-configuracion'] = '/mod/page/view.php?id=' + CMID_PAGINA_CONFIGURACION;
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
       // Bloque "Estado del sistema" de ADM (oculto por ahora)
@@ -245,7 +248,7 @@
         { id: 'importar-datos', grupo: 'gestion', icono: 'importar', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', roles: ['ADM', 'GES'] },
         { id: 'notas-primero', grupo: 'gestion', icono: 'lista', titulo: 'Notas de 1.er año', texto: 'Notas de parciales que cargan los estudiantes de 1.er año, con búsqueda y exportación.', cta: 'Ver notas', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'plan-estudios', grupo: 'gestion', icono: 'plan', titulo: 'Plan de Estudios y Correlativas', texto: 'Plan 2024, correlativas y tabla de aprobaciones esperadas.', cta: 'Editar plan', roles: ['ADM', 'GES'] },
-        { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Umbrales del semáforo, pesos de los indicadores y cierre de período.', cta: 'Configurar', roles: ['ADM'] }
+        { id: 'configuracion', grupo: 'gestion', icono: 'configuracion', titulo: 'Configuración del Sistema', texto: 'Período vigente y cierre del período, con las alertas por omisión de la Encuesta Cuatrimestral.', cta: 'Configurar', roles: ['ADM'] }
       ];
 
       var TARJETA = 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important;';
@@ -273,9 +276,9 @@
           '<span style="color: ' + color + ' !important;">' + icono(item.ok ? 'ok' : 'error', 18) + '</span>' + item.texto + '</span>';
       }
 
-      // UNA TARJETA ESTÁ IMPLEMENTADA SI TIENE DESTINO (EN LOCAL O EN MOODLE)
+      // UNA TARJETA ESTÁ IMPLEMENTADA SI TIENE DESTINO: EN MOODLE, UNA ACTIVIDAD PUBLICADA; EN LOCAL, UN ARCHIVO DEL REPO O UNA ACTIVIDAD
       function implementada(t) {
-        return !!(DESTINOS_LOCAL['btn-' + t.id] || DESTINOS_MOODLE['btn-' + t.id]);
+        return !!(DESTINOS_MOODLE['btn-' + t.id] || (ES_VISTA_LOCAL && DESTINOS_LOCAL['btn-' + t.id]));
       }
 
       // HTML DE UNA TARJETA DE MÓDULO
