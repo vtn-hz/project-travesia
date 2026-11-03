@@ -408,7 +408,8 @@
             doc.querySelectorAll('li.contentnode').forEach(function(li) {
               var dt = li.querySelector('dt');
               var dd = li.querySelector('dd');
-              if (dt && dd) campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').trim() });
+              // El bloque del código QR de la app de Moodle no es un dato del estudiante
+              if (dt && dd && !/c[oó]digo qr/i.test(dt.textContent)) campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').trim() });
             });
             return { campos: campos };
           });
