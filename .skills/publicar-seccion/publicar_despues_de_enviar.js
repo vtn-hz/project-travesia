@@ -6,7 +6,7 @@
 //     --archivo section/encuestas_despues_de_enviar/content.html --cmids 59710,59712 \
 //     --continuar '<campus>/course/section.php?id=<Zhakyz>#module-<paginas.vista_estudiante>' [--confirmar]
 // Manda el formulario de configuración de cada encuesta (modedit.php) con el HTML del archivo en page_after_submit
-// y la dirección en site_after_submit, sin abrir el editor (que puede quitar el script). Relee lo guardado.
+// y la dirección en site_after_submit, sin abrir el editor. Relee lo guardado.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const CONFIG = require('./config').cargar();
@@ -52,8 +52,9 @@ const salir = (m) => { console.log('✖ ' + m); process.exit(1); };
     estado.fase = 'lectura';
     await p.goto(`${BASE}/course/modedit.php?update=${cm}`, { waitUntil: 'domcontentloaded' });
     const d = await leer();
-    const ok = d.texto.includes('data-zk-despues-de-enviar') && d.texto.includes('<script>') && d.texto.includes('SEGUNDOS = 5') && d.url === CONT && d.name === antes.name;
-    console.log(`  respuesta ${st.replace(BASE, '')} → ${ok ? '✔ guardado y releído (script conservado)' : '✖ no quedó como se esperaba: ' + JSON.stringify({ largo: d.texto.length, script: d.texto.includes('<script>'), url: d.url })}`);
+    // Sin script desde el 2026-11-03 (Moodle lo quita al mostrar la página): se verifica el marcador, el link a Mi Trayectoria y la URL de Continuar
+    const ok = d.texto.includes('data-zk-despues-de-enviar') && d.texto.includes('#module-') && d.url === CONT && d.name === antes.name;
+    console.log(`  respuesta ${st.replace(BASE, '')} → ${ok ? '✔ guardado y releído' : '✖ no quedó como se esperaba: ' + JSON.stringify({ largo: d.texto.length, url: d.url })}`);
   }
   if (!CONFIRMAR) console.log('SIMULACIÓN: no se escribió nada.');
   console.log('Escrituras: ' + (escrituras.join(' · ') || 'ninguna'));

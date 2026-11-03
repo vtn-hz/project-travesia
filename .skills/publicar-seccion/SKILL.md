@@ -82,7 +82,7 @@ MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
 
 ## Página después de enviar una encuesta (`publicar_despues_de_enviar.js`)
 
-Lo que ve el estudiante al terminar una Encuesta de Zhakyz ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html)) va en los ajustes "Página después de enviar" y "URL para el botón Continuar" de la encuesta, no en un ítem. El script manda el formulario de configuración de cada encuesta (`modedit.php`) con el HTML del archivo, sin abrir el editor, y relee que el script se haya conservado.
+Lo que ve el estudiante al terminar una Encuesta de Zhakyz ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html)) va en los ajustes "Página después de enviar" y "URL para el botón Continuar" de la encuesta, no en un ítem. El script manda el formulario de configuración de cada encuesta (`modedit.php`) con el HTML del archivo, sin abrir el editor, y relee lo guardado. Ese HTML no lleva script: Moodle lo limpia al mostrarlo y el `<script>` no corre. La vuelta a Mi Trayectoria a los 5 segundos la hace la copia de respuestas (Página Tools), que manda la encuesta y muestra el aviso.
 
 ```bash
 MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
