@@ -176,7 +176,8 @@
         { rid: 91002, id_usuario: '2806', dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gldistefano@ejemplo.com.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-04-02T19:35:00-03:00' },
         { rid: 91003, id_usuario: '3773', dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2024', cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1', alta: '2024-03-15T09:00:00-03:00' },
         { rid: 91004, id_usuario: '3623', dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2022', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2022-04-19T21:00:00-03:00' },
-        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '', alta: '2026-10-30T18:20:00-03:00' }
+        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '', alta: '2026-10-30T18:20:00-03:00' },
+        { rid: 91006, id_usuario: '3751', dni: '99000004', nombre: 'Santiago', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-09-20T12:00:00-03:00' }
       ];
 
       var RESPUESTAS_PRUEBA = [
@@ -531,7 +532,8 @@
           var c = Object.assign({}, e); c.created_at = ''; return c;
         }));
         var entradas = datos.criticidad.filter(function(c) { return String(c.id_usuario) === usuario; });
-        if (!info && !entradas.length) return;
+        // Solo estudiantes cargados en el sistema (con entrada en Estudiantes)
+        if (!info) return;
         var tieneNotas = entradas.some(function(c) { return tipoDeEntrada(c, encuestas) === 'notas'; });
         var tramo = info ? (info.es_primer_anio === 'si' ? 'primero' : 'superior') : (tieneNotas ? 'primero' : 'superior');
         var dni = info ? info.dni : entradas[0].dni;

@@ -207,13 +207,14 @@
       // ---------------------------------------------------------
       // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS ACADÉMICOS FICTICIOS, LOS MISMOS DEL DETALLE)
       // ---------------------------------------------------------
-      // Base Estudiantes: las mismas entradas de prueba que Mi Trayectoria. Santiago no cargó su información personal
+      // Base Estudiantes: las mismas entradas de prueba que Mi Trayectoria, más Santiago
       var ESTUDIANTES_PRUEBA = [
         { rid: 91001, id_usuario: '3770', dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-03-20T10:10:00-03:00' },
         { rid: 91002, id_usuario: '2806', dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gldistefano@ejemplo.com.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-04-02T19:35:00-03:00' },
         { rid: 91003, id_usuario: '3773', dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2024', cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1', alta: '2024-03-15T09:00:00-03:00' },
         { rid: 91004, id_usuario: '3623', dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2022', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2022-04-19T21:00:00-03:00' },
-        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '', alta: '2026-10-30T18:20:00-03:00' }
+        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '', alta: '2026-10-30T18:20:00-03:00' },
+        { rid: 91006, id_usuario: '3751', dni: '99000004', nombre: 'Santiago', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-09-20T12:00:00-03:00' }
       ];
 
       // Base Respuestas: solo importa qué encuesta es cada envío
@@ -244,7 +245,7 @@
         automatica(1011, '2806', '99000001', '2026-1', 'notas_1ro', '511', 74, '2026-06-02T12:00:00-03:00'),
         automatica(1012, '2806', '99000001', '2026-2', 'notas_1ro', '512', 88, '2026-09-18T21:10:00-03:00'),
         automatica(1013, '2806', '99000001', '2026-2', 'materias', '901', 64, '2026-10-09T10:00:00-03:00', 'Recálculo: cambió el umbral de Álgebra I- B'),
-        // Santiago: cargó notas sin información personal; un tutor asignó un estado y después lo quitó
+        // Santiago: 1.er año; un tutor asignó un estado y después lo quitó
         automatica(1021, '3751', '99000004', '2026-2', 'notas_1ro', '521', 52, '2026-09-25T18:00:00-03:00'),
         automatica(1022, '3751', '99000004', '2026-2', 'notas_1ro', '522', 81, '2026-10-12T19:30:00-03:00'),
         manual(1023, '3751', '99000004', '2026-2', 'amarillo', 'Entrevista: rinde los recuperatorios en noviembre.', 'Luca Zuanetti', '2026-10-14T10:00:00-03:00'),
@@ -496,7 +497,7 @@
       var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
       var ignorarFilasHasta = 0; // después de guardar, el segundo clic de un doble clic no abre la fila de abajo
 
-      // UNA FILA POR ESTUDIANTE: LOS DE LA BASE ESTUDIANTES Y LOS QUE SOLO TIENEN ENTRADAS DE CRITICIDAD
+      // UNA FILA POR ESTUDIANTE DE LA BASE ESTUDIANTES
       function procesar() {
         var encuestas = {};
         datos.respuestas.forEach(function(r) { encuestas[String(r.rid)] = r.codigo_encuesta; });
@@ -508,8 +509,8 @@
           var id = String(e.id_usuario);
           if (!estudiantes[id] || (Number(e.rid) || 0) > (Number(estudiantes[id].rid) || 0)) estudiantes[id] = e;
         });
+        // Solo los estudiantes cargados en el sistema (con entrada en Estudiantes): las entradas de Criticidad de otros usuarios no se muestran
         var ids = Object.keys(estudiantes);
-        Object.keys(porUsuario).forEach(function(id) { if (!estudiantes[id]) ids.push(id); });
         filas = ids.map(function(id) {
           var e = estudiantes[id] || null;
           var entradas = porUsuario[id] || [];

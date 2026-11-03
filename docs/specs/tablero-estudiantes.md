@@ -52,7 +52,7 @@ Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sal
 4. **Asignar estado** (TUT y ADM): botón en cada fila que abre el diálogo. Se elige verde, amarillo o rojo (o *Quitar el estado asignado*, si hay uno) y el motivo es obligatorio. Se cierra con Escape, *Cancelar* o un clic afuera, y el foco vuelve al botón de la fila.
 5. **Detalle:** clic o Enter en la fila abre el [Detalle del estudiante](detalle-estudiante.md) con `#usuario=<id>`.
 
-- **Estudiantes sin información personal** que ya tienen entradas en Criticidad (por ejemplo, cargaron notas) aparecen como "DNI …", sin cohorte. Con notas cargadas se toman como 1.er año.
+- **Solo estudiantes cargados en el sistema** (decisión del 2026-11-03): el tablero lista únicamente a quienes tienen entrada en la base Estudiantes. Las entradas de Criticidad de un usuario sin información personal (por ejemplo, de una prueba de carga de notas) no se muestran.
 - Si un estudiante tiene más de una entrada en Estudiantes, vale la de `rid` mayor.
 
 ## Lectura y escritura en Moodle
@@ -67,7 +67,7 @@ Son los **6 integrantes de Zhakyz** ([EQUIPO_ZHAKYZ](../context/EQUIPO_ZHAKYZ.md
 
 | Integrante | Año | Calculado (2026-2) | Asignado | Vigente |
 |---|---|---|---|---|
-| Santiago Nicolás Yanosky | sin información personal (notas → 1.er año) | Riesgo alto, 81 (notas) | Asignado y después quitado | Riesgo alto |
+| Santiago Yanosky | 1.er año, cohorte 2026-1 | Riesgo alto, 81 (notas) | Asignado y después quitado | Riesgo alto |
 | Nicolás Gabriel Zuviria | 2.º en adelante (desde 2025-1) | Sin calcular: no respondió la Cuatrimestral 2026-2 | Riesgo alto, por Valentino Hernández Pascual | Riesgo alto |
 | Gian Luca Distefano | 1.er año | Riesgo medio, 64 (recálculo por un cambio de umbral) | — | Riesgo medio |
 | Valentino Hernández Pascual | 2.º en adelante | Sin calcular: sin entradas | — | Sin calcular |

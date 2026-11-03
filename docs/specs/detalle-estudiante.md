@@ -21,7 +21,7 @@
 | | **Trayectoria:** la cronología, con filtros por tipo |
 | | **Historial de cambios de estado:** calculados y asignados |
 
-En celular las columnas se apilan y el gráfico se dibuja al ancho de la pantalla. Un estudiante sin información personal muestra "DNI …", el ícono de persona y el aviso en el perfil.
+En celular las columnas se apilan y el gráfico se dibuja al ancho de la pantalla. Solo se muestran estudiantes con entrada en la base Estudiantes: para cualquier otro usuario, el detalle dice "No se encontró el estudiante".
 
 ## Foto y datos del campus
 
