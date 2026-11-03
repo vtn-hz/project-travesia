@@ -1,6 +1,6 @@
 {
   "descripcion": "Entradas de la base Encuestas (data/moodle/BASE_ENCUESTAS.json): una por encuesta y versión, tal como se cargan en Moodle. json_preguntas va como objeto acá y como texto JSON en la base. La versión vigente de cada encuesta es la de mayor número. Las versiones 1 (inicial) y 2 (cuatrimestral) son las del formato anterior de Respuestas, que guardaba el texto de cada pregunta en la respuesta, y no tienen entrada.",
-  "origen": "Armadas el 2026-11-01 desde data/moodle/encuestas/ENCUESTA_INICIAL.xml y ENCUESTA_CUATRIMESTRAL.xml (exportadas de Moodle; la Cuatrimestral con los 4 saltos de página del 2026-10-31) y los puntos provisorios de docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md. Cargadas en la base Encuestas (d=198) el 2026-11-01: inicial v2 = rid 20148, cuatrimestral v3 = rid 20149.",
+  "origen": "Armadas el 2026-11-01 desde data/moodle/encuestas/ENCUESTA_INICIAL.xml y ENCUESTA_CUATRIMESTRAL.xml (exportadas de Moodle; la Cuatrimestral con los 4 saltos de página del 2026-10-31) y los puntos provisorios de docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md. Cargadas en la base Encuestas (d=198) el 2026-11-01: inicial v2 = rid 20148, cuatrimestral v3 = rid 20149. El 2026-11-03 se sacaron los saltos de página de las dos encuestas: inicial v3 y cuatrimestral v4, iguales a las anteriores pero con todos los ítems en la página 1. La dependencia de inicio_laboral (solo si trabaja = Si) pasó al script de la copia, porque Moodle solo la aplica entre páginas.",
   "entradas": [
     {
       "codigo_encuesta": "inicial",
@@ -326,6 +326,331 @@
       "por_periodo": "si",
       "puntaje_maximo": 70,
       "created_at": "2026-11-01T12:00:00-03:00"
+    },
+    {
+      "codigo_encuesta": "inicial",
+      "version": 3,
+      "json_preguntas": [
+        {
+          "variable": null,
+          "item_id": 8254,
+          "pagina": 1,
+          "tipo": "label",
+          "pregunta": "Cuadro de créditos (widget CuadroCreditos de Utils)"
+        },
+        {
+          "variable": "creditos_aprobados",
+          "item_id": 8253,
+          "pagina": 1,
+          "tipo": "numeric",
+          "pregunta": "Los créditos obtenidos actualmente son:",
+          "obligatoria": true,
+          "rango": {
+            "min": 0,
+            "max": 223
+          },
+          "criticidad_max": 70,
+          "regla": {
+            "nombre": "avance_curricular",
+            "activa": false
+          }
+        },
+        {
+          "variable": "seleccion_creditos",
+          "item_id": 8774,
+          "pagina": 1,
+          "tipo": "textarea",
+          "formato": "seleccion_creditos",
+          "pregunta": "Materias aprobadas (lo completa el cuadro de créditos)",
+          "obligatoria": false
+        },
+        {
+          "variable": "año_cohorte",
+          "item_id": 8257,
+          "pagina": 1,
+          "tipo": "numeric",
+          "pregunta": "¿En qué año ingresaste a la facultad?",
+          "obligatoria": true,
+          "rango": {
+            "min": 2000,
+            "max": 3000
+          }
+        },
+        {
+          "variable": "cuatri_cohorte",
+          "item_id": 8258,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿En cuál cuatrimestre ingresaste?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "1",
+              "criticidad": null
+            },
+            {
+              "opcion": 2,
+              "texto": "2",
+              "criticidad": null
+            }
+          ]
+        },
+        {
+          "variable": "trabaja",
+          "item_id": 8259,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿Trabaja actualmente?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "Si",
+              "criticidad": 10
+            },
+            {
+              "opcion": 2,
+              "texto": "No",
+              "criticidad": 0
+            }
+          ],
+          "criticidad_max": 10
+        },
+        {
+          "variable": "inicio_laboral",
+          "item_id": 8260,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?",
+          "obligatoria": false,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "Comencé antes de ingresar a la carrera",
+              "criticidad": 20
+            },
+            {
+              "opcion": 2,
+              "texto": "Comencé en 1.º año",
+              "criticidad": 20
+            }
+          ],
+          "criticidad_max": 20
+        }
+      ],
+      "por_periodo": "no",
+      "puntaje_maximo": 30,
+      "created_at": "2026-11-03T10:00:00-03:00"
+    },
+    {
+      "codigo_encuesta": "cuatrimestral",
+      "version": 4,
+      "json_preguntas": [
+        {
+          "variable": null,
+          "item_id": 8261,
+          "pagina": 1,
+          "tipo": "label",
+          "pregunta": "Cuadro de créditos (widget CuadroCreditos de Utils)"
+        },
+        {
+          "variable": "creditos_aprobados",
+          "item_id": 8262,
+          "pagina": 1,
+          "tipo": "numeric",
+          "pregunta": "Los créditos obtenidos actualmente son:",
+          "obligatoria": true,
+          "rango": {
+            "min": 0,
+            "max": 235.5
+          },
+          "criticidad_max": 30,
+          "regla": {
+            "nombre": "avance_curricular",
+            "activa": false
+          }
+        },
+        {
+          "variable": "seleccion_creditos",
+          "item_id": 8775,
+          "pagina": 1,
+          "tipo": "textarea",
+          "formato": "seleccion_creditos",
+          "pregunta": "Materias aprobadas (lo completa el cuadro de créditos)",
+          "obligatoria": false
+        },
+        {
+          "variable": "progreso_proyecto_final",
+          "item_id": 8264,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "No aplico por nivel",
+              "criticidad": 0
+            },
+            {
+              "opcion": 2,
+              "texto": "No iniciado",
+              "criticidad": 10
+            },
+            {
+              "opcion": 3,
+              "texto": "Tema propuesto sin avance",
+              "criticidad": 7
+            },
+            {
+              "opcion": 4,
+              "texto": "En desarrollo activo",
+              "criticidad": 3
+            },
+            {
+              "opcion": 5,
+              "texto": "Finalizado pendiente de defensa",
+              "criticidad": 0
+            }
+          ],
+          "criticidad_max": 10
+        },
+        {
+          "variable": "trabaja",
+          "item_id": 8265,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿Trabaja actualmente?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "Si",
+              "criticidad": 5
+            },
+            {
+              "opcion": 2,
+              "texto": "No",
+              "criticidad": 0
+            }
+          ],
+          "criticidad_max": 5
+        },
+        {
+          "variable": "inicio_laboral",
+          "item_id": 8266,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "¿En qué momento de la carrera comenzaste tu actividad laboral?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "Comencé antes de ingresar a la carrera",
+              "criticidad": 10
+            },
+            {
+              "opcion": 2,
+              "texto": "Comencé en 1.º año",
+              "criticidad": 10
+            },
+            {
+              "opcion": 3,
+              "texto": "Comencé en 2.º año",
+              "criticidad": 10
+            },
+            {
+              "opcion": 4,
+              "texto": "Comencé en 3.º año",
+              "criticidad": 7
+            },
+            {
+              "opcion": 5,
+              "texto": "Comencé en 4.º año",
+              "criticidad": 7
+            },
+            {
+              "opcion": 6,
+              "texto": "Comencé en 5.º año",
+              "criticidad": 4
+            },
+            {
+              "opcion": 7,
+              "texto": "Comencé solo adeudando trabajo final",
+              "criticidad": 4
+            }
+          ],
+          "criticidad_max": 10
+        },
+        {
+          "variable": null,
+          "item_id": 8270,
+          "pagina": 1,
+          "tipo": "label",
+          "pregunta": "Selector de materias (widget SelectorMaterias de Utils)"
+        },
+        {
+          "variable": "materias_cuatrimestre",
+          "item_id": 8768,
+          "pagina": 1,
+          "tipo": "textarea",
+          "formato": "selector_materias",
+          "pregunta": "¿Qué materias cursaste el anterior cuatrimestre?",
+          "obligatoria": false,
+          "criticidad_max": 35,
+          "regla": {
+            "nombre": "cursada",
+            "activa": true,
+            "cantidad": [
+              35,
+              10,
+              5
+            ],
+            "recursada": [
+              8,
+              7
+            ],
+            "dificultad_max": 10,
+            "sin_inactividad": {
+              "variable": "progreso_proyecto_final",
+              "opciones": [
+                4,
+                5
+              ]
+            }
+          }
+        },
+        {
+          "variable": "avance_percibido",
+          "item_id": 8271,
+          "pagina": 1,
+          "tipo": "multichoice",
+          "pregunta": "Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?",
+          "obligatoria": true,
+          "opciones": [
+            {
+              "opcion": 1,
+              "texto": "Al día (cursando las materias del año que me corresponde)",
+              "criticidad": 0
+            },
+            {
+              "opcion": 2,
+              "texto": "Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)",
+              "criticidad": 5
+            },
+            {
+              "opcion": 3,
+              "texto": "Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)",
+              "criticidad": 10
+            }
+          ],
+          "criticidad_max": 10
+        }
+      ],
+      "por_periodo": "si",
+      "puntaje_maximo": 70,
+      "created_at": "2026-11-03T10:00:00-03:00"
     }
   ]
 }
