@@ -1,7 +1,7 @@
 <!-- SECCIÓN: CONFIGURACIÓN DEL SISTEMA (ROL ADM) · PERÍODO VIGENTE Y CIERRE DEL PERÍODO (ADR-009) -->
 <!-- VA EN: subsección oculta "Configuración" de Zhakyz → Página "Configuración del Sistema" (cmid en moodle.config.json → paginas.configuracion). La abre la tarjeta "Configuración del Sistema" del Hub. Oculta mientras Moodle no detecte roles -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período) y Criticidad (entradas del período). ESCRIBE, solo al cerrar: una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos (docs/specs/configuracion.md) -->
+<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle (show_entries.php, para no dar una omisión a quien respondió y no tiene la copia). ESCRIBE, solo al cerrar: una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos (docs/specs/configuracion.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="configuracion-sistema"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -88,6 +88,7 @@
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
+      var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
 
       // Índice de una omisión: el piso del rojo (ADR-009, docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md → Omisión)
       var INDICE_OMISION = 70;
@@ -106,6 +107,9 @@
       var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
       var CLAVE_PREVIEW_CIERRE = 'zk-preview-criticidad-cierre';
       var PAUSA_PREVIEW = 250; // milisegundos por entrada en la vista previa, para ver el progreso
+      var POR_PAGINA_MOODLE = 200; // respuestas por página al leer las respuestas de la Encuesta Cuatrimestral en Moodle
+      var MESES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12,
+        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12 };
       // Espera máxima (milisegundos) de la Página Tools, de cada base y de cada escritura
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
@@ -114,9 +118,10 @@
       // Situación de cada estudiante de 2.º año en adelante en el cierre
       var SITUACIONES = {
         omision: { orden: 0, texto: 'Recibe omisión', tono: 'rojo' },
-        ya_tiene: { orden: 1, texto: 'Ya tiene omisión', tono: 'neutro' },
-        paso: { orden: 2, texto: 'Fuera del cierre', tono: 'neutro' },
-        respondio: { orden: 3, texto: 'Sin cambios', tono: 'verde' }
+        sin_copia: { orden: 1, texto: 'Sin omisión', tono: 'amarillo' },
+        ya_tiene: { orden: 2, texto: 'Ya tiene omisión', tono: 'neutro' },
+        paso: { orden: 3, texto: 'Fuera del cierre', tono: 'neutro' },
+        respondio: { orden: 4, texto: 'Sin cambios', tono: 'verde' }
       };
 
       // Chips (skill diseno-ui → referencia/tokens.md)
@@ -174,6 +179,12 @@
         { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00' },
         { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00' }
       ];
+      // Respuestas de la Encuesta Cuatrimestral en Moodle (Moodle guarda solo la última de cada estudiante). Nicolás la respondió en
+      // 2026-2, pero la copia no llegó a la base Respuestas: no recibe la omisión y figura "Sin omisión"
+      var MOODLE_PRUEBA = [
+        { id_usuario: '3773', fecha: '2026-10-15T19:20:00-03:00' },
+        { id_usuario: '3623', fecha: '2026-09-02T11:48:00-03:00' }
+      ];
       // Base Criticidad: solo las entradas automáticas cuentan para el índice total (las del Tablero, sin las manuales)
       function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha) {
         return { rid: rid, id_usuario: id, dni: dni, periodo: periodo, origen: 'automatica', fuente: fuente, rid_fuente: ridFuente, indice: String(indice), created_at: fecha };
@@ -224,6 +235,12 @@
       function fechaVisible(iso) {
         var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
         return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+      }
+
+      // MILISEGUNDOS → DD/MM/AAAA (HORA LOCAL)
+      function fechaDeTiempo(t) {
+        var d = new Date(t);
+        return dos(d.getDate()) + '/' + dos(d.getMonth() + 1) + '/' + d.getFullYear();
       }
 
       // DÍAS ENTRE DOS FECHAS AAAA-MM-DD (b − a)
@@ -394,16 +411,60 @@
           });
       }
 
-      // DESAPROBAR UNA ENTRADA DE CRITICIDAD: SOLO LA VE EL EQUIPO (ADR-009). true SI MOODLE LO ACEPTÓ
+      // DESAPROBAR UNA ENTRADA DE CRITICIDAD: SOLO LA VE EL EQUIPO (ADR-009). true SOLO SI MOODLE MUESTRA EL AVISO DE ÉXITO:
+      // si no lo muestra (por ejemplo, porque ignoró el pedido), la entrada se informa para revisarla a mano
       function desaprobarMoodle(rid) {
         var url = M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_CRITICIDAD + '&disapprove=' + rid + '&sesskey=' + encodeURIComponent(M.cfg.sesskey);
         return fetch(url, { credentials: 'same-origin' }).then(function(r) {
           if (!r.ok || /\/login\//.test(r.url || '')) return false;
           return r.text().then(function(html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
-            return !doc.querySelector('#region-main .alert-danger, #region-main .errorbox');
+            return !!doc.querySelector('.alert-success') && !doc.querySelector('#region-main .alert-danger, #region-main .errorbox');
           });
         }).catch(function() { return false; });
+      }
+
+      // FECHA DE LA COLUMNA "Fecha" DE MOODLE ("lunes, 2 de noviembre de 2026, 21:46") → MILISEGUNDOS, O null SI NO SE ENTIENDE
+      function fechaMoodle(texto) {
+        var t = String(texto || '').toLowerCase();
+        var m = t.match(/(\d{1,2}) de ([a-záéíóú]+) de (\d{4})(?:\D+(\d{1,2}):(\d{2}))?/) || t.match(/(\d{1,2}) ([a-z]+) (\d{4})(?:\D+(\d{1,2}):(\d{2}))?/);
+        if (!m || !MESES[m[2]]) return null;
+        var d = new Date(Number(m[3]), MESES[m[2]] - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0));
+        return isFinite(d.getTime()) ? d.getTime() : null;
+      }
+
+      // RESPUESTAS DE LA ENCUESTA CUATRIMESTRAL EN MOODLE (show_entries.php, todos los grupos) → { id_usuario: milisegundos o null }.
+      // Moodle guarda una sola respuesta por estudiante (la última): con su fecha se sabe si respondió en el período
+      function respuestasMoodle() {
+        var vistas = {};
+        function pagina(n) {
+          var url = M.cfg.wwwroot + '/mod/feedback/show_entries.php?id=' + CMID_CUATRIMESTRAL + '&group=0&perpage=' + POR_PAGINA_MOODLE + '&page=' + n;
+          return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+            if (!r.ok || /\/login\//.test(r.url || '')) throw new Error('Moodle no mostró las respuestas de la Encuesta Cuatrimestral (HTTP ' + r.status + ').');
+            return r.text();
+          }).then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var tabla = doc.querySelector('#showentrytable');
+            var nuevas = 0;
+            if (tabla) {
+              var columna = Array.prototype.map.call(tabla.querySelectorAll('thead th'), function(th) { return th.textContent.trim().toLowerCase(); })
+                .reduce(function(c, t, i) { return c === -1 && (t === 'fecha' || t === 'date') ? i : c; }, -1);
+              tabla.querySelectorAll('tbody tr').forEach(function(tr) {
+                var a = tr.querySelector('a[href*="showcompleted="]');
+                var u = a && (a.getAttribute('href').match(/[?&]userid=(\d+)/) || [])[1];
+                if (!u || u in vistas) return;
+                vistas[u] = columna >= 0 && tr.cells[columna] ? fechaMoodle(tr.cells[columna].textContent) : null;
+                nuevas++;
+              });
+            } else if (!doc.querySelector('#region-main')) {
+              throw new Error('No se pudo leer la página de respuestas de la Encuesta Cuatrimestral.');
+            }
+            // Sigue mientras cada página traiga estudiantes nuevos (aunque Moodle use otro tamaño de página; tope de 50 páginas):
+            // la primera página sin estudiantes nuevos es la última
+            return nuevas > 0 && n < 50 ? pagina(n + 1) : vistas;
+          });
+        }
+        return pagina(0);
       }
 
       // ---------------------------------------------------------
@@ -421,7 +482,8 @@
             periodo: periodoDePrueba(),
             estudiantes: ESTUDIANTES_PRUEBA,
             respuestas: RESPUESTAS_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(cierrePreview())
+            criticidad: CRITICIDAD_PRUEBA.concat(cierrePreview()),
+            moodle: MOODLE_PRUEBA.reduce(function(m, x) { m[x.id_usuario] = tiempoDe(x.fecha); return m; }, {})
           });
         }
         return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
@@ -432,9 +494,10 @@
               leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS, filtro: function(e) {
                 return String(e.campos.codigo_encuesta || '').trim() === 'cuatrimestral' && String(e.campos.periodo || '').trim() === periodo;
               } }),
-              leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: function(e) { return String(e.campos.periodo || '').trim() === periodo; } })
+              leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: function(e) { return String(e.campos.periodo || '').trim() === periodo; } }),
+              conLimite(respuestasMoodle(), ESPERA_BASE, 'La lectura de las respuestas de la Encuesta Cuatrimestral')
             ]).then(function(r) {
-              return { periodo: p, estudiantes: r[0], respuestas: r[1], criticidad: r[2] };
+              return { periodo: p, estudiantes: r[0], respuestas: r[1], criticidad: r[2], moodle: r[3] };
             });
           });
         });
@@ -443,10 +506,15 @@
       // ---------------------------------------------------------
       // PLAN DEL CIERRE (LA SIMULACIÓN: NO ESCRIBE NADA)
       // ---------------------------------------------------------
-      // Por cada estudiante de 2.º año en adelante de la base Estudiantes: respondió, recibe omisión, ya tiene omisión o pasó a 2.º año
-      // en el período. Los de 1.er año quedan fuera del cierre (la Encuesta Cuatrimestral está deshabilitada para ellos)
+      // Por cada estudiante de 2.º año en adelante de la base Estudiantes: respondió, respondió solo en Moodle (la copia no llegó a
+      // Respuestas), recibe omisión, ya tiene omisión o pasó a 2.º año en el período. Los de 1.er año quedan fuera del cierre
+      // (la Encuesta Cuatrimestral está deshabilitada para ellos)
       function armarPlan(d) {
         var periodo = d.periodo.periodo;
+        // Una respuesta de Moodle cuenta para el período si es del inicio del período en adelante. Sin la fecha de inicio (o sin
+        // la fecha de la respuesta) no se puede saber: para no dar una omisión por error, cuenta igual y se marca
+        var inicio = esFecha(d.periodo.fecha_inicio) ? new Date(d.periodo.fecha_inicio + 'T00:00:00').getTime() : null;
+        var moodle = d.moodle || {};
         // Si un estudiante tiene varias entradas en Estudiantes, vale la de rid mayor (como en el Tablero)
         var estudiantes = {};
         d.estudiantes.forEach(function(e) {
@@ -473,9 +541,11 @@
           var entradas = criticidad[id] || [];
           var fila = {
             id: id, dni: e.dni, nombre: (String(e.nombre || '') + ' ' + String(e.apellido || '')).trim() || 'DNI ' + e.dni,
-            cohorte: e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '', respuesta: respuesta[id] || null, omision: null
+            cohorte: e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '', respuesta: respuesta[id] || null, omision: null,
+            moodle: id in moodle && (moodle[id] === null || inicio === null || moodle[id] >= inicio) ? { fecha: moodle[id] } : null
           };
           if (fila.respuesta) fila.situacion = 'respondio';
+          else if (fila.moodle) fila.situacion = 'sin_copia';
           else if (entradas.some(function(c) { return c.fuente === 'omision'; })) fila.situacion = 'ya_tiene';
           else if (String(e.periodo_paso_superior || '').trim() === periodo) fila.situacion = 'paso';
           else {
@@ -495,7 +565,7 @@
         return {
           periodo: periodo, filas: filas, primerAnio: primerAnio,
           omisiones: filas.filter(function(f) { return f.omision; }).map(function(f) { return f.omision; }),
-          respondieron: cuenta('respondio'), yaTienen: cuenta('ya_tiene'), pasaron: cuenta('paso')
+          respondieron: cuenta('respondio'), sinCopia: cuenta('sin_copia'), yaTienen: cuenta('ya_tiene'), pasaron: cuenta('paso')
         };
       }
 
@@ -507,7 +577,7 @@
       var errorCarga = '';
       var modal = null; // { disparador }
       var cierre = null; // { total, hechas, creadas: [{ rid, nombre, desaprobada }], error, terminado }
-      var fallaPreview = false; // vista previa: la 2.ª omisión falla, para probar que el cierre se retoma
+      var fallaPreview = false; // vista previa: la 1.ª omisión falla, para probar que el cierre se detiene sin cambiar el período
       var pulsadoEn = null;
 
       // ---------------------------------------------------------
@@ -615,7 +685,8 @@
         if (f.situacion === 'omision') {
           var o = f.omision;
           detalle = 'Índice ' + o.indice + ' · índice total ' + o.indice_total + ' · ' + escapar(TEXTO_SEMAFORO[o.semaforo] || '');
-        } else if (f.situacion === 'ya_tiene') detalle = 'Se agregó en un cierre anterior: no se repite.';
+        } else if (f.situacion === 'sin_copia') detalle = 'Respondió en Moodle, pero la respuesta no está en la base Respuestas: se copia cuando el estudiante vuelve a abrir la encuesta.';
+        else if (f.situacion === 'ya_tiene') detalle = 'Se agregó en un cierre anterior: no se repite.';
         else if (f.situacion === 'paso') detalle = 'Pasó a 2.º año en ' + escapar(plan.periodo) + '.';
         else detalle = 'Debe volver a responder en ' + escapar(periodoSiguiente(plan.periodo)) + '.';
         return chip(s.tono, s.texto) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + detalle + '</div>';
@@ -625,7 +696,9 @@
         var th = 'border: 0 !important; height: 48px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;';
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 10px 8px !important; vertical-align: middle !important;';
         var filas = plan.filas.length ? plan.filas.map(function(f) {
-          var enc = f.respuesta ? chip('verde', 'Respondida el ' + fechaVisible(f.respuesta.created_at)) : chip('amarillo', 'Sin responder');
+          var enc = f.respuesta ? chip('verde', 'Respondida el ' + fechaVisible(f.respuesta.created_at))
+            : f.moodle ? chip('amarillo', 'Solo en Moodle' + (f.moodle.fecha ? ' · ' + fechaDeTiempo(f.moodle.fecha) : ''))
+            : chip('amarillo', 'Sin responder');
           return '<tr data-usuario-cierre="' + escapar(f.id) + '">' +
             '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important;">' + escapar(f.nombre) + '</div>' +
             '<div style="font-size: 12px !important; color: #47536b !important;">DNI ' + escapar(f.dni) + (f.cohorte ? ' · cohorte ' + escapar(f.cohorte) : '') + '</div></td>' +
@@ -644,7 +717,7 @@
         var n = plan.omisiones.length;
         var kpis = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
           htmlKpi('2.º año en adelante', plan.filas.length, 'con información personal') +
-          htmlKpi('Respondieron', plan.respondieron, 'la Cuatrimestral ' + escapar(plan.periodo), 'verde') +
+          htmlKpi('Respondieron', plan.respondieron + plan.sinCopia, plan.sinCopia ? plan.sinCopia + ' solo en Moodle, sin copia' : 'la Cuatrimestral ' + escapar(plan.periodo), 'verde') +
           htmlKpi('Reciben omisión', n, 'índice ' + INDICE_OMISION + ' en Criticidad', 'rojo') +
           htmlKpi('Ya tienen omisión', plan.yaTienen, 'no se repite', 'neutro') +
           htmlKpi('Pasaron a 2.º año', plan.pasaron, 'en ' + escapar(plan.periodo) + ': fuera del cierre', 'neutro') +
@@ -779,7 +852,7 @@
       function guardarOmision(o, k) {
         if (usaPrueba) {
           return pausa(PAUSA_PREVIEW).then(function() {
-            if (fallaPreview && k === 1) { fallaPreview = false; throw new Error('Error simulado en la vista previa.'); }
+            if (fallaPreview && k === 0) { fallaPreview = false; marcarFallaPreview(); throw new Error('Error simulado en la vista previa.'); }
             var c = JSON.parse(JSON.stringify(o));
             c.rid = 70000 + cierrePreview().length + 1;
             c.autor = 'Vista previa (ADM)';
@@ -877,8 +950,8 @@
             ', con fecha límite de la Encuesta Cuatrimestral el ' + fechaVisible(c.nuevo.fecha_limite_encuesta) + '.' + lista);
         }
         if (sinDesaprobar.length) {
-          html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">No se pudieron desaprobar ' + sinDesaprobar.length + ' entradas</b> (rid ' +
-            sinDesaprobar.map(function(x) { return x.rid; }).join(', ') + '): las ven todos los que pueden abrir la base Criticidad. Desaprobarlas desde la base.') + '</div>';
+          html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">Moodle no confirmó la desaprobación de ' + sinDesaprobar.length + (sinDesaprobar.length === 1 ? ' entrada' : ' entradas') + '</b> (rid ' +
+            sinDesaprobar.map(function(x) { return x.rid; }).join(', ') + '). Revisarlas en la base Criticidad y, si siguen aprobadas, desaprobarlas desde la base: aprobadas, las ve cualquiera que pueda abrirla.') + '</div>';
         }
         $('aviso-resultado-config').innerHTML = html;
         mostrar($('aviso-resultado-config'), true);
@@ -898,7 +971,7 @@
         barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
         barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
           icono('ver', 18) + 'Vista previa local · ADM</span>' +
-          '<button id="btn-falla-preview" type="button" aria-pressed="false" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Simular un error en la 2.ª omisión</button>' +
+          '<button id="btn-falla-preview" type="button" aria-pressed="false" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Simular un error en la 1.ª omisión</button>' +
           '<button id="btn-restablecer-preview" type="button" style="margin-left: auto; cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Restablecer datos de prueba</button>';
         var aviso = $('aviso-datos-config');
         aviso.parentNode.insertBefore(barra, aviso.nextSibling);
