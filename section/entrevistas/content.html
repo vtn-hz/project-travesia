@@ -188,7 +188,8 @@
       var CMID_RESPUESTAS_ENTREVISTAS = 60299; // @config bases.respuestas_entrevistas.cmid · lectura y escritura
       // IDs field_<id> de RespuestasEntrevistas (data/moodle/BASE_RESPUESTAS_ENTREVISTAS.json), creada el 2026-11-03
       var CAMPOS_RESPUESTAS_ENTREVISTAS = {
-        rid_entrevista: 1398, por: 1399, accion: 1400, fecha: 1401, mensaje: 1402, creada: 1403
+        rid_entrevista: 1398, por: 1399, accion: 1400, fecha: 1401, mensaje: 1402, creada: 1403,
+        nombre_estudiante: 1491, nombre_acompanante: 1492 // agregados el 2026-11-03, al final
       };
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
@@ -492,7 +493,11 @@
         if (faltan) {
           return Promise.reject(new Error('la base RespuestasEntrevistas todavía no está creada en Moodle. Mientras tanto, la fecha la acepta o la cambia quien pidió la entrevista.'));
         }
-        var valores = { rid_entrevista: r.entrevista, por: r.por, accion: r.accion, fecha: r.fecha, mensaje: r.mensaje, creada: r.creada };
+        // Los nombres de los participantes son copias, para que la lista de la base los muestre (la Página no los lee)
+        var valores = {
+          rid_entrevista: r.entrevista, nombre_estudiante: r.nombreEstudiante, nombre_acompanante: r.nombreAcompanante,
+          por: r.por, accion: r.accion, fecha: r.fecha, mensaje: r.mensaje, creada: r.creada
+        };
         return enviarEntradaMoodle(CMID_RESPUESTAS_ENTREVISTAS, CAMPOS_RESPUESTAS_ENTREVISTAS, valores, 0)
           .then(function() { return { local: false }; });
       }
@@ -1138,7 +1143,8 @@
       function guardarRespuesta(accion, fecha, mensaje) {
         var ent = abierta;
         var r = {
-          rid: '', entrevista: ent.rid, por: miParte(), accion: accion, fecha: fecha, mensaje: mensaje || '',
+          rid: '', entrevista: ent.rid, nombreEstudiante: ent.nombreEstudiante || '', nombreAcompanante: ent.nombreAcompanante || '',
+          por: miParte(), accion: accion, fecha: fecha, mensaje: mensaje || '',
           creada: ahora(), autor: usuarioActual(), nombreAutor: nombreUsuarioActual()
         };
         var previas = {};

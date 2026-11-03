@@ -3,7 +3,7 @@
   "nombre": "RespuestasEntrevistas",
   "descripcion": "Respuestas a una entrevista de quien no es el autor de su entrada en Entrevistas: el estudiante que acepta o reprograma una entrevista que pidió un tutor o un asesor par, o el acompañante que responde una que pidió el estudiante. Solo se agregan entradas, cada una a nombre de quien responde. La Página Entrevistas y Tutorías las aplica a la entrevista al leerla.",
   "subseccion": "Database",
-  "origen": "Propuesta el 2026-11-03. En una base de datos de Moodle, cada usuario solo edita sus propias entradas (editar las de otros requiere mod/data:manageentries, que los estudiantes no tienen). En lugar de dar ese permiso, que dejaría a cualquier estudiante editar o borrar cualquier entrevista desde la base, quien no es el autor guarda su respuesta como una entrada propia. Creada en Moodle el 2026-11-03 (cmid 60299, d=208) con crear_base.js; campos 1398 a 1403; plantilla de lista con subir_plantillas.js.",
+  "origen": "Propuesta el 2026-11-03. En una base de datos de Moodle, cada usuario solo edita sus propias entradas (editar las de otros requiere mod/data:manageentries, que los estudiantes no tienen). En lugar de dar ese permiso, que dejaría a cualquier estudiante editar o borrar cualquier entrevista desde la base, quien no es el autor guarda su respuesta como una entrada propia. Creada en Moodle el 2026-11-03 (cmid 60299, d=208) con crear_base.js; campos 1398 a 1403; plantilla de lista con subir_plantillas.js. Campos nombre_estudiante y nombre_acompanante agregados al final (Moodle no reordena) para mostrar los participantes en la lista.",
   "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "No: la respuesta del estudiante la tiene que leer el navegador del acompañante, y un asesor par puede tener rol Estudiante (las entradas sin aprobar solo las ven su autor y los profesores).",
@@ -20,11 +20,61 @@
     "Al aplicarse, la propuesta nueva guarda el rid de la respuesta en 'respuesta' y la propuesta aceptada lo guarda en 'aceptada' (propuestas_json de Entrevistas). Cuando el autor vuelve a guardar la entrevista, la respuesta queda incorporada y no se aplica de nuevo."
   ],
   "campos": [
-    { "nombre": "rid_entrevista", "tipo": "text", "requerido": true, "descripcion": "rid de la entrada de Entrevistas a la que responde" },
-    { "nombre": "por", "tipo": "menu", "requerido": true, "descripcion": "Parte de la entrevista que responde", "opciones": ["estudiante", "acompanante"] },
-    { "nombre": "accion", "tipo": "menu", "requerido": true, "descripcion": "Aceptar la fecha vigente o proponer otra (reprogramar)", "opciones": ["aceptar", "proponer"] },
-    { "nombre": "fecha", "tipo": "text", "requerido": true, "descripcion": "Fecha y hora aceptada o propuesta (AAAA-MM-DDTHH:MM)" },
-    { "nombre": "mensaje", "tipo": "text", "requerido": false, "descripcion": "Mensaje para la otra parte (opcional)" },
-    { "nombre": "creada", "tipo": "text", "requerido": true, "descripcion": "Fecha y hora de la respuesta (AAAA-MM-DDTHH:MM)" }
+    {
+      "nombre": "rid_entrevista",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "rid de la entrada de Entrevistas a la que responde (la Página lo usa; la lista lo oculta)"
+    },
+    {
+      "nombre": "por",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Parte de la entrevista que responde",
+      "opciones": [
+        "estudiante",
+        "acompanante"
+      ]
+    },
+    {
+      "nombre": "accion",
+      "tipo": "menu",
+      "requerido": true,
+      "descripcion": "Aceptar la fecha vigente o proponer otra (reprogramar)",
+      "opciones": [
+        "aceptar",
+        "proponer"
+      ]
+    },
+    {
+      "nombre": "fecha",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora aceptada o propuesta (AAAA-MM-DDTHH:MM)"
+    },
+    {
+      "nombre": "mensaje",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Mensaje para la otra parte (opcional)"
+    },
+    {
+      "nombre": "creada",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora de la respuesta (AAAA-MM-DDTHH:MM)"
+    },
+    {
+      "nombre": "nombre_estudiante",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Copia del nombre del estudiante de la entrevista, para mostrar los participantes en la lista de la base"
+    },
+    {
+      "nombre": "nombre_acompanante",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Copia del nombre del acompañante (tutor o asesor par) de la entrevista, para mostrar los participantes en la lista de la base"
+    }
   ]
 }
