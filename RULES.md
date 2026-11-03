@@ -39,6 +39,7 @@ Estas reglas están por encima de todas las demás.
 | Subsección "Hub" → Página "Entrevistas y Tutorías" (cmid 60198) | [`section/entrevistas/content.html`](section/entrevistas/content.html) |
 | Subsección "Hub" → Página "Indicadores de Cohorte" (cmid 60283) | [`section/indicadores_cohorte/content.html`](section/indicadores_cohorte/content.html) |
 | Subsección "Tablero de Criticidad" (cmid 60286, sección 15796, oculta) → Página "Tablero de Criticidad" (cmid 60287, oculta) | [`section/tablero_estudiantes/content.html`](section/tablero_estudiantes/content.html) |
+| Subsección "Configuración" (cm 60293, sección 15797, oculta) → Página "Configuración del Sistema" (cmid 60294, oculta) | [`section/configuracion/content.html`](section/configuracion/content.html) ([ADR-009](docs/decisions/009-cierre-de-periodo-y-omision.md)) |
 | Subsección "Tablero de Criticidad" → Página "Detalle del estudiante" (cmid 60288, oculta) | [`section/detalle_estudiante/content.html`](section/detalle_estudiante/content.html) |
 | Subsección "Database" → Base de datos "Entrevistas" (cmid 60197, d=202) | [`data/moodle/BASE_ENTREVISTAS.json`](data/moodle/BASE_ENTREVISTAS.json) + [plantilla de lista](data/moodle/plantillas/entrevistas/) |
 | Subsección "Database" → Base de datos "Estudiantes" (cmid 60262, d=206) | [`data/moodle/BASE_ESTUDIANTES.json`](data/moodle/BASE_ESTUDIANTES.json) + [plantilla de lista](data/moodle/plantillas/estudiantes/). Con "Aprobación requerida" (nadie aprueba: cada estudiante ve y edita solo su entrada), máximo 1 entrada por estudiante y sin comentarios |

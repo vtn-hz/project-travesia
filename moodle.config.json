@@ -37,6 +37,10 @@
     "Tablero de Criticidad": {
       "id": 15796,
       "cmid": 60286
+    },
+    "Configuración": {
+      "id": 15797,
+      "cmid": 60293
     }
   },
   "paginas": {
@@ -53,7 +57,7 @@
     "informacion_personal": 60265,
     "utils_tools": 59941,
     "indicadores_cohorte": 60283,
-    "configuracion": null
+    "configuracion": 60294
   },
   "encuestas": {
     "inicial": {

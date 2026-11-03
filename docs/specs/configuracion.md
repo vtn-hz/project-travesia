@@ -8,7 +8,7 @@
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos)
 - **Decisión:** [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md)
 - **Pedido:** Valentino Hernández Pascual a Luca Zuanetti, fuera del Jira · rama `luca-configuracion`
-- **Estado:** desarrollada en local con datos de prueba (los 6 integrantes). **No publicada.**
+- **Estado:** **publicada el 2026-11-03** como Página oculta (cmid 60294) en la subsección oculta "Configuración" (cm 60293). La abre "Configurar" del Hub. El cierre ya escribe en las bases reales: usarlo solo cuando el equipo decida cerrar el período.
 - **Última actualización:** 2026-11-02
 
 ## Qué muestra
