@@ -437,8 +437,20 @@
         });
       }
 
+      // GRUPO ACTIVO EN "TODOS LOS PARTICIPANTES". Las bases están en modo "Grupos visibles": Moodle guarda en la sesión un
+      // grupo activo por curso (lo cambia cualquier página que se abra con &group=, como la lista de participantes) y no
+      // deja agregar entradas a quien no es miembro de ese grupo ("noaccess"). view.php con &group=0 lo vuelve a "Todos"
+      function grupoActivoATodos(cmid) {
+        return fetch(M.cfg.wwwroot + '/mod/data/view.php?id=' + cmid + '&group=0&perpage=1', { credentials: 'same-origin' })
+          .catch(function() { /* si falla, el guardado informa el error */ });
+      }
+
       // ENVIAR EL FORMULARIO DE UNA ENTRADA DE UNA BASE DE ZHAKYZ (rid 0 = NUEVA; SI NO, EDITA ESA ENTRADA)
       function enviarEntradaMoodle(cmid, campos, valores, rid) {
+        return grupoActivoATodos(cmid).then(function() { return enviarFormularioMoodle(cmid, campos, valores, rid); });
+      }
+
+      function enviarFormularioMoodle(cmid, campos, valores, rid) {
         var fd = new FormData();
         fd.append('id', cmid);
         fd.append('rid', rid || 0);
@@ -449,7 +461,13 @@
         });
         return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' })
           .then(function(r) {
-            if (!r.ok) throw new Error('Moodle respondió ' + r.status);
+            if (r.ok) return;
+            // Moodle no deja agregar ni editar: se muestra su mensaje, si lo hay
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var aviso = doc.querySelector('.errormessage, .alert-danger, .notifyproblem');
+              throw new Error('Moodle respondió ' + r.status + (aviso ? ' (' + aviso.textContent.replace(/\s+/g, ' ').trim() + ')' : ''));
+            });
           });
       }
 
@@ -1294,7 +1312,14 @@
       // el campo vuelve a ser de texto y el destinatario se busca por nombre entre los participantes
       function cargarDestinatarios() {
         var yo = String(usuarioActual());
-        Promise.all(GRUPOS_ACOMPANANTES.map(integrantesGrupo)).then(function(listas) {
+        // Los grupos se leen uno por vez y al final el grupo activo vuelve a "Todos": leer la lista con &group= lo cambia
+        // en la sesión, y con el grupo de tutores activo Moodle no deja que el estudiante guarde la solicitud
+        var listas = [];
+        var lectura = GRUPOS_ACOMPANANTES.reduce(function(p, g) {
+          return p.then(function() { return integrantesGrupo(g); }).then(function(l) { listas.push(l); });
+        }, Promise.resolve());
+        var restaurar = function() { return usandoPrueba ? null : grupoActivoATodos(CMID_ENTREVISTAS); };
+        lectura.then(restaurar, function(err) { return Promise.resolve(restaurar()).then(function() { throw err; }); }).then(function() {
           var select = document.getElementById('campo-destinatario-solicitud');
           if (!select) return;
           var total = 0;
