@@ -21,7 +21,7 @@
 
 ## Pendiente
 
-1. **Detección de roles por grupo** (local desde el 2026-11-02, sin publicar): `Zhakyz_Tutor` → TUT, `Zhakyz_AsesorPar` → PAR, `Zhakyz_Estudiante` → EST. Sin ninguno de esos grupos, el rol del curso: Profesor → ADM, Profesor sin permiso de edición → TUT, Estudiante → EST. Está en `GRUPOS_ROL`, `ROLES_CURSO` y `detectarRol()`. Al publicar, verificar en el campus qué método responde (el servicio `core_group_get_course_user_groups` o el perfil del usuario en el curso) y que el perfil muestre los roles.
+1. **Detección de roles por grupo** (publicada el 2026-11-03, falta probarla con cuentas de cada rol): `Zhakyz_Tutor` → TUT, `Zhakyz_AsesorPar` → PAR, `Zhakyz_Estudiante` → EST. Sin ninguno de esos grupos, el rol del curso: Profesor → ADM, Profesor sin permiso de edición → TUT, Estudiante → EST. Está en `GRUPOS_ROL`, `ROLES_CURSO` y `detectarRol()`. Al publicar, verificar en el campus qué método responde (el servicio `core_group_get_course_user_groups` o el perfil del usuario en el curso) y que el perfil muestre los roles.
 2. **Lado del estudiante** (pedir, aceptar o contraofertar): no entra en el modelo reducido. Desde SCRUM-24 (local) el estudiante llega desde Mi Trayectoria (`section/vista_estudiante`, tarjeta *Entrevistas y Tutorías*), y ahora se lo reconoce como EST por el grupo `Zhakyz_Estudiante`.
 
 ## Cómo verla en local

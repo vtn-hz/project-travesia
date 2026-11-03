@@ -118,6 +118,6 @@ Los DNI son marcadores (`prueba-<id>`), no documentos reales.
 
 ## Pendientes
 
-- Publicar en Moodle la detección del rol por grupo (ver *Detección del rol en Moodle*) y verificar en el campus qué método responde.
+- Probar en el campus la detección del rol (publicada el 2026-11-03) con una cuenta de cada grupo y de cada rol del curso, y ver qué método responde.
 - **Lado del estudiante (Req 11):** con permisos de `mod_data`, un estudiante solo edita sus propias entradas y no puede leer una base del equipo. Para que pida, acepte o contraoferte hace falta una tercera base donde solo agregue entradas, con "Requiere aprobación", o un mensaje de Moodle. Queda fuera del modelo reducido.
 - Enlazar "Solicitar entrevista" desde el tablero y el detalle (`#usuario=<id>`).
