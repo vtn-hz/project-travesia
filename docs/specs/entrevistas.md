@@ -104,6 +104,10 @@ Ids en [`moodle.config.json`](../../moodle.config.json): `bases.entrevistas` y `
 - **Todos los roles (ADM, TUT y PAR) ven todas las entrevistas**, con el nombre de quien la lleva, para que dos acompañantes no entrevisten al mismo estudiante.
 - El acompañante de una entrevista es el **usuario de la sesión que la pidió** (`M.cfg.userId` y el nombre del menú de usuario). "Participa como" (tutor o asesor par) sale del rol y se puede cambiar.
 - Solo ese acompañante o un ADM gestionan la entrevista (aceptar, contraofertar, registrar el resultado, cancelar).
+- **El destinatario se busca entre los participantes del curso y recibe un mensaje del campus** (local desde el 2026-11-03). Si pide un tutor o asesor par, se busca al estudiante: por la cuenta del campus si se indica y, si no, por nombre y apellido. Si pide el estudiante, se busca al tutor o asesor par por nombre. Si no hay un único participante con ese nombre (ninguno, varios, o una sola palabra escrita), aparece un error y la solicitud no se guarda.
+  - Los participantes se leen de `/user/index.php?id=1732&perpage=5000` (cuenta y nombre; se quitan las iniciales del avatar). La cuenta encontrada se guarda en la entrevista (`id_usuario_estudiante` o `id_usuario_acompanante`).
+  - Después de guardar, se envía el mensaje con el servicio `core_message_send_instant_messages` (habilitado en el campus): quién pide, la fecha propuesta, el motivo y el enlace a esta Página. Si el mensaje falla, la entrevista queda guardada y se avisa.
+  - En la vista previa local se busca entre los integrantes de Zhakyz y no se envía ningún mensaje.
 - **No se puede pedir una entrevista a un estudiante (por DNI) que ya tiene una activa** (por responder, esperando, programada o sin resultado). El aviso indica con quién la tiene.
 - "Ver detalle del estudiante" necesita `id_usuario_estudiante`. Si falta, avisa.
 

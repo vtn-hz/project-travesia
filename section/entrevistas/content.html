@@ -174,6 +174,8 @@
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
       var CMID_DETALLE = 60288; // @config paginas.detalle
+      // Esta misma Página: el mensaje de la solicitud enlaza acá para responderla
+      var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
 
       // usuario: con quién se simula cada rol en la vista previa local (en Moodle, el usuario de la sesión)
       // tipo: cómo queda el acompañante en las entrevistas que pide (ADM elige en el formulario)
@@ -941,7 +943,7 @@
           return '<div><label for="campo-destinatario-solicitud" style="' + ETIQUETA + '">Nombre del tutor o asesor par</label>' +
             '<input id="campo-destinatario-solicitud" type="text" list="lista-acompanantes-solicitud" autocomplete="off" style="height: 40px !important; ' + CAMPO + '">' +
             '<datalist id="lista-acompanantes-solicitud">' + sugerencias + '</datalist>' +
-            '<div style="' + ayuda + '">La solicitud queda a nombre de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
+            '<div style="' + ayuda + '">Se busca entre los participantes del curso y se le envía un mensaje del campus con la solicitud. La solicitud queda a nombre de ' + escapar(nombreUsuarioActual()) + ', el usuario de la sesión.</div></div>';
         }
         // Si se llega con #usuario=<id>, se completan los datos que ya figuran en otra entrevista de ese estudiante
         var previa = usuarioPreseleccionado ? entrevistas.filter(function(e) { return String(e.usuario) === String(usuarioPreseleccionado); })[0] : null;
@@ -953,7 +955,7 @@
             '<input id="campo-nombre-solicitud" type="text" value="' + escapar(previa ? previa.nombreEstudiante : '') + '" style="height: 40px !important; ' + CAMPO + '"></div></div>' +
             '<div><label for="campo-usuario-solicitud" style="' + ETIQUETA + '">Cuenta del campus del estudiante <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
             '<input id="campo-usuario-solicitud" type="text" inputmode="numeric" value="' + escapar(usuarioPreseleccionado || '') + '" style="height: 40px !important; ' + CAMPO + '">' +
-            '<div style="' + ayuda + '">Número de usuario de Moodle. Se usa para abrir el detalle del estudiante.</div></div>' +
+            '<div style="' + ayuda + '">Número de usuario de Moodle. Si se indica, el estudiante se busca por este número; si no, por nombre y apellido entre los participantes del curso. Se le envía un mensaje del campus con la solicitud.</div></div>' +
             '<div><label for="campo-tipo-solicitud" style="' + ETIQUETA + '">Participa como</label>' +
             '<select id="campo-tipo-solicitud" style="height: 40px !important; ' + CAMPO + '">' +
             Object.keys(TIPOS_ACOMPANANTE).map(function(k) { return '<option value="' + k + '"' + (k === tipoPropio ? ' selected' : '') + '>' + TIPOS_ACOMPANANTE[k] + '</option>'; }).join('') + '</select>' +
@@ -1008,40 +1010,176 @@
         };
       }
 
+      // ---------------------------------------------------------
+      // DESTINATARIO DE LA SOLICITUD: BÚSQUEDA EN LOS PARTICIPANTES DEL CURSO Y MENSAJE DE MOODLE
+      // ---------------------------------------------------------
+      // PARTICIPANTES DEL CURSO (CUENTA Y NOMBRE), LEÍDOS DE LA LISTA DE PARTICIPANTES. EN LOCAL, LOS INTEGRANTES DE ZHAKYZ
+      var participantesCurso = null;
+      function leerParticipantes() {
+        if (usandoPrueba) {
+          return Promise.resolve(Object.keys(NOMBRES_PRUEBA).map(function(id) { return { id: id, nombre: NOMBRES_PRUEBA[id] }; }));
+        }
+        if (!participantesCurso) {
+          participantesCurso = fetch(M.cfg.wwwroot + '/user/index.php?id=' + CURSO + '&perpage=5000', { credentials: 'same-origin' })
+            .then(function(r) {
+              if (!r.ok) throw new Error('Moodle respondió ' + r.status + ' al leer los participantes del curso');
+              return r.text();
+            })
+            .then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var vistos = {};
+              var lista = [];
+              Array.prototype.forEach.call(doc.querySelectorAll('a[href*="/user/view.php?id="][href*="course=' + CURSO + '"]'), function(a) {
+                var m = a.getAttribute('href').match(/[?&]id=(\d+)/);
+                // El link incluye las iniciales del avatar ("NS" en "NSNAHUEL SPIKERMAN"): se quitan antes de leer el nombre
+                var copia = a.cloneNode(true);
+                Array.prototype.forEach.call(copia.querySelectorAll('.userinitials, img'), function(x) { x.parentNode.removeChild(x); });
+                var nombre = copia.textContent.replace(/\s+/g, ' ').trim();
+                if (!m || !nombre || vistos[m[1]]) return;
+                vistos[m[1]] = true;
+                lista.push({ id: m[1], nombre: nombre });
+              });
+              if (!lista.length) throw new Error('No se pudo leer la lista de participantes del curso');
+              return lista;
+            });
+          participantesCurso.catch(function() { participantesCurso = null; });
+        }
+        return participantesCurso;
+      }
+
+      // BUSCAR UN PARTICIPANTE POR SU CUENTA (SI SE INDICA) O POR NOMBRE Y APELLIDO. SI NO HAY UNO SOLO, ERROR
+      function buscarParticipante(nombre, cuenta, quien) {
+        return leerParticipantes().then(function(lista) {
+          if (cuenta) {
+            var porCuenta = lista.filter(function(p) { return p.id === String(cuenta); })[0];
+            if (!porCuenta) throw new Error('Cuenta del campus: no hay ningún participante del curso con el número ' + cuenta + '.');
+            return porCuenta;
+          }
+          var buscado = normalizar(nombre);
+          var exactos = lista.filter(function(p) { return normalizar(p.nombre) === buscado; });
+          if (exactos.length === 1) return exactos[0];
+          // Sin coincidencia exacta: todas las palabras escritas deben figurar en el nombre ("Nahuel Spikerman"),
+          // y deben ser al menos dos (nombre y apellido), para no elegir a alguien solo por el nombre
+          var palabras = buscado.split(' ');
+          if (!exactos.length && palabras.length < 2) {
+            throw new Error('Escribir el nombre y el apellido del ' + quien + ' ("' + nombre + '" no alcanza para identificarlo).');
+          }
+          var parecidos = exactos.length ? exactos : lista.filter(function(p) {
+            var suyas = normalizar(p.nombre).split(' ');
+            return palabras.every(function(w) { return suyas.indexOf(w) !== -1; });
+          });
+          if (parecidos.length === 1) return parecidos[0];
+          if (!parecidos.length) {
+            throw new Error('No se encontró ningún participante del curso con el nombre "' + nombre + '". Verificar el nombre y apellido del ' + quien + '.');
+          }
+          throw new Error('El nombre "' + nombre + '" coincide con ' + parecidos.length + ' participantes del curso (' +
+            parecidos.slice(0, 5).map(function(p) { return p.nombre; }).join(', ') + '). Escribir el nombre completo' +
+            (quien === 'estudiante' ? ' o indicar la cuenta del campus.' : '.'));
+        });
+      }
+
+      // MENSAJE DE MOODLE (MENSAJERÍA DEL CAMPUS) A UN USUARIO. EN LOCAL NO SE ENVÍA
+      function enviarMensajeMoodle(idUsuario, texto) {
+        if (usandoPrueba) return Promise.resolve({ local: true });
+        var url = M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + encodeURIComponent(M.cfg.sesskey) + '&info=core_message_send_instant_messages';
+        var cuerpo = [{ index: 0, methodname: 'core_message_send_instant_messages',
+          args: { messages: [{ touserid: Number(idUsuario), text: texto, textformat: 2, clientmsgid: 'zk-entrevista-' + Date.now() }] } }];
+        return fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (!res || !res[0]) throw new Error('Moodle no respondió');
+            if (res[0].error) throw new Error(res[0].exception && res[0].exception.message || 'Moodle rechazó el mensaje');
+            var envio = res[0].data && res[0].data[0];
+            if (!envio || envio.msgid === -1 || envio.errormessage) throw new Error((envio && envio.errormessage) || 'Moodle rechazó el mensaje');
+            return { local: false };
+          });
+      }
+
+      // TEXTO DEL MENSAJE DE LA SOLICITUD
+      function textoMensajeSolicitud(ent) {
+        var deEstudiante = ent.origen === 'estudiante';
+        var quien = deEstudiante ? ent.nombreEstudiante + ' (estudiante)' : ent.nombreAcompanante + ' (' + TIPOS_ACOMPANANTE[ent.tipo].toLowerCase() + ')';
+        var enlace = CMID_PAGINA_ENTREVISTAS && window.M && M.cfg ? M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS : '';
+        return 'Solicitud de entrevista\n\n' +
+          quien + ' solicita una entrevista.\n' +
+          'Fecha propuesta: ' + fechaLarga(ent.propuestas[ent.propuestas.length - 1].fecha) + '\n' +
+          'Motivo: ' + ent.motivo + '\n\n' +
+          'La fecha se acepta o se cambia en Entrevistas y Tutorías' + (enlace ? ': ' + enlace : '.');
+      }
+
+      var enviandoSolicitud = false;
+
       function enviarSolicitud() {
+        if (enviandoSolicitud) return;
         var inv = involucradosSolicitud();
         if (inv.error) return mostrarError('txt-error-solicitud', inv.error);
         var fecha = document.getElementById('campo-fecha-solicitud').value;
         var motivo = document.getElementById('campo-motivo-solicitud').value.trim();
         if (!fecha || !motivo) return mostrarError('txt-error-solicitud', 'Completar la fecha propuesta y el motivo.');
         if (fecha <= ahora()) return mostrarError('txt-error-solicitud', 'La fecha debe ser posterior a hoy.');
-        // Un estudiante no puede tener dos entrevistas activas a la vez (con el mismo u otro acompañante)
-        var activa = entrevistaActivaDe({ dni: inv.dni, usuario: inv.usuario, nombre: inv.nombreEstudiante });
-        if (activa) {
-          return mostrarError('txt-error-solicitud', (rolActual === 'EST' ? 'Ya hay una entrevista en curso' : 'El estudiante ' + inv.nombreEstudiante + ' ya tiene una entrevista en curso') +
-            ' con ' + (activa.nombreAcompanante || 'Usuario ' + activa.acompanante) + ' (' +
-            ((rolActual === 'EST' && TEXTOS_ESTUDIANTE[situacion(activa)]) || ESTADOS[situacion(activa)].texto).toLowerCase() + '). ' +
-            (rolActual === 'EST' ? 'Su estado figura en la tabla.' : 'Se gestiona desde la Agenda.'));
+
+        var esEstudiante = rolActual === 'EST';
+        var btn = document.querySelector('#modal-solicitar-entrevista [data-accion="enviar-solicitud"]');
+        var textoBoton = btn ? btn.innerHTML : '';
+        enviandoSolicitud = true;
+        if (btn) btn.innerHTML = 'Buscando al ' + (esEstudiante ? 'destinatario' : 'estudiante') + '…';
+        function terminar() {
+          enviandoSolicitud = false;
+          if (btn) btn.innerHTML = textoBoton;
         }
-        contadorNuevas++;
-        var nueva = {
-          rid: 'nueva-' + contadorNuevas, nueva: true, dni: inv.dni, usuario: inv.usuario, nombreEstudiante: inv.nombreEstudiante,
-          tipo: inv.tipo, acompanante: inv.acompanante, nombreAcompanante: inv.nombreAcompanante,
-          origen: inv.origen, estado: 'solicitada', motivo: motivo,
-          solicitud: ahora(), programada: '', realizada: '', resultado: '',
-          propuestas: [{ por: inv.por, fecha: fecha, creada: ahora(), mensaje: '' }], acciones: []
-        };
-        guardarEntrevistaMoodle(nueva).then(function(res) {
-          cerrarSolicitud();
-          // En Moodle se vuelve a leer la base para tener el rid de la entrada nueva
-          if (!res.local) return iniciarDatos();
-          delete nueva.nueva;
-          entrevistas.push(nueva);
-          pestana = 'agenda';
-          filtroKpi = '';
-          renderizarTodo();
+
+        // El destinatario debe ser un participante del curso: el estudiante (si pide un tutor o asesor par)
+        // o el tutor o asesor par (si pide el estudiante). Si no se encuentra, la solicitud no se guarda.
+        var busqueda = esEstudiante
+          ? buscarParticipante(inv.nombreAcompanante, inv.acompanante, 'tutor o asesor par')
+          : buscarParticipante(inv.nombreEstudiante, inv.usuario, 'estudiante');
+        busqueda.then(function(p) {
+          if (esEstudiante) { inv.acompanante = p.id; inv.nombreAcompanante = p.nombre; }
+          else { inv.usuario = p.id; }
+          // Un estudiante no puede tener dos entrevistas activas a la vez (con el mismo u otro acompañante)
+          var activa = entrevistaActivaDe({ dni: inv.dni, usuario: inv.usuario, nombre: inv.nombreEstudiante });
+          if (activa) {
+            throw new Error((esEstudiante ? 'Ya hay una entrevista en curso' : 'El estudiante ' + inv.nombreEstudiante + ' ya tiene una entrevista en curso') +
+              ' con ' + (activa.nombreAcompanante || 'Usuario ' + activa.acompanante) + ' (' +
+              ((esEstudiante && TEXTOS_ESTUDIANTE[situacion(activa)]) || ESTADOS[situacion(activa)].texto).toLowerCase() + '). ' +
+              (esEstudiante ? 'Su estado figura en la tabla.' : 'Se gestiona desde la Agenda.'));
+          }
+          contadorNuevas++;
+          var nueva = {
+            rid: 'nueva-' + contadorNuevas, nueva: true, dni: inv.dni, usuario: inv.usuario, nombreEstudiante: inv.nombreEstudiante,
+            tipo: inv.tipo, acompanante: inv.acompanante, nombreAcompanante: inv.nombreAcompanante,
+            origen: inv.origen, estado: 'solicitada', motivo: motivo,
+            solicitud: ahora(), programada: '', realizada: '', resultado: '',
+            propuestas: [{ por: inv.por, fecha: fecha, creada: ahora(), mensaje: '' }], acciones: []
+          };
+          if (btn) btn.innerHTML = 'Guardando…';
+          return guardarEntrevistaMoodle(nueva).then(function(res) {
+            if (btn) btn.innerHTML = 'Enviando el mensaje…';
+            // La entrevista ya está guardada: si el mensaje falla, se avisa sin perderla
+            return enviarMensajeMoodle(p.id, textoMensajeSolicitud(nueva))
+              .then(function() { return null; }, function(err) { return err.message; })
+              .then(function(errorMensaje) {
+                terminar();
+                cerrarSolicitud();
+                var aviso = errorMensaje
+                  ? 'La solicitud se guardó, pero no se pudo enviar el mensaje a ' + p.nombre + ': ' + errorMensaje
+                  : null;
+                // En Moodle se vuelve a leer la base para tener el rid de la entrada nueva
+                var listo = res.local ? Promise.resolve().then(function() {
+                  delete nueva.nueva;
+                  entrevistas.push(nueva);
+                  pestana = 'agenda';
+                  filtroKpi = '';
+                  renderizarTodo();
+                }) : iniciarDatos();
+                return listo.then(function() { if (aviso) alert(aviso); });
+              });
+          }, function(err) {
+            throw new Error('No se pudo guardar: ' + err.message);
+          });
         }).catch(function(err) {
-          mostrarError('txt-error-solicitud', 'No se pudo guardar: ' + err.message);
+          terminar();
+          mostrarError('txt-error-solicitud', err.message);
         });
       }
 
