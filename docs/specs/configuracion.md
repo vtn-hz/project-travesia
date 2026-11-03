@@ -87,7 +87,7 @@ Abrir `section/configuracion/content.html` con Live Server (o cualquier servidor
 
 ## Pendientes
 
-- Publicar, cada paso con confirmación ([ADR-009 → publicación](../decisions/009-cierre-de-periodo-y-omision.md#publicación-y-pendientes)).
+- ~~Publicar~~ Publicado el 2026-11-03 ([ADR-009 → publicación](../decisions/009-cierre-de-periodo-y-omision.md#publicación-y-pendientes)). Falta el primer cierre real, que confirma la desaprobación de las omisiones.
 - Definir con el equipo y el calendario académico la fecha límite de 2026-2 (el inicio ya está: 2026-08-18) y el criterio para los plazos siguientes. Se carga desde *Definir la fecha límite*, sin tocar código.
 - Detectar el rol en Moodle: hasta entonces, la Página va oculta.
 - Más adelante, en la misma Página: umbrales del semáforo y pesos de los indicadores (la tarjeta del Hub ya no los promete).

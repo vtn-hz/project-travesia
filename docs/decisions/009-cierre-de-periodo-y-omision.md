@@ -1,6 +1,6 @@
 # ADR-009: Cierre de período y alerta por omisión
 
-- **Estado:** aceptada (2026-11-02). Mergeada en `main` el 2026-11-03. **Publicación en curso:** en Moodle están la base Períodos (cmid 60292, d=207), Tools v6, la Página Configuración del Sistema (cmid 60294, oculta) y el Hub; faltan las Páginas que leen el período
+- **Estado:** aceptada (2026-11-02). Mergeada en `main` el 2026-11-03. **Publicada el 2026-11-03:** la base Períodos (cmid 60292, d=207), Tools v6, la Página Configuración del Sistema (cmid 60294, oculta), el Hub y las Páginas que leen el período. Falta definir la fecha límite de 2026-2 y hacer el primer cierre real
 - **Fecha:** 2026-11-02
 - **Pedido:** Valentino Hernández Pascual a Luca Zuanetti, fuera del Jira: "un apartado en la configuración (un botón) que dispare un proceso que, a todos los que no respondieron la encuesta cuatrimestral, les genere una alerta ('no respondió encuesta'), que genera una entrada en la tabla de Criticidad. Además, a los que sí la respondieron, que les indique que tienen que volver a responderla porque finalizó el corte del cuatrimestre. Analizar si es viable el tiempo de días que se espera para empezar a esperar que se respondan las encuestas."
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos) y el requerimiento no funcional de minimizar la no respuesta
@@ -96,5 +96,5 @@ Pasos, cada uno simulado y con confirmación:
 1. **Hecho el 2026-11-03.** Crear la base Períodos con `crear_base.js` (cmid 60292, d=207), configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada: `2026-2`, con inicio el 2026-08-18 (el 17 fue feriado) y sin fecha límite, que se define más adelante. Primera entrada: rid 20287. En Moodle los campos quedaron no obligatorios.
 2. **Hecho el 2026-11-03:** publicar la Página Tools v6 (verificada en la vista previa de la Cuatrimestral). Probada con un envío real de la Cuatrimestral el 2026-11-03 (Luca, rol cambiado a Estudiante): Respuestas rid 20289 (versión 4, período 2026-2) y Criticidad rid 20290 (índice 50, índice total 30, período 2026-2).
 3. **Hecho el 2026-11-03:** crear la subsección oculta "Configuración" (sección 15797, cm 60293) con la Página "Configuración del Sistema" (cmid 60294, oculta), y republicar el Hub con la tarjeta. Verificado: la Página lee las bases reales y "Configurar" del Hub la abre.
-4. Republicar Mi Trayectoria, Información personal, el Tablero, el Detalle y el Hub.
+4. **Hecho el 2026-11-03:** republicar Mi Trayectoria (60264), Información personal (60265), el Tablero (60287) y el Detalle (60288); el Hub, en el paso 3. Verificado en el campus: leen 2026-2 de la base Períodos.
 5. Simular el cierre sobre las bases reales. El cierre real, solo con un pedido aparte.
