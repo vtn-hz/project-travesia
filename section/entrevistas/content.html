@@ -1137,16 +1137,8 @@
         });
       }
 
-      // ROL DEL USUARIO DE LA SESIÓN: PRIMERO EL ROL CAMBIADO ("CAMBIAR ROL A..."), DESPUÉS EL GRUPO (GRUPOS_ROL)
-      // Y DESPUÉS EL ROL DEL CURSO (ROLES_CURSO)
-      function detectarRol() {
-        if (ES_VISTA_LOCAL || !window.M || !M.cfg || !M.cfg.userId) return Promise.resolve(ROL_INICIAL);
-        return rolCambiado().then(function(cambiado) {
-          return cambiado || rolSinCambiar();
-        }).catch(function() { return ROL_SIN_DETECTAR; });
-      }
-
-      function rolSinCambiar() {
+      // ROL POR GRUPO (GRUPOS_ROL): EL DEL PRIMER GRUPO AL QUE PERTENECE, O null SI NO ESTÁ EN NINGUNO
+      function rolPorGrupo() {
         return gruposPorServicio()
           .catch(gruposPorPerfil)
           .catch(function() { return []; })
@@ -1155,8 +1147,18 @@
             for (var i = 0; i < GRUPOS_ROL.length; i++) {
               if (propios.indexOf(normalizar(GRUPOS_ROL[i].grupo)) !== -1) return GRUPOS_ROL[i].rol;
             }
-            return rolPorRolDelCurso().then(function(rol) { return rol || ROL_SIN_DETECTAR; });
-          })
+            return null;
+          });
+      }
+
+      // ROL DEL USUARIO DE LA SESIÓN, EN ESTE ORDEN:
+      // 1. el grupo (GRUPOS_ROL); 2. el rol cambiado con "Cambiar rol a..."; 3. el rol del curso (ROLES_CURSO)
+      function detectarRol() {
+        if (ES_VISTA_LOCAL || !window.M || !M.cfg || !M.cfg.userId) return Promise.resolve(ROL_INICIAL);
+        return rolPorGrupo()
+          .then(function(rol) { return rol || rolCambiado(); })
+          .then(function(rol) { return rol || rolPorRolDelCurso(); })
+          .then(function(rol) { return rol || ROL_SIN_DETECTAR; })
           .catch(function() { return ROL_SIN_DETECTAR; });
       }
 
