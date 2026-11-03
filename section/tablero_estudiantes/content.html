@@ -1,8 +1,9 @@
 <!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) · "VER DETALLE" ABRE detalle_estudiante -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- DATOS: bases Estudiantes (lista de estudiantes), Criticidad (calculado y asignado, ADR-007) y Respuestas (qué encuesta es cada envío). El calculado lo arma esta página: notas de parciales en 1.er año, última Encuesta Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
-  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
   <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
   <nolink>
 
@@ -10,7 +11,7 @@
   <div id="aviso-datos-ejemplo"
     style="display: none; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; border-radius: 10px !important; color: #0b0e14 !important;">
     <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
-    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios. Las bases de la sección Zhakyz todavía no están creadas; cuando existan, se configuran sus CMID al principio del script.</span>
+    <span id="txt-aviso-datos"><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios. Los estados que se asignan en la vista previa quedan en este navegador.</span>
   </div>
 
   <!-- ENCABEZADO -->
@@ -25,7 +26,7 @@
         Tablero de Criticidad</h3>
       <p
         style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
-        Cierre evaluado <b id="txt-cierre-evaluado" style="color: #0b0e14 !important; font-weight: 600 !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
+        Período <b id="txt-periodo-tablero" style="color: #0b0e14 !important; font-weight: 600 !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
     </div>
     <div id="badge-rol-tablero"
       style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
@@ -42,7 +43,7 @@
     style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; align-items: center !important; margin-bottom: 16px !important;">
     <div style="position: relative !important; flex: 1 1 220px !important;">
       <span data-icono="buscar" style="position: absolute !important; left: 10px !important; top: 10px !important; color: #47536b !important; pointer-events: none !important;"></span>
-      <input id="filtro-busqueda" type="search" placeholder="Buscar por nombre" aria-label="Buscar por nombre"
+      <input id="filtro-busqueda" type="search" placeholder="Buscar por nombre o DNI" aria-label="Buscar por nombre o DNI"
         style="width: 100% !important; height: 40px !important; padding: 8px 12px 8px 36px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
     </div>
     <select id="filtro-semaforo" aria-label="Estado vigente"
@@ -53,11 +54,11 @@
       <option value="verde">Sin riesgo</option>
       <option value="sin_datos">Sin calcular</option>
     </select>
-    <select id="filtro-etapa" aria-label="Etapa"
+    <select id="filtro-tramo" aria-label="Año de la carrera"
       style="height: 40px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
-      <option value="">Todas las etapas</option>
-      <option value="1">1.er año</option>
-      <option value="2">2.º año en adelante</option>
+      <option value="">1.er año y 2.º en adelante</option>
+      <option value="primero">1.er año</option>
+      <option value="superior">2.º año en adelante</option>
     </select>
     <select id="filtro-cohorte" aria-label="Cohorte"
       style="height: 40px !important; padding: 0 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #ffffff !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; margin: 0 !important;">
@@ -69,15 +70,15 @@
   </div>
 
   <!-- TABLA DE ESTUDIANTES -->
-  <div style="overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
-    <table id="tabla-estudiantes"
-      style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 600px !important; margin: 0 !important;">
+  <div style="position: relative !important; overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
+    <table id="tabla-estudiantes" tabindex="-1"
+      style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 720px !important; margin: 0 !important;">
       <thead>
         <tr style="background-color: #f5f6fa !important;">
           <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 16px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estudiante</th>
           <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Cohorte</th>
-          <th title="Lo genera el sistema según los criterios configurados" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado calculado</th>
-          <th title="Lo asigna un tutor o administrador y reemplaza al calculado" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado asignado</th>
+          <th title="Lo arma el sistema: notas de parciales en 1.er año, última Encuesta Cuatrimestral desde 2.º año" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Criticidad calculada</th>
+          <th title="Lo asigna un tutor o administrador y manda sobre el calculado" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado asignado</th>
           <th style="border: 0 !important; height: 52px !important; padding: 0 16px !important;"><span style="position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important;">Acciones</span></th>
         </tr>
       </thead>
@@ -96,6 +97,14 @@
     <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
   </div>
 
+  <!-- MODAL: ASIGNAR ESTADO (SE ARMA AL ABRIRLO) -->
+  <div id="modal-asignar-tablero" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-asignar"
+    style="display: none; position: fixed !important; inset: 0 !important; z-index: 10000 !important; background-color: rgba(5, 7, 10, 0.5) !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div id="caja-modal-asignar"
+      style="width: 100% !important; max-width: 480px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
+    </div>
+  </div>
+
   <!-- SCRIPT DE MANEJO DE EVENTOS -->
   <script>
     (function() {
@@ -110,35 +119,39 @@
           '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
           '#tablero-estudiantes [role="button"]:focus-visible, #tablero-estudiantes input:focus-visible, #tablero-estudiantes select:focus-visible, #tablero-estudiantes textarea:focus-visible, #tablero-estudiantes tr[tabindex]:focus-visible, #tablero-estudiantes [data-kpi]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
           '#cuerpo-tabla-estudiantes tr[data-usuario]:hover { background-color: rgba(218, 222, 231, 0.2); }' +
-          '#tablero-estudiantes [data-kpi]:hover { border-color: #c2c9d6 !important; }' +
-          '';
+          '#tablero-estudiantes [data-kpi]:hover, #tablero-estudiantes [data-opcion-nivel]:hover { border-color: #c2c9d6 !important; }' +
+          '#tablero-estudiantes [data-opcion-nivel]:focus-within { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
         document.head.appendChild(styleEl);
       }
 
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      var CIERRE_EVALUADO = '2026-2';
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      // Mismo período que la Página Tools (PERIODO_ACTUAL): el calculado sale de las entradas automáticas de este período
+      var PERIODO_ACTUAL = '2026-2';
+      // En Moodle el rol saldrá del grupo del usuario; por ahora arranca en ADM.
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
 
-      // Bases de la sección Zhakyz (null hasta que se creen). Solo se usan bases propias.
-      // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
-      var CMID_ESTUDIANTES = 60262; // @config bases.estudiantes.cmid · lectura: una entrada por estudiante
-      var CMID_ASIGNACIONES = 60191; // @config bases.criticidad.cmid · lectura: estados asignados (se asignan desde el detalle, Req 10)
+      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
+      var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
+      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
       var CMID_DETALLE = null; // @config paginas.detalle
 
-      // Estado calculado: solo criterios de los requerimientos (los modelos todavía no se aplican)
-      var UMBRALES = {
-        primerAnioRojo: 20, // Req 4: menos de 20 % de las materias esperadas
-        primerAnioVerde: 60 // Req 4: más de 60 %
-      };
-      // Materias esperadas de 1.er año al terminar cada cuatrimestre
-      var ESPERADAS_PRIMER_ANIO = { 1: 3, 2: 7 };
+      // Semáforo del índice de 0 a 100: los mismos cortes que las encuestas y la base Criticidad
+      var CORTES = { amarillo: 40, rojo: 70 };
+      // Campos de una entrada manual de Criticidad (los demás quedan vacíos). Se ubican por su etiqueta en el formulario de alta
+      var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
+      // Estados asignados en la vista previa (los comparte con el detalle)
+      var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
+      // Espera máxima (milisegundos) de la Página Tools y de cada base
+      var ESPERA_TOOLS = 20000;
+      var ESPERA_BASE = 60000;
 
       var ROLES = {
         ADM: { nombre: 'Administrador', puedeAsignar: true },
@@ -152,6 +165,16 @@
         amarillo: { orden: 2, texto: 'Riesgo medio', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
         sin_datos: { orden: 1, texto: 'Sin calcular', punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', color: '#566481' },
         verde: { orden: 0, texto: 'Sin riesgo', punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' }
+      };
+      var ASIGNABLES = ['rojo', 'amarillo', 'verde'];
+
+      // De dónde sale el calculado, según el tipo de la entrada
+      var TIPOS = {
+        notas: 'Notas de parciales',
+        cuatrimestral: 'Encuesta Cuatrimestral',
+        omision: 'Encuesta no respondida',
+        inicial: 'Encuesta Inicial',
+        encuesta: 'Encuesta'
       };
 
       // ---------------------------------------------------------
@@ -169,7 +192,8 @@
         chevron: '<path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/>',
         guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
         info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
-        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        editar: '<path d="m14.06 9.02.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>'
       };
 
       function icono(nombre, tamano) {
@@ -180,112 +204,331 @@
       }
 
       // ---------------------------------------------------------
-      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS ACADÉMICOS FICTICIOS)
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS ACADÉMICOS FICTICIOS, LOS MISMOS DEL DETALLE)
       // ---------------------------------------------------------
+      // Base Estudiantes: las mismas entradas de prueba que Mi Trayectoria. Santiago no cargó su información personal
       var ESTUDIANTES_PRUEBA = [
-        { usuario: '3770', nombre: 'Luca Zuanetti', cohorte: '2026-1', etapa: 1, cuatrimestreCursado: 2, aprobadasPrimerAnio: 6, notasCargadas: true, encuesta: null },
-        { usuario: '2806', nombre: 'Gian Luca Distefano', cohorte: '2026-2', etapa: 1, cuatrimestreCursado: 1, aprobadasPrimerAnio: 1, notasCargadas: true, encuesta: null },
-        { usuario: '3751', nombre: 'Santiago Nicolás Yanosky', cohorte: '2026-1', etapa: 1, cuatrimestreCursado: 2, aprobadasPrimerAnio: 1, notasCargadas: true, encuesta: null },
-        { usuario: '2048', nombre: 'Valentino Hernández Pascual', cohorte: '2026-2', etapa: 1, cuatrimestreCursado: 1, aprobadasPrimerAnio: 0, notasCargadas: false, encuesta: null },
-        { usuario: '3773', nombre: 'Nicolás Gabriel Zuviria', cohorte: '2024-1', etapa: 2, encuesta: '2026-1' },
-        { usuario: '3623', nombre: 'Nahuel Spikerman', cohorte: '2024-2', etapa: 2, encuesta: '2026-2' }
+        { rid: 91001, id_usuario: '3770', dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-03-20T10:10:00-03:00' },
+        { rid: 91002, id_usuario: '2806', dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gldistefano@ejemplo.com.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-04-02T19:35:00-03:00' },
+        { rid: 91003, id_usuario: '3773', dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2024', cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1', alta: '2024-03-15T09:00:00-03:00' },
+        { rid: 91004, id_usuario: '3623', dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2022', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2022-04-19T21:00:00-03:00' },
+        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '', alta: '2026-10-30T18:20:00-03:00' }
       ];
 
-      var ASIGNACIONES_PRUEBA = [
-        { usuario: '3773', nivel: 'rojo', motivo: 'Entrevista: está por dejar dos materias por el trabajo.', autor: 'Valentino Hernández Pascual', fecha: '08/10/2026' },
-        { usuario: '3623', nivel: 'verde', motivo: 'Entrevista: cursa al día y no reporta dificultades.', autor: 'Luca Zuanetti', fecha: '12/10/2026' }
+      // Base Respuestas: solo importa qué encuesta es cada envío
+      var RESPUESTAS_PRUEBA = [
+        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '' },
+        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1' },
+        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2' },
+        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1' },
+        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '' },
+        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2' },
+        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2' }
+      ];
+
+      // Base Criticidad: una entrada por evento (ADR-007)
+      function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha, motivo) {
+        return { rid: rid, id_usuario: id, dni: dni, periodo: periodo, origen: 'automatica', fuente: fuente, rid_fuente: ridFuente, indice: String(indice), semaforo: '', motivo: motivo || '', autor: '', created_at: fecha };
+      }
+      function manual(rid, id, dni, periodo, semaforo, motivo, autor, fecha) {
+        return { rid: rid, id_usuario: id, dni: dni, periodo: periodo, origen: 'manual', fuente: '', rid_fuente: '', indice: '', semaforo: semaforo, motivo: motivo, autor: autor, created_at: fecha };
+      }
+      var CRITICIDAD_PRUEBA = [
+        // Luca: 1.er año, mejora en el 2.º cuatrimestre
+        automatica(1001, '3770', '99000005', '2026-1', 'notas_1ro', '501', 67, '2026-05-08T18:20:00-03:00'),
+        automatica(1002, '3770', '99000005', '2026-1', 'notas_1ro', '502', 45, '2026-07-10T19:05:00-03:00'),
+        automatica(1003, '3770', '99000005', '2026-2', 'notas_1ro', '503', 38, '2026-09-20T17:40:00-03:00'),
+        automatica(1004, '3770', '99000005', '2026-2', 'notas_1ro', '504', 22, '2026-10-09T20:15:00-03:00'),
+        // Gian Luca: 1.er año, con un recálculo por un cambio de umbral
+        automatica(1011, '2806', '99000001', '2026-1', 'notas_1ro', '511', 74, '2026-06-02T12:00:00-03:00'),
+        automatica(1012, '2806', '99000001', '2026-2', 'notas_1ro', '512', 88, '2026-09-18T21:10:00-03:00'),
+        automatica(1013, '2806', '99000001', '2026-2', 'materias', '901', 64, '2026-10-09T10:00:00-03:00', 'Recálculo: cambió el umbral de Álgebra I- B'),
+        // Santiago: cargó notas sin información personal; un tutor asignó un estado y después lo quitó
+        automatica(1021, '3751', '99000004', '2026-2', 'notas_1ro', '521', 52, '2026-09-25T18:00:00-03:00'),
+        automatica(1022, '3751', '99000004', '2026-2', 'notas_1ro', '522', 81, '2026-10-12T19:30:00-03:00'),
+        manual(1023, '3751', '99000004', '2026-2', 'amarillo', 'Entrevista: rinde los recuperatorios en noviembre.', 'Luca Zuanetti', '2026-10-14T10:00:00-03:00'),
+        manual(1024, '3751', '99000004', '2026-2', 'sin_asignar', 'Vuelve el calculado: hay que esperar las notas de los recuperatorios.', 'Luca Zuanetti', '2026-10-20T09:30:00-03:00'),
+        // Nicolás: pasó a 2.º año en 2025-1; no respondió la Cuatrimestral 2026-2; tiene un estado asignado
+        automatica(1031, '3773', '99000006', '2024-1', 'notas_1ro', '531', 58, '2024-06-20T18:00:00-03:00'),
+        automatica(1032, '3773', '99000006', '2024-2', 'notas_1ro', '532', 47, '2024-11-15T18:00:00-03:00'),
+        automatica(1033, '3773', '99000006', '2024-1', 'respuestas', '5001', 100, '2024-04-02T11:00:00-03:00'),
+        automatica(1034, '3773', '99000006', '2025-1', 'respuestas', '5002', 35, '2025-04-15T10:20:00-03:00'),
+        automatica(1035, '3773', '99000006', '2025-2', 'respuestas', '5003', 45, '2025-09-10T15:00:00-03:00'),
+        automatica(1036, '3773', '99000006', '2026-1', 'respuestas', '5004', 40, '2026-04-10T14:30:00-03:00'),
+        manual(1037, '3773', '99000006', '2026-2', 'rojo', 'Entrevista: está por dejar dos materias por el trabajo.', 'Valentino Hernández Pascual', '2026-10-08T16:00:00-03:00'),
+        // Nahuel: 2.º año en adelante; una omisión en 2026-1; el tutor lo ve mejor que el calculado
+        automatica(1041, '3623', '99000003', '2022-1', 'respuestas', '5011', 0, '2022-04-20T16:40:00-03:00'),
+        automatica(1042, '3623', '99000003', '2025-2', 'respuestas', '5012', 30, '2025-09-05T11:00:00-03:00'),
+        automatica(1043, '3623', '99000003', '2026-1', 'omision', '', 60, '2026-07-31T23:59:00-03:00', 'No respondió la Encuesta Cuatrimestral 2026-1'),
+        automatica(1044, '3623', '99000003', '2026-2', 'respuestas', '5013', 47, '2026-09-02T11:48:00-03:00'),
+        manual(1045, '3623', '99000003', '2026-2', 'verde', 'Entrevista: cursa al día y no reporta dificultades.', 'Luca Zuanetti', '2026-10-12T11:00:00-03:00')
+        // Valentino: 2.º año en adelante, sin entradas
       ];
 
       // ---------------------------------------------------------
-      // ESTADO CALCULADO (AUTOGENERADO)
+      // UTILIDADES
       // ---------------------------------------------------------
-      function calcularEstado(est) {
-        if (est.etapa === 1) {
-          if (!est.notasCargadas) {
-            return { nivel: 'sin_datos', motivo: 'Todavía no hay notas de parciales cargadas.' };
-          }
-          var esperadas = ESPERADAS_PRIMER_ANIO[est.cuatrimestreCursado] || ESPERADAS_PRIMER_ANIO[2];
-          var pct = Math.round(est.aprobadasPrimerAnio / esperadas * 100);
-          var nivel = pct < UMBRALES.primerAnioRojo ? 'rojo' : pct > UMBRALES.primerAnioVerde ? 'verde' : 'amarillo';
-          return { nivel: nivel, motivo: 'Aprobó ' + est.aprobadasPrimerAnio + ' de ' + esperadas + ' materias esperadas (' + pct + ' %). Criterio de 1.er año del Req 4.' };
-        }
-        if (est.encuesta !== CIERRE_EVALUADO) {
-          return { nivel: 'amarillo', motivo: 'No respondió la encuesta del período ' + CIERRE_EVALUADO + ' (alerta por omisión, Req 2).' };
-        }
-        return { nivel: 'sin_datos', motivo: 'El criterio para 2.º año en adelante todavía no está definido.' };
-      }
+      function $(id) { return document.getElementById(id); }
 
-      // ---------------------------------------------------------
-      // ACCESO A DATOS
-      // ---------------------------------------------------------
-      // LEER UNA BASE DE ZHAKYZ: LA PLANTILLA DE LISTA EXPONE CADA CAMPO COMO data-* EN .zk-registro
-      function leerBaseMoodle(cmid) {
-        var url = M.cfg.wwwroot + '/mod/data/view.php?id=' + cmid + '&perpage=1000';
-        return fetch(url, { credentials: 'same-origin' })
-          .then(function(r) { return r.text(); })
-          .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            return Array.prototype.map.call(doc.querySelectorAll('.zk-registro'), function(el) {
-              return Object.assign({}, el.dataset);
-            });
-          });
-      }
-
-      // CONVERTIR UNA ENTRADA DE LA BASE AL FORMATO INTERNO
-      function normalizarEstudiante(r) {
-        return {
-          usuario: r.usuario, nombre: r.nombre, cohorte: r.cohorte,
-          etapa: parseInt(r.etapa, 10) || 1,
-          cuatrimestreCursado: parseInt(r.cuatrimestreCursado, 10) || 1,
-          aprobadasPrimerAnio: parseInt(r.aprobadasPrimerAnio, 10) || 0,
-          notasCargadas: r.notasCargadas === '1',
-          encuesta: r.encuesta || null
-        };
-      }
-
-      // CARGAR ESTUDIANTES Y ASIGNACIONES (BASES PROPIAS O DATOS DE PRUEBA)
-      function cargarDatos() {
-        if (ES_VISTA_LOCAL || !CMID_ESTUDIANTES || !CMID_ASIGNACIONES || !window.M) {
-          document.getElementById('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
-          return Promise.resolve({ estudiantes: ESTUDIANTES_PRUEBA, asignaciones: ASIGNACIONES_PRUEBA });
-        }
-        return Promise.all([leerBaseMoodle(CMID_ESTUDIANTES), leerBaseMoodle(CMID_ASIGNACIONES)])
-          .then(function(res) {
-            return { estudiantes: res[0].map(normalizarEstudiante), asignaciones: res[1] };
-          });
-      }
-
-      // ---------------------------------------------------------
-      // ESTADO EN MEMORIA
-      // ---------------------------------------------------------
-      var rolActual = ROL_INICIAL;
-      var filas = [];
-      var historiales = {}; // usuario -> asignaciones (la última manda; 'auto' la quita)
-
-      // ARMAR CADA FILA CON SUS DOS ESTADOS
-      function procesar(estudiantes, asignaciones) {
-        historiales = {};
-        asignaciones.forEach(function(a) {
-          (historiales[a.usuario] = historiales[a.usuario] || []).push(a);
-        });
-        filas = estudiantes.map(function(est) {
-          var historial = historiales[est.usuario] || [];
-          var ultima = historial[historial.length - 1];
-          var asignado = ultima && ultima.nivel !== 'auto' ? ultima : null;
-          var calculado = calcularEstado(est);
-          return { est: est, calculado: calculado, asignado: asignado, vigente: asignado ? asignado.nivel : calculado.nivel };
-        });
-      }
-
-      // ---------------------------------------------------------
-      // UTILIDADES DE PRESENTACIÓN
-      // ---------------------------------------------------------
       function escapar(s) {
         return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
           return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
         });
       }
 
+      function ahoraIso() {
+        var d = new Date(), off = -d.getTimezoneOffset(), s = off >= 0 ? '+' : '-', a = Math.abs(off);
+        var dos = function(n) { return String(n).padStart(2, '0'); };
+        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes()) + ':' + dos(d.getSeconds()) +
+          s + dos(Math.floor(a / 60)) + ':' + dos(a % 60);
+      }
+
+      function fechaVisible(iso) {
+        var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+      }
+
+      function leerAlmacen(clave, defecto) {
+        try { var v = window.localStorage.getItem(clave); return v ? JSON.parse(v) : defecto; } catch (e) { return defecto; }
+      }
+
+      // ESTADOS ASIGNADOS EN LA VISTA PREVIA: SOLO UNA LISTA DE ENTRADAS CON id_usuario (UN VALOR CORRUPTO NO ROMPE LA PANTALLA)
+      function asignadosPreview() {
+        var v = leerAlmacen(CLAVE_PREVIEW, []);
+        return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
+      }
+
+      function escribirAlmacen(clave, valor) {
+        try {
+          if (valor === null) window.localStorage.removeItem(clave);
+          else window.localStorage.setItem(clave, JSON.stringify(valor));
+        } catch (e) { /* sin almacenamiento: queda en memoria */ }
+      }
+
+      // ---------------------------------------------------------
+      // CRITICIDAD DE UN ESTUDIANTE (MISMA REGLA QUE section/detalle_estudiante)
+      // ---------------------------------------------------------
+      function numero(v) {
+        if (v === null || v === undefined || String(v).trim() === '') return null;
+        var n = Number(String(v).replace(',', '.'));
+        return isFinite(n) ? n : null;
+      }
+
+      function nivelDeIndice(indice) {
+        if (indice === null) return 'sin_datos';
+        return indice >= CORTES.rojo ? 'rojo' : indice >= CORTES.amarillo ? 'amarillo' : 'verde';
+      }
+
+      function tiempoDe(c) {
+        var t = Date.parse(c.created_at);
+        if (isFinite(t)) return t;
+        var a = Number(c.alta);
+        return isFinite(a) ? a * 1000 : 0;
+      }
+
+      function masReciente(lista) {
+        return lista.slice().sort(function(a, b) { return tiempoDe(a) - tiempoDe(b) || (Number(a.rid) || 0) - (Number(b.rid) || 0); }).pop() || null;
+      }
+
+      // TIPO DE UNA ENTRADA AUTOMÁTICA: notas, cuatrimestral, inicial, omision o encuesta (respuesta que no está en Respuestas)
+      function tipoDeEntrada(c, encuestas) {
+        if (c.fuente === 'notas_1ro' || c.fuente === 'materias') return 'notas';
+        if (c.fuente === 'omision') return 'omision';
+        if (c.fuente === 'respuestas') return encuestas[String(c.rid_fuente)] || 'encuesta';
+        return null;
+      }
+
+      // CALCULADO: 1.er año → última entrada de notas del período; 2.º en adelante → última Cuatrimestral (u omisión) del período.
+      // ASIGNADO: la última entrada manual de cualquier período, salvo que sea sin_asignar
+      function criticidadDe(tramo, entradas, encuestas) {
+        var candidatas = entradas.filter(function(c) {
+          if (c.origen !== 'automatica' || String(c.periodo) !== PERIODO_ACTUAL || numero(c.indice) === null) return false;
+          var tipo = tipoDeEntrada(c, encuestas);
+          return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+        });
+        var ultima = masReciente(candidatas);
+        var calculado;
+        if (ultima) {
+          var indice = numero(ultima.indice);
+          calculado = { nivel: nivelDeIndice(indice), indice: indice, tipo: tipoDeEntrada(ultima, encuestas), fecha: ultima.created_at, entrada: ultima,
+            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
+        } else {
+          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null,
+            motivo: tramo === 'primero' ? 'Sin notas de parciales en ' + PERIODO_ACTUAL + '.' : 'Sin Encuesta Cuatrimestral en ' + PERIODO_ACTUAL + '.' };
+        }
+        var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
+        var asignado = ultimaManual && ASIGNABLES.indexOf(ultimaManual.semaforo) !== -1 ? ultimaManual : null;
+        return { calculado: calculado, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ESPERA UNA PROMESA COMO MUCHO "ms": UNA BASE QUE NO RESPONDE NO DEJA LA PÁGINA CARGANDO PARA SIEMPRE
+      function conLimite(promesa, ms, que) {
+        return Promise.race([promesa, new Promise(function(r, rechazar) {
+          setTimeout(function() { rechazar(new Error(que + ' tardó más de ' + (ms / 1000) + ' segundos.')); }, ms);
+        })]);
+      }
+
+      // ENTRADAS DE UNA BASE (opciones de LeerBase), CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA.
+      // Si LeerBase llegó a su tope, la lista queda marcada como incompleta
+      function leerBase(Tools, nombre, opciones) {
+        return conLimite(Tools.LeerBase(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+          var lista = r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+            c.rid = e.rid ? Number(e.rid) : null;
+            c.alta = e.alta || '';
+            return c;
+          });
+          if (r.completa === false) incompletas.push(nombre);
+          return lista;
+        });
+      }
+
+      // De Criticidad, el tablero solo usa el período actual (calculado) y las entradas manuales (asignado)
+      function entradaUtilCriticidad(e) {
+        var c = e.campos || {};
+        return String(c.periodo || '').trim() === PERIODO_ACTUAL || String(c.origen || '').trim() === 'manual';
+      }
+
+      // AGREGAR UNA ENTRADA (rid=0). Los campos se ubican por su etiqueta en el formulario de alta, como en la Página Tools
+      function agregarEntradaMoodle(dataid, campos, registro) {
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + dataid, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de alta de la base (d=' + dataid + ').');
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
+            });
+            var fd = new FormData(form);
+            fd.set('d', String(dataid));
+            fd.set('rid', '0');
+            campos.forEach(function(k) {
+              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base (d=' + dataid + ').');
+              var v = registro[k];
+              fd.set(porCampo[k], v === null || v === undefined ? '' : String(v));
+            });
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
+            // Sin redirección a la entrada nueva: Moodle volvió a mostrar el formulario con sus errores (igual que en la Página Tools)
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la entrada nueva.');
+            });
+          });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE DATOS (BASES PROPIAS O DATOS DE PRUEBA)
+      // ---------------------------------------------------------
+      var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_CRITICIDAD || !DATAID_RESPUESTAS;
+
+      function cargarDatos() {
+        if (usaPrueba) {
+          $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
+          if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
+          return Promise.resolve({
+            estudiantes: ESTUDIANTES_PRUEBA,
+            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview()),
+            respuestas: RESPUESTAS_PRUEBA
+          });
+        }
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          return Promise.all([
+            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad }),
+            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS })
+          ]);
+        }).then(function(r) {
+          return { estudiantes: r[0], criticidad: r[1], respuestas: r[2] };
+        });
+      }
+
+      // ---------------------------------------------------------
+      // ESTADO EN MEMORIA
+      // ---------------------------------------------------------
+      var rolActual = ROL_INICIAL;
+      var datos = null;
+      var filas = [];
+      var filtroKpi = '';
+      var incompletas = []; // bases que LeerBase no leyó enteras
+      var modal = null; // { fila, disparador, guardando }
+      var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
+      var ignorarFilasHasta = 0; // después de guardar, el segundo clic de un doble clic no abre la fila de abajo
+
+      // UNA FILA POR ESTUDIANTE: LOS DE LA BASE ESTUDIANTES Y LOS QUE SOLO TIENEN ENTRADAS DE CRITICIDAD
+      function procesar() {
+        var encuestas = {};
+        datos.respuestas.forEach(function(r) { encuestas[String(r.rid)] = r.codigo_encuesta; });
+        var porUsuario = {};
+        datos.criticidad.forEach(function(c) { (porUsuario[String(c.id_usuario)] = porUsuario[String(c.id_usuario)] || []).push(c); });
+        // Si un estudiante tiene varias entradas en Estudiantes, vale la más nueva
+        var estudiantes = {};
+        datos.estudiantes.forEach(function(e) {
+          var id = String(e.id_usuario);
+          if (!estudiantes[id] || (Number(e.rid) || 0) > (Number(estudiantes[id].rid) || 0)) estudiantes[id] = e;
+        });
+        var ids = Object.keys(estudiantes);
+        Object.keys(porUsuario).forEach(function(id) { if (!estudiantes[id]) ids.push(id); });
+        filas = ids.map(function(id) {
+          var e = estudiantes[id] || null;
+          var entradas = porUsuario[id] || [];
+          var tieneNotas = entradas.some(function(c) { return tipoDeEntrada(c, encuestas) === 'notas'; });
+          // Sin información personal no se sabe el tramo: con notas cargadas se toma 1.er año
+          var tramo = e ? (e.es_primer_anio === 'si' ? 'primero' : 'superior') : (tieneNotas ? 'primero' : 'superior');
+          var dni = e ? e.dni : (entradas[0] && entradas[0].dni) || '';
+          var nombre = e ? (String(e.nombre || '') + ' ' + String(e.apellido || '')).trim() : '';
+          var crit = criticidadDe(tramo, entradas, encuestas);
+          return {
+            id: id, dni: dni, nombre: nombre || 'DNI ' + dni, conInfo: !!e, tramo: tramo,
+            cohorte: e && e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '',
+            calculado: crit.calculado, asignado: crit.asignado, vigente: crit.vigente
+          };
+        });
+      }
+
+      // ---------------------------------------------------------
+      // UTILIDADES DE PRESENTACIÓN
+      // ---------------------------------------------------------
       // CHIP DE UN NIVEL: PUNTO DE COLOR + TEXTO
       function chipNivel(nivel) {
         var n = NIVELES[nivel];
@@ -294,33 +537,42 @@
           '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + n.punto + ' !important;"></span>' + n.texto + '</span>';
       }
 
-      // CHIP DE ROL (NEUTRO)
-      function chipRol(rol) {
-        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' +
-          rol + '</span>';
+      // CHIP NEUTRO (ROL Y ETIQUETAS)
+      function chipNeutro(texto) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important; white-space: nowrap !important;">' +
+          escapar(texto) + '</span>';
+      }
+
+      function textoTramo(f) {
+        return (f.tramo === 'primero' ? '1.er año' : '2.º año en adelante') + (f.conInfo ? '' : ' · sin información personal');
       }
 
       // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
-      var filtroKpi = '';
+      // TEXTO PARA BUSCAR: SIN TILDES NI MAYÚSCULAS ("nicolas" encuentra a Nicolás)
+      function normalizar(texto) {
+        return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      }
 
-      // FILAS QUE CUMPLEN LOS FILTROS, ORDENADAS POR ESTADO VIGENTE
+      // FILAS QUE CUMPLEN LOS FILTROS, ORDENADAS POR ESTADO VIGENTE.
+      // La búsqueda se parte en palabras y cada una tiene que aparecer en el nombre o el DNI ("zuanetti luca" encuentra a Luca Zuanetti)
       function filasFiltradas() {
-        var q = document.getElementById('filtro-busqueda').value.trim().toLowerCase();
-        var sem = document.getElementById('filtro-semaforo').value;
-        var etapa = document.getElementById('filtro-etapa').value;
-        var cohorte = document.getElementById('filtro-cohorte').value;
+        var palabras = normalizar($('filtro-busqueda').value).split(/\s+/).filter(Boolean);
+        var sem = $('filtro-semaforo').value;
+        var tramo = $('filtro-tramo').value;
+        var cohorte = $('filtro-cohorte').value;
         return filas.filter(function(f) {
-          if (q && f.est.nombre.toLowerCase().indexOf(q) === -1) return false;
+          var donde = normalizar(f.nombre) + ' ' + f.dni;
+          if (palabras.some(function(p) { return donde.indexOf(p) === -1; })) return false;
           if (sem && f.vigente !== sem) return false;
           if (filtroKpi === 'asignados' && !f.asignado) return false;
           else if (filtroKpi && filtroKpi !== 'asignados' && f.vigente !== filtroKpi) return false;
-          if (etapa && String(f.est.etapa) !== etapa) return false;
-          if (cohorte && f.est.cohorte !== cohorte) return false;
+          if (tramo && f.tramo !== tramo) return false;
+          if (cohorte && f.cohorte !== cohorte) return false;
           return true;
         }).sort(function(a, b) {
-          return NIVELES[b.vigente].orden - NIVELES[a.vigente].orden || a.est.nombre.localeCompare(b.est.nombre);
+          return NIVELES[b.vigente].orden - NIVELES[a.vigente].orden || a.nombre.localeCompare(b.nombre);
         });
       }
 
@@ -332,10 +584,10 @@
           { id: 'rojo', titulo: 'Riesgo alto', valor: cuenta('rojo'), pie: 'estado vigente', nivel: 'rojo' },
           { id: 'amarillo', titulo: 'Riesgo medio', valor: cuenta('amarillo'), pie: 'estado vigente', nivel: 'amarillo' },
           { id: 'verde', titulo: 'Sin riesgo', valor: cuenta('verde'), pie: 'estado vigente', nivel: 'verde' },
-          { id: 'sin_datos', titulo: 'Sin calcular', valor: cuenta('sin_datos'), pie: 'faltan datos o criterio', nivel: 'sin_datos' },
+          { id: 'sin_datos', titulo: 'Sin calcular', valor: cuenta('sin_datos'), pie: 'sin datos del período', nivel: 'sin_datos' },
           { id: 'asignados', titulo: 'Con estado asignado', valor: filas.filter(function(f) { return f.asignado; }).length, pie: 'por un tutor', icono: 'asignado' }
         ];
-        document.getElementById('grilla-kpi-tablero').innerHTML = kpis.map(function(k) {
+        $('grilla-kpi-tablero').innerHTML = kpis.map(function(k) {
           var activo = filtroKpi === k.id && k.id !== '';
           var marca = k.nivel
             ? '<span style="width: 10px !important; height: 10px !important; border-radius: 50% !important; background-color: ' + NIVELES[k.nivel].punto + ' !important;"></span>'
@@ -349,38 +601,155 @@
         }).join('');
       }
 
+      // CELDA DEL CALCULADO: CHIP, ÍNDICE Y DE DÓNDE SALE
+      function celdaCalculado(f) {
+        var c = f.calculado;
+        var detalle = c.indice !== null
+          ? '<b style="font-weight: 600 !important; color: #0b0e14 !important; font-variant-numeric: tabular-nums !important;">' + c.indice + '</b> / 100 · ' + escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha)
+          : escapar(c.motivo);
+        return chipNivel(c.nivel) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + detalle + '</div>';
+      }
+
+      function botonAsignar(f) {
+        if (!ROLES[rolActual].puedeAsignar) return '';
+        return '<div data-asignar="' + escapar(f.id) + '" role="button" tabindex="0" aria-label="Asignar estado a ' + escapar(f.nombre) + '" style="height: 32px !important; padding: 0 10px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 13px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; cursor: pointer !important; white-space: nowrap !important; box-sizing: border-box !important;">' +
+          icono('editar', 16) + 'Asignar estado</div>';
+      }
+
       // TABLA
       function renderizarTabla() {
         var lista = filasFiltradas();
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; height: 52px !important; padding: 8px !important; vertical-align: middle !important;';
-        document.getElementById('cuerpo-tabla-estudiantes').innerHTML = lista.length ? lista.map(function(f) {
+        $('cuerpo-tabla-estudiantes').innerHTML = lista.length ? lista.map(function(f) {
           var asignado = f.asignado
-            ? chipNivel(f.asignado.nivel) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + escapar(f.asignado.autor) + '</div>'
+            ? chipNivel(f.asignado.semaforo) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + escapar(f.asignado.autor || 'Sin autor') + ' · ' + fechaVisible(f.asignado.created_at) + '</div>'
             : '<span style="color: #94a0b8 !important;">—</span>';
-          var calculadoEstilo = f.asignado ? 'opacity: 0.5 !important;' : '';
-          return '<tr data-usuario="' + escapar(f.est.usuario) + '" tabindex="0" style="cursor: pointer !important; animation: zk-aparecer 0.2s ease both;">' +
-            '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(f.est.nombre) + '</div>' +
-            '<div style="font-size: 12px !important; color: #47536b !important;">' + (f.est.etapa === 1 ? '1.er año' : '2.º año en adelante') + '</div></td>' +
-            '<td style="' + td + ' color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + escapar(f.est.cohorte) + '</td>' +
-            '<td style="' + td + calculadoEstilo + '">' + chipNivel(f.calculado.nivel) + '</td>' +
+          return '<tr data-usuario="' + escapar(f.id) + '" tabindex="0" aria-label="Ver el detalle de ' + escapar(f.nombre) + '" style="cursor: pointer !important; animation: zk-aparecer 0.2s ease both;">' +
+            '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(f.nombre) + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(textoTramo(f)) + '</div></td>' +
+            '<td style="' + td + ' color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (f.cohorte ? escapar(f.cohorte) : '—') + '</td>' +
+            '<td style="' + td + (f.asignado ? ' opacity: 0.6 !important;' : '') + '">' + celdaCalculado(f) + '</td>' +
             '<td style="' + td + '">' + asignado + '</td>' +
-            '<td style="' + td + ' text-align: right !important; padding-right: 16px !important;"><span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #026bd4 !important; font-weight: 500 !important; white-space: nowrap !important;">Ver detalle' + icono('chevron', 18) + '</span></td></tr>';
+            '<td style="' + td + ' text-align: right !important; padding-right: 16px !important;"><div style="display: inline-flex !important; align-items: center !important; gap: 12px !important;">' + botonAsignar(f) +
+            '<span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #026bd4 !important; font-weight: 500 !important; white-space: nowrap !important;">Ver detalle' + icono('chevron', 18) + '</span></div></td></tr>';
         }).join('') : '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes con esos filtros.</td></tr>';
-        document.getElementById('txt-total-filtrados').textContent =
+        $('txt-total-filtrados').textContent =
           'Mostrando ' + lista.length + ' de ' + filas.length + ' estudiantes. Si hay estado asignado, es el que manda; el calculado queda atenuado.';
       }
 
       // OPCIONES DEL FILTRO DE COHORTE
       function renderizarCohortes() {
-        var cohortes = filas.map(function(f) { return f.est.cohorte; })
-          .filter(function(c, i, a) { return a.indexOf(c) === i; }).sort().reverse();
-        document.getElementById('filtro-cohorte').innerHTML = '<option value="">Todas las cohortes</option>' +
-          cohortes.map(function(c) { return '<option value="' + c + '">Cohorte ' + c + '</option>'; }).join('');
+        var actual = $('filtro-cohorte').value;
+        var cohortes = filas.map(function(f) { return f.cohorte; })
+          .filter(function(c, i, a) { return c && a.indexOf(c) === i; }).sort().reverse();
+        $('filtro-cohorte').innerHTML = '<option value="">Todas las cohortes</option>' +
+          cohortes.map(function(c) { return '<option value="' + escapar(c) + '">Cohorte ' + escapar(c) + '</option>'; }).join('');
+        $('filtro-cohorte').value = cohortes.indexOf(actual) !== -1 ? actual : '';
       }
 
       function renderizarTodo() {
         renderizarKpi();
         renderizarTabla();
+      }
+
+      // ---------------------------------------------------------
+      // MODAL: ASIGNAR ESTADO (REQ 10)
+      // ---------------------------------------------------------
+      function abrirModal(id, disparador) {
+        var f = filas.filter(function(x) { return x.id === id; })[0];
+        if (!f || !ROLES[rolActual].puedeAsignar) return;
+        modal = { fila: f, disparador: disparador };
+        var opciones = ASIGNABLES.map(function(n) { return { valor: n, html: chipNivel(n) }; });
+        if (f.asignado) opciones.push({ valor: 'sin_asignar', html: '<span style="font-size: 13px !important; font-weight: 500 !important;">Quitar el estado asignado</span><span style="font-size: 12px !important; color: #47536b !important;">vuelve a mandar el calculado</span>' });
+        var campo = 'padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
+        $('caja-modal-asignar').innerHTML =
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
+          '<h5 id="titulo-modal-asignar" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Asignar estado</h5>' +
+          '<div id="btn-cerrar-modal-asignar" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div style="color: #47536b !important; margin-bottom: 16px !important;"><b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(f.nombre) + '</b> · ' + escapar(textoTramo(f)) + '</div>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px 16px !important; align-items: center !important; padding: 10px 12px !important; border-radius: 8px !important; background-color: #f5f6fa !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
+          '<span style="color: #47536b !important;">Calculado</span>' + chipNivel(f.calculado.nivel) +
+          '<span style="color: #47536b !important;">Asignado</span>' + (f.asignado ? chipNivel(f.asignado.semaforo) : '<span style="color: #94a0b8 !important;">—</span>') + '</div>' +
+          '<fieldset style="border: 0 !important; padding: 0 !important; margin: 0 0 12px 0 !important; min-width: 0 !important;">' +
+          '<legend style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin: 0 0 8px 0 !important; padding: 0 !important;">Estado</legend>' +
+          '<div style="display: flex !important; flex-direction: column !important; gap: 8px !important;">' +
+          opciones.map(function(o) {
+            return '<label data-opcion-nivel="' + o.valor + '" style="display: flex !important; align-items: center !important; gap: 10px !important; padding: 8px 12px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; cursor: pointer !important; margin: 0 !important; box-sizing: border-box !important;">' +
+              '<input type="radio" name="nivel-asignado" value="' + o.valor + '" style="margin: 0 !important; accent-color: #026bd4 !important; width: 16px !important; height: 16px !important;">' +
+              '<span style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 4px 8px !important;">' + o.html + '</span></label>';
+          }).join('') + '</div></fieldset>' +
+          '<label for="campo-motivo-asignado" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin: 0 0 6px 0 !important;">Motivo (obligatorio)</label>' +
+          '<textarea id="campo-motivo-asignado" rows="3" aria-required="true" aria-describedby="txt-error-asignacion" placeholder="Por ejemplo, el resultado de la entrevista" style="resize: vertical !important; ' + campo + '"></textarea>' +
+          '<div id="txt-error-asignacion" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 8px !important;"></div>' +
+          '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
+          '<div id="btn-cancelar-asignacion" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important; box-sizing: border-box !important;">Cancelar</div>' +
+          '<div id="btn-guardar-asignacion" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important;">' +
+          icono('guardar', 18) + '<span>Guardar</span></div></div>';
+        $('modal-asignar-tablero').style.setProperty('display', 'flex', 'important');
+        var primera = document.querySelector('#modal-asignar-tablero input[name="nivel-asignado"]');
+        if (primera) primera.focus();
+      }
+
+      // Mientras guarda no se cierra (la entrada se guardaría igual): solo lo cierra el guardado mismo
+      function cerrarModal(forzar) {
+        if (!modal || (modal.guardando && !forzar)) return;
+        $('modal-asignar-tablero').style.setProperty('display', 'none', 'important');
+        var disparador = modal.disparador;
+        modal = null;
+        if (disparador && document.body.contains(disparador)) disparador.focus();
+      }
+
+      function mostrarError(texto, enMotivo) {
+        var error = $('txt-error-asignacion');
+        error.textContent = texto;
+        error.style.setProperty('display', 'block', 'important');
+        if (enMotivo) $('campo-motivo-asignado').setAttribute('aria-invalid', 'true');
+      }
+
+      function ocultarError() {
+        var error = $('txt-error-asignacion');
+        if (!error) return;
+        error.style.setProperty('display', 'none', 'important');
+        $('campo-motivo-asignado').removeAttribute('aria-invalid');
+      }
+
+      function guardarAsignacion() {
+        if (!modal || modal.guardando) return;
+        var elegido = document.querySelector('#modal-asignar-tablero input[name="nivel-asignado"]:checked');
+        var motivo = $('campo-motivo-asignado').value.trim();
+        if (!elegido) return mostrarError('Falta elegir un estado.');
+        if (!motivo) return mostrarError('Falta el motivo: queda en el historial del estudiante.', true);
+        var m = modal;
+        var f = m.fila;
+        var entrada = {
+          id_usuario: f.id, dni: f.dni, periodo: PERIODO_ACTUAL, origen: 'manual', fuente: '', rid_fuente: '', indice: '',
+          semaforo: elegido.value, motivo: motivo, created_at: ahoraIso()
+        };
+        m.guardando = true;
+        var btn = $('btn-guardar-asignacion');
+        btn.lastChild.textContent = 'Guardando…';
+        var guardado = usaPrueba
+          ? Promise.resolve(Date.now())
+          : agregarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_MANUAL, entrada);
+        guardado.then(function(rid) {
+          entrada.rid = rid;
+          // Moodle muestra el autor real al volver a leer la base; hasta entonces, quien está mirando
+          entrada.autor = usaPrueba ? 'Vista previa (' + rolActual + ')' : 'Usuario actual';
+          datos.criticidad.push(entrada);
+          if (usaPrueba) escribirAlmacen(CLAVE_PREVIEW, asignadosPreview().concat([entrada]));
+          procesar();
+          renderizarTodo();
+          if (modal !== m) return;
+          // Si la fila salió de los filtros, el foco va a la tabla
+          m.disparador = document.querySelector('[data-asignar="' + f.id + '"]') || $('tabla-estudiantes');
+          cerrarModal(true);
+          ignorarFilasHasta = Date.now() + 500;
+        }).catch(function(err) {
+          if (modal !== m) return;
+          m.guardando = false;
+          btn.lastChild.textContent = 'Guardar';
+          mostrarError('No se pudo guardar: ' + err.message);
+        });
       }
 
       // ---------------------------------------------------------
@@ -396,22 +765,31 @@
       // ---------------------------------------------------------
       // EXPORTAR CSV
       // ---------------------------------------------------------
+      // Un valor que empieza con = + - @ (o tabulación) Excel lo toma como fórmula: se le antepone un apóstrofo.
+      // Nombre, apellido y motivos los cargan otras personas, así que no se exportan tal cual
+      function celdaCsv(v) {
+        var texto = String(v === null || v === undefined ? '' : v);
+        if (/^[=+\-@\t\r]/.test(texto)) texto = "'" + texto;
+        return '"' + texto.replace(/"/g, '""') + '"';
+      }
+
       function exportarCsv() {
-        var columnas = ['Estudiante', 'Cohorte', 'Etapa', 'Estado calculado', 'Motivo calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
+        var columnas = ['Estudiante', 'DNI', 'Año de la carrera', 'Cohorte', 'Estado calculado', 'Índice calculado', 'Origen del calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
         var lineas = filasFiltradas().map(function(f) {
-          return [f.est.nombre, f.est.cohorte, f.est.etapa === 1 ? '1.er año' : '2.º año en adelante',
-            NIVELES[f.calculado.nivel].texto, f.calculado.motivo,
-            f.asignado ? NIVELES[f.asignado.nivel].texto : '', f.asignado ? f.asignado.autor : '', f.asignado ? f.asignado.motivo : '',
+          return [f.nombre, f.dni, textoTramo(f), f.cohorte,
+            NIVELES[f.calculado.nivel].texto, f.calculado.indice === null ? '' : f.calculado.indice, f.calculado.motivo,
+            f.asignado ? NIVELES[f.asignado.semaforo].texto : '', f.asignado ? f.asignado.autor : '', f.asignado ? f.asignado.motivo : '',
             NIVELES[f.vigente].texto
-          ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';');
+          ].map(celdaCsv).join(';');
         });
-        var blob = new Blob(['﻿' + columnas.join(';') + '\n' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+        var blob = new Blob(['\ufeff' + columnas.join(';') + '\n' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
         var a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'tablero_estudiantes_' + CIERRE_EVALUADO + '.csv';
+        a.download = 'tablero_criticidad_' + PERIODO_ACTUAL + '.csv';
         document.body.appendChild(a);
         a.click();
         a.remove();
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
       }
 
       // ---------------------------------------------------------
@@ -419,15 +797,16 @@
       // ---------------------------------------------------------
       function aplicarRol(rol) {
         rolActual = rol;
-        document.getElementById('badge-rol-tablero').innerHTML =
+        $('badge-rol-tablero').innerHTML =
           '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
-          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipNeutro(rol);
         var botones = document.querySelectorAll('[data-preview-rol]');
         for (var i = 0; i < botones.length; i++) {
           var activo = botones[i].getAttribute('data-preview-rol') === rol;
           botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
           botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
         }
+        if (datos) renderizarTabla();
       }
 
       function crearBarraPreview() {
@@ -438,10 +817,18 @@
           icono('ver', 18) + 'Vista previa local · ver como</span>' +
           Object.keys(ROLES).map(function(rol) {
             return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
-          }).join('');
+          }).join('') +
+          '<button id="btn-restablecer-preview" style="margin-left: auto; cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Restablecer datos de prueba</button>';
         // La barra va debajo del aviso de datos de prueba
-        var aviso = document.getElementById('aviso-datos-ejemplo');
+        var aviso = $('aviso-datos-ejemplo');
         aviso.parentNode.insertBefore(barra, aviso.nextSibling);
+      }
+
+      function restablecerPreview() {
+        escribirAlmacen(CLAVE_PREVIEW, null);
+        datos.criticidad = CRITICIDAD_PRUEBA.slice();
+        procesar();
+        renderizarTodo();
       }
 
       // ---------------------------------------------------------
@@ -450,33 +837,67 @@
       function activarKpi(kpi) {
         var id = kpi.getAttribute('data-kpi');
         filtroKpi = filtroKpi === id ? '' : id;
-        document.getElementById('filtro-semaforo').value = '';
+        $('filtro-semaforo').value = '';
         renderizarTodo();
+        // La grilla se vuelve a armar: el foco vuelve a la misma tarjeta
+        var nueva = document.querySelector('[data-kpi="' + id + '"]');
+        if (nueva) nueva.focus();
       }
 
       document.addEventListener('click', function(e) {
         var t = e.target;
         if (!t.closest || !t.closest('#tablero-estudiantes')) return;
+        if (modal) {
+          var enFondo = t.id === 'modal-asignar-tablero' && pulsadoEn === t;
+          if (enFondo || t.closest('#btn-cerrar-modal-asignar') || t.closest('#btn-cancelar-asignacion')) return cerrarModal();
+          if (t.closest('#btn-guardar-asignacion')) return guardarAsignacion();
+          return;
+        }
         var btnRol = t.closest('[data-preview-rol]');
         if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        if (t.closest('#btn-restablecer-preview')) return restablecerPreview();
         var kpi = t.closest('[data-kpi]');
         if (kpi) return activarKpi(kpi);
         if (t.closest('#btn-exportar-csv')) return exportarCsv();
+        var asignar = t.closest('[data-asignar]');
+        if (asignar) return abrirModal(asignar.getAttribute('data-asignar'), asignar);
         var fila = t.closest('#cuerpo-tabla-estudiantes tr[data-usuario]');
-        if (fila) return abrirDetalle(fila.getAttribute('data-usuario'));
+        if (fila && Date.now() >= ignorarFilasHasta) return abrirDetalle(fila.getAttribute('data-usuario'));
       });
+
+      document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
 
       document.addEventListener('input', function(e) {
         if (e.target.id === 'filtro-busqueda') renderizarTabla();
+        if (e.target.id === 'campo-motivo-asignado') ocultarError();
       });
 
       document.addEventListener('change', function(e) {
         if (e.target.id === 'filtro-semaforo') { filtroKpi = ''; renderizarTodo(); }
-        if (e.target.id === 'filtro-etapa' || e.target.id === 'filtro-cohorte') renderizarTabla();
+        if (e.target.id === 'filtro-tramo' || e.target.id === 'filtro-cohorte') renderizarTabla();
+        if (e.target.name === 'nivel-asignado') {
+          ocultarError();
+          var opciones = document.querySelectorAll('#modal-asignar-tablero [data-opcion-nivel]');
+          for (var i = 0; i < opciones.length; i++) {
+            var activa = opciones[i].getAttribute('data-opcion-nivel') === e.target.value;
+            opciones[i].style.setProperty('border-color', activa ? '#026bd4' : 'rgba(194, 201, 214, 0.4)', 'important');
+            opciones[i].style.setProperty('background-color', activa ? '#e5f2ff' : 'transparent', 'important');
+          }
+        }
       });
 
       document.addEventListener('keydown', function(e) {
         var t = e.target;
+        if (modal && e.key === 'Escape') { e.preventDefault(); return cerrarModal(); }
+        // Tab dentro del modal: no sale de la caja (tampoco si el foco quedó afuera, por un clic en un texto)
+        if (modal && e.key === 'Tab') {
+          var foco = document.querySelectorAll('#caja-modal-asignar input, #caja-modal-asignar textarea, #caja-modal-asignar [role="button"]');
+          var primero = foco[0], ultimo = foco[foco.length - 1];
+          if (!$('caja-modal-asignar').contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? ultimo : primero).focus(); }
+          else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+          else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+          return;
+        }
         if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('#tablero-estudiantes') &&
           (t.getAttribute('role') === 'button' || t.matches('tr[data-usuario]'))) {
           e.preventDefault();
@@ -489,15 +910,23 @@
       // ---------------------------------------------------------
       var huecos = document.querySelectorAll('#tablero-estudiantes [data-icono]');
       for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
-      document.getElementById('txt-cierre-evaluado').textContent = CIERRE_EVALUADO;
+      $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
+      $('cuerpo-tabla-estudiantes').innerHTML =
+        '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
       cargarDatos().then(function(d) {
-        procesar(d.estudiantes, d.asignaciones);
+        datos = d;
+        procesar();
         renderizarCohortes();
         renderizarTodo();
+        if (incompletas.length) {
+          $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
+            ': la base tiene más entradas que las que lee la Página Tools, así que algunos estados pueden estar desactualizados.';
+          $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
+        }
       }).catch(function(e) {
-        document.getElementById('cuerpo-tabla-estudiantes').innerHTML =
+        $('cuerpo-tabla-estudiantes').innerHTML =
           '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
       });
     })();
