@@ -47,7 +47,8 @@
     "utils_widgets": 59932,
     "vista_estudiante": 60264,
     "informacion_personal": 60265,
-    "utils_tools": 59941
+    "utils_tools": 59941,
+    "indicadores_cohorte": null
   },
   "encuestas": {
     "inicial": {
