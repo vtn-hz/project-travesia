@@ -15,7 +15,8 @@
 | 3 | **"Volver a responder" sale del período.** Mi Trayectoria marca la Cuatrimestral como respondida si hay una entrada de Respuestas del período vigente. Con un período nuevo, todos los de 2.º año en adelante quedan en *Pendiente*, hayan respondido o no el anterior | `section/vista_estudiante` |
 | 4 | **Las encuestas de Moodle no necesitan cambios.** No tienen apertura ni cierre y permiten más de un envío (`multiple_submit = Sí`, revisado en el campus el 2026-11-02). Moodle guarda solo el último envío; la base Respuestas, todos | Ajustes de las encuestas 59710 y 59712 |
 | 5 | **Lo que escribe el equipo lo ven todos los estudiantes.** Moodle aprueba solas las entradas de quien puede aprobar, y una entrada aprobada la ve cualquiera que pueda abrir la base. El ADR-007 decía que el estudiante no ve las de `omision` y `materias`: no es así | Spec del tablero, pendientes de privacidad |
-| 6 | **Moodle no corre tareas propias.** Ningún script del sistema se ejecuta si nadie abre una página: no hay forma de "esperar N días" y disparar algo solo | [ADR-005](005-modelo-de-bases-moodle.md#quién-escribe-la-criticidad) |
+| 6 | **La copia en Respuestas puede faltar.** Moodle tiene una respuesta de la Cuatrimestral del 27/10 (Gian Luca) que no está en la base Respuestas: si la copia falla, queda pendiente en el navegador del estudiante hasta que vuelve a abrir la encuesta | `show_entries.php?id=59712`, revisado el 2026-11-02 |
+| 7 | **Moodle no corre tareas propias.** Ningún script del sistema se ejecuta si nadie abre una página: no hay forma de "esperar N días" y disparar algo solo | [ADR-005](005-modelo-de-bases-moodle.md#quién-escribe-la-criticidad) |
 
 ## Decisión
 
@@ -28,23 +29,24 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 | Alcance | Solo la **Encuesta Cuatrimestral** y solo los estudiantes de **2.º año en adelante con entrada en la base Estudiantes** (`es_primer_anio = no`). La Inicial es de una sola vez y en 1.er año la Cuatrimestral está deshabilitada |
 | Pasaron a 2.º año en el período | **No reciben omisión** en ese cierre (`periodo_paso_superior` = el período que se cierra): no tuvieron la Cuatrimestral habilitada durante todo el período |
 | Índice de la omisión | **70**, el piso del rojo: el tutor la ve como riesgo alto sin que pese más que la peor respuesta real |
-| Privacidad | Cada omisión **se desaprueba apenas se crea** (`view.php?d=…&disapprove=<rid>&sesskey=…`): así solo la ve el equipo |
+| Respondió solo en Moodle | **No recibe omisión.** Además de Respuestas, el cierre lee las respuestas de la Encuesta Cuatrimestral en Moodle (`show_entries.php`, todos los grupos): una respuesta desde el inicio del período cuenta como respondida y el estudiante figura "Sin omisión · solo en Moodle" (hallazgo 6). Moodle guarda solo la última respuesta de cada estudiante, con su fecha |
+| Privacidad | Cada omisión **se desaprueba apenas se crea** (`view.php?d=…&disapprove=<rid>&sesskey=…`): así solo la ve el equipo. Cuenta como desaprobada solo si Moodle muestra el aviso de éxito; si no, el resultado del cierre la lista para revisarla a mano |
 | Plazo en días | Una **fecha límite** por período (`fecha_limite_encuesta`): Mi Trayectoria la muestra y el cierre avisa, y pide marcar una casilla, si se hace antes. **Sin disparo automático** |
 | Volver a responder | Un **aviso en Mi Trayectoria**, no un mensaje de Moodle: "Finalizó el período 2026-2. Se debe responder la Encuesta Cuatrimestral del período 2027-1" |
 | Tablero y Detalle | Si un estudiante no tiene entradas en el período vigente, el calculado es el último del **período anterior**, marcado con su período. Sin esto, al cerrar, las omisiones (que son del período cerrado) dejarían de verse |
 
 ### Flujo del cierre
 
-1. La Página lee Períodos (vigente), Estudiantes, Respuestas (Cuatrimestral del período) y Criticidad (entradas del período).
-2. Arma el **plan**: por cada estudiante de 2.º año en adelante, *respondió*, *recibe omisión*, *ya tiene omisión* o *pasó a 2.º año en el período*; los de 1.er año quedan fuera. Es la simulación: se muestra al abrir la Página y no escribe nada.
-3. **Cerrar período** pide la fecha de inicio y la fecha límite del período nuevo, vuelve a leer las bases (por si alguien respondió mientras tanto) y, por cada estudiante sin respuesta ni omisión:
+1. La Página lee Períodos (vigente), Estudiantes, Respuestas (Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle.
+2. Arma el **plan**: por cada estudiante de 2.º año en adelante, *respondió*, *respondió solo en Moodle*, *recibe omisión*, *ya tiene omisión* o *pasó a 2.º año en el período*; los de 1.er año quedan fuera. Es la simulación: se muestra al abrir la Página y no escribe nada.
+3. **Cerrar período** pide la fecha de inicio y la fecha límite del período nuevo, vuelve a leer las bases (por si alguien respondió mientras tanto) y, por cada estudiante sin respuesta (en Respuestas ni en Moodle) ni omisión:
    - agrega a Criticidad `origen = automatica`, `fuente = omision`, `rid_fuente` vacío, `indice = 70`, `indice_total` (la misma regla del ADR-007, con las entradas automáticas del estudiante en el período), `semaforo` y `motivo = "No respondió la Encuesta Cuatrimestral <período>"`, con el período que se cierra;
    - la desaprueba.
 4. Recién con todas las omisiones guardadas agrega el período nuevo a Períodos. Si algo falla, se detiene sin cambiar el período: volver a cerrar retoma donde quedó, porque no se repite una omisión que ya existe.
 
 ### Plazo en días: viabilidad
 
-- **Disparo automático a los N días: no es viable.** Moodle no ejecuta código del sistema si nadie abre una página (hallazgo 6). Las alternativas (un script programado en la computadora de un integrante, o disparar el cierre cuando alguien del equipo abre el tablero) escriben en Moodle sin una persona que lo confirme, contra la regla 7 de [`RULES.md`](../../RULES.md).
+- **Disparo automático a los N días: no es viable.** Moodle no ejecuta código del sistema si nadie abre una página (hallazgo 7). Las alternativas (un script programado en la computadora de un integrante, o disparar el cierre cuando alguien del equipo abre el tablero) escriben en Moodle sin una persona que lo confirme, contra la regla 7 de [`RULES.md`](../../RULES.md).
 - **La fecha de cierre de la Encuesta de Moodle (`timeclose`): no conviene.** Al pasar la fecha, Moodle no deja responder, y habría que cambiar la configuración de la actividad en cada período.
 - **Fecha límite como dato: viable.** Se carga al abrir cada período, el estudiante la ve en Mi Trayectoria y el cierre avisa si se hace antes. El cierre lo hace una persona.
 - **Cuántos días:** no se fija en el sistema. Sale del calendario académico de la facultad (fin de las clases y mesas de examen) y lo define el equipo con el cliente al abrir cada período. La Página muestra el plazo resultante ("N días").
@@ -83,7 +85,8 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 - **El cierre corre en el navegador de quien lo aprieta:** escribe una entrada por estudiante, de a una (unos 2 segundos cada una). Con 300 estudiantes sin responder, unos 10 minutos con la pestaña abierta. La Página muestra el progreso y se puede retomar.
 - **Solo la protege que esté oculta.** Cualquier estudiante puede agregar entradas a Criticidad desde el formulario de la base: es el mismo problema que las asignaciones manuales (spec del tablero, pendientes). Se resuelve con la detección de roles.
 - **Quien no cargó la información personal no existe para el sistema** y no recibe la omisión.
-- **El envío de las encuestas lee una base más** (Períodos) antes de copiar. Si no la puede leer, usa el último período leído en ese navegador o `2026-2`.
+- **El envío de las encuestas lee una base más** (Períodos) antes de copiar, con una espera máxima de 4 segundos. Si no la puede leer a tiempo, usa el último período leído en ese navegador o, si nunca leyó uno, `2026-2`.
+- **Leer las respuestas de Moodle depende de su página de respuestas** (`show_entries.php`): si cambia el tema o el idioma del campus, la fecha puede dejar de leerse. Sin fecha, la respuesta cuenta igual (no se da una omisión por error).
 - **Las notas de 1.er año siguen tomando el período de su fecha** (enero a julio → 1, agosto a diciembre → 2) y `CriticidadNotas` solo cuenta las del período vigente. Si 2026-2 se cierra en diciembre, las notas que se carguen ese mes quedan en 2026-2 y no entran en el índice de 2027-1. Queda para cuando la base Períodos tenga las fechas de cada cuatrimestre.
 - **La URL de desaprobar** se verificó en el código de Moodle, no en el campus: hay que confirmarla en la primera ejecución real (la Página informa si una entrada no se pudo desaprobar).
 

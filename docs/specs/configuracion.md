@@ -38,6 +38,7 @@
 |---|---|---|
 | 1.er año | `es_primer_anio = si` | Fuera del cierre (solo cuenta en el resumen) |
 | Respondió | Hay una entrada de Respuestas con `codigo_encuesta = cuatrimestral` y el período | Sin cambios |
+| Respondió solo en Moodle | Moodle tiene su respuesta de la Cuatrimestral desde el inicio del período, pero la copia no llegó a Respuestas | Sin omisión ("solo en Moodle"): la copia se reintenta cuando el estudiante vuelve a abrir la encuesta |
 | Ya tiene omisión | Hay una entrada de Criticidad con `fuente = omision` y el período | Sin cambios: no se repite |
 | Pasó a 2.º año en el período | `periodo_paso_superior` = el período | Fuera del cierre |
 | Ninguna de las anteriores | — | **Recibe omisión** |
@@ -58,7 +59,7 @@ Solo figuran los estudiantes con entrada en la base Estudiantes (si hay varias, 
 | `motivo` | `No respondió la Encuesta Cuatrimestral <período>.` |
 | `created_at` | Fecha y hora del cierre |
 
-Después de crearla, `view.php?d=<Criticidad>&disapprove=<rid>&sesskey=…` la desaprueba: así solo la ve el equipo.
+Después de crearla, `view.php?d=<Criticidad>&disapprove=<rid>&sesskey=…` la desaprueba: así solo la ve el equipo. Cuenta como desaprobada solo si Moodle muestra el aviso de éxito; si no, el resultado del cierre la lista para revisarla en la base.
 
 ## El período en las demás vistas
 
@@ -74,13 +75,15 @@ Después de crearla, `view.php?d=<Criticidad>&disapprove=<rid>&sesskey=…` la d
 
 Abrir `section/configuracion/content.html` con Live Server (o cualquier servidor en `localhost`): con `file://` el navegador puede no compartir `localStorage` entre Páginas.
 
-- Datos de prueba: los del Tablero de Criticidad. En 2026-2, Nicolás y Valentino no respondieron (reciben omisión), Nahuel respondió y Luca, Gian Luca y Santiago son de 1.er año.
+- Datos de prueba: los del Tablero de Criticidad. En 2026-2, Valentino no respondió (recibe omisión), Nicolás respondió solo en Moodle (sin copia en Respuestas: no la recibe), Nahuel respondió y Luca, Gian Luca y Santiago son de 1.er año.
 - Lo que se cierra queda en `localStorage`: los períodos en `zk-preview-periodos` (los leen Tools, Mi Trayectoria, Información personal, el Tablero y el Detalle) y las omisiones en `zk-preview-criticidad-cierre` (las leen el Tablero y el Detalle).
-- *Simular un error en la 2.ª omisión* prueba que el cierre se detiene y se retoma. *Restablecer datos de prueba* (acá, en el Tablero o en Mi Trayectoria) vuelve a 2026-2.
+- *Simular un error en la 1.ª omisión* prueba que el cierre se detiene sin cambiar el período y que después se retoma. *Restablecer datos de prueba* (acá, en el Tablero o en Mi Trayectoria) vuelve a 2026-2.
 
-**Verificado (2026-11-02, navegador integrado, `localhost`):** la simulación de 2026-2 (2 omisiones con índice total 70, 1 respuesta y 3 de 1.er año); las validaciones del diálogo (sin fecha límite, fecha anterior al inicio y sin la casilla de cierre anticipado); un cierre con el error simulado, que guardó una omisión y no cambió el período; el segundo cierre, que guardó solo la que faltaba y pasó a 2027-1; el Tablero (período 2027-1 y calculado del período anterior, con las omisiones) y el Detalle de Valentino (omisión en la cronología y en el gráfico); Mi Trayectoria (aviso para Nahuel, que desaparece al responder; sin aviso para Valentino, que nunca respondió); Información personal con 2027 como año vigente; la copia de la Encuesta Inicial simulada con Tools v6, que guardó la entrada de Criticidad en 2027-1; el Hub con la tarjeta habilitada; *Restablecer datos de prueba*; 400 px sin desborde y sin errores de consola.
+**Verificado (2026-11-02, navegador integrado, `localhost`):** la simulación de 2026-2, primero con las reglas de base (2 omisiones con índice total 70, 1 respuesta y 3 de 1.er año) y, desde la revisión del 2026-11-03, con la respuesta de Nicolás solo en Moodle (1 omisión, 1 "Sin omisión · solo en Moodle", 1 respuesta); las validaciones del diálogo (sin fecha límite, fecha anterior al inicio y sin la casilla de cierre anticipado); un cierre con el error simulado en la 2.ª omisión (guardó una y no cambió el período) y otro en la 1.ª (no guardó ninguna); los cierres siguientes, que guardaron solo las que faltaban y pasaron a 2027-1; el Tablero (período 2027-1 y calculado del período anterior, con las omisiones) y el Detalle de Valentino (omisión en la cronología y en el gráfico); Mi Trayectoria (aviso para Nahuel, que desaparece al responder; sin aviso para Valentino, que nunca respondió); Información personal con 2027 como año vigente; la copia de la Encuesta Inicial simulada con Tools v6, que guardó la entrada de Criticidad en 2027-1; el Hub con la tarjeta habilitada; *Restablecer datos de prueba*; 400 px sin desborde y sin errores de consola. Tools v6 en Node, con un campus simulado: sin la base Períodos usa el último período leído en ese navegador (o `2026-2` si no leyó ninguno), también antes de leer la base.
 
-**Sin verificar en Moodle:** la lectura y escritura reales (LeerBase, alta en Criticidad y Períodos) y la URL de desaprobar.
+**Probado en el campus, solo lectura (2026-11-02 y 2026-11-03):** Tools v6 y esta Página cargadas en memoria desde la rama (sin publicar) leen las bases reales (Estudiantes 2, Respuestas 3, Criticidad 12) y la simulación de 2026-2 da 0 omisiones (Valentino respondió; Santiago pasó a 2.º año en el período). La lectura de las respuestas de Moodle (`show_entries.php`) devuelve las dos respuestas de la Cuatrimestral con su fecha exacta. Solo pedidos GET.
+
+**Sin verificar:** la escritura (alta de la omisión, desaprobarla y alta del período nuevo), que requiere crear la base Períodos.
 
 ## Pendientes
 

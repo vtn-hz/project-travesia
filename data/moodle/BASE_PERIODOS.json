@@ -10,6 +10,7 @@
     "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva.",
     "Número máximo de entradas": "0 (sin límite).",
     "Permitir comentarios": "No.",
+    "Disponibilidad": "Visible en Zhakyz: la leen los navegadores de todos los estudiantes (encuestas, notas y Mi Trayectoria). El campus no permite \"disponible pero no mostrada\".",
     "Quién escribe": "Solo el equipo (ADM), desde la Página Configuración del Sistema."
   },
   "plantillas": "data/moodle/plantillas/periodos/ (lista con .zk-registro, data-rid y una celda data-campo por campo, para que la lea LeerBase). La de alta es la de Moodle: la Página ubica cada campo por su etiqueta.",
