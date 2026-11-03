@@ -4,7 +4,7 @@
 
 - **Archivo:** `section/entrevistas/content.html`
 - **Acceso:** tarjeta "Entrevistas y Tutorías" del [menú inicial](../../section/menu_inicial/content.html) (en local, `btn-entrevistas`). Con `#usuario=<id de Moodle>` abre la solicitud con ese estudiante elegido (para enlazarla desde el tablero o el detalle).
-- **Roles:** ADM, TUT y PAR. GES no entra. La vista del estudiante (pedir entrevista, aceptar o contraofertar desde su lado) es otra sección y queda fuera del modelo reducido (ver Pendientes). Desde SCRUM-24 (local), [Mi Trayectoria](vista-estudiante.md) enlaza a esta Página con la tarjeta *Entrevistas y Tutorías* para todos los estudiantes; hasta que se detecte el rol EST, en Moodle se abre como ADM.
+- **Roles:** ADM, TUT y PAR. GES no entra. La vista del estudiante (pedir entrevista, aceptar o contraofertar desde su lado) es otra sección y queda fuera del modelo reducido (ver Pendientes). Desde SCRUM-24 (local), [Mi Trayectoria](vista-estudiante.md) enlaza a esta Página con la tarjeta *Entrevistas y Tutorías* para todos los estudiantes; el rol EST se detecta por el grupo `Zhakyz_Estudiante` (ver *Detección del rol en Moodle*).
 - **Requerimientos:** Req 5 (Dashboard Entrevistas: solicitudes, registro de realizadas e histórico), Req 11 (gestión de entrevistas) y RNF 1 (proactividad: programar antes de que el estudiante abandone).
 - **Estado:** **en revisión**, desarrollado en local con datos de prueba. **No publicado en Moodle** y no se publica hasta terminar la revisión ([`README` de la sección](../../section/entrevistas/README.md)).
 
@@ -19,6 +19,32 @@
 "Asignados" sale de la base **Acompañamientos** (11): cada entrada une un estudiante con su tutor o su asesor par. En la vista previa local, TUT es Valentino Hernández Pascual y PAR es Nahuel Spikerman. En Moodle será el usuario de la sesión (`M.cfg.userId`, a verificar en el campus) junto con la detección de roles por grupo.
 
 "Ver detalle del estudiante" solo aparece para ADM y TUT, porque el [detalle](detalle-estudiante.md) no incluye a PAR.
+
+### Detección del rol en Moodle
+
+Desde el 2026-11-02 (local), la Página toma el rol del grupo del usuario de la sesión en el curso 1732:
+
+| Grupo de Moodle | Rol |
+|---|---|
+| `Zhakyz_Tutor` | TUT |
+| `Zhakyz_AsesorPar` | PAR |
+| `Zhakyz_Estudiante` | EST |
+
+Si no está en ninguno de esos grupos, se usa su rol en el curso:
+
+| Rol del curso | Rol |
+|---|---|
+| Profesor (con permiso de edición, `roleid` 3) | ADM |
+| Profesor sin permiso de edición (`roleid` 4) | TUT |
+| Estudiante (`roleid` 5) | EST |
+
+- **Orden:** 1) el grupo; 2) el rol elegido con "Cambiar rol a…"; 3) el rol del curso. El grupo siempre manda: quien está en un grupo `Zhakyz_*` ve la vista de ese grupo aunque cambie el rol.
+- **"Cambiar rol a…"** (2026-11-03) se mira solo si el usuario no está en ningún grupo `Zhakyz_*`. Con el rol cambiado, Moodle marca la página con `body.userswitchedrole`, pero no muestra cuál rol se eligió, y el perfil sigue mostrando los roles reales. El rol simulado se deduce de sus permisos: si abre la gestión de grupos (`/group/index.php`), es Profesor → ADM; si abre los registros del curso (`/report/log/index.php`), es Profesor sin permiso de edición → TUT; si no abre ninguna, es Estudiante → EST. Probado en el campus con la cuenta del equipo: Estudiante → EST y Profesor sin permiso de edición → TUT.
+- Una cuenta con los roles Profesor y Estudiante a la vez (como las del equipo) entra como ADM. Para ver la vista del estudiante se usa "Cambiar rol a… Estudiante".
+- Si el usuario está en más de un grupo, la prioridad es Tutor, Asesor par y Estudiante. Si tiene más de un rol en el curso, la prioridad es Profesor, Profesor sin permiso de edición y Estudiante.
+- Los grupos se leen con el servicio AJAX `core_group_get_course_user_groups`. Si ese servicio no responde, se buscan los nombres de los grupos en el perfil del usuario en el curso (`/user/view.php?id=<id>&course=1732`).
+- Los roles del curso se leen de ese mismo perfil: cada rol es un link con `roleid=<id>`. Se reconoce por el nombre y, si el campus le puso otro nombre, por el `roleid` estándar. Si Moodle no responde y no se puede leer ni el grupo ni el rol, se muestra la vista con menos permisos (EST, `ROL_SIN_DETECTAR`).
+- La correspondencia está en `GRUPOS_ROL` y `ROLES_CURSO`, al principio del script. En la vista previa local el rol se sigue eligiendo con la barra.
 
 ## Pantalla
 
@@ -95,6 +121,6 @@ Los DNI son marcadores (`prueba-<id>`), no documentos reales.
 
 ## Pendientes
 
-- Rol en Moodle (grupos ADM, TUT, PAR): hasta detectarlo, en Moodle todos entran como ADM y pueden gestionar cualquier entrevista. `M.cfg.userId` ya se verificó en el campus.
+- Probar en el campus la detección del rol (publicada el 2026-11-03) con una cuenta de cada grupo y de cada rol del curso, y ver qué método responde.
 - **Lado del estudiante (Req 11):** con permisos de `mod_data`, un estudiante solo edita sus propias entradas y no puede leer una base del equipo. Para que pida, acepte o contraoferte hace falta una tercera base donde solo agregue entradas, con "Requiere aprobación", o un mensaje de Moodle. Queda fuera del modelo reducido.
 - Enlazar "Solicitar entrevista" desde el tablero y el detalle (`#usuario=<id>`).
