@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 5;
+      var VERSION = 6;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -60,7 +60,10 @@
       // ---------------------------------------------------------
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-      var PERIODO_ACTUAL = '2026-2';
+      // Período (ADR-009): PERIODO_ACTUAL lo actualiza PeriodoVigente() con la última entrada de la base Períodos.
+      // PERIODO_POR_DEFECTO se usa si la base todavía no existe y este navegador nunca leyó un período
+      var PERIODO_POR_DEFECTO = '2026-2';
+      var PERIODO_ACTUAL = PERIODO_POR_DEFECTO;
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
@@ -69,6 +72,7 @@
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
       var DATAID_PARCIALES_PRIMERO = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_MATERIAS_PRIMERO = 118; // @config bases.carga_materias_primero.dataid
+      var DATAID_PERIODOS = null; // @config bases.periodos.dataid
       var SECCION_ZHAKYZ = 15647; // @config seccion.id
       var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
       var SEGUNDOS_VOLVER = 5; // después de enviar la encuesta, segundos hasta volver a Mi Trayectoria
@@ -76,6 +80,9 @@
       var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
       var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
       var CLAVE_PENDIENTES_CRITICIDAD = 'zk-criticidad-pendientes'; // entradas de Criticidad que no se pudieron guardar (localStorage)
+      var CLAVE_PERIODO = 'zk-periodo-vigente'; // último período leído de la base Períodos (localStorage): se usa si la base no responde
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos'; // vista previa local: períodos que agregó la Página Configuración del Sistema
+      var ESPERA_PERIODO = 4000; // milisegundos que se espera la base Períodos al enviar una encuesta o guardar una nota
       // En local (Live Server): entradas de la base Encuestas, desde la Página Tools del repo (section/utils/tools/content.html).
       // Cuando la biblioteca la ejecuta un cargador, data-base es la dirección de la Página Tools
       var RUTA_LOCAL_ENCUESTAS = '../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json';
@@ -655,6 +662,10 @@
       // COPIAS PENDIENTES: { registro, indice }. SE REINTENTAN AL VOLVER A ABRIR LA ENCUESTA, SIN DUPLICAR (MISMO created_at)
       // Las de la versión anterior de la copia (sin json_respuesta) se dejan como están: no entran en los campos nuevos de la base
       function reintentarPendientes() {
+        return PeriodoVigente().then(reintentarConPeriodo);
+      }
+
+      function reintentarConPeriodo() {
         var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES, []);
         if (!pendientes.length) return reintentarCriticidadPendiente().catch(function() {});
         return leerUsuarioMoodle().then(function(u) { return entradasPropias(DATAID_RESPUESTAS, u.id); }).then(function(guardadas) {
@@ -710,6 +721,9 @@
           return Promise.all(faltan.map(function(k) {
             return adaptador.leerPagina(cmid, k).then(function(p) { paginas[k] = p; });
           }));
+        }).then(function() {
+          // El período del envío es el vigente en la base Períodos (si no responde a tiempo, el último leído)
+          return conLimite(PeriodoVigente(), ESPERA_PERIODO, 'La base Períodos').catch(function() {});
         }).then(function() {
           return adaptador.usuario();
         }).then(function(usuario) {
@@ -1147,6 +1161,7 @@
           var abierta = ENCUESTAS[Number((formularioEncuesta(document).querySelector('input[name="id"]') || {}).value)];
           // Con la versión leída se aplican las dependencias de la página (la pregunta que depende de otra empieza oculta)
           if (abierta) definicionVigente(abierta.clave).then(function() { aplicarDependencias(formularioEncuesta(document)); }, function() { /* se vuelve a pedir al enviar */ });
+          // reintentarPendientes también pide el período vigente: al enviar ya está leído
           reintentarPendientes();
         }
       }
@@ -1428,7 +1443,7 @@
 
       // CALCULA Y AGREGA LA ENTRADA DE LAS NOTAS DEL ESTUDIANTE (rid: LA NOTA QUE LA DISPARÓ)
       function criticidadDeNotas(rid) {
-        return leerUsuarioMoodle().then(function(u) {
+        return conLimite(PeriodoVigente(), ESPERA_PERIODO, 'La base Períodos').catch(function() {}).then(leerUsuarioMoodle).then(function(u) {
           if (!u.dni) throw new Error('No se pudo leer el DNI de la cuenta.');
           return leerNotasPropias(u.dni).then(function(datos) {
             var calculo = IndiceNotasPrimero(datos.parciales, datos.materias);
@@ -1472,7 +1487,7 @@
             throw e;
           });
         }
-        if (!form) return reintentarCriticidadPendiente();
+        if (!form) return PeriodoVigente().then(reintentarCriticidadPendiente);
         var d = form.querySelector('input[name="d"]');
         if (!d || Number(d.value) !== DATAID_PARCIALES_PRIMERO) { enviarNormal(form, boton); return Promise.resolve(null); }
         // "Guardar y agregar otra" no devuelve el rid: se guarda con "Guardar y ver" y después se abre un formulario vacío
@@ -1574,6 +1589,74 @@
         return e ? 'Moodle no muestra la base: ' + e.textContent.trim() : null;
       }
 
+      // =========================================================
+      // HERRAMIENTA PeriodoVigente: PERÍODO VIGENTE DE LA BASE PERÍODOS (ADR-009)
+      // =========================================================
+      // PeriodoVigente() → Promise de { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }.
+      //   La vigente es la entrada de rid mayor (la última que se cargó). Nunca se rechaza: si la base no existe o no se puede leer,
+      //   devuelve el último período leído en este navegador (fuente 'guardado') o PERIODO_POR_DEFECTO (fuente 'defecto'), con el error.
+      //   En la vista previa local lee los períodos de prueba más los que agregó la Página Configuración del Sistema (fuente 'prueba').
+      //   Una sola lectura por página; { releer: true } vuelve a leer la base.
+      // También actualiza PERIODO_ACTUAL, que usan CopiaRespuestas y CriticidadNotas.
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30', created_at: '2026-03-09T09:00:00-03:00' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-10', fecha_limite_encuesta: '2026-11-30', created_at: '2026-08-10T09:00:00-03:00' }
+      ];
+      var periodoCarga = null;
+
+      function esPeriodo(p) { return /^\d{4}-[12]$/.test(String(p || '').trim()); }
+
+      // 2026-2 → 2026-1; 2027-1 → 2026-2
+      function periodoAnterior(p) {
+        var x = String(p).split('-');
+        return x[1] === '2' ? x[0] + '-1' : (Number(x[0]) - 1) + '-2';
+      }
+
+      // ENTRADAS VÁLIDAS ORDENADAS POR rid (LA ÚLTIMA ES LA VIGENTE)
+      function ordenarPeriodos(lista) {
+        return lista.filter(function(p) { return esPeriodo(p.periodo); }).map(function(p) {
+          return { rid: Number(p.rid) || 0, periodo: String(p.periodo).trim(), fecha_inicio: String(p.fecha_inicio || '').trim(),
+            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), created_at: String(p.created_at || '').trim() };
+        }).sort(function(a, b) { return a.rid - b.rid; });
+      }
+
+      function periodosDePrueba() {
+        var agregados = leerAlmacen(window.localStorage, CLAVE_PREVIEW_PERIODOS, []);
+        return PERIODOS_PRUEBA.concat(Array.isArray(agregados) ? agregados : []);
+      }
+
+      function PeriodoVigente(opciones) {
+        if (periodoCarga && !(opciones && opciones.releer)) return periodoCarga;
+        var local = ES_VISTA_LOCAL || !(window.M && M.cfg && M.cfg.wwwroot);
+        var lectura = local ? Promise.resolve(periodosDePrueba())
+          : !DATAID_PERIODOS ? Promise.reject(new Error('La base Períodos todavía no está creada en Moodle.'))
+          : LeerBase({ dataid: DATAID_PERIODOS }).then(function(r) {
+            return r.entradas.map(function(e) { var c = {}; Object.keys(e.campos).forEach(function(k) { c[k] = e.campos[k]; }); c.rid = e.rid; return c; });
+          });
+        var carga = lectura.then(function(lista) {
+          var periodos = ordenarPeriodos(lista);
+          if (!periodos.length) throw new Error('La base Períodos no tiene ningún período con el formato AAAA-n.');
+          var v = periodos[periodos.length - 1];
+          if (!local) escribirAlmacen(window.localStorage, CLAVE_PERIODO, v);
+          return { periodo: v.periodo, fecha_inicio: v.fecha_inicio, fecha_limite_encuesta: v.fecha_limite_encuesta, rid: v.rid,
+            fuente: local ? 'prueba' : 'base', error: '', periodos: periodos };
+        }).catch(function(e) {
+          var guardado = leerAlmacen(window.localStorage, CLAVE_PERIODO, null);
+          var hayGuardado = !!guardado && esPeriodo(guardado.periodo);
+          var v = hayGuardado ? guardado : { periodo: PERIODO_POR_DEFECTO };
+          // Si falló la lectura, la próxima llamada vuelve a intentarla
+          if (periodoCarga === carga) periodoCarga = null;
+          return { periodo: v.periodo, fecha_inicio: v.fecha_inicio || '', fecha_limite_encuesta: v.fecha_limite_encuesta || '', rid: v.rid || null,
+            fuente: hayGuardado ? 'guardado' : 'defecto', error: e && e.message ? e.message : String(e), periodos: [] };
+        }).then(function(r) {
+          r.anterior = periodoAnterior(r.periodo);
+          PERIODO_ACTUAL = r.periodo;
+          return r;
+        });
+        periodoCarga = carga;
+        return carga;
+      }
+
       // ---------------------------------------------------------
       // FUNCIÓN: LeerBase({ dataid | cmid, porPagina, paralelo, maximo, filas, columnas, filtro, alAvanzar })
       //   → Promise de { entradas: [{ rid, campos }], formato, paginas, completa }
@@ -1653,6 +1736,7 @@
         CriticidadEncuesta: CriticidadEncuesta,
         IndiceNotasPrimero: IndiceNotasPrimero,
         CriticidadNotas: CriticidadNotas,
+        PeriodoVigente: PeriodoVigente,
         LeerBase: LeerBase
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
@@ -1697,6 +1781,11 @@
           descripcion: 'Al guardar una nota en CargaParcialesPrimero, la guarda, calcula el índice de las notas del estudiante en el período y agrega su entrada a la base Criticidad (fuente notas_1ro). Una página propia que guarda la nota por su cuenta la llama con el rid de la nota. Reintenta las entradas pendientes.',
           uso: 'Plantilla Javascript personalizado de CargaParcialesPrimero, y páginas propias de carga de notas',
           carga: 'Tools.CriticidadNotas({ form, boton }) desde la plantilla · Tools.CriticidadNotas({ rid }) desde una página propia, después de guardar'
+        },
+        PeriodoVigente: {
+          descripcion: 'Devuelve el período vigente de la base Períodos (la última entrada), con su fecha de inicio y la fecha límite de la Encuesta Cuatrimestral (ADR-009). Nunca falla: si la base no se puede leer, usa el último período leído en ese navegador o el período por defecto, y lo informa en error. CopiaRespuestas y CriticidadNotas guardan con este período.',
+          uso: 'CopiaRespuestas, CriticidadNotas, Mi Trayectoria, Información personal, Tablero de Criticidad, Detalle del estudiante y Configuración del Sistema',
+          carga: 'Tools.PeriodoVigente() → { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
