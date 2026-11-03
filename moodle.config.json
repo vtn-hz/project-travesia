@@ -52,7 +52,8 @@
     "vista_estudiante": 60264,
     "informacion_personal": 60265,
     "utils_tools": 59941,
-    "indicadores_cohorte": 60283
+    "indicadores_cohorte": 60283,
+    "configuracion": null
   },
   "encuestas": {
     "inicial": {
@@ -120,6 +121,13 @@
       "definicion": "data/moodle/BASE_ENTREVISTAS.json",
       "subseccion": "Database",
       "creada": "2026-11-01"
+    },
+    "periodos": {
+      "cmid": null,
+      "dataid": null,
+      "definicion": "data/moodle/BASE_PERIODOS.json",
+      "subseccion": "Database",
+      "propuesta": "2026-11-02"
     }
   }
 }
