@@ -408,8 +408,8 @@
             doc.querySelectorAll('li.contentnode').forEach(function(li) {
               var dt = li.querySelector('dt');
               var dd = li.querySelector('dd');
-              // El bloque del código QR de la app de Moodle no es un dato del estudiante
-              if (dt && dd && !/c[oó]digo qr/i.test(dt.textContent)) campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').trim() });
+              // Se omiten el código QR de la app de Moodle y la zona horaria: no son datos del estudiante que sirvan al seguimiento
+              if (dt && dd && !/c[oó]digo qr|zona horaria/i.test(dt.textContent)) campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').trim() });
             });
             return { campos: campos };
           });
