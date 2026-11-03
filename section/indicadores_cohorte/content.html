@@ -1,4 +1,5 @@
-<!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM, GES, TUT) · DESTINO: TARJETA "INDICADORES DE COHORTE" DEL HUB · SIN PUBLICAR -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Indicadores de Cohorte" (cmid 60283) · 2026-11-02 -->
+<!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "INDICADORES DE COHORTE" DEL HUB -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- FUENTES: docs/context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md, requerimientos v1.1, base Encuestas (versiones vigentes, leída el 2026-11-01),
      CargaMateriasPrimero, Tools v5 (cortes del semáforo), docs/models y ADR-007. Lo que queda fuera: docs/models/INDICADORES_NO_IMPLEMENTADOS.md -->
@@ -446,20 +447,30 @@
 
       // CALCULADORA DE UN CASO (CÁLCULO EN EL NAVEGADOR, NO GUARDA NADA)
       function calculadoraEncuesta(e) {
-        var campos = e.preguntas.filter(function(p) { return p.opciones; }).map(function(p) {
-          return '<div style="flex: 1 1 220px !important;"><label style="' + EST.label + '">' + escapar(p.pregunta) + '</label>' +
+        // CAMPO: LA ETIQUETA ARRIBA Y EL CONTROL ABAJO, ALINEADO CON LOS DEMÁS DE LA FILA AUNQUE LA ETIQUETA OCUPE MÁS LÍNEAS
+        var campo = function(etiqueta, control) {
+          return '<div style="display: flex !important; flex-direction: column !important; justify-content: space-between !important; gap: 4px !important; min-width: 0 !important;">' +
+            '<label style="' + EST.label + ' margin-bottom: 0 !important;">' + etiqueta + '</label>' + control + '</div>';
+        };
+        var grilla = function(minimo, contenido) {
+          return '<div style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(' + minimo + 'px, 1fr)) !important; gap: 12px 16px !important; margin-bottom: 16px !important;">' + contenido + '</div>';
+        };
+        var numero = function(id, valor, extra) {
+          return '<input data-calc-encuesta="' + id + '" type="number" value="' + valor + '" ' + extra + ' style="' + EST.input + ' width: 100% !important;">';
+        };
+        var selects = e.preguntas.filter(function(p) { return p.opciones; }).map(function(p) {
+          return campo(escapar(p.pregunta),
             '<select data-calc-encuesta="' + p.variable + '" style="' + EST.input + ' width: 100% !important;">' +
             p.opciones.map(function(o, i) { return '<option value="' + i + '">' + escapar(o[0]) + ' (' + o[1] + ')</option>'; }).join('') +
-            '</select></div>';
-        });
-        if (encuestaActual === 'cuatrimestral') {
-          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">Materias cursadas</label><input data-calc-encuesta="cantidad" type="number" min="0" max="10" value="4" style="' + EST.input + ' width: 100% !important;"></div>');
-          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">De ellas, recursadas</label><input data-calc-encuesta="recursadas" type="number" min="0" max="10" value="1" style="' + EST.input + ' width: 100% !important;"></div>');
-          campos.push('<div style="flex: 1 1 140px !important;"><label style="' + EST.label + '">Dificultad promedio (1 a 5)</label><input data-calc-encuesta="dificultad" type="number" min="1" max="5" step="0.5" value="3" style="' + EST.input + ' width: 100% !important;"></div>');
-        }
+            '</select>');
+        }).join('');
+        var cursada = encuestaActual !== 'cuatrimestral' ? '' :
+          '<div style="font-size: 13px !important; font-weight: 600 !important; margin: 0 0 8px 0 !important;">Cursada del cuatrimestre anterior</div>' +
+          grilla(150, campo('Materias cursadas', numero('cantidad', 4, 'min="0" max="10"')) +
+            campo('De ellas, recursadas', numero('recursadas', 1, 'min="0" max="10"')) +
+            campo('Dificultad promedio (1 a 5)', numero('dificultad', 3, 'min="1" max="5" step="0.5"')));
         return tarjeta('Probar un caso', 'Elija respuestas para ver cuántos puntos suman y qué color resulta. No se guarda nada.',
-          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 12px !important;">' + campos.join('') + '</div>' +
-          '<div id="resultado-calc-encuesta"></div>');
+          grilla(220, selects) + cursada + '<div id="resultado-calc-encuesta"></div>');
       }
 
       function calcularEncuesta() {

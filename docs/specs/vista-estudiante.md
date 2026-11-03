@@ -46,7 +46,7 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
 
 - El botón de una sección deshabilitada dice qué falta o desde cuándo está disponible; nunca "No disponible".
 - Una sola acción principal: sin información personal, *Cargar información personal*; en 1.er año, Parciales; en 2.º año en adelante, la primera encuesta pendiente y, si no hay, Entrevistas.
-- Las encuestas se abren con su portada, `/mod/feedback/view.php?id=<cmid>`, que al estudiante le muestra el botón para responder. `complete.php` da error a quien no puede responder (el equipo, con rol de profesor). Su estado sale de las entradas propias de Respuestas (la cuatrimestral, del período actual).
+- Las encuestas se abren con su portada, `/mod/feedback/view.php?id=<cmid>`, que al estudiante le muestra el botón para responder. `complete.php` da error a quien no puede responder (el equipo, con rol de profesor). Al terminar, la encuesta muestra "Sus respuestas han sido guardadas. Gracias." y a los 5 segundos vuelve a Mi Trayectoria ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html), en la "Página después de enviar" de las dos encuestas). Su estado sale de las entradas propias de Respuestas (la cuatrimestral, del período actual).
 
 ## Información personal (Página propia)
 

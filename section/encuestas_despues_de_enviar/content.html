@@ -1,0 +1,53 @@
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Encuestas "Encuesta Inicial" (cmid 59710) y "Encuesta Cuatrimestral" (cmid 59712) → ajuste "Página después de enviar" · 2026-11-02 -->
+<!-- QUÉ ES: lo que ve el estudiante al terminar una encuesta. Reemplaza el aviso de Moodle ("Sus respuestas han sido guardadas. Gracias.") por el mismo mensaje y, a los 5 segundos, lo lleva de vuelta a Mi Trayectoria -->
+<!-- DÓNDE VA: en el ajuste "Página después de enviar" de las dos encuestas (page_after_submit). El botón "Continuar" de Moodle va al mismo lugar (ajuste "URL para el botón Continuar", site_after_submit) -->
+<!-- MI TRAYECTORIA: Área de texto y medios (paginas.vista_estudiante) dentro de la sección Zhakyz: se vuelve a section.php de Zhakyz con el ancla #module-<cmid> -->
+<!-- NO EDITAR DESDE EL FORMULARIO DE LA ENCUESTA: el editor de Moodle puede quitar el script -->
+<!-- SIN BARRA INVERTIDA SEGUIDA DE CORCHETE O PARÉNTESIS, NI DOS SIGNOS DE PESOS: el filtro de fórmulas de Moodle los toma como TeX -->
+<div data-zk-despues-de-enviar style="margin: 16px 0 !important; padding: 0 !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; text-align: left !important;">
+  <nolink>
+    <div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 14px 16px !important; border-radius: 10px !important; background-color: #f6fef6 !important; border: 1px solid #c5f7c5 !important; box-sizing: border-box !important;">
+      <span style="color: #1f7a1f !important; padding-top: 1px !important; flex: 0 0 auto !important;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display: block !important;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/></svg>
+      </span>
+      <div>
+        <div style="font-weight: 600 !important;">Sus respuestas han sido guardadas. Gracias.</div>
+        <div id="zk-despues-texto" style="color: #47536b !important; margin-top: 2px !important;">En 5 segundos vuelve a Mi Trayectoria.</div>
+        <a id="zk-despues-link" href="#" style="display: inline-block !important; margin-top: 6px !important; color: #026bd4 !important; font-weight: 500 !important;">Volver ahora a Mi Trayectoria</a>
+      </div>
+    </div>
+  </nolink>
+</div>
+<script>
+  (function() {
+    // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+    var SECCION_ZHAKYZ = 15647; // @config seccion.id
+    var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
+    var SEGUNDOS = 5;
+
+    var raiz = document.querySelector('[data-zk-despues-de-enviar]');
+    if (!raiz) return;
+    var enMoodle = typeof M !== 'undefined' && M.cfg && M.cfg.wwwroot;
+    // En local (vista previa) no se redirige: solo se muestra la cuenta regresiva
+    var destino = enMoodle ? M.cfg.wwwroot + '/course/section.php?id=' + SECCION_ZHAKYZ + '#module-' + CMID_VISTA_ESTUDIANTE : null;
+    var link = document.getElementById('zk-despues-link');
+    var texto = document.getElementById('zk-despues-texto');
+    if (destino) link.setAttribute('href', destino);
+
+    var quedan = SEGUNDOS;
+    function mostrar() {
+      texto.textContent = quedan > 0
+        ? 'En ' + quedan + (quedan === 1 ? ' segundo' : ' segundos') + ' vuelve a Mi Trayectoria.'
+        : 'Volviendo a Mi Trayectoria…';
+    }
+    mostrar();
+    var reloj = setInterval(function() {
+      quedan -= 1;
+      mostrar();
+      if (quedan <= 0) {
+        clearInterval(reloj);
+        if (destino) window.location.href = destino;
+      }
+    }, 1000);
+  })();
+</script>

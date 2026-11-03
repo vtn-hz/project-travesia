@@ -126,6 +126,7 @@
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
+      var CMID_PAGINA_INDICADORES = 60283; // @config paginas.indicadores_cohorte
       // Notas de 1.er año: la tarjeta abre la base, donde los docentes ven las notas de todos (los estudiantes cargan en su propia Página)
       var CMID_BASE_PARCIALES_PRIMERO = 59521; // @config bases.carga_parciales_primero.cmid
       var DESTINOS_MOODLE = {
@@ -133,6 +134,7 @@
         'btn-notas-primero': '/mod/data/view.php?id=' + CMID_BASE_PARCIALES_PRIMERO
       };
       if (CMID_PAGINA_ENTREVISTAS) DESTINOS_MOODLE['btn-entrevistas'] = '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS;
+      if (CMID_PAGINA_INDICADORES) DESTINOS_MOODLE['btn-indicadores'] = '/mod/page/view.php?id=' + CMID_PAGINA_INDICADORES;
       // Acceso "Ver como estudiante" (oculto por ahora)
       var MOSTRAR_VISTA_ALUMNO = false;
       // Bloque "Estado del sistema" de ADM (oculto por ahora)
@@ -236,7 +238,7 @@
       var TARJETAS = [
         { id: 'tablero-criticidad', grupo: 'seguimiento', icono: 'tablero', titulo: 'Tablero de Criticidad', texto: 'Estado calculado y asignado de cada estudiante, y a quién contactar.', cta: 'Ver estudiantes', principal: true, roles: ['ADM', 'GES', 'TUT'] },
         { id: 'entrevistas', grupo: 'seguimiento', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', roles: ['ADM', 'TUT', 'PAR'] },
-        { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas.', cta: 'Ver indicadores', roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Avance curricular, índice de ritmo, materias críticas y cómo se calcula la criticidad de cada estudiante.', cta: 'Ver indicadores', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'reportes', grupo: 'seguimiento', icono: 'reportes', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'importar-datos', grupo: 'gestion', icono: 'importar', titulo: 'Importar Datos', texto: 'CSV de parciales y finales y de estados de cursada, identificados por DNI.', cta: 'Subir archivo', roles: ['ADM', 'GES'] },
         { id: 'notas-primero', grupo: 'gestion', icono: 'lista', titulo: 'Notas de 1.er año', texto: 'Notas de parciales que cargan los estudiantes de 1.er año, con búsqueda y exportación.', cta: 'Ver notas', roles: ['ADM', 'GES', 'TUT'] },

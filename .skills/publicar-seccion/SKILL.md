@@ -80,6 +80,18 @@ MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
 - Sin `--confirmar` simula: muestra el tamaño y los cambios de cada ítem. Con `--confirmar` guarda uno por uno, relee lo guardado y frena si un ítem perdió scripts.
 - Actualiza la fecha del comentario `PUBLICADO EN MOODLE` del archivo.
 
+## Página después de enviar una encuesta (`publicar_despues_de_enviar.js`)
+
+Lo que ve el estudiante al terminar una Encuesta de Zhakyz ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html)) va en los ajustes "Página después de enviar" y "URL para el botón Continuar" de la encuesta, no en un ítem. El script manda el formulario de configuración de cada encuesta (`modedit.php`) con el HTML del archivo, sin abrir el editor, y relee que el script se haya conservado.
+
+```bash
+MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
+  node .skills/publicar-seccion/publicar_despues_de_enviar.js --archivo section/encuestas_despues_de_enviar/content.html \
+  --cmids 59710,59712 --continuar '<campus>/course/section.php?id=<Zhakyz>#module-<paginas.vista_estudiante>'
+```
+
+Sin `--confirmar` simula. Verifica que las encuestas estén dentro de Zhakyz y solo deja pasar el guardado de esas encuestas.
+
 ## Crear bases de datos (`crear_base.js`)
 
 Para las bases (`mod_data`) que usan las secciones, el flujo es el mismo (simular → confirmar → verificar) con `crear_base.js`:
