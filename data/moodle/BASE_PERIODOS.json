@@ -3,8 +3,8 @@
   "nombre": "Períodos",
   "descripcion": "Períodos lectivos del sistema: una entrada por período abierto. Solo se agregan entradas: el período vigente es la de rid mayor (la última que se cargó). La escribe la Página Configuración del Sistema al cerrar un período, y la leen todas las vistas con PeriodoVigente() de la Página Tools. Volver atrás es agregar otra vez el período anterior.",
   "subseccion": "Database",
-  "origen": "ADR-009 (2026-11-02). Reemplaza la base 2 del modelo simplificado con los campos que usa el cierre de período. Sin crear en Moodle.",
-  "estado": "propuesta",
+  "origen": "ADR-009 (2026-11-02). Reemplaza la base 2 del modelo simplificado con los campos que usa el cierre de período. Creada en Moodle el 2026-11-03 (cmid 60292, d=207) con crear_base.js; plantilla de lista con subir_plantillas.js; configurada desde los ajustes de la actividad. En Moodle los 4 campos quedaron no obligatorios. Primera entrada: rid 20287.",
+  "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: las que carga el equipo (rol Profesor) quedan aprobadas solas y las leen todos los navegadores; la que cargara un estudiante la vería solo él, así que solo cambiaría sus propias vistas.",
     "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva.",

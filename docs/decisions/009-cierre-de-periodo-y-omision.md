@@ -1,6 +1,6 @@
 # ADR-009: Cierre de período y alerta por omisión
 
-- **Estado:** aceptada (2026-11-02). Desarrollada en local, **sin publicar**
+- **Estado:** aceptada (2026-11-02). Mergeada en `main` el 2026-11-03. **Publicación en curso:** la base Períodos está en Moodle (cmid 60292, d=207); falta lo demás
 - **Fecha:** 2026-11-02
 - **Pedido:** Valentino Hernández Pascual a Luca Zuanetti, fuera del Jira: "un apartado en la configuración (un botón) que dispare un proceso que, a todos los que no respondieron la encuesta cuatrimestral, les genere una alerta ('no respondió encuesta'), que genera una entrada en la tabla de Criticidad. Además, a los que sí la respondieron, que les indique que tienen que volver a responderla porque finalizó el corte del cuatrimestre. Analizar si es viable el tiempo de días que se espera para empezar a esperar que se respondan las encuestas."
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos) y el requerimiento no funcional de minimizar la no respuesta
@@ -92,8 +92,8 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 
 ## Publicación y pendientes
 
-Nada publicado. Pasos, cada uno simulado y con confirmación:
-1. Crear la base Períodos con `crear_base.js`, configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada: `2026-2`, con inicio el 2026-08-18 (el 17 fue feriado) y sin fecha límite, que se define más adelante.
+Pasos, cada uno simulado y con confirmación:
+1. **Hecho el 2026-11-03.** Crear la base Períodos con `crear_base.js` (cmid 60292, d=207), configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada: `2026-2`, con inicio el 2026-08-18 (el 17 fue feriado) y sin fecha límite, que se define más adelante. Primera entrada: rid 20287. En Moodle los campos quedaron no obligatorios.
 2. Publicar la Página Tools v6 y probar un envío real de la Cuatrimestral.
 3. Crear la subsección oculta "Configuración" con la Página "Configuración del Sistema".
 4. Republicar Mi Trayectoria, Información personal, el Tablero, el Detalle y el Hub.

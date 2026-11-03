@@ -123,11 +123,12 @@
       "creada": "2026-11-01"
     },
     "periodos": {
-      "cmid": null,
-      "dataid": null,
+      "cmid": 60292,
+      "dataid": 207,
       "definicion": "data/moodle/BASE_PERIODOS.json",
       "subseccion": "Database",
-      "propuesta": "2026-11-02"
+      "propuesta": "2026-11-02",
+      "creada": "2026-11-03"
     }
   }
 }
