@@ -105,7 +105,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 | Estudiante | Nombre y apellido, de la cuenta | Solo para mostrar |
 | Materia | **Exactamente el nombre de CargaMateriasPrimero** (por ejemplo, `Análisis Matemático I`, `Álgebra I- B`). Ofrecerlo como lista, no como texto libre | Las notas se agrupan por materia y se cruzan con su umbral por nombre. Se ignoran mayúsculas, espacios, guiones y guiones bajos, pero no las tildes |
 | Instancia | `Parcial N` (según los parciales de la materia) o `Recuperatorio` | Cada parcial cuenta como una evaluación |
-| Fecha | `AAAA-MM-DD` | Define el período: de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`. Solo cuentan las notas del período actual (`PERIODO_ACTUAL` en Tools) |
+| Fecha | `AAAA-MM-DD` | Define el período: de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`. Solo cuentan las notas del período vigente (`PERIODO_ACTUAL` en Tools; desde Tools v6, la base Períodos, [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md)) |
 | Nota | Número de 0 a 10. Vacío si estuvo ausente | Promedio y umbral |
 | Estado | **Uno solo** entre `Aprobado`, `Desaprobado` y `Ausente` (el campo de Moodle permite elegir varios) | `Ausente` o sin nota cuenta como ausencia; `Aprobado`, como aprobada |
 | Recupera_a | En un recuperatorio, **la instancia que reemplaza, escrita igual** (por ejemplo, `Parcial 1`) | El recuperatorio reemplaza a esa instancia en el cálculo |
@@ -115,7 +115,7 @@ El cálculo depende de que los datos lleguen así. Un formulario propio tiene qu
 1. **Configurar la base con "Requiere aprobación"** y no aprobar entradas. **Hecho el 2026-11-02** y probado con dos cuentas con el cambio de rol a Estudiante: cada una ve su nota pendiente y no la de la otra; los docentes ven todas. Las entradas cargadas antes quedaron aprobadas, así que las ve cualquier estudiante hasta que se reemplacen los datos de prueba.
 2. **Completar CargaMateriasPrimero** con las 7 materias de 1.er año del Plan 2024. Hoy tiene Análisis Matemático I, Álgebra I- B, Fundamentos de Química y Análisis Matemático II. **Faltan Álgebra II, Física A y Fundamentos de la Programación:** sin ellas, sus notas cuentan como no críticas, con umbral 4.
 3. **Elegir la opción A o la B.** Se eligió la B: la Página Tools v5 y la página propia se publicaron el 2026-11-02.
-4. **Actualizar `PERIODO_ACTUAL`** en Tools si cambia el cuatrimestre.
+4. **Actualizar `PERIODO_ACTUAL`** en Tools si cambia el cuatrimestre. Con Tools v6 ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local) ya no hace falta: el período se cambia al cerrar el anterior en la Página Configuración del Sistema.
 5. **Limpiar los datos de prueba** de la base. Tiene personas que no son del equipo (Carlos López, Juan Pérez…), contra la regla 5 de [`RULES.md`](../../RULES.md), y la nota de prueba del 2026-11-01 (rid 20152).
 
 ## Lo que todavía no hace

@@ -7,7 +7,7 @@
 - **Roles:** ADM, GES y TUT. Solo **TUT y ADM** pueden asignar estados.
 - **Requerimientos:** Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados).
 - **Ticket:** [SCRUM-21](https://zhakyz.atlassian.net/browse/SCRUM-21) · rama `feat/SCRUM-21-tablero-criticidad`
-- **Estado:** desarrollado en local con datos de prueba sobre las bases del ADR-007. **No publicado.**
+- **Estado:** **publicado el 2026-11-03** como Página oculta (cmid 60288, [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) lee el período vigente de la base Períodos y, sin entradas del período, usa las del anterior, como el tablero
 - **Última actualización:** 2026-11-03
 
 > **En revisión.** Cargar en el frontend los datos de todos los estudiantes para esta visualización puede ser muy pesado. El modelo de bases y la pregunta abierta están en el [ADR-005](../decisions/005-modelo-de-bases-moodle.md).
@@ -71,6 +71,5 @@ Como el tablero (Página Tools y `LeerBase`), más CargaParcialesPrimero (por co
 
 ## Pendientes
 
-- Publicar el detalle y el tablero, y cargar `paginas.detalle` y `paginas.tablero` (requiere confirmación).
 - Detectar el rol en Moodle (por grupos) y no aceptar asignaciones manuales de fuera del equipo: ver los [pendientes del tablero](tablero-estudiantes.md#pendientes).
 - Los mismos pendientes de privacidad y de la omisión que el [tablero](tablero-estudiantes.md#pendientes).
