@@ -30,8 +30,8 @@
     {
       "nombre": "fecha_limite_encuesta",
       "tipo": "text",
-      "requerido": true,
-      "descripcion": "Hasta cuándo se espera la Encuesta Cuatrimestral del período (AAAA-MM-DD). Mi Trayectoria la muestra y el cierre avisa si se hace antes. No cierra la encuesta: el estudiante puede responder hasta que se cierre el período"
+      "requerido": false,
+      "descripcion": "Hasta cuándo se espera la Encuesta Cuatrimestral del período (AAAA-MM-DD). Vacía mientras el equipo no la defina: se define o se cambia después desde la Página Configuración del Sistema, que agrega una entrada del mismo período con la fecha nueva. Mi Trayectoria la muestra y el cierre avisa si se hace antes. No cierra la encuesta: el estudiante puede responder hasta que se cierre el período"
     },
     {
       "nombre": "created_at",
@@ -41,9 +41,9 @@
     }
   ],
   "primera_entrada": {
-    "descripcion": "Al crear la base se carga el período en curso, con las fechas que defina el equipo",
+    "descripcion": "Al crear la base se carga el período en curso. El 2.º cuatrimestre de 2026 empezó el martes 18 de agosto (el lunes 17 fue feriado). La fecha límite de la encuesta se define más adelante desde la Página Configuración del Sistema",
     "periodo": "2026-2",
-    "fecha_inicio": "a definir",
-    "fecha_limite_encuesta": "a definir"
+    "fecha_inicio": "2026-08-18",
+    "fecha_limite_encuesta": ""
   }
 }

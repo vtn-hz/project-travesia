@@ -31,7 +31,7 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 | Índice de la omisión | **70**, el piso del rojo: el tutor la ve como riesgo alto sin que pese más que la peor respuesta real |
 | Respondió solo en Moodle | **No recibe omisión.** Además de Respuestas, el cierre lee las respuestas de la Encuesta Cuatrimestral en Moodle (`show_entries.php`, todos los grupos): una respuesta desde el inicio del período cuenta como respondida y el estudiante figura "Sin omisión · solo en Moodle" (hallazgo 6). Moodle guarda solo la última respuesta de cada estudiante, con su fecha |
 | Privacidad | Cada omisión **se desaprueba apenas se crea** (`view.php?d=…&disapprove=<rid>&sesskey=…`): así solo la ve el equipo. Cuenta como desaprobada solo si Moodle muestra el aviso de éxito; si no, el resultado del cierre la lista para revisarla a mano |
-| Plazo en días | Una **fecha límite** por período (`fecha_limite_encuesta`): Mi Trayectoria la muestra y el cierre avisa, y pide marcar una casilla, si se hace antes. **Sin disparo automático** |
+| Plazo en días | Una **fecha límite** por período (`fecha_limite_encuesta`), **opcional**: se puede dejar vacía al abrir el período y definirla o cambiarla después (*Definir la fecha límite* agrega una entrada del mismo período con la fecha nueva). Con fecha, Mi Trayectoria la muestra y el cierre avisa, y pide marcar una casilla, si se hace antes. **Sin disparo automático** |
 | Volver a responder | Un **aviso en Mi Trayectoria**, no un mensaje de Moodle: "Finalizó el período 2026-2. Se debe responder la Encuesta Cuatrimestral del período 2027-1" |
 | Tablero y Detalle | Si un estudiante no tiene entradas en el período vigente, el calculado es el último del **período anterior**, marcado con su período. Sin esto, al cerrar, las omisiones (que son del período cerrado) dejarían de verse |
 
@@ -39,7 +39,7 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 
 1. La Página lee Períodos (vigente), Estudiantes, Respuestas (Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle.
 2. Arma el **plan**: por cada estudiante de 2.º año en adelante, *respondió*, *respondió solo en Moodle*, *recibe omisión*, *ya tiene omisión* o *pasó a 2.º año en el período*; los de 1.er año quedan fuera. Es la simulación: se muestra al abrir la Página y no escribe nada.
-3. **Cerrar período** pide la fecha de inicio y la fecha límite del período nuevo, vuelve a leer las bases (por si alguien respondió mientras tanto) y, por cada estudiante sin respuesta (en Respuestas ni en Moodle) ni omisión:
+3. **Cerrar período** pide la fecha de inicio y, si ya se conoce, la fecha límite del período nuevo, vuelve a leer las bases (por si alguien respondió mientras tanto) y, por cada estudiante sin respuesta (en Respuestas ni en Moodle) ni omisión:
    - agrega a Criticidad `origen = automatica`, `fuente = omision`, `rid_fuente` vacío, `indice = 70`, `indice_total` (la misma regla del ADR-007, con las entradas automáticas del estudiante en el período), `semaforo` y `motivo = "No respondió la Encuesta Cuatrimestral <período>"`, con el período que se cierra;
    - la desaprueba.
 4. Recién con todas las omisiones guardadas agrega el período nuevo a Períodos. Si algo falla, se detiene sin cambiar el período: volver a cerrar retoma donde quedó, porque no se repite una omisión que ya existe.
@@ -48,7 +48,7 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 
 - **Disparo automático a los N días: no es viable.** Moodle no ejecuta código del sistema si nadie abre una página (hallazgo 7). Las alternativas (un script programado en la computadora de un integrante, o disparar el cierre cuando alguien del equipo abre el tablero) escriben en Moodle sin una persona que lo confirme, contra la regla 7 de [`RULES.md`](../../RULES.md).
 - **La fecha de cierre de la Encuesta de Moodle (`timeclose`): no conviene.** Al pasar la fecha, Moodle no deja responder, y habría que cambiar la configuración de la actividad en cada período.
-- **Fecha límite como dato: viable.** Se carga al abrir cada período, el estudiante la ve en Mi Trayectoria y el cierre avisa si se hace antes. El cierre lo hace una persona.
+- **Fecha límite como dato: viable.** Se carga al abrir cada período o más adelante, cuando el equipo la conozca (al 2026-11-03 todavía no está definida la de 2026-2). El estudiante la ve en Mi Trayectoria y el cierre avisa si se hace antes. El cierre lo hace una persona.
 - **Cuántos días:** no se fija en el sistema. Sale del calendario académico de la facultad (fin de las clases y mesas de examen) y lo define el equipo con el cliente al abrir cada período. La Página muestra el plazo resultante ("N días").
 
 ### Base Períodos
@@ -57,11 +57,11 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 |---|---|---|
 | `periodo` | text | `AAAA-n` (`n` = 1 o 2). Se ignoran las entradas con otro formato |
 | `fecha_inicio` | text | `AAAA-MM-DD` |
-| `fecha_limite_encuesta` | text | `AAAA-MM-DD`: hasta cuándo se espera la Cuatrimestral del período |
+| `fecha_limite_encuesta` | text | `AAAA-MM-DD`: hasta cuándo se espera la Cuatrimestral del período. Opcional: vacía hasta que el equipo la defina |
 | `created_at` | text | ISO 8601 con zona |
 
 - **"Requiere aprobación":** sí. Lo que carga el equipo queda aprobado solo y lo leen todos; lo que cargara un estudiante lo vería solo él (afectaría solo a sus propias vistas).
-- **Vigente:** la de `rid` mayor. Volver atrás es agregar otra vez el período anterior.
+- **Vigente:** la de `rid` mayor. Definir o cambiar la fecha límite es agregar una entrada del mismo período con la fecha nueva; volver atrás es agregar otra vez el período anterior.
 - **Sin la base** (o si no se puede leer), `PeriodoVigente()` usa `2026-2` y lo avisa.
 - Quedan fuera del modelo original `fecha_fin` y `cant_ingresantes`: no los usa nadie todavía.
 
@@ -93,7 +93,7 @@ Las cinco respuestas del 2026-11-02 (Luca Zuanetti), más dos reglas que saliero
 ## Publicación y pendientes
 
 Nada publicado. Pasos, cada uno simulado y con confirmación:
-1. Crear la base Períodos con `crear_base.js`, configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada (`2026-2`, con la fecha de inicio y la fecha límite que defina el equipo).
+1. Crear la base Períodos con `crear_base.js`, configurarla ("Requiere aprobación"), cargar sus plantillas y su primera entrada: `2026-2`, con inicio el 2026-08-18 (el 17 fue feriado) y sin fecha límite, que se define más adelante.
 2. Publicar la Página Tools v6 y probar un envío real de la Cuatrimestral.
 3. Crear la subsección oculta "Configuración" con la Página "Configuración del Sistema".
 4. Republicar Mi Trayectoria, Información personal, el Tablero, el Detalle y el Hub.

@@ -87,7 +87,7 @@ Definida en [`BASE_PERIODOS.json`](../../../data/moodle/BASE_PERIODOS.json) por 
 |---|---|---|---|
 | `periodo` | text | `Periodo_Lectivo.anio` + `cuatrimestre` | `AAAA-n`, por ejemplo `2026-2` |
 | `fecha_inicio` | text (fecha) | `Periodo_Lectivo.fecha_inicio` | El día en que se cerró el período anterior |
-| `fecha_limite_encuesta` | text (fecha) | (nuevo) | Hasta cuándo se espera la Encuesta Cuatrimestral del período |
+| `fecha_limite_encuesta` | text (fecha) | (nuevo) | Hasta cuándo se espera la Encuesta Cuatrimestral del período. Opcional: se define después agregando una entrada del mismo período |
 | `created_at` | text (fecha y hora) | (nuevo) | |
 
 Quedan para más adelante `fecha_fin` (`Periodo_Lectivo.fecha_fin`) y `cant_ingresantes` (`Cohorte.cant_ingresantes`): no los usa ninguna vista todavía.
