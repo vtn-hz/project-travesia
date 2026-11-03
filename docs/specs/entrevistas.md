@@ -119,6 +119,7 @@ Ids en [`moodle.config.json`](../../moodle.config.json): `bases.entrevistas` y `
   - Los participantes se leen de `/user/index.php?id=1732&perpage=5000` (cuenta y nombre; se quitan las iniciales del avatar). La cuenta encontrada se guarda en la entrevista (`id_usuario_estudiante` o `id_usuario_acompanante`).
   - Después de guardar, se envía el mensaje con el servicio `core_message_send_instant_messages` (habilitado en el campus): quién pide, la fecha propuesta, el motivo y el enlace a esta Página. Si el mensaje falla, la entrevista queda guardada y se avisa.
   - En la vista previa local se busca entre los integrantes de Zhakyz y no se envía ningún mensaje.
+- **2 horas entre entrevistas del mismo día** (desde el 2026-11-03): cuando el tutor o asesor par propone una fecha (solicitud nueva, contraoferta o reprogramación), debe quedar a 2 horas o más de sus otras entrevistas activas del mismo día: las programadas (fecha acordada) y las solicitadas cuya fecha vigente propuso él. Si queda a menos, el campo de fecha se marca en naranja (escala orange de diseno-ui) con un aviso que nombra la otra entrevista, y no se puede enviar. La entrevista que se está cambiando no cuenta. No se controla cuando propone el estudiante ni al aceptar una fecha (`MINUTOS_ENTRE_ENTREVISTAS` = 120).
 - **No se puede pedir una entrevista a un estudiante (por DNI) que ya tiene una activa** (por responder, esperando, programada o sin resultado). El aviso indica con quién la tiene.
 - "Ver detalle del estudiante" necesita `id_usuario_estudiante`. Si falta, avisa.
 
