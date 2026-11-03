@@ -1,7 +1,7 @@
 <!-- SECCIÓN: CONFIGURACIÓN DEL SISTEMA (ROL ADM) · PERÍODO VIGENTE Y CIERRE DEL PERÍODO (ADR-009) -->
 <!-- VA EN: subsección oculta "Configuración" de Zhakyz → Página "Configuración del Sistema" (cmid en moodle.config.json → paginas.configuracion). La abre la tarjeta "Configuración del Sistema" del Hub. Oculta mientras Moodle no detecte roles -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle (show_entries.php, para no dar una omisión a quien respondió y no tiene la copia). ESCRIBE, solo al cerrar: una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos (docs/specs/configuracion.md) -->
+<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle (show_entries.php, para no dar una omisión a quien respondió y no tiene la copia). ESCRIBE, solo al confirmar: al cerrar, una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos; al definir o cambiar la fecha límite de la encuesta, una entrada del mismo período en Períodos (docs/specs/configuracion.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="configuracion-sistema"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -52,10 +52,10 @@
     <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
   </div>
 
-  <!-- MODAL: CERRAR EL PERÍODO (SE ARMA AL ABRIRLO) -->
-  <div id="modal-cierre-config" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-cierre"
+  <!-- MODAL: CERRAR EL PERÍODO O DEFINIR LA FECHA LÍMITE (SE ARMA AL ABRIRLO) -->
+  <div id="modal-config" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-config"
     style="display: none; position: fixed !important; inset: 0 !important; z-index: 10000 !important; background-color: rgba(5, 7, 10, 0.5) !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
-    <div id="caja-modal-cierre"
+    <div id="caja-modal-config"
       style="width: 100% !important; max-width: 560px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
     </div>
   </div>
@@ -102,7 +102,7 @@
       // con las demás vistas). Las omisiones de la vista previa las leen también el Tablero y el Detalle
       var PERIODOS_PRUEBA = [
         { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30', created_at: '2026-03-09T09:00:00-03:00' },
-        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-10', fecha_limite_encuesta: '2026-11-30', created_at: '2026-08-10T09:00:00-03:00' }
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '', created_at: '2026-08-18T09:00:00-03:00' }
       ];
       var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
       var CLAVE_PREVIEW_CIERRE = 'zk-preview-criticidad-cierre';
@@ -575,7 +575,7 @@
       var datos = null;
       var plan = null;
       var errorCarga = '';
-      var modal = null; // { disparador }
+      var modal = null; // { tipo: 'cierre' o 'limite', disparador, guardando }
       var cierre = null; // { total, hechas, creadas: [{ rid, nombre, desaprobada }], error, terminado }
       var fallaPreview = false; // vista previa: la 1.ª omisión falla, para probar que el cierre se detiene sin cambiar el período
       var pulsadoEn = null;
@@ -658,12 +658,19 @@
           problema = '<div style="margin-top: 16px !important;">' + aviso('error', '<b style="font-weight: 600 !important;">No se pudo leer la base Períodos.</b> ' + escapar(p.error) +
             ' Las vistas usan ' + (p.fuente === 'guardado' ? 'el último período leído en cada navegador' : 'el período por defecto') + ' (' + escapar(p.periodo) + '). El cierre queda deshabilitado hasta que la base se pueda leer.') + '</div>';
         }
+        var sinLimite = !esFecha(p.fecha_limite_encuesta);
+        if (!problema && sinLimite) {
+          problema = '<div style="margin-top: 16px !important;">' + aviso('info', '<b style="font-weight: 600 !important;">La fecha límite de la Encuesta Cuatrimestral ' + escapar(p.periodo) + ' todavía no está definida.</b> Se puede definir más adelante. Mientras tanto, Mi Trayectoria no muestra un plazo y el cierre no pide confirmar un cierre anticipado.') + '</div>';
+        }
+        var ocupado = !!(cierre && !cierre.terminado);
+        var accion = '<div style="display: flex !important; justify-content: flex-end !important; margin-top: 16px !important;">' +
+          boton('btn-abrir-limite', sinLimite ? 'Definir la fecha límite' : 'Cambiar la fecha límite', 'secundario', 'calendario', !puedeCerrar() || ocupado) + '</div>';
         var cuerpo = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 16px 24px !important;">' +
           dato('Período', escapar(p.periodo), escapar(periodoVisible(p.periodo))) +
           dato('Inicio', esFecha(p.fecha_inicio) ? fechaVisible(p.fecha_inicio) : '—', 'cierre del período anterior') +
-          dato('Fecha límite de la Encuesta Cuatrimestral', esFecha(p.fecha_limite_encuesta) ? fechaVisible(p.fecha_limite_encuesta) : '—', 'la encuesta sigue abierta hasta el cierre') +
+          dato('Fecha límite de la Encuesta Cuatrimestral', esFecha(p.fecha_limite_encuesta) ? fechaVisible(p.fecha_limite_encuesta) : 'Sin definir', 'la encuesta sigue abierta hasta el cierre') +
           dato('Plazo', dias === null ? '—' : dias + (dias === 1 ? ' día' : ' días'), 'desde el inicio hasta la fecha límite') +
-          '</div>' + problema;
+          '</div>' + problema + accion;
         return tarjeta('card-periodo-config', 'calendario', 'Período vigente', chip(plazo.tono, plazo.texto), cuerpo);
       }
 
@@ -774,24 +781,25 @@
       }
 
       // ---------------------------------------------------------
-      // MODAL: CERRAR EL PERÍODO
+      // MODAL: CERRAR EL PERÍODO O DEFINIR LA FECHA LÍMITE
       // ---------------------------------------------------------
+      var TEXTO_PLAZO = 'El plazo lo define el equipo con el calendario académico. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.';
       var CAMPO = 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
 
       function abrirModal(disparador) {
         if (!puedeCerrar() || (cierre && !cierre.terminado)) return;
-        modal = { disparador: disparador };
+        modal = { tipo: 'cierre', disparador: disparador };
         var p = datos.periodo, nuevo = periodoSiguiente(plan.periodo), plazo = estadoPlazo(p), n = plan.omisiones.length;
         var antes = plazo.antes
           ? '<div style="margin-top: 16px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">Todavía no llegó la fecha límite</b> de la Encuesta Cuatrimestral ' + escapar(plan.periodo) + ' (' + fechaVisible(p.fecha_limite_encuesta) + '). Quienes no respondieron todavía están dentro del plazo.' +
             '<label style="display: flex !important; align-items: flex-start !important; gap: 8px !important; margin: 8px 0 0 0 !important; cursor: pointer !important; font-weight: 500 !important;">' +
             '<input type="checkbox" id="campo-antes-limite" style="margin: 3px 0 0 0 !important; width: 16px !important; height: 16px !important; accent-color: #026bd4 !important;">Cerrar antes de la fecha límite del ' + fechaVisible(p.fecha_limite_encuesta) + '</label>') + '</div>'
           : '';
-        $('caja-modal-cierre').innerHTML =
+        $('caja-modal-config').innerHTML =
           '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
-          '<h5 id="titulo-modal-cierre" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Cerrar el período ' + escapar(plan.periodo) + '</h5>' +
-          '<div id="btn-cerrar-modal-cierre" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
-          '<div id="cuerpo-modal-cierre">' +
+          '<h5 id="titulo-modal-config" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Cerrar el período ' + escapar(plan.periodo) + '</h5>' +
+          '<div id="btn-cerrar-modal-config" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div id="cuerpo-modal-config">' +
           '<ul style="margin: 8px 0 16px 0 !important; padding: 0 0 0 20px !important; color: #0b0e14 !important;">' +
           '<li style="margin-bottom: 4px !important;">Se ' + (n === 1 ? 'agrega 1 entrada' : 'agregan ' + n + ' entradas') + ' de omisión a la base Criticidad (índice ' + INDICE_OMISION + '), cada una desaprobada para que solo la vea el equipo.</li>' +
           '<li style="margin-bottom: 4px !important;">Después, el período vigente pasa a <b style="font-weight: 600 !important;">' + escapar(nuevo) + '</b> (' + escapar(periodoVisible(nuevo)) + '): todos los estudiantes de 2.º año en adelante deben responder la Encuesta Cuatrimestral otra vez.</li>' +
@@ -799,51 +807,111 @@
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
           '<div style="flex: 1 1 200px !important;"><label for="campo-inicio-periodo" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Inicio del período ' + escapar(nuevo) + '</label>' +
           '<input type="date" id="campo-inicio-periodo" value="' + hoy() + '" style="' + CAMPO + '"></div>' +
-          '<div style="flex: 1 1 200px !important;"><label for="campo-limite-periodo" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Fecha límite de la Encuesta Cuatrimestral</label>' +
-          '<input type="date" id="campo-limite-periodo" aria-required="true" aria-describedby="txt-plazo-cierre" style="' + CAMPO + '"></div></div>' +
-          '<div id="txt-plazo-cierre" style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">El plazo lo define el equipo con el calendario académico. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.</div>' +
+          '<div style="flex: 1 1 200px !important;"><label for="campo-limite-periodo" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Fecha límite de la Encuesta Cuatrimestral (opcional)</label>' +
+          '<input type="date" id="campo-limite-periodo" aria-describedby="txt-plazo-cierre" style="' + CAMPO + '"></div></div>' +
+          '<div id="txt-plazo-cierre" style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">' + TEXTO_PLAZO + ' Se puede dejar vacía y definirla después desde Período vigente.</div>' +
           antes +
-          '<div id="txt-error-cierre" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 12px !important;"></div>' +
+          '<div id="txt-error-modal" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 12px !important;"></div>' +
           '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
-          boton('btn-cancelar-cierre', 'Cancelar', 'secundario') + boton('btn-confirmar-cierre', 'Cerrar el período ' + plan.periodo, 'principal', 'verificado') + '</div></div>';
-        $('modal-cierre-config').style.setProperty('display', 'flex', 'important');
-        $('campo-limite-periodo').focus();
+          boton('btn-cancelar-modal', 'Cancelar', 'secundario') + boton('btn-confirmar-cierre', 'Cerrar el período ' + plan.periodo, 'principal', 'verificado') + '</div></div>';
+        $('modal-config').style.setProperty('display', 'flex', 'important');
+        $('campo-inicio-periodo').focus();
+      }
+
+      // DEFINIR O CAMBIAR LA FECHA LÍMITE DEL PERÍODO VIGENTE: UNA ENTRADA NUEVA DEL MISMO PERÍODO EN PERÍODOS (LA VIGENTE ES LA ÚLTIMA)
+      function abrirModalLimite(disparador) {
+        if (!puedeCerrar() || (cierre && !cierre.terminado)) return;
+        modal = { tipo: 'limite', disparador: disparador };
+        var p = datos.periodo, actual = esFecha(p.fecha_limite_encuesta) ? p.fecha_limite_encuesta : '';
+        $('caja-modal-config').innerHTML =
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
+          '<h5 id="titulo-modal-config" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">' + (actual ? 'Cambiar' : 'Definir') + ' la fecha límite de ' + escapar(p.periodo) + '</h5>' +
+          '<div id="btn-cerrar-modal-config" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div id="cuerpo-modal-config">' +
+          '<p style="margin: 8px 0 16px 0 !important; color: #47536b !important;">Se agrega una entrada a la base Períodos con el mismo período (' + escapar(p.periodo) + ', inicio ' + (esFecha(p.fecha_inicio) ? fechaVisible(p.fecha_inicio) : 'sin definir') +
+          ') y la fecha nueva. La vigente es la última entrada, así que Mi Trayectoria y el cierre toman esta fecha. La encuesta no se cierra en esa fecha.</p>' +
+          '<label for="campo-limite-vigente" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Fecha límite de la Encuesta Cuatrimestral ' + escapar(p.periodo) + '</label>' +
+          '<input type="date" id="campo-limite-vigente" value="' + actual + '" aria-required="true" aria-describedby="txt-plazo-limite" style="' + CAMPO + ' max-width: 240px !important;">' +
+          '<div id="txt-plazo-limite" style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">' + TEXTO_PLAZO + '</div>' +
+          '<div id="txt-error-modal" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 12px !important;"></div>' +
+          '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
+          boton('btn-cancelar-modal', 'Cancelar', 'secundario') + boton('btn-guardar-limite', 'Guardar la fecha límite', 'principal', 'calendario') + '</div></div>';
+        $('modal-config').style.setProperty('display', 'flex', 'important');
+        $('campo-limite-vigente').focus();
+        if (actual) actualizarPlazoLimite();
       }
 
       function cerrarModal() {
-        if (!modal || (cierre && !cierre.terminado)) return;
-        $('modal-cierre-config').style.setProperty('display', 'none', 'important');
-        var disparador = modal.disparador;
+        if (!modal || modal.guardando || (cierre && !cierre.terminado)) return;
+        $('modal-config').style.setProperty('display', 'none', 'important');
+        var disparador = modal.disparador, tipo = modal.tipo;
         modal = null;
-        var nuevo = disparador && document.body.contains(disparador) ? disparador : $('btn-abrir-cierre') || $('btn-releer-config');
+        var nuevo = disparador && document.body.contains(disparador) ? disparador : $(tipo === 'limite' ? 'btn-abrir-limite' : 'btn-abrir-cierre') || $('btn-releer-config');
         if (nuevo) nuevo.focus();
       }
 
       function mostrarError(texto) {
-        var e = $('txt-error-cierre');
+        var e = $('txt-error-modal');
         e.textContent = texto;
         e.style.setProperty('display', 'block', 'important');
       }
 
+      // TEXTO DEL PLAZO DEBAJO DEL CAMPO DE FECHA LÍMITE (SOLO CON LAS DOS FECHAS Y LA LÍMITE POSTERIOR AL INICIO)
+      function textoPlazo(i, l) {
+        if (!(esFecha(i) && esFecha(l) && diasEntre(i, l) > 0)) return TEXTO_PLAZO;
+        var d = diasEntre(i, l);
+        return 'Plazo: ' + d + (d === 1 ? ' día' : ' días') + ', del ' + fechaVisible(i) + ' al ' + fechaVisible(l) + '. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.';
+      }
+
       function actualizarPlazo() {
-        var i = $('campo-inicio-periodo').value, l = $('campo-limite-periodo').value;
-        var t = $('txt-plazo-cierre');
-        if (esFecha(i) && esFecha(l) && diasEntre(i, l) > 0) {
-          var d = diasEntre(i, l);
-          t.textContent = 'Plazo: ' + d + (d === 1 ? ' día' : ' días') + ', del ' + fechaVisible(i) + ' al ' + fechaVisible(l) + '. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.';
-        }
-        $('txt-error-cierre').style.setProperty('display', 'none', 'important');
+        var l = $('campo-limite-periodo').value;
+        $('txt-plazo-cierre').textContent = l ? textoPlazo($('campo-inicio-periodo').value, l) : TEXTO_PLAZO + ' Se puede dejar vacía y definirla después desde Período vigente.';
+        $('txt-error-modal').style.setProperty('display', 'none', 'important');
+      }
+
+      function actualizarPlazoLimite() {
+        $('txt-plazo-limite').textContent = textoPlazo(datos.periodo.fecha_inicio, $('campo-limite-vigente').value);
+        $('txt-error-modal').style.setProperty('display', 'none', 'important');
       }
 
       // VALIDA EL FORMULARIO → { periodo, fecha_inicio, fecha_limite_encuesta } O UN ERROR
       function leerFormulario() {
         var i = $('campo-inicio-periodo').value, l = $('campo-limite-periodo').value;
         if (!esFecha(i)) return { error: 'Inicio del período: "' + i + '" debe ser una fecha (AAAA-MM-DD).' };
-        if (!esFecha(l)) return { error: 'Fecha límite de la Encuesta Cuatrimestral: falta la fecha (AAAA-MM-DD).' };
-        if (diasEntre(i, l) <= 0) return { error: 'Fecha límite de la Encuesta Cuatrimestral: "' + fechaVisible(l) + '" debe ser posterior al inicio del período (' + fechaVisible(i) + ').' };
+        if (l && !esFecha(l)) return { error: 'Fecha límite de la Encuesta Cuatrimestral: "' + l + '" debe ser una fecha (AAAA-MM-DD) o quedar vacía.' };
+        if (l && diasEntre(i, l) <= 0) return { error: 'Fecha límite de la Encuesta Cuatrimestral: "' + fechaVisible(l) + '" debe ser posterior al inicio del período (' + fechaVisible(i) + ').' };
         var check = $('campo-antes-limite');
         if (check && !check.checked) return { error: 'Cerrar antes de la fecha límite: marcar la casilla para confirmar el cierre anticipado.' };
-        return { nuevo: { periodo: periodoSiguiente(plan.periodo), fecha_inicio: i, fecha_limite_encuesta: l } };
+        return { nuevo: { periodo: periodoSiguiente(plan.periodo), fecha_inicio: i, fecha_limite_encuesta: l || '' } };
+      }
+
+      // GUARDA LA FECHA LÍMITE DEL PERÍODO VIGENTE (UNA ENTRADA NUEVA DEL MISMO PERÍODO)
+      function guardarLimite() {
+        if (!modal || modal.tipo !== 'limite' || modal.guardando) return;
+        var p = datos.periodo, l = $('campo-limite-vigente').value;
+        if (!esFecha(l)) return mostrarError('Fecha límite de la Encuesta Cuatrimestral: falta la fecha (AAAA-MM-DD).');
+        if (esFecha(p.fecha_inicio) && diasEntre(p.fecha_inicio, l) <= 0) return mostrarError('Fecha límite de la Encuesta Cuatrimestral: "' + fechaVisible(l) + '" debe ser posterior al inicio del período (' + fechaVisible(p.fecha_inicio) + ').');
+        if (l === p.fecha_limite_encuesta) return mostrarError('Fecha límite de la Encuesta Cuatrimestral: "' + fechaVisible(l) + '" es la fecha que ya está definida.');
+        var m = modal;
+        m.guardando = true;
+        var btn = $('btn-guardar-limite');
+        btn.lastChild.textContent = 'Guardando…';
+        guardarPeriodo({ periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: l }).then(function(rid) {
+          m.guardando = false;
+          $('aviso-resultado-config').innerHTML = aviso('ok', '<b style="font-weight: 600 !important;">Se definió la fecha límite de la Encuesta Cuatrimestral ' + escapar(p.periodo) + ':</b> ' + fechaVisible(l) +
+            '. Se agregó a la base Períodos (rid ' + escapar(rid) + ').');
+          mostrar($('aviso-resultado-config'), true);
+          cerrarModal();
+          // La tarjeta se vuelve a armar: el foco vuelve a su botón
+          leerYRenderizar().then(function() {
+            var b = $('btn-abrir-limite');
+            if (b) b.focus();
+          });
+        }, function(e) {
+          m.guardando = false;
+          btn.lastChild.textContent = 'Guardar la fecha límite';
+          mostrarError('No se pudo guardar: ' + (e && e.message ? e.message : e));
+        });
       }
 
       // ---------------------------------------------------------
@@ -886,7 +954,7 @@
         var texto = c.fase === 'leyendo' ? 'Volviendo a leer las bases para confirmar quiénes no respondieron…'
           : c.fase === 'periodo' ? 'Guardando el período ' + c.nuevo.periodo + '…'
           : 'Guardando la omisión ' + Math.min(c.hechas + 1, c.total) + ' de ' + c.total + '…';
-        $('cuerpo-modal-cierre').innerHTML =
+        $('cuerpo-modal-config').innerHTML =
           '<p style="margin: 8px 0 12px 0 !important; color: #47536b !important;">No cerrar esta pestaña hasta que termine. Si se cierra, volver a cerrar el período retoma donde quedó.</p>' +
           '<div style="font-weight: 500 !important; margin-bottom: 8px !important;" aria-live="polite">' + escapar(texto) + '</div>' +
           '<div role="progressbar" aria-label="Progreso del cierre" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" style="height: 8px !important; border-radius: 999px !important; background-color: #ebeef4 !important; overflow: hidden !important;">' +
@@ -947,7 +1015,7 @@
         } else {
           html = aviso('ok', '<b style="font-weight: 600 !important;">Se cerró el período ' + escapar(c.periodo) + '.</b> ' +
             (c.creadas.length === 1 ? 'Se agregó 1 omisión' : 'Se agregaron ' + c.creadas.length + ' omisiones') + ' a la base Criticidad. El período vigente es ' + escapar(c.nuevo.periodo) +
-            ', con fecha límite de la Encuesta Cuatrimestral el ' + fechaVisible(c.nuevo.fecha_limite_encuesta) + '.' + lista);
+            (esFecha(c.nuevo.fecha_limite_encuesta) ? ', con fecha límite de la Encuesta Cuatrimestral el ' + fechaVisible(c.nuevo.fecha_limite_encuesta) + '.' : ', sin fecha límite de la Encuesta Cuatrimestral: se define desde Período vigente.') + lista);
         }
         if (sinDesaprobar.length) {
           html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">Moodle no confirmó la desaprobación de ' + sinDesaprobar.length + (sinDesaprobar.length === 1 ? ' entrada' : ' entradas') + '</b> (rid ' +
@@ -955,7 +1023,7 @@
         }
         $('aviso-resultado-config').innerHTML = html;
         mostrar($('aviso-resultado-config'), true);
-        $('modal-cierre-config').style.setProperty('display', 'none', 'important');
+        $('modal-config').style.setProperty('display', 'none', 'important');
         modal = null;
         leerYRenderizar().then(function() {
           var b = $('btn-releer-config');
@@ -1003,9 +1071,10 @@
         if (!t.closest || !t.closest('#configuracion-sistema')) return;
         if (t.closest('[aria-disabled="true"]')) return;
         if (modal) {
-          var enFondo = t.id === 'modal-cierre-config' && pulsadoEn === t;
-          if (enFondo || t.closest('#btn-cerrar-modal-cierre') || t.closest('#btn-cancelar-cierre')) return cerrarModal();
+          var enFondo = t.id === 'modal-config' && pulsadoEn === t;
+          if (enFondo || t.closest('#btn-cerrar-modal-config') || t.closest('#btn-cancelar-modal')) return cerrarModal();
           if (t.closest('#btn-confirmar-cierre')) return confirmarCierre();
+          if (t.closest('#btn-guardar-limite')) return guardarLimite();
           return;
         }
         if (t.closest('#btn-falla-preview')) { fallaPreview = !fallaPreview; return marcarFallaPreview(); }
@@ -1013,16 +1082,19 @@
         if (t.closest('#btn-releer-config')) { mostrar($('aviso-resultado-config'), false); return leerYRenderizar(); }
         var abrir = t.closest('#btn-abrir-cierre');
         if (abrir) return abrirModal(abrir);
+        var limite = t.closest('#btn-abrir-limite');
+        if (limite) return abrirModalLimite(limite);
       });
 
       document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
 
       document.addEventListener('input', function(e) {
         if (e.target.id === 'campo-inicio-periodo' || e.target.id === 'campo-limite-periodo') actualizarPlazo();
+        if (e.target.id === 'campo-limite-vigente') actualizarPlazoLimite();
       });
 
       document.addEventListener('change', function(e) {
-        if (e.target.id === 'campo-antes-limite') $('txt-error-cierre').style.setProperty('display', 'none', 'important');
+        if (e.target.id === 'campo-antes-limite') $('txt-error-modal').style.setProperty('display', 'none', 'important');
       });
 
       document.addEventListener('keydown', function(e) {
@@ -1030,10 +1102,10 @@
         if (modal && e.key === 'Escape') { e.preventDefault(); return cerrarModal(); }
         // Tab dentro del modal: no sale de la caja
         if (modal && e.key === 'Tab') {
-          var foco = document.querySelectorAll('#caja-modal-cierre input, #caja-modal-cierre [role="button"]:not([aria-disabled="true"])');
+          var foco = document.querySelectorAll('#caja-modal-config input, #caja-modal-config [role="button"]:not([aria-disabled="true"])');
           if (!foco.length) { e.preventDefault(); return; }
           var primero = foco[0], ultimo = foco[foco.length - 1];
-          if (!$('caja-modal-cierre').contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? ultimo : primero).focus(); }
+          if (!$('caja-modal-config').contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? ultimo : primero).focus(); }
           else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
           else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
           return;
