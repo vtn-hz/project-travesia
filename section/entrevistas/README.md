@@ -15,14 +15,14 @@
 - Cada entrevista es una entrada de la base Entrevistas con sus **involucrados** (DNI, nombre y cuenta del estudiante; tipo, cuenta y nombre del acompañante), su estado y sus fechas. No hay base de asignaciones: Acompañamientos se eliminó el 2026-11-01.
 - El acompañante es el usuario de la sesión que pide la entrevista (`M.cfg.userId` y el nombre del menú de usuario de Moodle).
 - Todos los roles ven todas las entrevistas, y no se puede pedir otra a un DNI que ya tiene una activa.
-- **Quién pide:** un tutor o asesor par escribe el nombre y el DNI del estudiante; un estudiante (rol EST) escribe el nombre del tutor o asesor par destinatario. El estudiante ve solo sus entrevistas. En Moodle el rol EST todavía no se detecta: por ahora solo se ve en la vista previa local.
+- **Quién pide:** un tutor o asesor par escribe el nombre y el DNI del estudiante; un estudiante (rol EST) escribe el nombre del tutor o asesor par destinatario. El estudiante ve solo sus entrevistas. En Moodle el rol sale del grupo del usuario (ver Pendiente, punto 1).
 - La Página lee la base desde `/mod/data/view.php`. La plantilla de lista es una tabla con el formato de la base Materias (una fila `tr.zk-registro` con `data-rid` por entrevista); cada campo va como texto en un elemento con `data-campo="…"`, y los que no se muestran (cuentas, `propuestas_json` y `acciones_json`) van en una celda oculta. **No usar atributos `data-*` para los campos:** Moodle no escapa las comillas del texto y un JSON o un motivo con comillas corta el atributo. Si se cambia la plantilla, subirla con `node .skills/publicar-seccion/subir_plantillas.js --clave entrevistas`.
 - Para guardar, usa los `field_<id>` de la base (`CAMPOS_ENTREVISTAS`, 1339 a 1353). Si se recrean los campos, hay que actualizarlos.
 
 ## Pendiente
 
-1. **Detección de roles** por grupo (ADM, TUT, PAR): hasta entonces todos entran como ADM y pueden gestionar cualquier entrevista.
-2. **Lado del estudiante** (pedir, aceptar o contraofertar): no entra en el modelo reducido. Desde SCRUM-24 (local) el estudiante llega desde Mi Trayectoria (`section/vista_estudiante`, tarjeta *Entrevistas y Tutorías*), así que la detección del rol EST pasa a ser necesaria para que no vea la página como ADM.
+1. **Detección de roles por grupo** (local desde el 2026-11-02, sin publicar): `Zhakyz_Tutor` → TUT, `Zhakyz_AsesorPar` → PAR, `Zhakyz_Estudiante` → EST. Sin ninguno de esos grupos, el rol del curso: Profesor → ADM, Profesor sin permiso de edición → TUT, Estudiante → EST. Está en `GRUPOS_ROL`, `ROLES_CURSO` y `detectarRol()`. Al publicar, verificar en el campus qué método responde (el servicio `core_group_get_course_user_groups` o el perfil del usuario en el curso) y que el perfil muestre los roles.
+2. **Lado del estudiante** (pedir, aceptar o contraofertar): no entra en el modelo reducido. Desde SCRUM-24 (local) el estudiante llega desde Mi Trayectoria (`section/vista_estudiante`, tarjeta *Entrevistas y Tutorías*), y ahora se lo reconoce como EST por el grupo `Zhakyz_Estudiante`.
 
 ## Cómo verla en local
 

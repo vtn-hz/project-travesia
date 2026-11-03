@@ -135,8 +135,26 @@
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM.
+      // En local arranca en ADM (se cambia con la barra de vista previa). En Moodle, el rol sale del grupo
+      // del usuario en el curso (GRUPOS_ROL) y, si no está en ninguno, del rol del curso (ROLES_CURSO).
       var ROL_INICIAL = 'ADM';
+      // Solo si Moodle no responde y no se puede leer ni el grupo ni el rol: la vista con menos permisos
+      var ROL_SIN_DETECTAR = 'EST';
+      var CURSO = 1732; // @config curso
+      // Grupo de Moodle → rol, en orden de prioridad: si alguien está en más de uno, vale el primero
+      var GRUPOS_ROL = [
+        { grupo: 'Zhakyz_Tutor', rol: 'TUT' },
+        { grupo: 'Zhakyz_AsesorPar', rol: 'PAR' },
+        { grupo: 'Zhakyz_Estudiante', rol: 'EST' }
+      ];
+      // Rol del curso → rol, en orden de prioridad. nombres: cómo lo muestra el perfil (sin tildes ni mayúsculas);
+      // roleid: el id estándar de Moodle, por si el campus le cambió el nombre.
+      // "Profesor sin permiso de edición" va antes que "Profesor" para no confundirlos.
+      var ROLES_CURSO = [
+        { rol: 'ADM', roleid: '3', nombres: ['profesor', 'teacher', 'editing teacher', 'docente'] },
+        { rol: 'TUT', roleid: '4', nombres: ['profesor sin permiso de edicion', 'profesor sin permisos de edicion', 'non-editing teacher', 'profesor no editor'] },
+        { rol: 'EST', roleid: '5', nombres: ['estudiante', 'student', 'alumno'] }
+      ];
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Fecha de los datos de prueba: así las entrevistas "próximas" y "sin resultado" no cambian con el día
@@ -1039,6 +1057,82 @@
       }
 
       // ---------------------------------------------------------
+      // DETECCIÓN DEL ROL POR GRUPO DE MOODLE
+      // ---------------------------------------------------------
+      // GRUPOS DEL USUARIO EN EL CURSO, CON EL SERVICIO AJAX DE MOODLE (core_group_get_course_user_groups)
+      function gruposPorServicio() {
+        var url = M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + encodeURIComponent(M.cfg.sesskey) +
+          '&info=core_group_get_course_user_groups';
+        var cuerpo = [{ index: 0, methodname: 'core_group_get_course_user_groups', args: { courseid: CURSO, userid: Number(M.cfg.userId) } }];
+        return fetch(url, {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo)
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (!res || !res[0] || res[0].error || !res[0].data) throw new Error('Servicio de grupos no disponible');
+            return res[0].data.groups.map(function(g) { return g.name; });
+          });
+      }
+
+      // PERFIL DEL USUARIO EN EL CURSO (SE LEE UNA SOLA VEZ: SIRVE PARA LOS GRUPOS Y PARA LOS ROLES)
+      var perfilCurso = null;
+      function leerPerfilCurso() {
+        if (!perfilCurso) {
+          var url = M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(M.cfg.userId) + '&course=' + CURSO;
+          perfilCurso = fetch(url, { credentials: 'same-origin' })
+            .then(function(r) { return r.text(); })
+            .then(function(html) { return new DOMParser().parseFromString(html, 'text/html'); });
+        }
+        return perfilCurso;
+      }
+
+      // ALTERNATIVA: LOS GRUPOS QUE MUESTRA EL PERFIL DEL USUARIO EN EL CURSO (BLOQUE "GRUPOS")
+      function gruposPorPerfil() {
+        return leerPerfilCurso().then(function(doc) {
+          var texto = doc.body.textContent.replace(/\s+/g, ' ');
+          return GRUPOS_ROL.map(function(g) { return g.grupo; }).filter(function(nombre) {
+            return new RegExp('(^|[^A-Za-z0-9_])' + nombre + '($|[^A-Za-z0-9_])').test(texto);
+          });
+        });
+      }
+
+      // ROL DEL CURSO: EL PERFIL LISTA CADA ROL COMO UN LINK A LOS PARTICIPANTES CON "roleid=<id>"
+      function rolPorRolDelCurso() {
+        return leerPerfilCurso().then(function(doc) {
+          var propios = Array.prototype.map.call(doc.querySelectorAll('a[href*="roleid="]'), function(a) {
+            var m = a.getAttribute('href').match(/[?&]roleid=(\d+)/);
+            return { roleid: m ? m[1] : '', nombre: normalizar(a.textContent) };
+          });
+          for (var i = 0; i < ROLES_CURSO.length; i++) {
+            var r = ROLES_CURSO[i];
+            for (var j = 0; j < propios.length; j++) {
+              // Si el nombre es uno conocido, manda el nombre; el roleid solo decide cuando el nombre no se reconoce
+              var conocido = ROLES_CURSO.some(function(x) { return x.nombres.indexOf(propios[j].nombre) !== -1; });
+              if (conocido ? r.nombres.indexOf(propios[j].nombre) !== -1 : propios[j].roleid === r.roleid) return r.rol;
+            }
+          }
+          return null;
+        });
+      }
+
+      // ROL DEL USUARIO DE LA SESIÓN: PRIMERO EL GRUPO (GRUPOS_ROL), DESPUÉS EL ROL DEL CURSO (ROLES_CURSO)
+      function detectarRol() {
+        if (ES_VISTA_LOCAL || !window.M || !M.cfg || !M.cfg.userId) return Promise.resolve(ROL_INICIAL);
+        return gruposPorServicio()
+          .catch(gruposPorPerfil)
+          .catch(function() { return []; })
+          .then(function(grupos) {
+            var propios = grupos.map(function(n) { return normalizar(n); });
+            for (var i = 0; i < GRUPOS_ROL.length; i++) {
+              if (propios.indexOf(normalizar(GRUPOS_ROL[i].grupo)) !== -1) return GRUPOS_ROL[i].rol;
+            }
+            return rolPorRolDelCurso().then(function(rol) { return rol || ROL_SIN_DETECTAR; });
+          })
+          .catch(function() { return ROL_SIN_DETECTAR; });
+      }
+
+      // ---------------------------------------------------------
       // ROL Y VISTA PREVIA LOCAL
       // ---------------------------------------------------------
       function aplicarRol(rol) {
@@ -1180,9 +1274,9 @@
       }
 
       function iniciarDatos() {
-        return cargarDatos().then(function(d) {
-          entrevistas = d;
-          aplicarRol(rolActual);
+        return Promise.all([cargarDatos(), detectarRol()]).then(function(r) {
+          entrevistas = r[0];
+          aplicarRol(r[1]);
           var usuario = usuarioDelHash();
           if (usuario) abrirSolicitud(usuario);
         }).catch(function(e) {
