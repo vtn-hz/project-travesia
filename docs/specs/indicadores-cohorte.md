@@ -3,8 +3,8 @@
 > Documento vivo — se actualiza a medida que se refinan los requerimientos.
 
 - **Archivo:** `section/indicadores_cohorte/content.html`
-- **Acceso:** tarjeta "Indicadores de Cohorte" del [menú inicial](../../section/menu_inicial/content.html) (en la vista previa local)
-- **Estado:** versión provisoria, **solo en el repo**. No está publicada en Moodle
+- **Acceso:** botón "Ver indicadores" de la tarjeta "Indicadores de Cohorte" del [menú inicial](../../section/menu_inicial/content.html)
+- **Estado:** versión provisoria, **publicada** el 2026-11-02 como Página "Indicadores de Cohorte" (cmid 60283) en la subsección Hub
 - **Requerimientos:** Seguimiento de Trayectoria, Cuellos de Botella e Inteligencia de Negocio (semáforos), más la configuración de indicadores por el equipo gestor
 - **Última actualización:** 2026-11-02
 
@@ -66,8 +66,6 @@ Para publicarla, conviene leerlos en vivo: la base Encuestas y CargaMateriasPrim
 
 ## Pendientes
 
-- **Texto de la tarjeta del Hub:** promete retención, desgranamiento, egreso y duración real, que quedaron fuera. Antes de publicar hay que cambiarlo (propuesta en [`INDICADORES_NO_IMPLEMENTADOS.md`](../models/INDICADORES_NO_IMPLEMENTADOS.md#consecuencia-para-el-hub)).
 - **Valores por cohorte:** calcular los indicadores con datos disponibles (avance curricular, materias críticas por correlativas, dificultad y recursado) a partir de las bases Respuestas, Materias y Criticidad.
 - **Leer los puntos y los cortes en vivo** en lugar de copiarlos.
-- **Publicar** en la subsección Hub, con confirmación ([`RULES.md`](../../RULES.md), regla 3), y conectar la tarjeta en `DESTINOS_MOODLE` del menú.
 - **Detección de roles** en Moodle, por grupos.

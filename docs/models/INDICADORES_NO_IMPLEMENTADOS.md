@@ -82,7 +82,7 @@ Indicadores del [documento de trayectoria y terminalidad](../context/research/IN
 
 ## Consecuencia para el Hub
 
-La tarjeta "Indicadores de Cohorte" promete *retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas*. Con este recorte, cuatro de esos seis quedan fuera. Si la vista se publica así, el texto de la tarjeta tiene que cambiar, por ejemplo: "Avance curricular, índice de ritmo, ubicación en el plan, materias críticas y criterios de criticidad".
+La tarjeta "Indicadores de Cohorte" promete *retención, desgranamiento, índice de ritmo, egreso, duración real y materias críticas*. Con este recorte, cuatro de esos seis quedaron fuera. Al publicar la sección (2026-11-02) el texto cambió a "Avance curricular, índice de ritmo, materias críticas y cómo se calcula la criticidad de cada estudiante".
 
 ## Qué destrabaría los "muy difíciles"
 
