@@ -124,6 +124,7 @@
       };
       // Destino de cada tarjeta en Moodle (solo las actividades ya publicadas en Zhakyz)
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_PAGINA_TABLERO = 60287; // @config paginas.tablero
       var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
       var CMID_PAGINA_INDICADORES = 60283; // @config paginas.indicadores_cohorte
@@ -133,6 +134,7 @@
         'btn-plan-estudios': '/mod/page/view.php?id=' + CMID_PAGINA_PLAN,
         'btn-notas-primero': '/mod/data/view.php?id=' + CMID_BASE_PARCIALES_PRIMERO
       };
+      if (CMID_PAGINA_TABLERO) DESTINOS_MOODLE['btn-tablero-criticidad'] = '/mod/page/view.php?id=' + CMID_PAGINA_TABLERO;
       if (CMID_PAGINA_ENTREVISTAS) DESTINOS_MOODLE['btn-entrevistas'] = '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS;
       if (CMID_PAGINA_INDICADORES) DESTINOS_MOODLE['btn-indicadores'] = '/mod/page/view.php?id=' + CMID_PAGINA_INDICADORES;
       // Acceso "Ver como estudiante" (oculto por ahora)
@@ -233,10 +235,10 @@
       ];
 
       // ---------------------------------------------------------
-      // DEFINICIÓN DE TARJETAS (UNA SOLA ACCIÓN PRINCIPAL: EL TABLERO)
+      // DEFINICIÓN DE TARJETAS (TODAS CON EL MISMO BOTÓN; LAS QUE NO TIENEN DESTINO SE MUESTRAN DESHABILITADAS)
       // ---------------------------------------------------------
       var TARJETAS = [
-        { id: 'tablero-criticidad', grupo: 'seguimiento', icono: 'tablero', titulo: 'Tablero de Criticidad', texto: 'Estado calculado y asignado de cada estudiante, y a quién contactar.', cta: 'Ver estudiantes', principal: true, roles: ['ADM', 'GES', 'TUT'] },
+        { id: 'tablero-criticidad', grupo: 'seguimiento', icono: 'tablero', titulo: 'Tablero de Criticidad', texto: 'Estado calculado y asignado de cada estudiante, y a quién contactar.', cta: 'Ver estudiantes', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'entrevistas', grupo: 'seguimiento', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', roles: ['ADM', 'TUT', 'PAR'] },
         { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Avance curricular, índice de ritmo, materias críticas y cómo se calcula la criticidad de cada estudiante.', cta: 'Ver indicadores', roles: ['ADM', 'GES', 'TUT'] },
         { id: 'reportes', grupo: 'seguimiento', icono: 'reportes', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', roles: ['ADM', 'GES', 'TUT'] },
@@ -271,13 +273,21 @@
           '<span style="color: ' + color + ' !important;">' + icono(item.ok ? 'ok' : 'error', 18) + '</span>' + item.texto + '</span>';
       }
 
+      // UNA TARJETA ESTÁ IMPLEMENTADA SI TIENE DESTINO (EN LOCAL O EN MOODLE)
+      function implementada(t) {
+        return !!(DESTINOS_LOCAL['btn-' + t.id] || DESTINOS_MOODLE['btn-' + t.id]);
+      }
+
       // HTML DE UNA TARJETA DE MÓDULO
       function htmlTarjeta(t) {
-        var boton = t.principal
-          ? 'border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important;'
-          : 'border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important;';
-        return '<div id="card-' + t.id + '" data-roles="' + t.roles.join(',') +
-          '" style="flex: 1 1 340px !important; max-width: 401px !important; ' + TARJETA + ' gap: 16px !important; justify-content: space-between !important;">' +
+        var activa = implementada(t);
+        var boton = activa
+          ? 'border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important; cursor: pointer !important;'
+          : 'border: 1px solid #ebeef4 !important; background-color: #f5f6fa !important; color: #94a0b8 !important; cursor: not-allowed !important;';
+        // Sin implementar: atenuada, sin acción y con "Próximamente" en lugar del botón
+        var accion = activa ? ' data-accion="tarjeta" role="button" tabindex="0"' : ' role="button" aria-disabled="true"';
+        return '<div id="card-' + t.id + '" data-roles="' + t.roles.join(',') + '"' + (activa ? '' : ' data-sin-implementar="true"') +
+          ' style="flex: 1 1 340px !important; max-width: 401px !important; ' + TARJETA + ' gap: 16px !important; justify-content: space-between !important;' + (activa ? '' : ' opacity: 0.6 !important;') + '">' +
           '<div>' +
           '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 8px !important; margin-bottom: 12px !important;">' +
           '<span style="width: 36px !important; height: 36px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
@@ -286,9 +296,9 @@
           t.roles.map(chipRol).join('') + '</div></div>' +
           '<h4 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important;">' + t.titulo + '</h4>' +
           '<p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">' + t.texto + '</p></div>' +
-          '<div id="btn-' + t.id + '" data-accion="tarjeta" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; ' + boton +
-          ' font-size: 14px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important; cursor: pointer !important;">' +
-          t.cta + icono('flecha', 18) + '</div></div>';
+          '<div id="btn-' + t.id + '"' + accion + ' style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; ' + boton +
+          ' font-size: 14px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important;">' +
+          (activa ? t.cta + icono('flecha', 18) : 'Próximamente') + '</div></div>';
       }
 
       // PINTAR TODAS LAS GRILLAS
