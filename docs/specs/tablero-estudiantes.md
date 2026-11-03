@@ -86,6 +86,7 @@ Son los **6 integrantes de Zhakyz** ([EQUIPO_ZHAKYZ](../context/EQUIPO_ZHAKYZ.md
 - Publicar el tablero y el detalle, y cargar `paginas.tablero` y `paginas.detalle` (requiere confirmación).
 - Publicar la plantilla de lista de Criticidad con la columna `autor`.
 - **Privacidad de las asignaciones:** Moodle aprueba solas las entradas de quien puede aprobar (el equipo docente), y una entrada aprobada la ve cualquiera que pueda abrir la base, incluidos los estudiantes. Revisar el acceso a la base Criticidad antes de asignar estados reales.
-- Detectar el rol en Moodle (por grupos): hoy arranca como ADM.
+- Detectar el rol en Moodle (por grupos): hoy arranca como ADM. Fuera del alcance de SCRUM-21: en la prueba con un Moodle simulado (2026-11-03), una sesión de estudiante vio las filas de otros estudiantes y pudo guardar una asignación. Hay que resolverlo antes de publicar, restringiendo el acceso a la Página o detectando el rol.
+- **Asignaciones falsificables:** el estado asignado es la última entrada `origen = manual`, sin mirar quién la cargó, y los estudiantes pueden escribir en Criticidad (ADR-007). Un estudiante podría cargarse un `semaforo = verde` desde el formulario de la base. Hay que aceptar solo las manuales del equipo (por autor o aprobación) o llevarlas a una base que solo escriba el equipo. También queda fuera del alcance de SCRUM-21 por depender de los roles.
 - La entrada de omisión (`fuente = omision`) todavía no la genera nadie. Mientras tanto, quien no respondió la Cuatrimestral del período figura *Sin calcular*.
 - Leer todas las bases en el navegador puede ser pesado con muchos estudiantes ([ADR-005](../decisions/005-modelo-de-bases-moodle.md)).

@@ -72,5 +72,5 @@ Como el tablero (Página Tools y `LeerBase`), más CargaParcialesPrimero (por co
 ## Pendientes
 
 - Publicar el detalle y el tablero, y cargar `paginas.detalle` y `paginas.tablero` (requiere confirmación).
-- Detectar el rol en Moodle (por grupos).
+- Detectar el rol en Moodle (por grupos) y no aceptar asignaciones manuales de fuera del equipo: ver los [pendientes del tablero](tablero-estudiantes.md#pendientes).
 - Los mismos pendientes de privacidad y de la omisión que el [tablero](tablero-estudiantes.md#pendientes).
