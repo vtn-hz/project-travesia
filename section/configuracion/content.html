@@ -1,0 +1,996 @@
+<!-- SECCIÓN: CONFIGURACIÓN DEL SISTEMA (ROL ADM) · PERÍODO VIGENTE Y CIERRE DEL PERÍODO (ADR-009) -->
+<!-- VA EN: subsección oculta "Configuración" de Zhakyz → Página "Configuración del Sistema" (cmid en moodle.config.json → paginas.configuracion). La abre la tarjeta "Configuración del Sistema" del Hub. Oculta mientras Moodle no detecte roles -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período) y Criticidad (entradas del período). ESCRIBE, solo al cerrar: una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos (docs/specs/configuracion.md) -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="configuracion-sistema"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
+  <nolink>
+
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-config"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; margin: 0 0 20px 0 !important; padding: 10px 14px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; border-radius: 10px !important; color: #0b0e14 !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span id="txt-aviso-datos-config"><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios, los mismos del Tablero de Criticidad. Lo que se cierra en la vista previa queda en este navegador.</span>
+  </div>
+
+  <!-- ENCABEZADO -->
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 24px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Gestión de datos y configuración</div>
+      <h3
+        style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Configuración del Sistema</h3>
+      <p
+        style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
+        Período vigente y cierre del período, con las alertas por omisión de la Encuesta Cuatrimestral.</p>
+    </div>
+    <div id="badge-rol-config"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO DEL ÚLTIMO CIERRE (RESULTADO) -->
+  <div id="aviso-resultado-config" role="status" style="display: none; margin: 0 0 20px 0 !important;"></div>
+
+  <!-- CONTENIDO: PERÍODO VIGENTE, CIERRE E HISTORIAL (SE ARMA AL LEER LAS BASES) -->
+  <div id="contenido-config">
+    <div style="padding: 32px !important; text-align: center !important; color: #47536b !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
+      Leyendo las bases Períodos, Estudiantes, Respuestas y Criticidad…</div>
+  </div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span
+      style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">
+      Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- MODAL: CERRAR EL PERÍODO (SE ARMA AL ABRIRLO) -->
+  <div id="modal-cierre-config" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-cierre"
+    style="display: none; position: fixed !important; inset: 0 !important; z-index: 10000 !important; background-color: rgba(5, 7, 10, 0.5) !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
+    <div id="caja-modal-cierre"
+      style="width: 100% !important; max-width: 560px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
+    </div>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-configuracion-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-configuracion-style';
+        styleEl.innerHTML =
+          '#configuracion-sistema > nolink { display: block; }' +
+          '@keyframes zk-aparecer-config { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
+          '#configuracion-sistema [role="button"]:focus-visible, #configuracion-sistema input:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
+          '#configuracion-sistema [role="button"][aria-disabled="true"] { cursor: not-allowed !important; opacity: 0.5 !important; }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_PERIODOS = null; // @config bases.periodos.dataid
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
+      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
+      var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
+
+      // Índice de una omisión: el piso del rojo (ADR-009, docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md → Omisión)
+      var INDICE_OMISION = 70;
+      // Semáforo y grupos de fuentes del índice total: las mismas reglas que la Página Tools (ADR-007)
+      var CORTES = { amarillo: 40, rojo: 70 };
+      var GRUPO_FUENTE = { notas_1ro: 'notas', materias: 'notas', respuestas: 'encuestas', omision: 'encuestas' };
+      // Campos de cada base que escribe esta página. Se ubican por su etiqueta en el formulario de alta
+      var CAMPOS_OMISION = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'indice_total', 'semaforo', 'motivo', 'created_at'];
+      var CAMPOS_PERIODO = ['periodo', 'fecha_inicio', 'fecha_limite_encuesta', 'created_at'];
+      // Vista previa: los mismos períodos de prueba que la Página Tools, más los que se agregan al cerrar (localStorage, compartidos
+      // con las demás vistas). Las omisiones de la vista previa las leen también el Tablero y el Detalle
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30', created_at: '2026-03-09T09:00:00-03:00' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-10', fecha_limite_encuesta: '2026-11-30', created_at: '2026-08-10T09:00:00-03:00' }
+      ];
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
+      var CLAVE_PREVIEW_CIERRE = 'zk-preview-criticidad-cierre';
+      var PAUSA_PREVIEW = 250; // milisegundos por entrada en la vista previa, para ver el progreso
+      // Espera máxima (milisegundos) de la Página Tools, de cada base y de cada escritura
+      var ESPERA_TOOLS = 20000;
+      var ESPERA_BASE = 60000;
+      var ESPERA_ESCRITURA = 30000;
+
+      // Situación de cada estudiante de 2.º año en adelante en el cierre
+      var SITUACIONES = {
+        omision: { orden: 0, texto: 'Recibe omisión', tono: 'rojo' },
+        ya_tiene: { orden: 1, texto: 'Ya tiene omisión', tono: 'neutro' },
+        paso: { orden: 2, texto: 'Fuera del cierre', tono: 'neutro' },
+        respondio: { orden: 3, texto: 'Sin cambios', tono: 'verde' }
+      };
+
+      // Chips (skill diseno-ui → referencia/tokens.md)
+      var TONOS = {
+        rojo: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', color: '#910808' },
+        amarillo: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
+        verde: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' },
+        neutro: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', color: '#566481' }
+      };
+      var TEXTO_SEMAFORO = { rojo: 'Riesgo alto', amarillo: 'Riesgo medio', verde: 'Sin riesgo' };
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — Apache 2.0, skill diseno-ui)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>',
+        error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+        cerrar: '<path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>',
+        configuracion: '<path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.566.566 0 0 0-.18-.03c-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.06.02.12.03.18.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-1.98-1.71c.04.31.05.52.05.73 0 .21-.02.43-.05.73l-.14 1.13.89.7 1.08.84-.7 1.21-1.27-.51-1.04-.42-.9.68c-.43.32-.84.56-1.25.73l-1.06.43-.16 1.13-.2 1.35h-1.4l-.19-1.35-.16-1.13-1.06-.43c-.43-.18-.83-.41-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21 1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7-1.08-.84.7-1.21 1.27.51 1.04.42.9-.68c.43-.32.84-.56 1.25-.73l1.06-.43.16-1.13.2-1.35h1.39l.19 1.35.16 1.13 1.06.43c.43.18.83.41 1.23.71l.91.7 1.06-.43 1.27-.51.7 1.21-1.07.85-.89.7.14 1.13zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>',
+        calendario: '<path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>',
+        horario: '<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>',
+        estudiantes: '<path d="M4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 0 0 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0 0 20 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zm-7.76-2.78c-1.17-.52-2.61-.9-4.24-.9-1.63 0-3.07.39-4.24.9A2.988 2.988 0 0 0 6 16.39V18h12v-1.61c0-1.18-.68-2.26-1.76-2.74zM8.07 16c.09-.23.13-.39.91-.69.97-.38 1.99-.56 3.02-.56s2.05.18 3.02.56c.77.3.81.46.91.69H8.07zM12 8c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1m0-2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>',
+        verificado: '<g fill-rule="evenodd"><path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H4V5h16v14z"/><path d="M19.41 10.42 17.99 9l-3.17 3.17-1.41-1.42L12 12.16 14.82 15zM5 7h5v2H5zm0 4h5v2H5zm0 4h5v2H5z"/></g>',
+        lista: '<path d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.54 11 2 7.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 11zm0 8L2 15.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41L5.54 19z"/>'
+      };
+
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (LOS MISMOS DEL TABLERO DE CRITICIDAD, DATOS ACADÉMICOS FICTICIOS)
+      // ---------------------------------------------------------
+      var ESTUDIANTES_PRUEBA = [
+        { rid: 91001, id_usuario: '3770', dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '' },
+        { rid: 91002, id_usuario: '2806', dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '' },
+        { rid: 91003, id_usuario: '3773', dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', es_primer_anio: 'no', anio_ingreso: '2024', cuatrimestre_ingreso: '1', periodo_paso_superior: '2025-1' },
+        { rid: 91004, id_usuario: '3623', dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', es_primer_anio: 'no', anio_ingreso: '2022', cuatrimestre_ingreso: '1', periodo_paso_superior: '' },
+        { rid: 91005, id_usuario: '2048', dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', es_primer_anio: 'no', anio_ingreso: '2023', cuatrimestre_ingreso: '2', periodo_paso_superior: '' },
+        { rid: 91006, id_usuario: '3751', dni: '99000004', nombre: 'Santiago', apellido: 'Yanosky', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '' }
+      ];
+      // Base Respuestas: solo importan la encuesta, el período y la fecha
+      var RESPUESTAS_PRUEBA = [
+        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00:00-03:00' },
+        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1', created_at: '2025-04-15T10:20:00-03:00' },
+        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-10T15:00:00-03:00' },
+        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30:00-03:00' },
+        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40:00-03:00' },
+        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00' },
+        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00' }
+      ];
+      // Base Criticidad: solo las entradas automáticas cuentan para el índice total (las del Tablero, sin las manuales)
+      function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha) {
+        return { rid: rid, id_usuario: id, dni: dni, periodo: periodo, origen: 'automatica', fuente: fuente, rid_fuente: ridFuente, indice: String(indice), created_at: fecha };
+      }
+      var CRITICIDAD_PRUEBA = [
+        automatica(1003, '3770', '99000005', '2026-2', 'notas_1ro', '503', 38, '2026-09-20T17:40:00-03:00'),
+        automatica(1004, '3770', '99000005', '2026-2', 'notas_1ro', '504', 22, '2026-10-09T20:15:00-03:00'),
+        automatica(1012, '2806', '99000001', '2026-2', 'notas_1ro', '512', 88, '2026-09-18T21:10:00-03:00'),
+        automatica(1013, '2806', '99000001', '2026-2', 'materias', '901', 64, '2026-10-09T10:00:00-03:00'),
+        automatica(1021, '3751', '99000004', '2026-2', 'notas_1ro', '521', 52, '2026-09-25T18:00:00-03:00'),
+        automatica(1022, '3751', '99000004', '2026-2', 'notas_1ro', '522', 81, '2026-10-12T19:30:00-03:00'),
+        automatica(1036, '3773', '99000006', '2026-1', 'respuestas', '5004', 40, '2026-04-10T14:30:00-03:00'),
+        automatica(1043, '3623', '99000003', '2026-1', 'omision', '', 60, '2026-07-31T23:59:00-03:00'),
+        automatica(1044, '3623', '99000003', '2026-2', 'respuestas', '5013', 47, '2026-09-02T11:48:00-03:00')
+      ];
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function $(id) { return document.getElementById(id); }
+
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function mostrar(el, visible, modo) {
+        if (el) el.style.setProperty('display', visible ? (modo || 'block') : 'none', 'important');
+      }
+
+      function dos(n) { return String(n).padStart(2, '0'); }
+
+      function ahoraIso() {
+        var d = new Date(), off = -d.getTimezoneOffset(), s = off >= 0 ? '+' : '-', a = Math.abs(off);
+        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate()) + 'T' + dos(d.getHours()) + ':' + dos(d.getMinutes()) + ':' + dos(d.getSeconds()) +
+          s + dos(Math.floor(a / 60)) + ':' + dos(a % 60);
+      }
+
+      function hoy() {
+        var d = new Date();
+        return d.getFullYear() + '-' + dos(d.getMonth() + 1) + '-' + dos(d.getDate());
+      }
+
+      function esFecha(f) { return /^\d{4}-\d{2}-\d{2}$/.test(String(f || '')) && isFinite(Date.parse(f + 'T00:00:00Z')); }
+
+      // AAAA-MM-DD(THH:MM…) → DD/MM/AAAA
+      function fechaVisible(iso) {
+        var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+      }
+
+      // DÍAS ENTRE DOS FECHAS AAAA-MM-DD (b − a)
+      function diasEntre(a, b) {
+        return Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
+      }
+
+      function esPeriodo(p) { return /^\d{4}-[12]$/.test(String(p || '').trim()); }
+
+      // 2026-2 → 2027-1; 2026-1 → 2026-2
+      function periodoSiguiente(p) {
+        var x = String(p).split('-');
+        return x[1] === '1' ? x[0] + '-2' : (Number(x[0]) + 1) + '-1';
+      }
+
+      // 2026-2 → 2.º cuatrimestre 2026
+      function periodoVisible(p) {
+        var x = String(p || '').split('-');
+        return x.length === 2 ? (x[1] === '1' ? '1.er' : '2.º') + ' cuatrimestre ' + x[0] : String(p || '');
+      }
+
+      function numero(v) {
+        if (v === null || v === undefined || String(v).trim() === '') return null;
+        var n = Number(String(v).replace(',', '.'));
+        return isFinite(n) ? n : null;
+      }
+
+      function leerAlmacen(clave, defecto) {
+        try { var v = window.localStorage.getItem(clave); var x = v ? JSON.parse(v) : defecto; return Array.isArray(defecto) && !Array.isArray(x) ? defecto : x; } catch (e) { return defecto; }
+      }
+
+      function escribirAlmacen(clave, valor) {
+        try {
+          if (valor === null) window.localStorage.removeItem(clave);
+          else window.localStorage.setItem(clave, JSON.stringify(valor));
+        } catch (e) { /* sin almacenamiento: queda en memoria */ }
+      }
+
+      function pausa(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+      // ESPERA UNA PROMESA COMO MUCHO "ms"
+      function conLimite(promesa, ms, que) {
+        return Promise.race([promesa, new Promise(function(r, rechazar) {
+          setTimeout(function() { rechazar(new Error(que + ' tardó más de ' + (ms / 1000) + ' segundos.')); }, ms);
+        })]);
+      }
+
+      // ---------------------------------------------------------
+      // ÍNDICE TOTAL Y SEMÁFORO (LA MISMA REGLA QUE indiceTotal Y semaforoDe DE LA PÁGINA TOOLS, ADR-007)
+      // ---------------------------------------------------------
+      function semaforoDe(indice) {
+        if (typeof indice !== 'number' || !isFinite(indice)) return null;
+        return indice >= CORTES.rojo ? 'rojo' : indice >= CORTES.amarillo ? 'amarillo' : 'verde';
+      }
+
+      function tiempoDe(iso) {
+        var t = new Date(iso).getTime();
+        return isFinite(t) ? t : 0;
+      }
+
+      // Promedio del último índice de cada grupo de fuentes del estudiante en el período, contando la entrada nueva (solo automáticas)
+      function indiceTotal(nueva, propias) {
+        var ultimas = {};
+        propias.concat([nueva]).forEach(function(c) {
+          var grupo = GRUPO_FUENTE[c.fuente];
+          var indice = numero(c.indice);
+          if (!grupo || c.origen !== 'automatica' || String(c.periodo) !== String(nueva.periodo) || indice === null) return;
+          var t = c === nueva ? Infinity : tiempoDe(c.created_at);
+          if (!ultimas[grupo] || t >= ultimas[grupo].t) ultimas[grupo] = { indice: indice, t: t };
+        });
+        var valores = Object.keys(ultimas).map(function(g) { return ultimas[g].indice; });
+        return valores.length ? Math.round(valores.reduce(function(a, b) { return a + b; }, 0) / valores.length) : null;
+      }
+
+      // ---------------------------------------------------------
+      // PERÍODOS DE LA VISTA PREVIA (LA MISMA REGLA QUE PeriodoVigente DE LA PÁGINA TOOLS: LA VIGENTE ES LA DE rid MAYOR)
+      // ---------------------------------------------------------
+      function ordenarPeriodos(lista) {
+        return lista.filter(function(p) { return esPeriodo(p.periodo); }).map(function(p) {
+          return { rid: Number(p.rid) || 0, periodo: String(p.periodo).trim(), fecha_inicio: String(p.fecha_inicio || '').trim(),
+            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), created_at: String(p.created_at || '').trim(), autor: p.autor || '' };
+        }).sort(function(a, b) { return a.rid - b.rid; });
+      }
+
+      function periodoDePrueba() {
+        var periodos = ordenarPeriodos(PERIODOS_PRUEBA.concat(leerAlmacen(CLAVE_PREVIEW_PERIODOS, [])));
+        var v = periodos[periodos.length - 1];
+        return { periodo: v.periodo, fecha_inicio: v.fecha_inicio, fecha_limite_encuesta: v.fecha_limite_encuesta, rid: v.rid, fuente: 'prueba', error: '', periodos: periodos };
+      }
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE
+      // ---------------------------------------------------------
+      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.PeriodoVigente !== 'function') throw new Error('La Página Tools no tiene PeriodoVigente: falta publicar la versión 6.');
+            return window.ZhakyzTools;
+          });
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      // ENTRADAS DE UNA BASE, CON SUS CAMPOS COMO TEXTO Y EL rid. Si LeerBase llegó a su tope, se avisa: el cierre no sigue con datos incompletos
+      function leerBase(Tools, nombre, opciones) {
+        return conLimite(Tools.LeerBase(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+          if (r.completa === false) throw new Error('La base ' + nombre + ' tiene más entradas que las que lee la Página Tools: el cierre necesita leerlas todas.');
+          return r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+            c.rid = e.rid ? Number(e.rid) : null;
+            return c;
+          });
+        });
+      }
+
+      // AGREGAR UNA ENTRADA (rid=0) → PROMESA DEL rid NUEVO. Los campos se ubican por su etiqueta en el formulario de alta (como en la Página Tools)
+      function agregarEntradaMoodle(dataid, campos, registro) {
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + dataid, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de alta de la base (d=' + dataid + ').');
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase()] = ctrl.name;
+            });
+            var fd = new FormData(form);
+            fd.set('d', String(dataid));
+            fd.set('rid', '0');
+            campos.forEach(function(k) {
+              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base (d=' + dataid + ').');
+              var v = registro[k];
+              fd.set(porCampo[k], v === null || v === undefined ? '' : String(v));
+            });
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
+            // Sin redirección a la entrada nueva: Moodle volvió a mostrar el formulario con sus errores
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la entrada nueva.');
+            });
+          });
+      }
+
+      // DESAPROBAR UNA ENTRADA DE CRITICIDAD: SOLO LA VE EL EQUIPO (ADR-009). true SI MOODLE LO ACEPTÓ
+      function desaprobarMoodle(rid) {
+        var url = M.cfg.wwwroot + '/mod/data/view.php?d=' + DATAID_CRITICIDAD + '&disapprove=' + rid + '&sesskey=' + encodeURIComponent(M.cfg.sesskey);
+        return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+          if (!r.ok || /\/login\//.test(r.url || '')) return false;
+          return r.text().then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            return !doc.querySelector('#region-main .alert-danger, #region-main .errorbox');
+          });
+        }).catch(function() { return false; });
+      }
+
+      // ---------------------------------------------------------
+      // CARGA DE DATOS (BASES PROPIAS O DATOS DE PRUEBA)
+      // ---------------------------------------------------------
+      var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_RESPUESTAS || !DATAID_CRITICIDAD;
+
+      function cierrePreview() {
+        return leerAlmacen(CLAVE_PREVIEW_CIERRE, []).filter(function(c) { return c && typeof c === 'object' && c.id_usuario; });
+      }
+
+      function cargarDatos() {
+        if (usaPrueba) {
+          return Promise.resolve({
+            periodo: periodoDePrueba(),
+            estudiantes: ESTUDIANTES_PRUEBA,
+            respuestas: RESPUESTAS_PRUEBA,
+            criticidad: CRITICIDAD_PRUEBA.concat(cierrePreview())
+          });
+        }
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          return Tools.PeriodoVigente({ releer: true }).then(function(p) {
+            var periodo = p.periodo;
+            return Promise.all([
+              leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
+              leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS, filtro: function(e) {
+                return String(e.campos.codigo_encuesta || '').trim() === 'cuatrimestral' && String(e.campos.periodo || '').trim() === periodo;
+              } }),
+              leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: function(e) { return String(e.campos.periodo || '').trim() === periodo; } })
+            ]).then(function(r) {
+              return { periodo: p, estudiantes: r[0], respuestas: r[1], criticidad: r[2] };
+            });
+          });
+        });
+      }
+
+      // ---------------------------------------------------------
+      // PLAN DEL CIERRE (LA SIMULACIÓN: NO ESCRIBE NADA)
+      // ---------------------------------------------------------
+      // Por cada estudiante de 2.º año en adelante de la base Estudiantes: respondió, recibe omisión, ya tiene omisión o pasó a 2.º año
+      // en el período. Los de 1.er año quedan fuera del cierre (la Encuesta Cuatrimestral está deshabilitada para ellos)
+      function armarPlan(d) {
+        var periodo = d.periodo.periodo;
+        // Si un estudiante tiene varias entradas en Estudiantes, vale la de rid mayor (como en el Tablero)
+        var estudiantes = {};
+        d.estudiantes.forEach(function(e) {
+          var id = String(e.id_usuario);
+          if (!id) return;
+          if (!estudiantes[id] || (Number(e.rid) || 0) > (Number(estudiantes[id].rid) || 0)) estudiantes[id] = e;
+        });
+        var respuesta = {};
+        d.respuestas.forEach(function(r) {
+          if (String(r.codigo_encuesta) !== 'cuatrimestral' || String(r.periodo) !== periodo) return;
+          var id = String(r.id_usuario);
+          if (!respuesta[id] || tiempoDe(r.created_at) > tiempoDe(respuesta[id].created_at)) respuesta[id] = r;
+        });
+        var criticidad = {};
+        d.criticidad.forEach(function(c) {
+          if (String(c.periodo) !== periodo) return;
+          (criticidad[String(c.id_usuario)] = criticidad[String(c.id_usuario)] || []).push(c);
+        });
+        var primerAnio = 0;
+        var filas = [];
+        Object.keys(estudiantes).forEach(function(id) {
+          var e = estudiantes[id];
+          if (String(e.es_primer_anio).toLowerCase() === 'si') { primerAnio++; return; }
+          var entradas = criticidad[id] || [];
+          var fila = {
+            id: id, dni: e.dni, nombre: (String(e.nombre || '') + ' ' + String(e.apellido || '')).trim() || 'DNI ' + e.dni,
+            cohorte: e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '', respuesta: respuesta[id] || null, omision: null
+          };
+          if (fila.respuesta) fila.situacion = 'respondio';
+          else if (entradas.some(function(c) { return c.fuente === 'omision'; })) fila.situacion = 'ya_tiene';
+          else if (String(e.periodo_paso_superior || '').trim() === periodo) fila.situacion = 'paso';
+          else {
+            fila.situacion = 'omision';
+            var nueva = {
+              id_usuario: Number(id), dni: e.dni, periodo: periodo, origen: 'automatica', fuente: 'omision', rid_fuente: '',
+              indice: INDICE_OMISION, indice_total: null, semaforo: null, motivo: 'No respondió la Encuesta Cuatrimestral ' + periodo + '.', created_at: null
+            };
+            nueva.indice_total = indiceTotal(nueva, entradas);
+            nueva.semaforo = semaforoDe(nueva.indice_total);
+            fila.omision = nueva;
+          }
+          filas.push(fila);
+        });
+        filas.sort(function(a, b) { return SITUACIONES[a.situacion].orden - SITUACIONES[b.situacion].orden || a.nombre.localeCompare(b.nombre); });
+        var cuenta = function(s) { return filas.filter(function(f) { return f.situacion === s; }).length; };
+        return {
+          periodo: periodo, filas: filas, primerAnio: primerAnio,
+          omisiones: filas.filter(function(f) { return f.omision; }).map(function(f) { return f.omision; }),
+          respondieron: cuenta('respondio'), yaTienen: cuenta('ya_tiene'), pasaron: cuenta('paso')
+        };
+      }
+
+      // ---------------------------------------------------------
+      // ESTADO EN MEMORIA
+      // ---------------------------------------------------------
+      var datos = null;
+      var plan = null;
+      var errorCarga = '';
+      var modal = null; // { disparador }
+      var cierre = null; // { total, hechas, creadas: [{ rid, nombre, desaprobada }], error, terminado }
+      var fallaPreview = false; // vista previa: la 2.ª omisión falla, para probar que el cierre se retoma
+      var pulsadoEn = null;
+
+      // ---------------------------------------------------------
+      // COMPONENTES
+      // ---------------------------------------------------------
+      function chip(tono, texto) {
+        var c = TONOS[tono];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + c.borde +
+          ' !important; background-color: ' + c.fondo + ' !important; color: ' + c.color + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important; box-sizing: border-box !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + c.punto + ' !important;"></span>' + escapar(texto) + '</span>';
+      }
+
+      function chipNeutro(texto) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important; white-space: nowrap !important;">' +
+          escapar(texto) + '</span>';
+      }
+
+      // AVISO: tipo 'alerta', 'error', 'info' u 'ok'
+      function aviso(tipo, html) {
+        var c = {
+          alerta: { fondo: '#fdf1ce', borde: 'rgba(246, 206, 85, 0.5)', icono: '#aa8109', nombre: 'alerta' },
+          error: { fondo: '#fff0f0', borde: '#fdcece', icono: '#c20a0a', nombre: 'error' },
+          info: { fondo: '#e5f2ff', borde: 'rgba(77, 166, 255, 0.4)', icono: '#026bd4', nombre: 'info' },
+          ok: { fondo: '#f6fef6', borde: '#c5f7c5', icono: '#1f7a1f', nombre: 'ok' }
+        }[tipo];
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; padding: 10px 14px !important; border-radius: 10px !important; background-color: ' + c.fondo + ' !important; border: 1px solid ' + c.borde + ' !important; color: #0b0e14 !important; font-size: 14px !important;">' +
+          '<span style="color: ' + c.icono + ' !important; padding-top: 1px !important;">' + icono(c.nombre, 20) + '</span><div style="min-width: 0 !important;">' + html + '</div></div>';
+      }
+
+      // BOTÓN: 'principal' (gradiente oscuro) o 'secundario' (outlined)
+      function boton(id, texto, tipo, iconoNombre, deshabilitado) {
+        var estilo = tipo === 'principal'
+          ? 'border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important;'
+          : 'border: 1px solid #dadee7 !important; background-color: rgba(245, 246, 250, 0.3) !important; color: #0b0e14 !important;';
+        return '<div id="' + id + '" role="button" tabindex="' + (deshabilitado ? '-1' : '0') + '"' + (deshabilitado ? ' aria-disabled="true"' : '') +
+          ' style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; ' + estilo + ' font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important; white-space: nowrap !important;">' +
+          (iconoNombre ? icono(iconoNombre, 18) : '') + '<span>' + escapar(texto) + '</span></div>';
+      }
+
+      function tarjeta(id, iconoNombre, titulo, extra, cuerpo) {
+        return '<div id="' + id + '" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 20px !important; box-sizing: border-box !important; margin-bottom: 16px !important; animation: zk-aparecer-config 0.2s ease both;">' +
+          '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; flex-wrap: wrap !important; margin-bottom: 16px !important;">' +
+          '<div style="display: flex !important; align-items: center !important; gap: 12px !important;">' +
+          '<span style="width: 36px !important; height: 36px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 auto !important;">' + icono(iconoNombre, 20) + '</span>' +
+          '<h4 style="margin: 0 !important; font-size: 18px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">' + titulo + '</h4></div>' +
+          (extra || '') + '</div>' + cuerpo + '</div>';
+      }
+
+      function dato(etiqueta, valor, pie) {
+        return '<div style="flex: 1 1 180px !important; min-width: 0 !important;">' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(etiqueta) + '</div>' +
+          '<div style="font-size: 16px !important; font-weight: 600 !important; color: #0b0e14 !important; font-variant-numeric: tabular-nums !important;">' + valor + '</div>' +
+          (pie ? '<div style="font-size: 12px !important; color: #47536b !important;">' + pie + '</div>' : '') + '</div>';
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: PERÍODO VIGENTE
+      // ---------------------------------------------------------
+      // ESTADO DEL PLAZO DE LA ENCUESTA: { tono, texto, antes (true si todavía no llegó la fecha límite) }
+      function estadoPlazo(p) {
+        if (!esFecha(p.fecha_limite_encuesta)) return { tono: 'neutro', texto: 'Sin fecha límite', antes: false };
+        var faltan = diasEntre(hoy(), p.fecha_limite_encuesta);
+        if (faltan > 0) return { tono: 'amarillo', texto: 'Dentro del plazo · ' + (faltan === 1 ? 'falta 1 día' : 'faltan ' + faltan + ' días'), antes: true };
+        if (faltan === 0) return { tono: 'amarillo', texto: 'El plazo vence hoy', antes: true };
+        return { tono: 'verde', texto: 'Plazo vencido el ' + fechaVisible(p.fecha_limite_encuesta), antes: false };
+      }
+
+      // EL CIERRE NECESITA LEER Y ESCRIBIR EL PERÍODO EN LA BASE (EN LA VISTA PREVIA, EN ESTE NAVEGADOR)
+      function puedeCerrar() {
+        return !!datos && (usaPrueba || (datos.periodo.fuente === 'base' && !!DATAID_PERIODOS));
+      }
+
+      function htmlPeriodo() {
+        var p = datos.periodo, plazo = estadoPlazo(p);
+        var dias = esFecha(p.fecha_inicio) && esFecha(p.fecha_limite_encuesta) ? diasEntre(p.fecha_inicio, p.fecha_limite_encuesta) : null;
+        var problema = '';
+        if (!usaPrueba && p.fuente !== 'base') {
+          problema = '<div style="margin-top: 16px !important;">' + aviso('error', '<b style="font-weight: 600 !important;">No se pudo leer la base Períodos.</b> ' + escapar(p.error) +
+            ' Las vistas usan ' + (p.fuente === 'guardado' ? 'el último período leído en cada navegador' : 'el período por defecto') + ' (' + escapar(p.periodo) + '). El cierre queda deshabilitado hasta que la base se pueda leer.') + '</div>';
+        }
+        var cuerpo = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 16px 24px !important;">' +
+          dato('Período', escapar(p.periodo), escapar(periodoVisible(p.periodo))) +
+          dato('Inicio', esFecha(p.fecha_inicio) ? fechaVisible(p.fecha_inicio) : '—', 'cierre del período anterior') +
+          dato('Fecha límite de la Encuesta Cuatrimestral', esFecha(p.fecha_limite_encuesta) ? fechaVisible(p.fecha_limite_encuesta) : '—', 'la encuesta sigue abierta hasta el cierre') +
+          dato('Plazo', dias === null ? '—' : dias + (dias === 1 ? ' día' : ' días'), 'desde el inicio hasta la fecha límite') +
+          '</div>' + problema;
+        return tarjeta('card-periodo-config', 'calendario', 'Período vigente', chip(plazo.tono, plazo.texto), cuerpo);
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: CIERRE DEL PERÍODO
+      // ---------------------------------------------------------
+      function htmlKpi(titulo, valor, pie, tono) {
+        var marca = tono ? '<span style="width: 10px !important; height: 10px !important; border-radius: 50% !important; background-color: ' + TONOS[tono].punto + ' !important;"></span>' : '';
+        return '<div style="flex: 1 1 130px !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 12px 14px !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; gap: 4px !important;">' +
+          '<div style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important;">' + titulo + '</div>' +
+          '<div style="display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important;">' +
+          '<span style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.2 !important;">' + valor + '</span>' + marca + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + pie + '</div></div>';
+      }
+
+      function celdaResultado(f) {
+        var s = SITUACIONES[f.situacion];
+        var detalle;
+        if (f.situacion === 'omision') {
+          var o = f.omision;
+          detalle = 'Índice ' + o.indice + ' · índice total ' + o.indice_total + ' · ' + escapar(TEXTO_SEMAFORO[o.semaforo] || '');
+        } else if (f.situacion === 'ya_tiene') detalle = 'Se agregó en un cierre anterior: no se repite.';
+        else if (f.situacion === 'paso') detalle = 'Pasó a 2.º año en ' + escapar(plan.periodo) + '.';
+        else detalle = 'Debe volver a responder en ' + escapar(periodoSiguiente(plan.periodo)) + '.';
+        return chip(s.tono, s.texto) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + detalle + '</div>';
+      }
+
+      function htmlTabla() {
+        var th = 'border: 0 !important; height: 48px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;';
+        var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 10px 8px !important; vertical-align: middle !important;';
+        var filas = plan.filas.length ? plan.filas.map(function(f) {
+          var enc = f.respuesta ? chip('verde', 'Respondida el ' + fechaVisible(f.respuesta.created_at)) : chip('amarillo', 'Sin responder');
+          return '<tr data-usuario-cierre="' + escapar(f.id) + '">' +
+            '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important;">' + escapar(f.nombre) + '</div>' +
+            '<div style="font-size: 12px !important; color: #47536b !important;">DNI ' + escapar(f.dni) + (f.cohorte ? ' · cohorte ' + escapar(f.cohorte) : '') + '</div></td>' +
+            '<td style="' + td + '">' + enc + '</td>' +
+            '<td style="' + td + ' padding-right: 16px !important;">' + celdaResultado(f) + '</td></tr>';
+        }).join('') : '<tr><td colspan="3" style="border: 0 !important; padding: 24px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes de 2.º año en adelante en la base Estudiantes.</td></tr>';
+        return '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; margin-top: 16px !important;">' +
+          '<table id="tabla-cierre-config" style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 600px !important; margin: 0 !important;">' +
+          '<thead><tr style="background-color: #f5f6fa !important;"><th style="' + th + ' padding-left: 16px !important;">Estudiante (2.º año en adelante)</th>' +
+          '<th style="' + th + '">Encuesta Cuatrimestral ' + escapar(plan.periodo) + '</th><th style="' + th + '">Resultado del cierre</th></tr></thead>' +
+          '<tbody>' + filas + '</tbody></table></div>';
+      }
+
+      function htmlCierre() {
+        var nuevo = periodoSiguiente(plan.periodo);
+        var n = plan.omisiones.length;
+        var kpis = '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          htmlKpi('2.º año en adelante', plan.filas.length, 'con información personal') +
+          htmlKpi('Respondieron', plan.respondieron, 'la Cuatrimestral ' + escapar(plan.periodo), 'verde') +
+          htmlKpi('Reciben omisión', n, 'índice ' + INDICE_OMISION + ' en Criticidad', 'rojo') +
+          htmlKpi('Ya tienen omisión', plan.yaTienen, 'no se repite', 'neutro') +
+          htmlKpi('Pasaron a 2.º año', plan.pasaron, 'en ' + escapar(plan.periodo) + ': fuera del cierre', 'neutro') +
+          htmlKpi('1.er año', plan.primerAnio, 'fuera del cierre', 'neutro') + '</div>';
+        var explicacion = '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Al cerrar el período <b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(plan.periodo) +
+          '</b>, cada estudiante de 2.º año en adelante que no respondió la Encuesta Cuatrimestral recibe una entrada de omisión en la base Criticidad (índice ' + INDICE_OMISION +
+          ', visible solo para el equipo). Después, el período vigente pasa a <b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(nuevo) +
+          '</b> y todos los estudiantes de 2.º año en adelante deben responder la encuesta otra vez. Lo que se muestra a continuación es la simulación: no se escribe nada hasta confirmar el cierre.</p>';
+        var nota = '<p style="margin: 12px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">Solo figuran los estudiantes con información personal cargada (base Estudiantes): quien no la cargó no recibe la omisión. Una omisión no impide responder: la encuesta sigue abierta para el período nuevo.</p>';
+        var deshabilitado = !puedeCerrar() || !!(cierre && !cierre.terminado);
+        var acciones = '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important;">' +
+          boton('btn-releer-config', 'Volver a leer las bases', 'secundario', null, !!(cierre && !cierre.terminado)) +
+          boton('btn-abrir-cierre', 'Cerrar el período ' + plan.periodo, 'principal', 'verificado', deshabilitado) + '</div>';
+        return tarjeta('card-cierre-config', 'lista', 'Cierre del período ' + escapar(plan.periodo), chipNeutro('Simulación'), explicacion + kpis + htmlTabla() + nota + acciones);
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO: HISTORIAL DE PERÍODOS
+      // ---------------------------------------------------------
+      function htmlHistorial() {
+        var periodos = (datos.periodo.periodos || []).slice().reverse();
+        if (!periodos.length) return '';
+        var th = 'border: 0 !important; height: 44px !important; text-align: left !important; padding: 0 8px !important; font-size: 13px !important; font-weight: 500 !important; color: #47536b !important; background-color: #f5f6fa !important;';
+        var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 8px !important; font-size: 13px !important; font-variant-numeric: tabular-nums !important;';
+        var tabla = '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;"><table style="width: 100% !important; border-collapse: collapse !important; min-width: 520px !important; margin: 0 !important;">' +
+          '<thead><tr><th style="' + th + ' padding-left: 12px !important;">Período</th><th style="' + th + '">Inicio</th><th style="' + th + '">Fecha límite</th><th style="' + th + '">Plazo</th><th style="' + th + '">Cargado</th></tr></thead><tbody>' +
+          periodos.map(function(p, i) {
+            var dias = esFecha(p.fecha_inicio) && esFecha(p.fecha_limite_encuesta) ? diasEntre(p.fecha_inicio, p.fecha_limite_encuesta) + ' días' : '—';
+            return '<tr><td style="' + td + ' padding-left: 12px !important;"><span style="font-weight: 500 !important;">' + escapar(p.periodo) + '</span>' + (i === 0 ? ' ' + chipNeutro('Vigente') : '') + '</td>' +
+              '<td style="' + td + '">' + (fechaVisible(p.fecha_inicio) || '—') + '</td><td style="' + td + '">' + (fechaVisible(p.fecha_limite_encuesta) || '—') + '</td>' +
+              '<td style="' + td + '">' + dias + '</td><td style="' + td + '">' + (fechaVisible(p.created_at) || '—') + (p.autor ? ' · ' + escapar(p.autor) : '') + '</td></tr>';
+          }).join('') + '</tbody></table></div>';
+        return tarjeta('card-historial-config', 'horario', 'Historial de períodos', '', tabla);
+      }
+
+      function renderizarTodo() {
+        if (errorCarga) {
+          $('contenido-config').innerHTML = aviso('error', '<b style="font-weight: 600 !important;">No se pudieron leer las bases.</b> ' + escapar(errorCarga)) +
+            '<div style="display: flex !important; justify-content: flex-end !important; margin-top: 16px !important;">' + boton('btn-releer-config', 'Volver a leer las bases', 'secundario') + '</div>';
+          return;
+        }
+        $('contenido-config').innerHTML = htmlPeriodo() + htmlCierre() + htmlHistorial();
+      }
+
+      function leerYRenderizar() {
+        errorCarga = '';
+        $('contenido-config').innerHTML = '<div style="padding: 32px !important; text-align: center !important; color: #47536b !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">Leyendo las bases Períodos, Estudiantes, Respuestas y Criticidad…</div>';
+        return cargarDatos().then(function(d) {
+          datos = d;
+          plan = armarPlan(d);
+        }).catch(function(e) {
+          errorCarga = String(e && e.message ? e.message : e);
+        }).then(renderizarTodo);
+      }
+
+      // ---------------------------------------------------------
+      // MODAL: CERRAR EL PERÍODO
+      // ---------------------------------------------------------
+      var CAMPO = 'height: 40px !important; padding: 8px 12px !important; border-radius: 8px !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; background-color: #fcfcfc !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; box-sizing: border-box !important; width: 100% !important; margin: 0 !important;';
+
+      function abrirModal(disparador) {
+        if (!puedeCerrar() || (cierre && !cierre.terminado)) return;
+        modal = { disparador: disparador };
+        var p = datos.periodo, nuevo = periodoSiguiente(plan.periodo), plazo = estadoPlazo(p), n = plan.omisiones.length;
+        var antes = plazo.antes
+          ? '<div style="margin-top: 16px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">Todavía no llegó la fecha límite</b> de la Encuesta Cuatrimestral ' + escapar(plan.periodo) + ' (' + fechaVisible(p.fecha_limite_encuesta) + '). Quienes no respondieron todavía están dentro del plazo.' +
+            '<label style="display: flex !important; align-items: flex-start !important; gap: 8px !important; margin: 8px 0 0 0 !important; cursor: pointer !important; font-weight: 500 !important;">' +
+            '<input type="checkbox" id="campo-antes-limite" style="margin: 3px 0 0 0 !important; width: 16px !important; height: 16px !important; accent-color: #026bd4 !important;">Cerrar antes de la fecha límite del ' + fechaVisible(p.fecha_limite_encuesta) + '</label>') + '</div>'
+          : '';
+        $('caja-modal-cierre').innerHTML =
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
+          '<h5 id="titulo-modal-cierre" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Cerrar el período ' + escapar(plan.periodo) + '</h5>' +
+          '<div id="btn-cerrar-modal-cierre" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div id="cuerpo-modal-cierre">' +
+          '<ul style="margin: 8px 0 16px 0 !important; padding: 0 0 0 20px !important; color: #0b0e14 !important;">' +
+          '<li style="margin-bottom: 4px !important;">Se ' + (n === 1 ? 'agrega 1 entrada' : 'agregan ' + n + ' entradas') + ' de omisión a la base Criticidad (índice ' + INDICE_OMISION + '), cada una desaprobada para que solo la vea el equipo.</li>' +
+          '<li style="margin-bottom: 4px !important;">Después, el período vigente pasa a <b style="font-weight: 600 !important;">' + escapar(nuevo) + '</b> (' + escapar(periodoVisible(nuevo)) + '): todos los estudiantes de 2.º año en adelante deben responder la Encuesta Cuatrimestral otra vez.</li>' +
+          '<li>Si una entrada no se puede guardar, el cierre se detiene sin cambiar el período. Volver a cerrar retoma donde quedó, sin repetir omisiones.</li></ul>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
+          '<div style="flex: 1 1 200px !important;"><label for="campo-inicio-periodo" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Inicio del período ' + escapar(nuevo) + '</label>' +
+          '<input type="date" id="campo-inicio-periodo" value="' + hoy() + '" style="' + CAMPO + '"></div>' +
+          '<div style="flex: 1 1 200px !important;"><label for="campo-limite-periodo" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Fecha límite de la Encuesta Cuatrimestral</label>' +
+          '<input type="date" id="campo-limite-periodo" aria-required="true" aria-describedby="txt-plazo-cierre" style="' + CAMPO + '"></div></div>' +
+          '<div id="txt-plazo-cierre" style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">El plazo lo define el equipo con el calendario académico. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.</div>' +
+          antes +
+          '<div id="txt-error-cierre" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 12px !important;"></div>' +
+          '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
+          boton('btn-cancelar-cierre', 'Cancelar', 'secundario') + boton('btn-confirmar-cierre', 'Cerrar el período ' + plan.periodo, 'principal', 'verificado') + '</div></div>';
+        $('modal-cierre-config').style.setProperty('display', 'flex', 'important');
+        $('campo-limite-periodo').focus();
+      }
+
+      function cerrarModal() {
+        if (!modal || (cierre && !cierre.terminado)) return;
+        $('modal-cierre-config').style.setProperty('display', 'none', 'important');
+        var disparador = modal.disparador;
+        modal = null;
+        var nuevo = disparador && document.body.contains(disparador) ? disparador : $('btn-abrir-cierre') || $('btn-releer-config');
+        if (nuevo) nuevo.focus();
+      }
+
+      function mostrarError(texto) {
+        var e = $('txt-error-cierre');
+        e.textContent = texto;
+        e.style.setProperty('display', 'block', 'important');
+      }
+
+      function actualizarPlazo() {
+        var i = $('campo-inicio-periodo').value, l = $('campo-limite-periodo').value;
+        var t = $('txt-plazo-cierre');
+        if (esFecha(i) && esFecha(l) && diasEntre(i, l) > 0) {
+          var d = diasEntre(i, l);
+          t.textContent = 'Plazo: ' + d + (d === 1 ? ' día' : ' días') + ', del ' + fechaVisible(i) + ' al ' + fechaVisible(l) + '. La encuesta no se cierra en esa fecha: se espera hasta ahí para cerrar el período.';
+        }
+        $('txt-error-cierre').style.setProperty('display', 'none', 'important');
+      }
+
+      // VALIDA EL FORMULARIO → { periodo, fecha_inicio, fecha_limite_encuesta } O UN ERROR
+      function leerFormulario() {
+        var i = $('campo-inicio-periodo').value, l = $('campo-limite-periodo').value;
+        if (!esFecha(i)) return { error: 'Inicio del período: "' + i + '" debe ser una fecha (AAAA-MM-DD).' };
+        if (!esFecha(l)) return { error: 'Fecha límite de la Encuesta Cuatrimestral: falta la fecha (AAAA-MM-DD).' };
+        if (diasEntre(i, l) <= 0) return { error: 'Fecha límite de la Encuesta Cuatrimestral: "' + fechaVisible(l) + '" debe ser posterior al inicio del período (' + fechaVisible(i) + ').' };
+        var check = $('campo-antes-limite');
+        if (check && !check.checked) return { error: 'Cerrar antes de la fecha límite: marcar la casilla para confirmar el cierre anticipado.' };
+        return { nuevo: { periodo: periodoSiguiente(plan.periodo), fecha_inicio: i, fecha_limite_encuesta: l } };
+      }
+
+      // ---------------------------------------------------------
+      // CIERRE: OMISIONES (UNA POR UNA, DESAPROBADAS) Y DESPUÉS EL PERÍODO NUEVO
+      // ---------------------------------------------------------
+      function guardarOmision(o, k) {
+        if (usaPrueba) {
+          return pausa(PAUSA_PREVIEW).then(function() {
+            if (fallaPreview && k === 1) { fallaPreview = false; throw new Error('Error simulado en la vista previa.'); }
+            var c = JSON.parse(JSON.stringify(o));
+            c.rid = 70000 + cierrePreview().length + 1;
+            c.autor = 'Vista previa (ADM)';
+            escribirAlmacen(CLAVE_PREVIEW_CIERRE, cierrePreview().concat([c]));
+            return { rid: c.rid, desaprobada: true };
+          });
+        }
+        return conLimite(agregarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_OMISION, o), ESPERA_ESCRITURA, 'La entrada de Criticidad').then(function(rid) {
+          return desaprobarMoodle(rid).then(function(ok) { return { rid: rid, desaprobada: ok }; });
+        });
+      }
+
+      function guardarPeriodo(p) {
+        var entrada = { periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: p.fecha_limite_encuesta, created_at: ahoraIso() };
+        if (usaPrueba) {
+          return pausa(PAUSA_PREVIEW).then(function() {
+            var agregados = leerAlmacen(CLAVE_PREVIEW_PERIODOS, []);
+            var rid = ordenarPeriodos(PERIODOS_PRUEBA.concat(agregados)).reduce(function(m, x) { return Math.max(m, x.rid); }, 0) + 1;
+            entrada.rid = rid;
+            entrada.autor = 'Vista previa (ADM)';
+            escribirAlmacen(CLAVE_PREVIEW_PERIODOS, agregados.concat([entrada]));
+            return rid;
+          });
+        }
+        return conLimite(agregarEntradaMoodle(DATAID_PERIODOS, CAMPOS_PERIODO, entrada), ESPERA_ESCRITURA, 'La entrada de Períodos');
+      }
+
+      function renderizarProgreso() {
+        var c = cierre;
+        var pct = c.total ? Math.round(c.hechas / c.total * 100) : 100;
+        var texto = c.fase === 'leyendo' ? 'Volviendo a leer las bases para confirmar quiénes no respondieron…'
+          : c.fase === 'periodo' ? 'Guardando el período ' + c.nuevo.periodo + '…'
+          : 'Guardando la omisión ' + Math.min(c.hechas + 1, c.total) + ' de ' + c.total + '…';
+        $('cuerpo-modal-cierre').innerHTML =
+          '<p style="margin: 8px 0 12px 0 !important; color: #47536b !important;">No cerrar esta pestaña hasta que termine. Si se cierra, volver a cerrar el período retoma donde quedó.</p>' +
+          '<div style="font-weight: 500 !important; margin-bottom: 8px !important;" aria-live="polite">' + escapar(texto) + '</div>' +
+          '<div role="progressbar" aria-label="Progreso del cierre" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" style="height: 8px !important; border-radius: 999px !important; background-color: #ebeef4 !important; overflow: hidden !important;">' +
+          '<div style="height: 100% !important; width: ' + pct + '% !important; background-color: #026bd4 !important;"></div></div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important; font-variant-numeric: tabular-nums !important;">' + c.hechas + ' de ' + c.total + ' omisiones guardadas</div>';
+      }
+
+      function confirmarCierre() {
+        if (!modal || (cierre && !cierre.terminado)) return;
+        var f = leerFormulario();
+        if (f.error) return mostrarError(f.error);
+        var periodo = plan.periodo;
+        cierre = { total: plan.omisiones.length, hechas: 0, creadas: [], error: '', terminado: false, fase: 'leyendo', nuevo: f.nuevo, periodo: periodo };
+        renderizarProgreso();
+        // Antes de escribir se vuelve a leer: alguien pudo responder (o cerrar) mientras tanto
+        cargarDatos().then(function(d) {
+          if (d.periodo.periodo !== periodo) throw new Error('El período vigente cambió mientras tanto (ahora es ' + d.periodo.periodo + '): no se escribió nada.');
+          datos = d;
+          plan = armarPlan(d);
+          cierre.total = plan.omisiones.length;
+          cierre.fase = 'omisiones';
+          renderizarProgreso();
+          return plan.omisiones.reduce(function(p, o, k) {
+            return p.then(function() {
+              o.created_at = ahoraIso();
+              return guardarOmision(o, k).then(function(r) {
+                var fila = plan.filas.filter(function(x) { return Number(x.id) === Number(o.id_usuario); })[0];
+                cierre.creadas.push({ rid: r.rid, nombre: fila ? fila.nombre : 'DNI ' + o.dni, desaprobada: r.desaprobada });
+                cierre.hechas++;
+                renderizarProgreso();
+              }, function(e) {
+                throw new Error('No se pudo guardar la omisión de ' + (o.dni ? 'DNI ' + o.dni : 'un estudiante') + ': ' + (e && e.message ? e.message : e));
+              });
+            });
+          }, Promise.resolve());
+        }).then(function() {
+          cierre.fase = 'periodo';
+          renderizarProgreso();
+          return guardarPeriodo(cierre.nuevo);
+        }).then(function() {
+          terminarCierre('');
+        }, function(e) {
+          terminarCierre(String(e && e.message ? e.message : e));
+        });
+      }
+
+      function terminarCierre(error) {
+        var c = cierre;
+        c.terminado = true;
+        c.error = error;
+        var sinDesaprobar = c.creadas.filter(function(x) { return !x.desaprobada; });
+        var lista = c.creadas.length ? '<div style="margin-top: 8px !important; font-size: 13px !important; color: #47536b !important;">Omisiones guardadas: ' +
+          c.creadas.map(function(x) { return escapar(x.nombre) + ' (rid ' + x.rid + ')'; }).join(', ') + '.</div>' : '';
+        var html;
+        if (error) {
+          html = aviso('error', '<b style="font-weight: 600 !important;">El cierre del período ' + escapar(c.periodo) + ' se detuvo.</b> ' + escapar(error) +
+            ' El período vigente sigue siendo ' + escapar(c.periodo) + '. Volver a cerrar retoma donde quedó, sin repetir las omisiones ya guardadas.' + lista);
+        } else {
+          html = aviso('ok', '<b style="font-weight: 600 !important;">Se cerró el período ' + escapar(c.periodo) + '.</b> ' +
+            (c.creadas.length === 1 ? 'Se agregó 1 omisión' : 'Se agregaron ' + c.creadas.length + ' omisiones') + ' a la base Criticidad. El período vigente es ' + escapar(c.nuevo.periodo) +
+            ', con fecha límite de la Encuesta Cuatrimestral el ' + fechaVisible(c.nuevo.fecha_limite_encuesta) + '.' + lista);
+        }
+        if (sinDesaprobar.length) {
+          html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">No se pudieron desaprobar ' + sinDesaprobar.length + ' entradas</b> (rid ' +
+            sinDesaprobar.map(function(x) { return x.rid; }).join(', ') + '): las ven todos los que pueden abrir la base Criticidad. Desaprobarlas desde la base.') + '</div>';
+        }
+        $('aviso-resultado-config').innerHTML = html;
+        mostrar($('aviso-resultado-config'), true);
+        $('modal-cierre-config').style.setProperty('display', 'none', 'important');
+        modal = null;
+        leerYRenderizar().then(function() {
+          var b = $('btn-releer-config');
+          if (b) b.focus();
+        });
+      }
+
+      // ---------------------------------------------------------
+      // VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ADM</span>' +
+          '<button id="btn-falla-preview" type="button" aria-pressed="false" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Simular un error en la 2.ª omisión</button>' +
+          '<button id="btn-restablecer-preview" type="button" style="margin-left: auto; cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-size: 12px; background: transparent; color: #c2c9d6;">Restablecer datos de prueba</button>';
+        var aviso = $('aviso-datos-config');
+        aviso.parentNode.insertBefore(barra, aviso.nextSibling);
+      }
+
+      function marcarFallaPreview() {
+        var b = $('btn-falla-preview');
+        b.setAttribute('aria-pressed', String(fallaPreview));
+        b.style.backgroundColor = fallaPreview ? '#ffffff' : 'transparent';
+        b.style.color = fallaPreview ? '#0b0e14' : '#c2c9d6';
+      }
+
+      function restablecerPreview() {
+        if (cierre && !cierre.terminado) return;
+        escribirAlmacen(CLAVE_PREVIEW_PERIODOS, null);
+        escribirAlmacen(CLAVE_PREVIEW_CIERRE, null);
+        cierre = null;
+        fallaPreview = false;
+        marcarFallaPreview();
+        mostrar($('aviso-resultado-config'), false);
+        leerYRenderizar();
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#configuracion-sistema')) return;
+        if (t.closest('[aria-disabled="true"]')) return;
+        if (modal) {
+          var enFondo = t.id === 'modal-cierre-config' && pulsadoEn === t;
+          if (enFondo || t.closest('#btn-cerrar-modal-cierre') || t.closest('#btn-cancelar-cierre')) return cerrarModal();
+          if (t.closest('#btn-confirmar-cierre')) return confirmarCierre();
+          return;
+        }
+        if (t.closest('#btn-falla-preview')) { fallaPreview = !fallaPreview; return marcarFallaPreview(); }
+        if (t.closest('#btn-restablecer-preview')) return restablecerPreview();
+        if (t.closest('#btn-releer-config')) { mostrar($('aviso-resultado-config'), false); return leerYRenderizar(); }
+        var abrir = t.closest('#btn-abrir-cierre');
+        if (abrir) return abrirModal(abrir);
+      });
+
+      document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
+
+      document.addEventListener('input', function(e) {
+        if (e.target.id === 'campo-inicio-periodo' || e.target.id === 'campo-limite-periodo') actualizarPlazo();
+      });
+
+      document.addEventListener('change', function(e) {
+        if (e.target.id === 'campo-antes-limite') $('txt-error-cierre').style.setProperty('display', 'none', 'important');
+      });
+
+      document.addEventListener('keydown', function(e) {
+        var t = e.target;
+        if (modal && e.key === 'Escape') { e.preventDefault(); return cerrarModal(); }
+        // Tab dentro del modal: no sale de la caja
+        if (modal && e.key === 'Tab') {
+          var foco = document.querySelectorAll('#caja-modal-cierre input, #caja-modal-cierre [role="button"]:not([aria-disabled="true"])');
+          if (!foco.length) { e.preventDefault(); return; }
+          var primero = foco[0], ultimo = foco[foco.length - 1];
+          if (!$('caja-modal-cierre').contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? ultimo : primero).focus(); }
+          else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+          else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+          return;
+        }
+        if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('#configuracion-sistema') && t.getAttribute('role') === 'button') {
+          e.preventDefault();
+          t.click();
+        }
+      });
+
+      // Mientras se cierra el período, salir de la página lo deja a medias: el navegador lo pregunta
+      window.addEventListener('beforeunload', function(e) {
+        if (cierre && !cierre.terminado) { e.preventDefault(); e.returnValue = ''; }
+      });
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      var huecos = document.querySelectorAll('#configuracion-sistema [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      $('badge-rol-config').innerHTML =
+        '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+        icono('configuracion', 16) + '</span>Administrador' + chipNeutro('ADM');
+      if (usaPrueba) {
+        $('aviso-datos-config').style.setProperty('display', 'flex', 'important');
+        if (!ES_VISTA_LOCAL) $('txt-aviso-datos-config').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Respuestas o Criticidad) en este script.';
+      }
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      leerYRenderizar();
+    })();
+  </script>
+  </nolink>
+</div>
