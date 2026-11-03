@@ -37,7 +37,8 @@ docs/
 │   ├── 005-modelo-de-bases-moodle.md
 │   ├── 006-versionado-de-encuestas.md
 │   ├── 007-encuestas-respuestas-y-criticidad.md
-│   └── 008-encuesta-inicial-y-datos-personales.md ← pendiente
+│   ├── 008-encuesta-inicial-y-datos-personales.md ← pendiente
+│   └── 009-cierre-de-periodo-y-omision.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
@@ -47,7 +48,8 @@ docs/
 │   ├── copia-encuestas.md
 │   ├── carga-parciales-primero.md
 │   ├── entrevistas.md
-│   └── indicadores-cohorte.md
+│   ├── indicadores-cohorte.md
+│   └── configuracion.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 
@@ -106,6 +108,8 @@ Sirve como vista rápida de la historia del proyecto.
 - [Indicadores de Cohorte](specs/indicadores-cohorte.md) — Sección provisoria con la definición y el cálculo de cada indicador
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [ADR-008](decisions/008-encuesta-inicial-y-datos-personales.md) — Pregunta abierta: reemplazar la Encuesta Inicial por la Información personal
+- [ADR-009](decisions/009-cierre-de-periodo-y-omision.md) — Cierre de período y alerta por omisión: base Períodos y Página Configuración del Sistema
+- [Configuración del Sistema](specs/configuracion.md) — Período vigente y cierre del período, con las omisiones de la Encuesta Cuatrimestral
 - [Carga de parciales de 1.er año](specs/carga-parciales-primero.md) — Guía para el apartado donde los estudiantes suben sus notas, y cómo se calcula su criticidad
 - [Vista del estudiante](specs/vista-estudiante.md) — Mi Trayectoria e Información personal (SCRUM-24): base Estudiantes, secciones deshabilitadas hasta cargarla y habilitadas por tramo (`es_primer_anio`)
 - [Plan de estudios 2024](../data/plan_estudios/README.md) — Materias y correlativas listas para importar

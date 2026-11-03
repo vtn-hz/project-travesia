@@ -39,6 +39,7 @@
     <div id="columna-perfil-estudiante" style="flex: 1 1 220px !important; min-width: 0 !important;"></div>
     <div style="flex: 999 1 420px !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; gap: 16px !important;">
       <div id="tarjeta-info-personal"></div>
+      <div id="aviso-periodo-estudiante" style="display: none;"></div>
       <div id="grilla-opciones-estudiante" style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important;"></div>
     </div>
   </div>
@@ -74,8 +75,17 @@
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var EN_MOODLE = !ES_VISTA_LOCAL && !!(window.M && M.cfg && M.cfg.wwwroot);
-      // Mismo período que la Página Tools (PERIODO_ACTUAL): con él se guardan las respuestas de la Encuesta Cuatrimestral
-      var PERIODO_ACTUAL = '2026-2';
+      // Período (ADR-009): el vigente de la base Períodos (PeriodoVigente de la Página Tools), con la fecha límite de la Encuesta
+      // Cuatrimestral. En la vista previa, los mismos períodos de prueba que la Página Tools más los que agregó la Página Configuración
+      // del Sistema. Hasta leerlo vale PERIODO_POR_DEFECTO
+      var PERIODO_POR_DEFECTO = '2026-2';
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '' }
+      ];
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
+      var PERIODO_ACTUAL = PERIODO_POR_DEFECTO;
+      var PERIODO_ANTERIOR = '2026-1';
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
@@ -175,6 +185,7 @@
         cuenta: null,      // datos de la cuenta de Moodle (solo se muestran hasta cargar la información personal)
         estudiante: null,  // entrada propia de Estudiantes (null: sin información personal)
         respuestas: null,  // entradas propias de Respuestas (null: no se pudieron leer)
+        periodo: null,     // período vigente: { periodo, fecha_inicio, fecha_limite_encuesta }
         error: ''          // error al leer la base Estudiantes: todo queda deshabilitado
       };
       var respuestasLocales = RESPUESTAS_PRUEBA.slice();
@@ -243,6 +254,30 @@
           if (fa !== fb) return fa < fb ? -1 : 1;
           return (Number(a.rid) || 0) - (Number(b.rid) || 0);
         }).pop() || null;
+      }
+
+      // ---------------------------------------------------------
+      // PERÍODO VIGENTE
+      // ---------------------------------------------------------
+      // VISTA PREVIA: LA MISMA REGLA QUE PeriodoVigente (LA ENTRADA DE rid MAYOR)
+      function periodoDePrueba() {
+        var agregados = [];
+        try { agregados = JSON.parse(window.localStorage.getItem(CLAVE_PREVIEW_PERIODOS) || '[]') || []; } catch (e) { /* sin almacenamiento: los períodos de prueba */ }
+        var lista = PERIODOS_PRUEBA.concat(Array.isArray(agregados) ? agregados : []).filter(function(p) { return p && /^\d{4}-[12]$/.test(String(p.periodo)); })
+          .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+        return lista[lista.length - 1] || null;
+      }
+
+      function fijarPeriodo(p) {
+        estado.periodo = p && p.periodo ? p : { periodo: PERIODO_POR_DEFECTO, fecha_inicio: '', fecha_limite_encuesta: '' };
+        PERIODO_ACTUAL = String(estado.periodo.periodo);
+        var x = PERIODO_ACTUAL.split('-');
+        PERIODO_ANTERIOR = x[1] === '2' ? x[0] + '-1' : (Number(x[0]) - 1) + '-2';
+      }
+
+      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
+      function leerPeriodo(Tools) {
+        return typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null);
       }
 
       // ---------------------------------------------------------
@@ -323,6 +358,8 @@
         estado.usuario = { id: Number(M.cfg.userId) };
         return cargarTools().then(function(Tools) {
           var cuenta = leerCuentaMoodle().then(function(c) { estado.cuenta = c; });
+          // El período solo cambia el estado de la Cuatrimestral: si no se lee, queda el último leído o el período por defecto
+          var periodo = leerPeriodo(Tools).then(fijarPeriodo, function() { fijarPeriodo(null); });
           // Las respuestas solo informan el estado de las encuestas: si no se leen, la vista sigue
           var respuestas = entradasPropias(Tools, DATAID_RESPUESTAS).catch(function() { return null; });
           var estudiante = DATAID_ESTUDIANTES
@@ -331,7 +368,7 @@
               return lista.length ? lista[lista.length - 1] : null;
             })
             : Promise.reject(new Error('La base Estudiantes todavía no está creada en Moodle.'));
-          return Promise.all([estudiante, respuestas, cuenta]).then(function(r) {
+          return Promise.all([estudiante, respuestas, cuenta, periodo]).then(function(r) {
             estado.estudiante = r[0];
             estado.respuestas = r[1];
           });
@@ -490,6 +527,33 @@
         return { leida: true, respondida: r };
       }
 
+      // FECHA AAAA-MM-DD DE HOY (PARA LA FECHA LÍMITE DE LA CUATRIMESTRAL)
+      function hoy() {
+        var d = new Date();
+        return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+      }
+
+      // TEXTO DE LA TARJETA DE LA CUATRIMESTRAL: EL PERÍODO Y, SI HAY, LA FECHA LÍMITE
+      function textoCuatrimestral(respondida) {
+        var t = 'Actualización de materias, estado laboral, cursadas actualmente y Proyecto Final. Período: ' + periodoVisible(PERIODO_ACTUAL) + '.';
+        var limite = estado.periodo && /^\d{4}-\d{2}-\d{2}$/.test(estado.periodo.fecha_limite_encuesta) ? estado.periodo.fecha_limite_encuesta : '';
+        if (!limite || respondida) return t;
+        return t + (limite >= hoy() ? ' Responder hasta el ' + fechaVisible(limite) + '.' : ' La fecha límite fue el ' + fechaVisible(limite) + ': la encuesta sigue abierta hasta el cierre del período.');
+      }
+
+      // AVISO DE VOLVER A RESPONDER: 2.º AÑO EN ADELANTE, CON UNA CUATRIMESTRAL DE UN PERÍODO ANTERIOR Y NINGUNA DEL VIGENTE (ADR-009)
+      function renderizarAvisoPeriodo(conInfo, tramo, cuatri) {
+        var el = $('aviso-periodo-estudiante');
+        var anterior = conInfo && tramo === 'superior' && cuatri.leida && !cuatri.respondida && estado.respuestas.some(function(x) {
+          return String(x.codigo_encuesta) === 'cuatrimestral' && String(x.periodo) !== PERIODO_ACTUAL;
+        });
+        if (!anterior) { el.innerHTML = ''; mostrar(el, false); return; }
+        var limite = estado.periodo && /^\d{4}-\d{2}-\d{2}$/.test(estado.periodo.fecha_limite_encuesta) ? estado.periodo.fecha_limite_encuesta : '';
+        el.innerHTML = aviso('info', '<b style="font-weight: 600 !important;">Finalizó el período ' + escapar(PERIODO_ANTERIOR) + '.</b> Se debe responder la Encuesta Cuatrimestral del período ' +
+          escapar(PERIODO_ACTUAL) + ' (' + escapar(periodoVisible(PERIODO_ACTUAL)) + ')' + (limite && limite >= hoy() ? ' hasta el ' + fechaVisible(limite) : '') + '.');
+        mostrar(el, true, 'block');
+      }
+
       function chipEncuesta(e) {
         if (!e.leida) return chip('neutro', 'Sin datos');
         return e.respondida ? chip('listo', 'Respondida el ' + fechaVisible(e.respondida.created_at)) : chip('pendiente', 'Pendiente');
@@ -519,7 +583,7 @@
           },
           {
             id: 'card-encuesta-cuatrimestral', icono: 'encuestas', titulo: 'Encuesta Cuatrimestral',
-            texto: 'Actualización de materias, estado laboral, cursadas actualmente y Proyecto Final. Período: ' + periodoVisible(PERIODO_ACTUAL) + '.',
+            texto: textoCuatrimestral(cuatri.respondida),
             habilitada: habilitada('cuatrimestral'), pendiente: habilitada('cuatrimestral') && cuatri.leida && !cuatri.respondida,
             chip: habilitada('cuatrimestral') ? chipEncuesta(cuatri) : '',
             boton: botonDe('cuatrimestral', cuatri.respondida ? 'Actualizar la respuesta' : 'Acceder a la encuesta')
@@ -538,6 +602,7 @@
           }
         ];
         $('grilla-opciones-estudiante').innerHTML = opciones.map(tarjetaOpcion).join('');
+        renderizarAvisoPeriodo(conInfo, tramo, cuatri);
       }
 
       function renderizarTodo() {
@@ -576,6 +641,7 @@
         estado.cuenta = x.cuenta;
         estado.estudiante = estudianteLocal(x.usuario);
         estado.respuestas = respuestasLocales.filter(function(r) { return r.id_usuario === x.usuario; });
+        fijarPeriodo(periodoDePrueba());
         try { history.replaceState(null, '', '#usuario=' + x.usuario); } catch (e) { /* sin historial: solo cambia la vista */ }
         renderizarTodo();
         var botones = document.querySelectorAll('[data-preview-usuario]');
@@ -611,7 +677,8 @@
         var btnUsuario = t.closest('[data-preview-usuario]');
         if (btnUsuario) return simularEstudiante(Number(btnUsuario.getAttribute('data-preview-usuario')));
         if (t.closest('#btn-restablecer-preview')) {
-          try { window.localStorage.removeItem(CLAVE_PREVIEW); } catch (err) { /* sin almacenamiento */ }
+          // También borra los períodos que agregó la vista previa de la Página Configuración del Sistema
+          try { window.localStorage.removeItem(CLAVE_PREVIEW); window.localStorage.removeItem(CLAVE_PREVIEW_PERIODOS); } catch (err) { /* sin almacenamiento */ }
           return simularEstudiante(estado.usuario.id);
         }
         var btnAccion = t.closest('[data-accion]');

@@ -38,7 +38,7 @@ Una base de Moodle es una **tabla plana**, y la leemos y escribimos desde JavaSc
 | # | Base | Entidades del DER | Una entrada por… | Tipo | Visible para |
 |---|---|---|---|---|---|
 | 1 | Plan de estudios | `Plan_Estudio`, `Materia`, `Materia_Plan`, `Correlatividad` | materia de un plan | Editable | Equipo |
-| 2 | Períodos | `Periodo_Lectivo`, `Cohorte` | cuatrimestre | Editable | Equipo |
+| 2 | Períodos | `Periodo_Lectivo`, `Cohorte` | período abierto | Solo agrega (la vigente es la última) | Todos (la leen los navegadores de los estudiantes; la escribe el equipo) |
 | 3 | Indicadores | `Indicador` | regla y versión | Editable (versiona) | Equipo |
 | 4 | Estudiantes | `Estudiante` | estudiante | Editable | Cada estudiante ve y edita la suya |
 | 5 | Situación académica | `Cursada`, `Evaluacion`, `Lote_Importacion` | estudiante y período | Solo agrega | Equipo |
@@ -81,12 +81,16 @@ Una entrada por materia en un plan. Los datos del plan (vigencia, duración) se 
 
 ### 2. Períodos
 
+Definida en [`BASE_PERIODOS.json`](../../../data/moodle/BASE_PERIODOS.json) por el [ADR-009](../../decisions/009-cierre-de-periodo-y-omision.md) (propuesta, sin crear en Moodle). **Solo agrega entradas:** la vigente es la de `rid` mayor. La escribe la Página Configuración del Sistema al cerrar un período, y la leen todas las vistas con `PeriodoVigente()` de la Página Tools, en lugar del `PERIODO_ACTUAL` fijo en el código.
+
 | Campo | Tipo | Origen en el DER | Notas |
 |---|---|---|---|
-| `periodo` | text | `Periodo_Lectivo.anio` + `cuatrimestre` | `AAAA-n`, por ejemplo `2026-2`. Único |
-| `fecha_inicio` | text (fecha) | `Periodo_Lectivo.fecha_inicio` | |
-| `fecha_fin` | text (fecha) | `Periodo_Lectivo.fecha_fin` | |
-| `cant_ingresantes` | number | `Cohorte.cant_ingresantes` | Vacío si en ese período no hubo ingreso. La cohorte se identifica con el período de ingreso |
+| `periodo` | text | `Periodo_Lectivo.anio` + `cuatrimestre` | `AAAA-n`, por ejemplo `2026-2` |
+| `fecha_inicio` | text (fecha) | `Periodo_Lectivo.fecha_inicio` | El día en que se cerró el período anterior |
+| `fecha_limite_encuesta` | text (fecha) | (nuevo) | Hasta cuándo se espera la Encuesta Cuatrimestral del período. Opcional: se define después agregando una entrada del mismo período |
+| `created_at` | text (fecha y hora) | (nuevo) | |
+
+Quedan para más adelante `fecha_fin` (`Periodo_Lectivo.fecha_fin`) y `cant_ingresantes` (`Cohorte.cant_ingresantes`): no los usa ninguna vista todavía.
 
 ### 3. Indicadores
 
@@ -202,7 +206,7 @@ Desde el [ADR-007](../../decisions/007-encuestas-respuestas-y-criticidad.md) gua
 | `json_respuesta` | text (JSON) | `Respuesta` | `[{ item_id, respuestas: [...] }]`: número de opción, número, `{ plan, materias }` o `{ materia, primera_vez, dificultad }` |
 | `created_at` | text (fecha y hora) | `Envio_Encuesta.fecha_completado` | |
 
-No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período. Si al cerrar el período no respondió, el equipo agrega una entrada `omision` en Criticidad.
+No se guardan envíos pendientes: un envío **pendiente** es un estudiante del tramo sin entrada en el período. Si al cerrar el período no respondió, la Página Configuración del Sistema agrega una entrada `omision` en Criticidad ([ADR-009](../../decisions/009-cierre-de-periodo-y-omision.md)).
 
 ### 9. Criticidad
 

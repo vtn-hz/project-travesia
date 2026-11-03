@@ -128,8 +128,19 @@
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      // Mismo período que la Página Tools (PERIODO_ACTUAL): el calculado sale de las entradas automáticas de este período
-      var PERIODO_ACTUAL = '2026-2';
+      // Período (ADR-009): el vigente de la base Períodos (PeriodoVigente de la Página Tools). El calculado sale de las entradas
+      // automáticas de ese período y, si el estudiante no tiene ninguna, de las del período anterior (por ejemplo, la omisión que
+      // agrega el cierre del período). En la vista previa, los mismos períodos de prueba que la Página Tools más los que agregó la
+      // Página Configuración del Sistema. Hasta leerlo vale PERIODO_POR_DEFECTO
+      var PERIODO_POR_DEFECTO = '2026-2';
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '' }
+      ];
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
+      var CLAVE_PREVIEW_CIERRE = 'zk-preview-criticidad-cierre'; // omisiones de la vista previa de la Página Configuración del Sistema
+      var PERIODO_ACTUAL = PERIODO_POR_DEFECTO;
+      var PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
       // En Moodle el rol saldrá del grupo del usuario; por ahora arranca en ADM.
       var ROL_INICIAL = 'ADM';
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
@@ -300,6 +311,39 @@
         return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
       }
 
+      // OMISIONES QUE AGREGÓ LA VISTA PREVIA DE LA PÁGINA CONFIGURACIÓN DEL SISTEMA
+      function cierrePreview() {
+        var v = leerAlmacen(CLAVE_PREVIEW_CIERRE, []);
+        return Array.isArray(v) ? v.filter(function(c) { return c && typeof c === 'object' && c.id_usuario; }) : [];
+      }
+
+      // ---------------------------------------------------------
+      // PERÍODO VIGENTE
+      // ---------------------------------------------------------
+      // 2026-2 → 2026-1; 2027-1 → 2026-2
+      function periodoAnterior(p) {
+        var x = String(p).split('-');
+        return x[1] === '2' ? x[0] + '-1' : (Number(x[0]) - 1) + '-2';
+      }
+
+      // VISTA PREVIA: LA MISMA REGLA QUE PeriodoVigente (LA ENTRADA DE rid MAYOR)
+      function periodoDePrueba() {
+        var agregados = leerAlmacen(CLAVE_PREVIEW_PERIODOS, []);
+        var lista = PERIODOS_PRUEBA.concat(Array.isArray(agregados) ? agregados : []).filter(function(p) { return p && /^\d{4}-[12]$/.test(String(p.periodo)); })
+          .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+        return lista[lista.length - 1] || null;
+      }
+
+      function fijarPeriodo(p) {
+        PERIODO_ACTUAL = p && p.periodo ? String(p.periodo) : PERIODO_POR_DEFECTO;
+        PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
+      }
+
+      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
+      function leerPeriodo(Tools) {
+        return (typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null)).then(fijarPeriodo);
+      }
+
       function escribirAlmacen(clave, valor) {
         try {
           if (valor === null) window.localStorage.removeItem(clave);
@@ -343,19 +387,24 @@
       // CALCULADO: 1.er año → última entrada de notas del período; 2.º en adelante → última Cuatrimestral (u omisión) del período.
       // ASIGNADO: la última entrada manual de cualquier período, salvo que sea sin_asignar
       function criticidadDe(tramo, entradas, encuestas) {
-        var candidatas = entradas.filter(function(c) {
-          if (c.origen !== 'automatica' || String(c.periodo) !== PERIODO_ACTUAL || numero(c.indice) === null) return false;
-          var tipo = tipoDeEntrada(c, encuestas);
-          return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
-        });
-        var ultima = masReciente(candidatas);
+        var delPeriodo = function(periodo) {
+          return entradas.filter(function(c) {
+            if (c.origen !== 'automatica' || String(c.periodo) !== periodo || numero(c.indice) === null) return false;
+            var tipo = tipoDeEntrada(c, encuestas);
+            return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+          });
+        };
+        // Sin entradas en el período vigente vale la última del anterior, marcada con su período (ADR-009)
+        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || masReciente(delPeriodo(PERIODO_ANTERIOR));
         var calculado;
         if (ultima) {
           var indice = numero(ultima.indice);
+          var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
           calculado = { nivel: nivelDeIndice(indice), indice: indice, tipo: tipoDeEntrada(ultima, encuestas), fecha: ultima.created_at, entrada: ultima,
-            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
+            periodo: String(ultima.periodo), anterior: anterior,
+            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
         } else {
-          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null,
+          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
             motivo: tramo === 'primero' ? 'Sin notas de parciales en ' + PERIODO_ACTUAL + '.' : 'Sin Encuesta Cuatrimestral en ' + PERIODO_ACTUAL + '.' };
         }
         var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
@@ -415,10 +464,11 @@
         });
       }
 
-      // De Criticidad, el tablero solo usa el período actual (calculado) y las entradas manuales (asignado)
+      // De Criticidad, el tablero solo usa el período actual y el anterior (calculado) y las entradas manuales (asignado)
       function entradaUtilCriticidad(e) {
         var c = e.campos || {};
-        return String(c.periodo || '').trim() === PERIODO_ACTUAL || String(c.origen || '').trim() === 'manual';
+        var periodo = String(c.periodo || '').trim();
+        return periodo === PERIODO_ACTUAL || periodo === PERIODO_ANTERIOR || String(c.origen || '').trim() === 'manual';
       }
 
       // AGREGAR UNA ENTRADA (rid=0). Los campos se ubican por su etiqueta en el formulario de alta, como en la Página Tools
@@ -468,13 +518,17 @@
         if (usaPrueba) {
           $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
           if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
+          fijarPeriodo(periodoDePrueba());
           return Promise.resolve({
             estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview()),
+            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview()),
             respuestas: RESPUESTAS_PRUEBA
           });
         }
         return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          // El período va primero: el filtro de Criticidad lo usa mientras lee
+          return leerPeriodo(Tools).then(function() { return Tools; });
+        }).then(function(Tools) {
           return Promise.all([
             leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
             leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad }),
@@ -609,6 +663,7 @@
         var detalle = c.indice !== null
           ? '<b style="font-weight: 600 !important; color: #0b0e14 !important; font-variant-numeric: tabular-nums !important;">' + c.indice + '</b> / 100 · ' + escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha)
           : escapar(c.motivo);
+        if (c.indice !== null && c.anterior) detalle += ' · período ' + escapar(c.periodo);
         return chipNivel(c.nivel) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + detalle + '</div>';
       }
 
@@ -827,7 +882,12 @@
       }
 
       function restablecerPreview() {
+        // También borra lo que cerró la vista previa de la Página Configuración del Sistema (períodos y omisiones)
         escribirAlmacen(CLAVE_PREVIEW, null);
+        escribirAlmacen(CLAVE_PREVIEW_CIERRE, null);
+        escribirAlmacen(CLAVE_PREVIEW_PERIODOS, null);
+        fijarPeriodo(periodoDePrueba());
+        $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
         datos.criticidad = CRITICIDAD_PRUEBA.slice();
         procesar();
         renderizarTodo();
@@ -912,13 +972,13 @@
       // ---------------------------------------------------------
       var huecos = document.querySelectorAll('#tablero-estudiantes [data-icono]');
       for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
-      $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
       $('cuerpo-tabla-estudiantes').innerHTML =
         '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
       cargarDatos().then(function(d) {
         datos = d;
+        $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
         procesar();
         renderizarCohortes();
         renderizarTodo();

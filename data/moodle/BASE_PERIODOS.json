@@ -1,0 +1,49 @@
+{
+  "clave": "periodos",
+  "nombre": "Períodos",
+  "descripcion": "Períodos lectivos del sistema: una entrada por período abierto. Solo se agregan entradas: el período vigente es la de rid mayor (la última que se cargó). La escribe la Página Configuración del Sistema al cerrar un período, y la leen todas las vistas con PeriodoVigente() de la Página Tools. Volver atrás es agregar otra vez el período anterior.",
+  "subseccion": "Database",
+  "origen": "ADR-009 (2026-11-02). Reemplaza la base 2 del modelo simplificado con los campos que usa el cierre de período. Sin crear en Moodle.",
+  "estado": "propuesta",
+  "configuracion": {
+    "Requiere aprobación": "Sí, y no aprobar entradas: las que carga el equipo (rol Profesor) quedan aprobadas solas y las leen todos los navegadores; la que cargara un estudiante la vería solo él, así que solo cambiaría sus propias vistas.",
+    "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva.",
+    "Número máximo de entradas": "0 (sin límite).",
+    "Permitir comentarios": "No.",
+    "Disponibilidad": "Visible en Zhakyz: la leen los navegadores de todos los estudiantes (encuestas, notas y Mi Trayectoria). El campus no permite \"disponible pero no mostrada\".",
+    "Quién escribe": "Solo el equipo (ADM), desde la Página Configuración del Sistema."
+  },
+  "plantillas": "data/moodle/plantillas/periodos/ (lista con .zk-registro, data-rid y una celda data-campo por campo, para que la lea LeerBase). La de alta es la de Moodle: la Página ubica cada campo por su etiqueta.",
+  "campos": [
+    {
+      "nombre": "periodo",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Período (AAAA-n, n = 1 o 2). Las entradas con otro formato se ignoran"
+    },
+    {
+      "nombre": "fecha_inicio",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha de inicio del período en el sistema (AAAA-MM-DD): el día en que se cerró el anterior"
+    },
+    {
+      "nombre": "fecha_limite_encuesta",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Hasta cuándo se espera la Encuesta Cuatrimestral del período (AAAA-MM-DD). Vacía mientras el equipo no la defina: se define o se cambia después desde la Página Configuración del Sistema, que agrega una entrada del mismo período con la fecha nueva. Mi Trayectoria la muestra y el cierre avisa si se hace antes. No cierra la encuesta: el estudiante puede responder hasta que se cierre el período"
+    },
+    {
+      "nombre": "created_at",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora de la entrada (ISO 8601 con zona)"
+    }
+  ],
+  "primera_entrada": {
+    "descripcion": "Al crear la base se carga el período en curso. El 2.º cuatrimestre de 2026 empezó el martes 18 de agosto (el lunes 17 fue feriado). La fecha límite de la encuesta se define más adelante desde la Página Configuración del Sistema",
+    "periodo": "2026-2",
+    "fecha_inicio": "2026-08-18",
+    "fecha_limite_encuesta": ""
+  }
+}

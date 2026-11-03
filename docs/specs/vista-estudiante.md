@@ -7,7 +7,7 @@
   - [`section/vista_estudiante/content.html`](../../section/vista_estudiante/content.html): Mi Trayectoria, la pantalla de entrada del estudiante;
   - [`section/informacion_personal/content.html`](../../section/informacion_personal/content.html): carga y edición de la información personal.
 - **Rol:** EST (estudiante).
-- **Estado:** **local**, sin publicar. `paginas.vista_estudiante`, `paginas.informacion_personal` y `bases.estudiantes` valen `null` en [`moodle.config.json`](../../moodle.config.json).
+- **Estado:** **publicado el 2026-11-02** (Mi Trayectoria, cmid 60264; Información personal, cmid 60265; base Estudiantes, d=206; [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) las dos Páginas leen el período vigente de la base Períodos.
 - **Última actualización:** 2026-11-02
 
 ---
@@ -35,12 +35,17 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
   - con entrada: ingreso y año de la carrera, y el botón **Editar información personal**.
   - Los dos botones abren la Página Información personal.
 
+### Período vigente ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local)
+
+- La tarjeta de la Encuesta Cuatrimestral muestra el período vigente y, si no está respondida, "Responder hasta el …" (o "La fecha límite fue el …: la encuesta sigue abierta hasta el cierre del período").
+- **Volver a responder:** con una Cuatrimestral de un período anterior y ninguna del vigente, un aviso arriba de las secciones: "Finalizó el período 2026-2. Se debe responder la Encuesta Cuatrimestral del período 2027-1 (1.er cuatrimestre 2027) hasta el …". Desaparece al responder.
+
 ### Secciones por tramo
 
 | Sección | Sin información personal | 1.er año | 2.º año en adelante |
 |---|---|---|---|
 | Encuesta Inicial | Deshabilitada: "Requiere cargar la información personal" | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado Pendiente o Respondida |
-| Encuesta Cuatrimestral | Deshabilitada | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado del período (`PERIODO_ACTUAL` = 2026-2) |
+| Encuesta Cuatrimestral | Deshabilitada | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado del período vigente (base Períodos, [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md)) y su fecha límite |
 | Parciales de primer año | Deshabilitada | **Habilitada** (Página 60209) | Deshabilitada: "Disponible solo en 1.er año" |
 | Entrevistas y Tutorías | Deshabilitada | **Habilitada** (Página 60198) | **Habilitada** |
 
@@ -121,4 +126,4 @@ Actualizados con este cambio:
 2. Crear las dos Páginas y decidir cómo llega el estudiante desde el Hub, que todavía no detecta roles.
 3. Probar la lectura de la cuenta con un estudiante real (`/user/edit.php` puede no estar permitido).
 4. Entrevistas y Tutorías todavía abre como ADM en Moodle (no detecta el rol EST).
-5. `PERIODO_ACTUAL` está repetido en Tools y en la vista.
+5. ~~`PERIODO_ACTUAL` está repetido en Tools y en la vista.~~ Resuelto en local por el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md): las dos leen `PeriodoVigente()`.

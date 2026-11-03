@@ -25,6 +25,15 @@
 | 40 a 69 | Amarillo: riesgo moderado |
 | 70 a 100 | Rojo: criticidad alta |
 
+## Omisión
+
+Quien no responde la Encuesta Cuatrimestral de un período recibe, al cerrar el período, una entrada en Criticidad con `fuente = omision` ([ADR-009](../../decisions/009-cierre-de-periodo-y-omision.md)).
+
+- **Índice: 70**, el piso del rojo. El tutor la ve como riesgo alto, pero no pesa más que la peor combinación de respuestas (100).
+- **Grupo:** *encuestas*, como `respuestas`: en el `indice_total` ocupa el lugar de la encuesta que no se respondió.
+- **Solo 2.º año en adelante** con información personal cargada, y no a quien pasó a 2.º año durante el período que se cierra.
+- La agrega la Página Configuración del Sistema al cerrar el período y se desaprueba al crearla: el estudiante no la ve.
+
 ## Avance curricular (lo usan las dos encuestas)
 
 > **En análisis (2026-10-26).** El cálculo está desactivado ([biblioteca de Tools](../../../section/utils/tools/content.html), comentado, sin borrar) mientras el equipo lo revisa porque es complejo. En la base Encuestas, `creditos_aprobados` tiene `regla: { nombre: "avance_curricular", activa: false }`: se guarda la respuesta, pero no suma ni cuenta en `puntaje_maximo`. Mientras tanto, el máximo es **30** en la inicial y **70** en la cuatrimestral, y desde el ADR-007 el índice se lleva a 0–100 con ese máximo para que los cortes del semáforo sigan valiendo.

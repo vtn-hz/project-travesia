@@ -114,7 +114,7 @@ Después de guardar la respuesta, la copia agrega a Criticidad:
 - **`indice_total`:** el promedio del último índice de las notas de 1.er año y el de esta encuesta, en el período. En el ejemplo, las notas tenían 52: (52 + 47) ÷ 2 = 50. Si el estudiante no tiene notas en el período, es igual al índice.
 - **`semaforo`:** el del `indice_total` (40 y 70).
 - **Si no se puede calcular el índice** (por ejemplo, una definición con errores), la respuesta se guarda igual y no se agrega la entrada de Criticidad.
-- **El periodo** de la entrada es el de la respuesta. En la Inicial, que no lleva período, es `PERIODO_ACTUAL`.
+- **El periodo** de la entrada es el de la respuesta. En la Inicial, que no lleva período, es el período vigente. Desde Tools v6 ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local) el período vigente sale de la base Períodos (`PeriodoVigente()`), leído al abrir la encuesta y otra vez al enviarla, con una espera máxima de 4 segundos.
 
 ## Datos en Moodle
 
@@ -211,5 +211,5 @@ La Página Tools (índice) carga sin errores y a 400 px no desborda.
 5. **Cuadro de créditos:** todavía ofrece el Plan 2003, que quedó fuera del alcance. Si el estudiante lo elige, el avance no se puntúa. Desde el 2026-10-25 el cuadro guarda su selección en las respuestas ocultas 8774 y 8775 y la recupera al volver a su página; la copia usa esas respuestas cuando el cuadro no está en pantalla (por ejemplo, si el estudiante termina la encuesta en otro dispositivo).
 6. **Control para el equipo:** comparar la última respuesta de Moodle con la última versión de la base, para detectar copias que no llegaron.
 7. **`avance_percibido`:** "Demorado" y "Muy demorado" tienen el mismo umbral (50 %) en Moodle.
-8. **Período:** `PERIODO_ACTUAL` está fijo en el script (`2026-2`). Hay que cambiarlo cada cuatrimestre o definir la ventana del período.
+8. **Período:** resuelto en local por el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (base Períodos y Tools v6). Hasta publicarlo, `PERIODO_ACTUAL` sigue fijo en el script publicado (`2026-2`).
 9. **Índice de la Inicial con el avance desactivado:** solo puntúa la situación laboral, y quien trabaja desde 1.er año llega a 100. Revisar con el equipo.
