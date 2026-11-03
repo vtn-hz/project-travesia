@@ -682,13 +682,24 @@
       // ---------------------------------------------------------
       // PERMISOS
       // ---------------------------------------------------------
-      // GESTIONA EL ACOMPAÑANTE DE LA ENTREVISTA; ADM PUEDE GESTIONAR CUALQUIERA. SI LA PIDIÓ UN ESTUDIANTE
+      // GESTIONAN LOS INVOLUCRADOS: EL ESTUDIANTE (ACEPTAR O REPROGRAMAR) Y EL ACOMPAÑANTE (ACEPTAR, REPROGRAMAR,
+      // CANCELAR Y REGISTRAR EL RESULTADO); ADM PUEDE GESTIONAR CUALQUIERA COMO ACOMPAÑANTE. SI LA PIDIÓ UN ESTUDIANTE
       // Y TODAVÍA NO SE CONOCE LA CUENTA DEL ACOMPAÑANTE, LA GESTIONA EL USUARIO CON ESE NOMBRE
       function puedeGestionar(ent) {
-        if (rolActual === 'EST') return false;
+        if (rolActual === 'EST') return !!ent.usuario && String(ent.usuario) === String(usuarioActual());
         if (rolActual === 'ADM') return true;
         if (!ent.acompanante) return normalizar(ent.nombreAcompanante) === normalizar(nombreUsuarioActual());
         return String(ent.acompanante) === String(usuarioActual());
+      }
+
+      // PARTE DE LA ENTREVISTA DEL USUARIO DE LA SESIÓN (COMO EN propuestas[].por)
+      function miParte() { return rolActual === 'EST' ? 'estudiante' : 'acompanante'; }
+
+      // ¿PUEDE ACEPTAR LA FECHA VIGENTE? SOLO SI LA PROPUSO LA OTRA PARTE: QUIEN HIZO LA SOLICITUD
+      // (O LA ÚLTIMA PROPUESTA) NO LA ACEPTA, SALVO QUE RECIBA UNA CONTRAOFERTA
+      function puedeAceptar(ent) {
+        var ultima = ent.propuestas[ent.propuestas.length - 1];
+        return ent.estado === 'solicitada' && !!ultima && ultima.por !== miParte();
       }
 
       // ---------------------------------------------------------
@@ -744,7 +755,7 @@
         return '<div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">' +
           '<div><label for="campo-fecha-contraoferta" style="' + ETIQUETA + '">Nueva fecha y hora</label>' +
           '<input id="campo-fecha-contraoferta" type="datetime-local" min="' + ahora() + '" style="height: 40px !important; ' + CAMPO + '"></div>' +
-          '<div><label for="campo-mensaje-contraoferta" style="' + ETIQUETA + '">Mensaje para el estudiante <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
+          '<div><label for="campo-mensaje-contraoferta" style="' + ETIQUETA + '">Mensaje para ' + (rolActual === 'EST' ? 'el acompañante' : 'el estudiante') + ' <span style="font-weight: 400 !important; color: #47536b !important;">(opcional)</span></label>' +
           '<textarea id="campo-mensaje-contraoferta" rows="2" style="resize: vertical !important; ' + CAMPO + '"></textarea></div>' +
           '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important; gap: 8px !important;">' +
           boton('volver', 'Volver') + boton('enviar-contraoferta', 'Enviar propuesta', 'principal', 'flecha') + '</div></div>';
@@ -789,8 +800,34 @@
           boton('volver', 'Volver') + boton('guardar-resultado', 'Guardar resultado', 'principal', 'guardar') + '</div></div>';
       }
 
+      // BOTONES DEL ESTUDIANTE: ACEPTAR LA FECHA (SOLO SI LA PROPUSO EL ACOMPAÑANTE) O REPROGRAMARLA
+      function accionesEstudiante(ent, f) {
+        var s = f.situacion;
+        var ultima = ent.propuestas[ent.propuestas.length - 1];
+        var fila = function(botones) {
+          return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important;">' + botones + '</div>';
+        };
+        if (s === 'esperando') {
+          return avisoInfo(escapar(f.acompanante) + ' propuso el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Aceptar la fecha o proponer otra.') +
+            fila((puedeAceptar(ent) ? boton('aceptar', 'Aceptar fecha', 'principal', 'ok') : '') + boton('contraoferta', 'Proponer otra fecha', 'secundario', 'calendario'));
+        }
+        if (s === 'responder') {
+          return avisoInfo('Se propuso el <b style="font-weight: 600 !important;">' + fechaLarga(ultima.fecha) + '</b>. Falta que ' + escapar(f.acompanante) + ' acepte la fecha o proponga otra.') +
+            fila(boton('contraoferta', 'Cambiar la fecha', 'secundario', 'calendario'));
+        }
+        if (s === 'proxima') {
+          return avisoInfo('La entrevista está acordada para el <b style="font-weight: 600 !important;">' + fechaLarga(ent.programada) + '</b>.') +
+            fila(boton('contraoferta', 'Reprogramar', 'secundario', 'calendario'));
+        }
+        if (s === 'sin_resultado') {
+          return avisoInfo('La entrevista estaba acordada para el ' + fechaLarga(ent.programada) + '. El resultado lo registra ' + escapar(f.acompanante) + '.');
+        }
+        return '';
+      }
+
       // BOTONES SEGÚN EL ESTADO DE LA ENTREVISTA
       function accionesDisponibles(ent, f) {
+        if (rolActual === 'EST') return accionesEstudiante(ent, f);
         var s = f.situacion;
         var ultima = ent.propuestas[ent.propuestas.length - 1];
         if (s === 'responder') {
@@ -842,10 +879,10 @@
         if (ent.propuestas.length) cuerpo += bloque('Fechas propuestas', propuestasHtml(ent, f));
 
         var gestion = '';
-        if (rolActual === 'EST' && ESTADOS[f.situacion].activa) {
-          gestion = avisoInfo('La entrevista la coordina ' + escapar(f.acompanante) + '. Los cambios de fecha y el resultado se registran desde su agenda.');
-        } else if (!gestiona && ESTADOS[f.situacion].activa) {
-          gestion = avisoInfo('Solo el acompañante de la entrevista (' + escapar(f.acompanante) + ') o un administrador pueden gestionarla.');
+        if (!gestiona && ESTADOS[f.situacion].activa) {
+          gestion = avisoInfo(rolActual === 'EST'
+            ? 'La entrevista no está asociada a la cuenta del campus del estudiante. La gestiona ' + escapar(f.acompanante) + '.'
+            : 'Solo los involucrados en la entrevista (' + escapar(f.estudiante) + ' y ' + escapar(f.acompanante) + ') o un administrador pueden gestionarla.');
         } else if (vistaModal === 'contraoferta') gestion = formularioContraoferta();
         else if (vistaModal === 'resultado') gestion = formularioResultado(ent);
         else if (vistaModal) gestion = formularioCierre();
@@ -872,7 +909,7 @@
       function aplicarCambio(cambios) {
         var ent = abierta;
         // La primera vez que el acompañante gestiona una entrevista pedida por un estudiante, queda su cuenta
-        if (!ent.acompanante && rolActual !== 'ADM') cambios = Object.assign({ acompanante: usuarioActual(), tipo: ROLES[rolActual].tipo }, cambios);
+        if (!ent.acompanante && rolActual !== 'ADM' && rolActual !== 'EST') cambios = Object.assign({ acompanante: usuarioActual(), tipo: ROLES[rolActual].tipo }, cambios);
         var copia = Object.assign({}, ent, cambios);
         return guardarEntrevistaMoodle(copia).then(function() {
           Object.assign(ent, cambios);
@@ -891,12 +928,16 @@
       function enviarContraoferta() {
         var fecha = document.getElementById('campo-fecha-contraoferta').value;
         var mensaje = document.getElementById('campo-mensaje-contraoferta').value.trim();
-        if (!fecha) return mostrarError('txt-error-modal', 'Elegí la nueva fecha y hora.');
-        if (fecha <= ahora()) return mostrarError('txt-error-modal', 'La fecha tiene que ser posterior a hoy.');
-        aplicarCambio({ estado: 'solicitada', programada: '', propuestas: proponer('acompanante', fecha, mensaje) });
+        if (!fecha) return mostrarError('txt-error-modal', 'Elegir la nueva fecha y hora.');
+        if (fecha <= ahora()) return mostrarError('txt-error-modal', 'La fecha debe ser posterior a hoy.');
+        // La fecha nueva queda como propuesta de quien reprograma: la otra parte es la que la acepta
+        aplicarCambio({ estado: 'solicitada', programada: '', propuestas: proponer(miParte(), fecha, mensaje) });
       }
 
       function aceptarFecha() {
+        if (!puedeAceptar(abierta)) {
+          return mostrarError('txt-error-modal', 'La fecha vigente la propuso usted: la acepta la otra parte o se espera su contraoferta.');
+        }
         var ultima = abierta.propuestas[abierta.propuestas.length - 1];
         aplicarCambio({ estado: 'programada', programada: ultima.fecha });
       }
@@ -1359,7 +1400,11 @@
         if (accion === 'enviar-contraoferta') return enviarContraoferta();
         if (accion === 'confirmar-cierre') return confirmarCierre();
         if (accion === 'guardar-resultado') return guardarResultado();
-        if (accion === 'simular-aceptacion') return aceptarFecha();
+        // Vista previa local: acepta como si fuera el estudiante (el acompañante no acepta su propia propuesta)
+        if (accion === 'simular-aceptacion') {
+          var vigente = abierta.propuestas[abierta.propuestas.length - 1];
+          return aplicarCambio({ estado: 'programada', programada: vigente.fecha });
+        }
         if (accion === 'agregar-accion') {
           accionesBorrador.push({ tipo_derivacion: 'asesor_par', descripcion: '', fecha_compromiso: '' });
           document.getElementById('lista-acciones-borrador').innerHTML = accionesBorrador.map(filaAccionBorrador).join('');
