@@ -15,10 +15,13 @@
     <span id="txt-aviso-detalle"><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios. Los estados que se asignan en la vista previa quedan en este navegador (los comparte el tablero).</span>
   </div>
 
-  <!-- VOLVER AL TABLERO -->
-  <div id="btn-volver-tablero" role="button" tabindex="0"
-    style="display: inline-flex !important; align-items: center !important; gap: 8px !important; color: #026bd4 !important; font-weight: 500 !important; cursor: pointer !important; margin-bottom: 16px !important;">
-    <span data-icono="volver"></span>Volver al Tablero de Criticidad</div>
+  <!-- VOLVER AL TABLERO Y SOLICITAR ENTREVISTA (EL BOTÓN SE ARMA SEGÚN EL ROL, A LA ALTURA DEL DE ENTREVISTAS Y TUTORÍAS) -->
+  <div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 8px 16px !important; margin-bottom: 16px !important;">
+    <div id="btn-volver-tablero" role="button" tabindex="0"
+      style="display: inline-flex !important; align-items: center !important; gap: 8px !important; color: #026bd4 !important; font-weight: 500 !important; cursor: pointer !important;">
+      <span data-icono="volver"></span>Volver al Tablero de Criticidad</div>
+    <div id="acciones-detalle" style="display: flex !important; gap: 8px !important;"></div>
+  </div>
 
   <!-- CONTENIDO (SE ARMA SEGÚN #usuario) -->
   <div id="contenido-detalle"></div>
@@ -99,6 +102,9 @@
       // Tablero de Criticidad: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_TABLERO_LOCAL = '../tablero_estudiantes/content.html';
       var CMID_TABLERO = 60287; // @config paginas.tablero
+      // "Solicitar entrevista" abre la Página Entrevistas y Tutorías con el formulario completo para este estudiante
+      var URL_ENTREVISTAS_LOCAL = '../entrevistas/content.html';
+      var CMID_PAGINA_ENTREVISTAS = 60198; // @config paginas.entrevistas
 
       // Semáforo del índice de 0 a 100: los mismos cortes que el tablero, las encuestas y la base Criticidad
       var CORTES = { amarillo: 40, rojo: 70 };
@@ -115,9 +121,10 @@
       var ESPERA_OPCIONAL = 20000;
 
       var ROLES = {
-        ADM: { nombre: 'Administrador', puedeAsignar: true },
-        GES: { nombre: 'Gestor Dpto. Industrial', puedeAsignar: false },
-        TUT: { nombre: 'Tutor / Entrevistador', puedeAsignar: true }
+        // puedeEntrevistar: ve "Solicitar entrevista" (los roles que piden entrevistas en Entrevistas y Tutorías)
+        ADM: { nombre: 'Administrador', puedeAsignar: true, puedeEntrevistar: true },
+        GES: { nombre: 'Gestor Dpto. Industrial', puedeAsignar: false, puedeEntrevistar: false },
+        TUT: { nombre: 'Tutor / Entrevistador', puedeAsignar: true, puedeEntrevistar: true }
       };
 
       // Semáforo (skill diseno-ui, referencia/tokens.md)
@@ -163,6 +170,7 @@
         asignado: '<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.22 0 .41.1.55.25.12.13.2.31.2.5 0 .41-.34.75-.75.75s-.75-.34-.75-.75c0-.19.08-.37.2-.5.14-.15.33-.25.55-.25zM19 19H5V5h14v14zM12 6c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-6 6.47V18h12v-1.53c0-2.5-3.97-3.58-6-3.58s-6 1.07-6 3.58zM8.31 16c.69-.56 2.38-1.12 3.69-1.12s3.01.56 3.69 1.12H8.31z"/>',
         importar: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>',
         encuestas: '<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-6.49-5.84c.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.6.58 1.73.01 2.57-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c.01-.41-.06-1.08.26-1.66zm-.56 3.79c0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04 0 .58-.44 1.05-1.04 1.05-.58 0-1.05-.47-1.05-1.05z"/>',
+        agregar: '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>', // add (Material Icons Outlined)
         entrevistas: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM5 7V5h14v2H5zm2 4h10v2H7zm0 4h7v2H7z"/>',
         estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
         guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
@@ -677,6 +685,25 @@
         return tarjeta(i ? 'Perfil del estudiante' : 'Perfil del estudiante (sin información personal)', cabecera + lista);
       }
 
+      // BOTÓN "SOLICITAR ENTREVISTA" ARRIBA A LA DERECHA (EL MISMO DE ENTREVISTAS Y TUTORÍAS), SOLO SI HAY ESTUDIANTE Y EL ROL PIDE ENTREVISTAS
+      function renderizarAcciones() {
+        var cont = $('acciones-detalle');
+        if (!cont) return;
+        cont.innerHTML = est && ROLES[rolActual].puedeEntrevistar
+          ? '<div id="btn-solicitar-entrevista-detalle" role="button" tabindex="0" style="height: 40px !important; padding: 0 16px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 14px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; cursor: pointer !important; box-sizing: border-box !important; white-space: nowrap !important;">' +
+            icono('agregar', 20) + 'Solicitar entrevista</div>'
+          : '';
+      }
+
+      // ABRIR LA SOLICITUD DE ENTREVISTA PARA ESTE ESTUDIANTE (PÁGINA ENTREVISTAS Y TUTORÍAS, CON EL FORMULARIO ABIERTO).
+      // El nombre y el DNI van en la dirección (#solicitar&usuario=…&dni=…&nombre=…); solo se completan motivo, fecha y rol
+      function solicitarEntrevista() {
+        var hash = '#solicitar&usuario=' + encodeURIComponent(est.id) + '&dni=' + encodeURIComponent(est.dni) +
+          (est.info ? '&nombre=' + encodeURIComponent(est.nombre) : '');
+        if (ES_VISTA_LOCAL) window.location.href = URL_ENTREVISTAS_LOCAL + hash;
+        else if (CMID_PAGINA_ENTREVISTAS) window.location.href = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_PAGINA_ENTREVISTAS + hash;
+      }
+
       // ---------------------------------------------------------
       // GRÁFICO: EVOLUCIÓN DE LA CRITICIDAD (SVG, 0 A 100, DOS SERIES)
       // ---------------------------------------------------------
@@ -1046,6 +1073,7 @@
       }
 
       function renderizar() {
+        renderizarAcciones();
         var cont = $('contenido-detalle');
         if (!datos) {
           cont.innerHTML = '<div style="padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando…</div>';
@@ -1279,6 +1307,7 @@
         if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
         if (t.closest('#btn-volver-tablero')) return volverAlTablero();
         if (t.closest('#btn-abrir-asignacion')) return abrirModal(t.closest('#btn-abrir-asignacion'));
+        if (t.closest('#btn-solicitar-entrevista-detalle')) return solicitarEntrevista();
         var verRespuesta = t.closest('[data-ver-respuesta]');
         if (verRespuesta) return abrirRespuestas(verRespuesta.getAttribute('data-ver-respuesta'), verRespuesta);
         var punto = t.closest('[data-ref-punto]');
