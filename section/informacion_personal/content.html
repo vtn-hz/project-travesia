@@ -87,8 +87,16 @@
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var EN_MOODLE = !ES_VISTA_LOCAL && !!(window.M && M.cfg && M.cfg.wwwroot);
-      // Mismo período que la Página Tools (PERIODO_ACTUAL)
-      var PERIODO_ACTUAL = '2026-2';
+      // Período (ADR-009): el vigente de la base Períodos (PeriodoVigente de la Página Tools). Define el año máximo de ingreso y el
+      // período en que el estudiante pasa a 2.º año. En la vista previa, los mismos períodos de prueba que la Página Tools más los que
+      // agregó la Página Configuración del Sistema. Hasta leerlo vale PERIODO_POR_DEFECTO
+      var PERIODO_POR_DEFECTO = '2026-2';
+      var PERIODOS_PRUEBA = [
+        { rid: 1, periodo: '2026-1', fecha_inicio: '2026-03-09', fecha_limite_encuesta: '2026-04-30' },
+        { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-10', fecha_limite_encuesta: '2026-11-30' }
+      ];
+      var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos';
+      var PERIODO_ACTUAL = PERIODO_POR_DEFECTO;
       var ANIO_ACTUAL = Number(PERIODO_ACTUAL.split('-')[0]);
       var ANIO_INGRESO_MINIMO = 2000;
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
@@ -219,6 +227,28 @@
       // ---------------------------------------------------------
       // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
       // ---------------------------------------------------------
+      // ---------------------------------------------------------
+      // PERÍODO VIGENTE
+      // ---------------------------------------------------------
+      // VISTA PREVIA: LA MISMA REGLA QUE PeriodoVigente (LA ENTRADA DE rid MAYOR)
+      function periodoDePrueba() {
+        var agregados = [];
+        try { agregados = JSON.parse(window.localStorage.getItem(CLAVE_PREVIEW_PERIODOS) || '[]') || []; } catch (e) { /* sin almacenamiento: los períodos de prueba */ }
+        var lista = PERIODOS_PRUEBA.concat(Array.isArray(agregados) ? agregados : []).filter(function(p) { return p && /^\d{4}-[12]$/.test(String(p.periodo)); })
+          .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+        return lista[lista.length - 1] || null;
+      }
+
+      function fijarPeriodo(p) {
+        PERIODO_ACTUAL = p && p.periodo ? String(p.periodo) : PERIODO_POR_DEFECTO;
+        ANIO_ACTUAL = Number(PERIODO_ACTUAL.split('-')[0]);
+      }
+
+      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
+      function leerPeriodo(Tools) {
+        return (typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null)).then(fijarPeriodo, function() { fijarPeriodo(null); });
+      }
+
       function cargarTools() {
         if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
         if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
@@ -341,7 +371,7 @@
       function cargarDatosMoodle() {
         estado.usuario = { id: Number(M.cfg.userId) };
         return cargarTools().then(function(Tools) {
-          return Promise.all([leerEstudianteMoodle(Tools), leerCuentaMoodle()]).then(function(r) {
+          return Promise.all([leerEstudianteMoodle(Tools), leerCuentaMoodle(), leerPeriodo(Tools)]).then(function(r) {
             estado.estudiante = r[0];
             estado.cuenta = r[1];
           });
@@ -542,6 +572,7 @@
         estado.cuenta = x.cuenta;
         estado.estudiante = leerPreview()[x.usuario] || ESTUDIANTES_PRUEBA.filter(function(e) { return e.id_usuario === x.usuario; })[0] || null;
         estado.industrial = '';
+        fijarPeriodo(periodoDePrueba());
         try { history.replaceState(null, '', '#usuario=' + x.usuario); } catch (e) { /* sin historial */ }
         mostrar($('aviso-estado-info'), false);
         renderizarFormulario();
