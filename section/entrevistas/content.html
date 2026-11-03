@@ -1116,9 +1116,37 @@
         });
       }
 
-      // ROL DEL USUARIO DE LA SESIÓN: PRIMERO EL GRUPO (GRUPOS_ROL), DESPUÉS EL ROL DEL CURSO (ROLES_CURSO)
+      // ¿EL USUARIO PUEDE ABRIR ESTA PANTALLA DEL CURSO? (LA PANTALLA TIENE EL ELEMENTO selector; SI NO, MOODLE MUESTRA UN ERROR)
+      function puedeAbrir(ruta, selector) {
+        return fetch(M.cfg.wwwroot + ruta, { credentials: 'same-origin' })
+          .then(function(r) { return r.ok ? r.text() : ''; })
+          .then(function(html) { return !!html && !!new DOMParser().parseFromString(html, 'text/html').querySelector(selector); })
+          .catch(function() { return false; });
+      }
+
+      // ROL CAMBIADO CON "CAMBIAR ROL A...": MOODLE MARCA LA PÁGINA CON body.userswitchedrole, PERO NO MUESTRA CUÁL ROL
+      // ELIGIÓ Y EL PERFIL SIGUE MOSTRANDO LOS ROLES REALES. Se deduce de los permisos que tiene con el rol simulado:
+      // gestionar grupos (solo Profesor) → ADM; ver los registros del curso (cualquier profesor) → TUT; ninguno → EST.
+      function rolCambiado() {
+        if (!document.body.classList.contains('userswitchedrole')) return Promise.resolve(null);
+        return puedeAbrir('/group/index.php?id=' + CURSO, '#groups, select[name="groups[]"]').then(function(editaGrupos) {
+          if (editaGrupos) return 'ADM';
+          return puedeAbrir('/report/log/index.php?id=' + CURSO, 'input[name="chooselog"], select[name="date"]').then(function(veRegistros) {
+            return veRegistros ? 'TUT' : 'EST';
+          });
+        });
+      }
+
+      // ROL DEL USUARIO DE LA SESIÓN: PRIMERO EL ROL CAMBIADO ("CAMBIAR ROL A..."), DESPUÉS EL GRUPO (GRUPOS_ROL)
+      // Y DESPUÉS EL ROL DEL CURSO (ROLES_CURSO)
       function detectarRol() {
         if (ES_VISTA_LOCAL || !window.M || !M.cfg || !M.cfg.userId) return Promise.resolve(ROL_INICIAL);
+        return rolCambiado().then(function(cambiado) {
+          return cambiado || rolSinCambiar();
+        }).catch(function() { return ROL_SIN_DETECTAR; });
+      }
+
+      function rolSinCambiar() {
         return gruposPorServicio()
           .catch(gruposPorPerfil)
           .catch(function() { return []; })
