@@ -1,0 +1,918 @@
+<!-- SECCIÓN: REPORTES (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "REPORTES" DEL HUB · SIN PUBLICAR -->
+<!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
+<!-- DATOS: en Moodle, las bases de Zhakyz leídas con LeerBase (Página Tools): Estudiantes, Criticidad, Respuestas, Períodos,
+     CargaParcialesPrimero, CargaMateriasPrimero, Materias y Entrevistas. En la vista previa local, datos de prueba de los integrantes -->
+<!-- CONTENEDOR PRINCIPAL -->
+<div id="reportes-gestion"
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  <nolink>
+
+  <!-- ENCABEZADO -->
+  <div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>
+      <h3 style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Reportes</h3>
+      <p style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">Informes de gestión con resumen y estadísticas del período, para descargar en CSV o guardar en PDF.</p>
+    </div>
+    <div id="badge-rol-reportes"
+      style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
+    </div>
+  </div>
+
+  <!-- AVISO: DATOS DE PRUEBA -->
+  <div id="aviso-datos-prueba-reportes"
+    style="display: flex !important; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
+    <span><b style="font-weight: 600 !important;">Datos de prueba.</b> Integrantes de Zhakyz con datos académicos ficticios. En Moodle, los informes se arman con las bases de Zhakyz.</span>
+  </div>
+
+  <!-- FILTROS -->
+  <div id="filtros-reportes" style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap: 12px 16px !important; margin-bottom: 16px !important;"></div>
+
+  <!-- SELECTOR DE INFORME -->
+  <div id="selector-reportes" role="tablist" style="display: flex !important; flex-wrap: wrap !important; gap: 4px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important; margin-bottom: 20px !important;"></div>
+
+  <!-- CONTENIDO -->
+  <div id="contenido-reportes"></div>
+
+  <!-- PIE DE PÁGINA ZHAKYZ -->
+  <div id="footer-zhakyz"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
+    <span style="color: #0b0e14 !important; font-weight: 600 !important; letter-spacing: 1.5px !important; text-transform: uppercase !important;">Zhakyz &amp; Asociados</span>
+    <span>Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP</span>
+  </div>
+
+  <!-- SCRIPT DE MANEJO DE EVENTOS -->
+  <script>
+    (function() {
+      // ---------------------------------------------------------
+      // INYECCIÓN DINÁMICA DE ESTILOS CSS EN EL HEAD
+      // ---------------------------------------------------------
+      if (!document.getElementById('zhakyz-reportes-style')) {
+        var styleEl = document.createElement('style');
+        styleEl.id = 'zhakyz-reportes-style';
+        styleEl.innerHTML =
+          '#reportes-gestion > nolink { display: block; }' +
+          '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }';
+        document.head.appendChild(styleEl);
+      }
+
+      // ---------------------------------------------------------
+      // CONFIGURACIÓN
+      // ---------------------------------------------------------
+      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM. Los tres roles ven los mismos informes
+      var ROL_INICIAL = 'ADM';
+      var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
+        /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var ROLES = {
+        ADM: { nombre: 'Administrador' },
+        GES: { nombre: 'Gestor Dpto. Industrial' },
+        TUT: { nombre: 'Tutor / Entrevistador' }
+      };
+      var CORTES = { amarillo: 40, rojo: 70 };
+      var CREDITOS_PLAN = 223;
+      // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
+      var CMID_TOOLS = 59941; // @config paginas.utils_tools
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
+      var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
+      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
+      var DATAID_PERIODOS = 207; // @config bases.periodos.dataid
+      var DATAID_PARCIALES = 117; // @config bases.carga_parciales_primero.dataid
+      var DATAID_MATERIAS_PRIMERO = 118; // @config bases.carga_materias_primero.dataid
+      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
+      var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
+      // CargaParcialesPrimero usa la plantilla del equipo (sin data-campo): filas y nombre de cada celda, en orden
+      var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
+      var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Fecha', 'Nota', 'Estado', 'Recupera_a'];
+      // Esperas máximas: una base que no responde no deja la página cargando para siempre
+      var ESPERA_TOOLS = 20000;
+      var ESPERA_BASE = 60000;
+      // Ítems de la Encuesta Cuatrimestral (versión vigente de la base Encuestas)
+      var ITEMS = { creditos: 8262, pfg: 8264, trabaja: 8265, inicio: 8266, materias: 8768, avance: 8271 };
+      var OPCIONES = {
+        8264: ['No aplica por el nivel', 'No iniciado', 'Tema propuesto sin avance', 'En desarrollo activo', 'Finalizado, pendiente de defensa'],
+        8265: ['Sí', 'No'],
+        8266: ['Antes de ingresar', 'En 1.º año', 'En 2.º año', 'En 3.º año', 'En 4.º año', 'En 5.º año', 'Solo adeudando el trabajo final'],
+        8271: ['Al día', 'Demorado', 'Muy demorado']
+      };
+
+      // ---------------------------------------------------------
+      // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS FICTICIOS)
+      // ---------------------------------------------------------
+      var PERIODOS_PRUEBA = [
+        { periodo: '2026-1', fecha_inicio: '2026-03-16', fecha_limite_encuesta: '2026-07-31' },
+        { periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '' }
+      ];
+      // Base Estudiantes
+      var ESTUDIANTES_PRUEBA = [
+        { id_usuario: 3773, nombre: 'Nicolás Gabriel', apellido: 'Zuviria', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1' },
+        { id_usuario: 3751, nombre: 'Santiago Nicolás', apellido: 'Yanosky', es_primer_anio: 'si', anio_ingreso: 2026, cuatrimestre_ingreso: '1' },
+        { id_usuario: 3623, nombre: 'Nahuel', apellido: 'Spikerman', es_primer_anio: 'no', anio_ingreso: 2024, cuatrimestre_ingreso: '1' },
+        { id_usuario: 3770, nombre: 'Luca', apellido: 'Zuanetti', es_primer_anio: 'no', anio_ingreso: 2024, cuatrimestre_ingreso: '1' },
+        { id_usuario: 2806, nombre: 'Gian Luca', apellido: 'Distefano', es_primer_anio: 'no', anio_ingreso: 2023, cuatrimestre_ingreso: '2' },
+        { id_usuario: 2048, nombre: 'Valentino', apellido: 'Hernández Pascual', es_primer_anio: 'no', anio_ingreso: 2022, cuatrimestre_ingreso: '1' }
+      ];
+      // Base Criticidad (en Moodle, "encuesta" sale de la entrada de Respuestas que indica rid_fuente)
+      var CRITICIDAD_PRUEBA = [
+        { id_usuario: 3773, periodo: '2026-2', origen: 'automatica', fuente: 'notas_1ro', indice: 22, created_at: '2026-09-20T10:00' },
+        { id_usuario: 3773, periodo: '2026-2', origen: 'automatica', fuente: 'notas_1ro', indice: 31, created_at: '2026-10-25T10:00' },
+        { id_usuario: 3751, periodo: '2026-2', origen: 'automatica', fuente: 'notas_1ro', indice: 74, created_at: '2026-10-28T10:00' },
+        { id_usuario: 3623, periodo: '2026-1', origen: 'automatica', fuente: 'respuestas', encuesta: 'cuatrimestral', indice: 36, created_at: '2026-07-10T10:00' },
+        { id_usuario: 3623, periodo: '2026-2', origen: 'automatica', fuente: 'respuestas', encuesta: 'cuatrimestral', indice: 48, created_at: '2026-10-03T10:00' },
+        { id_usuario: 3770, periodo: '2026-2', origen: 'automatica', fuente: 'respuestas', encuesta: 'cuatrimestral', indice: 13, created_at: '2026-10-05T10:00' },
+        { id_usuario: 2806, periodo: '2026-1', origen: 'automatica', fuente: 'omision', indice: 70, created_at: '2026-08-01T10:00' },
+        { id_usuario: 2048, periodo: '2026-2', origen: 'automatica', fuente: 'respuestas', encuesta: 'cuatrimestral', indice: 81, created_at: '2026-10-09T10:00' },
+        { id_usuario: 2048, periodo: '2026-2', origen: 'manual', semaforo: 'amarillo', motivo: 'Entrevista realizada: reorganiza su carga laboral', created_at: '2026-10-20T10:00' }
+      ];
+      // Base Respuestas: Encuestas Cuatrimestrales ({ item_id, respuestas })
+      var RESPUESTAS_PRUEBA = [
+        { id_usuario: 3623, periodo: '2026-1', created_at: '2026-07-10', json: [
+          { item_id: 8262, respuestas: [81] }, { item_id: 8264, respuestas: [1] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [3] },
+          { item_id: 8768, respuestas: [{ materia: 'ING8302', primera_vez: true, dificultad: 3 }, { materia: 'ING2221', primera_vez: true, dificultad: 4 }] },
+          { item_id: 8271, respuestas: [2] }] },
+        { id_usuario: 3623, periodo: '2026-2', created_at: '2026-10-03', json: [
+          { item_id: 8262, respuestas: [95] }, { item_id: 8264, respuestas: [1] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [3] },
+          { item_id: 8768, respuestas: [{ materia: 'ING8301', primera_vez: true, dificultad: 3 }, { materia: 'ING2221', primera_vez: false, dificultad: 5 }, { materia: 'ING8201', primera_vez: true, dificultad: 4 }] },
+          { item_id: 8271, respuestas: [2] }] },
+        { id_usuario: 3770, periodo: '2026-2', created_at: '2026-10-05', json: [
+          { item_id: 8262, respuestas: [118] }, { item_id: 8264, respuestas: [1] }, { item_id: 8265, respuestas: [2] },
+          { item_id: 8768, respuestas: [{ materia: 'ING8301', primera_vez: true, dificultad: 2 }, { materia: 'ING8201', primera_vez: true, dificultad: 3 }, { materia: 'ING2219', primera_vez: true, dificultad: 2 }, { materia: 'ING8308', primera_vez: true, dificultad: 1 }] },
+          { item_id: 8271, respuestas: [1] }] },
+        { id_usuario: 2048, periodo: '2026-2', created_at: '2026-10-09', json: [
+          { item_id: 8262, respuestas: [140] }, { item_id: 8264, respuestas: [2] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [2] },
+          { item_id: 8768, respuestas: [{ materia: 'ING2221', primera_vez: false, dificultad: 5 }] },
+          { item_id: 8271, respuestas: [3] }] }
+      ];
+      // Nombres de las materias (base Materias, Plan 2024)
+      var MATERIAS_PRUEBA = {
+        ING8302: 'Administración Estratégica', ING2221: 'Termodinámica Industrial', ING8301: 'Administración de Operaciones',
+        ING8201: 'Investigación Operativa A', ING2219: 'Tecnología de los Materiales', ING8308: 'Gestión de la Tecnología y la Innovación'
+      };
+      // Bases CargaParcialesPrimero y CargaMateriasPrimero
+      var MATERIAS_PRIMERO_PRUEBA = [
+        { materia: 'Análisis Matemático I', critica: true, umbral: 4.5 },
+        { materia: 'Álgebra I- B', critica: true, umbral: 6 },
+        { materia: 'Fundamentos de Química', critica: false, umbral: null }
+      ];
+      var PARCIALES_PRUEBA = [
+        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 1', fecha: '2026-09-15', nota: 6, estado: 'Aprobado' },
+        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 2', fecha: '2026-10-20', nota: 4, estado: 'Desaprobado' },
+        { id_usuario: 3773, materia: 'Álgebra I- B', instancia: 'Parcial 1', fecha: '2026-09-18', nota: 7, estado: 'Aprobado' },
+        { id_usuario: 3773, materia: 'Fundamentos de Química', instancia: 'Parcial 1', fecha: '2026-09-25', nota: 8, estado: 'Aprobado' },
+        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 1', fecha: '2026-09-15', nota: 3, estado: 'Desaprobado' },
+        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 2', fecha: '2026-10-20', nota: null, estado: 'Ausente' },
+        { id_usuario: 3751, materia: 'Álgebra I- B', instancia: 'Parcial 1', fecha: '2026-09-18', nota: 5, estado: 'Desaprobado' },
+        { id_usuario: 3751, materia: 'Fundamentos de Química', instancia: 'Parcial 1', fecha: '2026-09-25', nota: 6, estado: 'Aprobado' }
+      ];
+      // Base Entrevistas
+      var ENTREVISTAS_PRUEBA = [
+        { id_usuario_estudiante: 2048, nombre_acompanante: 'Luca Zuanetti', tipo_acompanante: 'tutor', originada_por: 'tutor', estado: 'realizada', fecha_solicitud: '2026-10-10', fecha_realizada: '2026-10-17' },
+        { id_usuario_estudiante: 3751, nombre_acompanante: 'Luca Zuanetti', tipo_acompanante: 'tutor', originada_por: 'tutor', estado: 'programada', fecha_solicitud: '2026-10-29', fecha_realizada: '' },
+        { id_usuario_estudiante: 3623, nombre_acompanante: 'Gian Luca Distefano', tipo_acompanante: 'asesor_par', originada_por: 'estudiante', estado: 'realizada', fecha_solicitud: '2026-09-02', fecha_realizada: '2026-09-04' },
+        { id_usuario_estudiante: 3770, nombre_acompanante: 'Gian Luca Distefano', tipo_acompanante: 'asesor_par', originada_por: 'estudiante', estado: 'cancelada', fecha_solicitud: '2026-09-20', fecha_realizada: '' },
+        { id_usuario_estudiante: 2806, nombre_acompanante: 'Luca Zuanetti', tipo_acompanante: 'tutor', originada_por: 'tutor', estado: 'solicitada', fecha_solicitud: '2026-11-02', fecha_realizada: '' }
+      ];
+      var ESTADOS_ENTREVISTA = { solicitada: 'Solicitada', programada: 'Programada', realizada: 'Realizada', no_asistio: 'No asistió', cancelada: 'Cancelada', rechazada: 'Rechazada' };
+
+      var INFORMES = [
+        { id: 'criticidad', titulo: 'Criticidad del período', icono: 'tablero' },
+        { id: 'respuesta', titulo: 'Respuesta a la encuesta', icono: 'encuestas' },
+        { id: 'resultados', titulo: 'Resultados de la encuesta', icono: 'indicadores' },
+        { id: 'primero', titulo: 'Notas de 1.er año', icono: 'reportes' },
+        { id: 'entrevistas', titulo: 'Entrevistas y tutorías', icono: 'entrevistas' },
+        { id: 'avance', titulo: 'Avance curricular', icono: 'plan' }
+      ];
+      // Datos con los que se arman los informes: los de prueba o los leídos de Moodle (cargarDatos)
+      var PERIODOS = [], ESTUDIANTES = [], CRITICIDAD = [], RESPUESTAS = [], MATERIAS = {}, MATERIAS_PRIMERO = [], PARCIALES = [], ENTREVISTAS = [];
+      var estado = { informe: 'criticidad', periodo: '', cohorte: 'todas', tramo: 'todos' };
+      var ultimo = null; // último informe dibujado: { titulo, resumen, columnas, filas } para exportar
+
+      // ---------------------------------------------------------
+      // ÍCONOS (Material Icons Outlined — .skills/diseno-ui/iconos.js)
+      // ---------------------------------------------------------
+      var ICONOS = {
+        tablero: '<path d="m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/><path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>',
+        encuestas: '<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>',
+        indicadores: '<path d="M21 8c-1.45 0-2.26 1.44-1.93 2.51l-3.55 3.56c-.3-.09-.74-.09-1.04 0l-2.55-2.55C12.27 10.45 11.46 9 10 9c-1.45 0-2.27 1.44-1.93 2.52l-4.56 4.55C2.44 15.74 1 16.55 1 18c0 1.1.9 2 2 2 1.45 0 2.26-1.44 1.93-2.51l4.55-4.56c.3.09.74.09 1.04 0l2.55 2.55C12.73 16.55 13.54 18 15 18c1.45 0 2.27-1.44 1.93-2.52l3.56-3.55c1.07.33 2.51-.48 2.51-1.93 0-1.1-.9-2-2-2z"/>',
+        reportes: '<path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>',
+        entrevistas: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM5 7V5h14v2H5zm2 4h10v2H7zm0 4h7v2H7z"/>',
+        plan: '<path d="M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3h7zM7 9H4V5h3v4zm10 6h3v4h-3v-4zm0-10h3v4h-3V5z"/>',
+        estudiante: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+        descargar: '<path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/>',
+        imprimir: '<path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/><circle cx="18" cy="11.5" r="1"/>',
+        alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+        info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+        ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
+      };
+
+      // SVG DE UN ÍCONO: HEREDA EL COLOR DEL TEXTO
+      function icono(nombre, tamano) {
+        var t = tamano || 20;
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + t + '" height="' + t +
+          '" fill="currentColor" aria-hidden="true" focusable="false" style="display: block !important; flex: 0 0 auto !important;">' +
+          ICONOS[nombre] + '<\/svg>';
+      }
+
+      // ---------------------------------------------------------
+      // ESTILOS COMPARTIDOS (TOKENS DE diseno-ui)
+      // ---------------------------------------------------------
+      var EST = {
+        tarjeta: 'background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; box-sizing: border-box !important; margin-bottom: 16px !important; animation: zk-aparecer 0.25s ease both;',
+        h4: 'margin: 0 0 4px 0 !important; font-size: 16px !important; font-weight: 600 !important; color: #0b0e14 !important; line-height: 1.5 !important;',
+        ayuda: 'margin: 0 0 12px 0 !important; font-size: 12px !important; color: #47536b !important; line-height: 1.5 !important;',
+        tabla: 'width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; margin: 0 !important;',
+        th: 'text-align: left !important; background-color: #f5f6fa !important; color: #47536b !important; font-weight: 500 !important; padding: 8px 12px !important; border: 0 !important; white-space: nowrap !important;',
+        td: 'padding: 8px 12px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; vertical-align: top !important; color: #0b0e14 !important;',
+        input: 'height: 36px !important; padding: 0 10px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #fcfcfc !important; font-family: inherit !important; font-size: 13px !important; color: #0b0e14 !important; box-sizing: border-box !important; width: 100% !important;',
+        label: 'display: block !important; font-size: 12px !important; color: #47536b !important; margin-bottom: 4px !important;',
+        boton: 'cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid #dadee7; border-radius: 8px; background-color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 500; color: #0b0e14;'
+      };
+
+      var SEMAFORO = {
+        rojo: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808', nombre: 'Riesgo alto' },
+        amarillo: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', nombre: 'Riesgo moderado' },
+        verde: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', nombre: 'Riesgo bajo' },
+        neutro: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', texto: '#566481', nombre: 'Sin calcular' }
+      };
+
+      // ---------------------------------------------------------
+      // UTILIDADES
+      // ---------------------------------------------------------
+      function escapar(s) {
+        return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+          return { '&': '\x26amp;', '<': '\x26lt;', '>': '\x26gt;', '"': '\x26quot;', "'": '\x26#39;' }[c];
+        });
+      }
+
+      function redondear(n, d) {
+        var f = Math.pow(10, d || 0);
+        return Math.round(n * f) / f;
+      }
+
+      // NÚMEROS CON COMA DECIMAL (FORMATO ARGENTINO), TAMBIÉN EN EL CSV
+      function decimal(v) {
+        return typeof v === 'number' ? String(v).replace('.', ',') : v;
+      }
+
+      function porcentaje(a, b) {
+        return b ? Math.round(a / b * 100) + ' %' : '—';
+      }
+
+      function promedio(lista) {
+        return lista.length ? lista.reduce(function(a, b) { return a + b; }, 0) / lista.length : null;
+      }
+
+      function semaforoDe(indice) {
+        if (indice === null || indice === undefined) return 'neutro';
+        return indice >= CORTES.rojo ? 'rojo' : indice >= CORTES.amarillo ? 'amarillo' : 'verde';
+      }
+
+      // CHIP CON PUNTO + TEXTO (NUNCA SOLO COLOR)
+      function chip(nivel, texto) {
+        var s = SEMAFORO[nivel];
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + s.borde + ' !important; background-color: ' + s.fondo + ' !important; color: ' + s.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + s.punto + ' !important;"></span>' + escapar(texto || s.nombre) + '</span>';
+      }
+
+      function cohorteDe(e) { return e.anio_ingreso + '-' + e.cuatrimestre_ingreso; }
+      function nombreDe(e) { return e.apellido + ', ' + e.nombre; }
+      function tramoDe(e) { return e.es_primer_anio === 'si' ? '1.er año' : '2.º año en adelante'; }
+      function estudiante(id) { return ESTUDIANTES.filter(function(e) { return e.id_usuario === id; })[0]; }
+
+      // ESTUDIANTES QUE PASAN LOS FILTROS DE COHORTE Y TRAMO
+      function estudiantesFiltrados() {
+        return ESTUDIANTES.filter(function(e) {
+          if (estado.cohorte !== 'todas' && cohorteDe(e) !== estado.cohorte) return false;
+          if (estado.tramo === 'primero' && e.es_primer_anio !== 'si') return false;
+          if (estado.tramo === 'superior' && e.es_primer_anio === 'si') return false;
+          return true;
+        });
+      }
+
+      function periodoAnterior(p) {
+        var a = Number(p.split('-')[0]), c = Number(p.split('-')[1]);
+        return c === 1 ? (a - 1) + '-2' : a + '-1';
+      }
+
+      // RESPUESTA DE UN ÍTEM EN UN ENVÍO ({ item_id, respuestas })
+      function respuestaItem(envio, item) {
+        var r = envio.json.filter(function(x) { return x.item_id === item; })[0];
+        return r ? r.respuestas : null;
+      }
+
+      // ---------------------------------------------------------
+      // COMPONENTES
+      // ---------------------------------------------------------
+      function tarjeta(titulo, ayuda, contenido, fuente) {
+        return '<div style="' + EST.tarjeta + '">' +
+          (titulo ? '<h4 style="' + EST.h4 + '">' + escapar(titulo) + '</h4>' : '') +
+          (ayuda ? '<p style="' + EST.ayuda + '">' + ayuda + '</p>' : '') + contenido +
+          (fuente ? '<div style="display: flex !important; align-items: center !important; gap: 6px !important; font-size: 12px !important; color: #47536b !important; margin-top: 10px !important;">' + icono('info', 14) + '<span>Fuente: ' + fuente + '</span></div>' : '') +
+          '</div>';
+      }
+
+      function tabla(encabezados, filas) {
+        if (!filas.length) return '<p style="' + EST.ayuda + ' margin: 0 !important;">No hay datos para los filtros elegidos.</p>';
+        return '<div style="overflow-x: auto !important;"><table style="' + EST.tabla + '"><thead><tr>' +
+          encabezados.map(function(h) { return '<th style="' + EST.th + '">' + escapar(h) + '</th>'; }).join('') +
+          '</tr></thead><tbody>' + filas.map(function(f) {
+            return '<tr>' + f.map(function(c) { return '<td style="' + EST.td + '">' + c + '</td>'; }).join('') + '</tr>';
+          }).join('') + '</tbody></table></div>';
+      }
+
+      // FILA DE INDICADORES RESUMEN
+      function kpis(lista) {
+        return '<div style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 8px !important; margin-bottom: 16px !important;">' +
+          lista.map(function(k) {
+            return '<div style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 12px !important;">' +
+              '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(k.titulo) + '</div>' +
+              '<div style="font-size: 24px !important; font-weight: 600 !important; line-height: 1.3 !important;">' + escapar(decimal(k.valor)) + '</div>' +
+              (k.detalle ? '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(k.detalle) + '</div>' : '') + '</div>';
+          }).join('') + '</div>';
+      }
+
+      // BARRAS HORIZONTALES: [{ etiqueta, valor, color }]
+      function barras(lista, sufijo) {
+        var max = Math.max.apply(null, lista.map(function(b) { return b.valor; }).concat([1]));
+        return lista.map(function(b) {
+          return '<div style="display: grid !important; grid-template-columns: minmax(120px, 34%) 1fr 48px !important; align-items: center !important; gap: 10px !important; margin-bottom: 6px !important; font-size: 13px !important;">' +
+            '<span style="color: #0b0e14 !important;">' + escapar(b.etiqueta) + '</span>' +
+            '<span style="display: block !important; height: 10px !important; border-radius: 999px !important; background-color: #f5f6fa !important; overflow: hidden !important;">' +
+            '<span style="display: block !important; height: 10px !important; width: ' + Math.round(b.valor / max * 100) + '% !important; background-color: ' + (b.color || '#026bd4') + ' !important; border-radius: 999px !important;"></span></span>' +
+            '<span style="text-align: right !important; color: #47536b !important;">' + b.valor + (sufijo || '') + '</span></div>';
+        }).join('');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 1: CRITICIDAD DEL PERÍODO (MISMA REGLA QUE EL TABLERO)
+      // ---------------------------------------------------------
+      // 1.er año: último índice de notas del período · 2.º año en adelante: última Cuatrimestral u omisión.
+      // Sin entradas en el período, vale el último del período anterior (ADR-009). Asignado: última manual de cualquier período
+      function calculadoDe(e, periodo) {
+        var fuentes = e.es_primer_anio === 'si' ? ['notas_1ro', 'materias'] : ['respuestas', 'omision'];
+        var buscar = function(p) {
+          return CRITICIDAD.filter(function(c) {
+            return c.id_usuario === e.id_usuario && c.origen === 'automatica' && c.periodo === p && fuentes.indexOf(c.fuente) !== -1 &&
+              (c.fuente !== 'respuestas' || c.encuesta === 'cuatrimestral');
+          }).sort(function(a, b) { return a.created_at < b.created_at ? -1 : 1; }).pop();
+        };
+        var c = buscar(periodo), deAntes = false;
+        if (!c) { c = buscar(periodoAnterior(periodo)); deAntes = !!c; }
+        return c ? { indice: c.indice, fuente: c.fuente, periodo: c.periodo, deAntes: deAntes } : null;
+      }
+
+      function asignadoDe(e) {
+        var m = CRITICIDAD.filter(function(c) { return c.id_usuario === e.id_usuario && c.origen === 'manual'; })
+          .sort(function(a, b) { return a.created_at < b.created_at ? -1 : 1; }).pop();
+        return m && m.semaforo !== 'sin_asignar' ? m : null;
+      }
+
+      var NOMBRE_FUENTE = { notas_1ro: 'Notas de 1.er año', materias: 'Cambio de materias', respuestas: 'Encuesta Cuatrimestral', omision: 'Omisión de la encuesta' };
+
+      function informeCriticidad() {
+        var lista = estudiantesFiltrados().map(function(e) {
+          var calc = calculadoDe(e, estado.periodo), asig = asignadoDe(e);
+          var nivelCalc = semaforoDe(calc ? calc.indice : null);
+          return { e: e, calc: calc, nivelCalc: nivelCalc, asig: asig, vigente: asig ? asig.semaforo : nivelCalc };
+        });
+        var cuenta = function(campo, nivel) { return lista.filter(function(x) { return x[campo] === nivel; }).length; };
+        var resumen = [
+          { titulo: 'Estudiantes', valor: lista.length },
+          { titulo: 'Riesgo alto', valor: cuenta('vigente', 'rojo'), detalle: porcentaje(cuenta('vigente', 'rojo'), lista.length) },
+          { titulo: 'Riesgo moderado', valor: cuenta('vigente', 'amarillo'), detalle: porcentaje(cuenta('vigente', 'amarillo'), lista.length) },
+          { titulo: 'Riesgo bajo', valor: cuenta('vigente', 'verde'), detalle: porcentaje(cuenta('vigente', 'verde'), lista.length) },
+          { titulo: 'Sin calcular', valor: cuenta('vigente', 'neutro') },
+          { titulo: 'Con estado asignado', valor: lista.filter(function(x) { return x.asig; }).length }
+        ];
+        var tramos = ['1.er año', '2.º año en adelante'].map(function(t) {
+          var sub = lista.filter(function(x) { return tramoDe(x.e) === t; });
+          return [escapar(t), String(sub.length)].concat(['rojo', 'amarillo', 'verde', 'neutro'].map(function(n) { return String(sub.filter(function(x) { return x.vigente === n; }).length); }));
+        });
+        var columnas = ['Estudiante', 'Año de la carrera', 'Cohorte', 'Índice calculado', 'Estado calculado', 'Origen', 'Estado asignado', 'Motivo del asignado', 'Estado vigente'];
+        var datos = lista.sort(function(a, b) { return (b.calc ? b.calc.indice : -1) - (a.calc ? a.calc.indice : -1); }).map(function(x) {
+          return [nombreDe(x.e), tramoDe(x.e), cohorteDe(x.e), x.calc ? x.calc.indice : '', SEMAFORO[x.nivelCalc].nombre,
+            x.calc ? NOMBRE_FUENTE[x.calc.fuente] + (x.calc.deAntes ? ' (período ' + x.calc.periodo + ')' : '') : '',
+            x.asig ? SEMAFORO[x.asig.semaforo].nombre : '', x.asig ? x.asig.motivo : '', SEMAFORO[x.vigente].nombre];
+        });
+        ultimo = { titulo: 'Criticidad del período ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) +
+          tarjeta('Por año de la carrera', 'Estado vigente: el asignado por un tutor si existe; si no, el calculado.',
+            tabla(['Año de la carrera', 'Estudiantes', 'Alto', 'Moderado', 'Bajo', 'Sin calcular'], tramos)) +
+          tarjeta('Detalle por estudiante', 'Ordenado por índice calculado, de mayor a menor.', tabla(columnas, datos.map(function(f, i) {
+            var x = lista[i];
+            return [escapar(f[0]), escapar(f[1]), escapar(f[2]), escapar(f[3]), chip(x.nivelCalc), escapar(f[5]), x.asig ? chip(x.asig.semaforo) : '—', escapar(f[7]), chip(x.vigente)];
+          })), 'bases Estudiantes y Criticidad, con la misma regla que el Tablero de Criticidad');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 2: RESPUESTA A LA ENCUESTA CUATRIMESTRAL
+      // ---------------------------------------------------------
+      function informeRespuesta() {
+        var per = PERIODOS.filter(function(p) { return p.periodo === estado.periodo; })[0];
+        var lista = estudiantesFiltrados().filter(function(e) { return e.es_primer_anio !== 'si'; }).map(function(e) {
+          var envios = RESPUESTAS.filter(function(r) { return r.id_usuario === e.id_usuario && r.periodo === estado.periodo; });
+          var omision = CRITICIDAD.filter(function(c) { return c.id_usuario === e.id_usuario && c.fuente === 'omision' && c.periodo === estado.periodo; })[0];
+          var situacion = envios.length ? 'Respondió' : omision ? 'Omisión registrada' : 'Sin responder';
+          return { e: e, envios: envios, situacion: situacion, fecha: envios.length ? envios[envios.length - 1].created_at : '' };
+        });
+        var n = function(s) { return lista.filter(function(x) { return x.situacion === s; }).length; };
+        var resumen = [
+          { titulo: 'Habilitados (2.º año en adelante)', valor: lista.length },
+          { titulo: 'Respondieron', valor: n('Respondió'), detalle: porcentaje(n('Respondió'), lista.length) },
+          { titulo: 'Sin responder', valor: n('Sin responder') },
+          { titulo: 'Con omisión registrada', valor: n('Omisión registrada') },
+          { titulo: 'Fecha límite', valor: per && per.fecha_limite_encuesta ? per.fecha_limite_encuesta : 'Sin definir' }
+        ];
+        var cohortes = {};
+        lista.forEach(function(x) { var c = cohorteDe(x.e); cohortes[c] = cohortes[c] || { total: 0, resp: 0 }; cohortes[c].total++; if (x.situacion === 'Respondió') cohortes[c].resp++; });
+        var columnas = ['Estudiante', 'Cohorte', 'Situación', 'Fecha del último envío', 'Envíos en el período'];
+        var datos = lista.map(function(x) { return [nombreDe(x.e), cohorteDe(x.e), x.situacion, x.fecha, x.envios.length]; });
+        ultimo = { titulo: 'Respuesta a la Encuesta Cuatrimestral ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        var nivelSit = { 'Respondió': 'verde', 'Sin responder': 'amarillo', 'Omisión registrada': 'rojo' };
+        return kpis(resumen) +
+          tarjeta('Tasa de respuesta por cohorte', 'La Encuesta Cuatrimestral se habilita desde 2.º año. La omisión la registra el cierre del período en la Configuración del Sistema.',
+            barras(Object.keys(cohortes).sort().map(function(c) { return { etiqueta: 'Cohorte ' + c, valor: Math.round(cohortes[c].resp / cohortes[c].total * 100) }; }), ' %')) +
+          tarjeta('Detalle por estudiante', '', tabla(columnas, datos.map(function(f) {
+            return [escapar(f[0]), escapar(f[1]), chip(nivelSit[f[2]], f[2]), escapar(f[3] || '—'), escapar(f[4])];
+          })), 'bases Estudiantes, Respuestas, Criticidad (omisiones) y Períodos');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 3: RESULTADOS DE LA ENCUESTA CUATRIMESTRAL
+      // ---------------------------------------------------------
+      function informeResultados() {
+        var ids = estudiantesFiltrados().map(function(e) { return e.id_usuario; });
+        // Último envío de cada estudiante en el período
+        var envios = {};
+        RESPUESTAS.filter(function(r) { return r.periodo === estado.periodo && ids.indexOf(r.id_usuario) !== -1; })
+          .forEach(function(r) { if (!envios[r.id_usuario] || envios[r.id_usuario].created_at < r.created_at) envios[r.id_usuario] = r; });
+        envios = Object.keys(envios).map(function(k) { return envios[k]; });
+        var distribucion = function(item) {
+          var cuenta = OPCIONES[item].map(function() { return 0; });
+          envios.forEach(function(r) { var v = respuestaItem(r, item); if (v && v[0]) cuenta[v[0] - 1]++; });
+          return OPCIONES[item].map(function(o, i) { return { etiqueta: o, valor: cuenta[i] }; }).filter(function(b) { return b.valor > 0 || item !== ITEMS.inicio; });
+        };
+        var materias = {};
+        envios.forEach(function(r) {
+          (respuestaItem(r, ITEMS.materias) || []).forEach(function(m) {
+            var x = materias[m.materia] = materias[m.materia] || { cursan: 0, recursan: 0, dificultad: [] };
+            x.cursan++;
+            if (m.primera_vez === false) x.recursan++;
+            if (typeof m.dificultad === 'number') x.dificultad.push(m.dificultad);
+          });
+        });
+        var columnas = ['Materia', 'Código', 'La cursaron', 'La recursan', '% de recursado', 'Dificultad promedio (1 a 5)'];
+        var datos = Object.keys(materias).map(function(cod) {
+          var x = materias[cod];
+          return [MATERIAS[cod] || cod, cod, x.cursan, x.recursan, porcentaje(x.recursan, x.cursan), x.dificultad.length ? redondear(promedio(x.dificultad), 1) : ''];
+        }).sort(function(a, b) { return (b[5] || 0) - (a[5] || 0); });
+        var trabajan = envios.filter(function(r) { var v = respuestaItem(r, ITEMS.trabaja); return v && v[0] === 1; }).length;
+        var resumen = [
+          { titulo: 'Envíos considerados', valor: envios.length, detalle: 'el último de cada estudiante' },
+          { titulo: 'Trabajan', valor: trabajan, detalle: porcentaje(trabajan, envios.length) },
+          { titulo: 'Materias declaradas', valor: Object.keys(materias).length }
+        ];
+        ultimo = { titulo: 'Resultados de la Encuesta Cuatrimestral ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) +
+          '<div style="display: grid !important; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important; gap: 0 16px !important;">' +
+          tarjeta('Situación de avance percibida', '', barras(distribucion(ITEMS.avance))) +
+          tarjeta('Estado del Proyecto Final', '', barras(distribucion(ITEMS.pfg))) +
+          tarjeta('Situación laboral', '', barras(distribucion(ITEMS.trabaja))) +
+          tarjeta('Momento de inicio laboral', 'Solo quienes trabajan.', barras(distribucion(ITEMS.inicio))) +
+          '</div>' +
+          tarjeta('Materias cursadas el cuatrimestre anterior', 'Ordenadas por dificultad promedio. Sirve para detectar materias críticas por recursado y dificultad declarada.',
+            tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); })), 'bases Respuestas (Encuesta Cuatrimestral), Encuestas y Materias');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 4: NOTAS DE 1.ER AÑO (MISMAS REGLAS QUE IndiceNotasPrimero)
+      // ---------------------------------------------------------
+      function informePrimero() {
+        var ids = estudiantesFiltrados().filter(function(e) { return e.es_primer_anio === 'si'; }).map(function(e) { return e.id_usuario; });
+        var notas = PARCIALES.filter(function(p) { return ids.indexOf(p.id_usuario) !== -1; });
+        var columnas = ['Materia', 'Crítica', 'Estudiantes', 'Instancias', 'Aprobadas', 'Ausentes', 'Promedio de lo rendido', 'Con nota bajo el umbral'];
+        var datos = MATERIAS_PRIMERO.map(function(m) {
+          var n = notas.filter(function(p) { return p.materia === m.materia; });
+          var rendidas = n.filter(function(p) { return p.estado !== 'Ausente' && p.nota !== null; });
+          var alumnos = n.map(function(p) { return p.id_usuario; }).filter(function(v, i, a) { return a.indexOf(v) === i; });
+          var bajoUmbral = m.critica ? alumnos.filter(function(id) { return rendidas.some(function(p) { return p.id_usuario === id && p.nota < (m.umbral || 4); }); }).length : '';
+          return [m.materia, m.critica ? 'Sí (umbral ' + decimal(m.umbral) + ')' : 'No', alumnos.length, n.length,
+            porcentaje(rendidas.filter(function(p) { return p.estado === 'Aprobado'; }).length, rendidas.length),
+            porcentaje(n.length - rendidas.length, n.length),
+            rendidas.length ? redondear(promedio(rendidas.map(function(p) { return p.nota; })), 2) : '', bajoUmbral];
+        });
+        var icg = ids.map(function(id) { var c = calculadoDe(estudiante(id), estado.periodo); return c ? c.indice : null; });
+        var resumen = [
+          { titulo: 'Estudiantes de 1.er año', valor: ids.length },
+          { titulo: 'Notas cargadas', valor: notas.length },
+          { titulo: 'ICG promedio', valor: icg.filter(function(x) { return x !== null; }).length ? Math.round(promedio(icg.filter(function(x) { return x !== null; }))) : '—' },
+          { titulo: 'En riesgo alto', valor: icg.filter(function(x) { return x !== null && x >= CORTES.rojo; }).length }
+        ];
+        ultimo = { titulo: 'Notas de 1.er año ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) +
+          tarjeta('Distribución del ICG', 'Índice de las notas de cada estudiante (última entrada del período).',
+            barras(['verde', 'amarillo', 'rojo', 'neutro'].map(function(n) {
+              return { etiqueta: SEMAFORO[n].nombre, valor: icg.filter(function(x) { return semaforoDe(x) === n; }).length, color: SEMAFORO[n].punto };
+            }))) +
+          tarjeta('Por materia', 'Una instancia es ausente si su estado es «Ausente» o no tiene nota, y aprobada si su estado es «Aprobado». Las materias críticas son las de CargaMateriasPrimero.',
+            tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); })), 'bases CargaParcialesPrimero, CargaMateriasPrimero y Criticidad');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 5: ENTREVISTAS Y TUTORÍAS
+      // ---------------------------------------------------------
+      function informeEntrevistas() {
+        var i = PERIODOS.map(function(p) { return p.periodo; }).indexOf(estado.periodo);
+        var per = PERIODOS[i] || { fecha_inicio: '' };
+        var siguiente = i >= 0 ? PERIODOS[i + 1] : null;
+        // Entrevistas pedidas entre el inicio del período y el inicio del siguiente
+        var enPeriodo = function(f) { return f && f >= (per.fecha_inicio || '') && (!siguiente || !siguiente.fecha_inicio || f < siguiente.fecha_inicio); };
+        var ids = estudiantesFiltrados().map(function(e) { return e.id_usuario; });
+        var lista = ENTREVISTAS.filter(function(x) { return ids.indexOf(x.id_usuario_estudiante) !== -1 && enPeriodo(x.fecha_solicitud); });
+        var dias = lista.filter(function(x) { return x.estado === 'realizada' && x.fecha_realizada; })
+          .map(function(x) { return (new Date(x.fecha_realizada) - new Date(x.fecha_solicitud)) / 86400000; });
+        // Estudiantes en riesgo alto (vigente) sin entrevista realizada o en curso en el período
+        var rojosSin = estudiantesFiltrados().filter(function(e) {
+          var calc = calculadoDe(e, estado.periodo), asig = asignadoDe(e);
+          var vigente = asig ? asig.semaforo : semaforoDe(calc ? calc.indice : null);
+          return vigente === 'rojo' && !lista.some(function(x) { return x.id_usuario_estudiante === e.id_usuario && ['solicitada', 'programada', 'realizada'].indexOf(x.estado) !== -1; });
+        });
+        var resumen = [
+          { titulo: 'Entrevistas del período', valor: lista.length },
+          { titulo: 'Realizadas', valor: lista.filter(function(x) { return x.estado === 'realizada'; }).length },
+          { titulo: 'Pendientes', valor: lista.filter(function(x) { return x.estado === 'solicitada' || x.estado === 'programada'; }).length },
+          { titulo: 'Días hasta realizarla', valor: dias.length ? redondear(promedio(dias), 1) : '—', detalle: 'promedio' },
+          { titulo: 'Riesgo alto sin entrevista', valor: rojosSin.length }
+        ];
+        var porAcompanante = {};
+        lista.forEach(function(x) {
+          var k = x.nombre_acompanante + (x.tipo_acompanante === 'asesor_par' ? ' (asesor par)' : ' (tutor)');
+          var a = porAcompanante[k] = porAcompanante[k] || { total: 0, realizadas: 0 };
+          a.total++; if (x.estado === 'realizada') a.realizadas++;
+        });
+        var columnas = ['Estudiante', 'Acompañante', 'Pedida por', 'Estado', 'Solicitada', 'Realizada'];
+        var datos = lista.map(function(x) {
+          return [nombreDe(estudiante(x.id_usuario_estudiante)), x.nombre_acompanante, x.originada_por === 'tutor' ? 'Tutor o asesor' : 'Estudiante',
+            ESTADOS_ENTREVISTA[x.estado], x.fecha_solicitud, x.fecha_realizada];
+        });
+        ultimo = { titulo: 'Entrevistas y tutorías ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) +
+          (rojosSin.length ? '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: #fff0f0 !important; border: 1px solid #fdcece !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important;">' +
+            '<span style="color: #c20a0a !important; padding-top: 1px !important;">' + icono('alerta', 20) + '</span><span><b style="font-weight: 600 !important;">Riesgo alto sin entrevista:</b> ' +
+            rojosSin.map(function(e) { return escapar(nombreDe(e)); }).join(' · ') + '.</span></div>' : '') +
+          tarjeta('Por estado', '', barras(Object.keys(ESTADOS_ENTREVISTA).map(function(k) {
+            return { etiqueta: ESTADOS_ENTREVISTA[k], valor: lista.filter(function(x) { return x.estado === k; }).length };
+          }).filter(function(b) { return b.valor > 0; }))) +
+          tarjeta('Por acompañante', '', tabla(['Acompañante', 'Entrevistas', 'Realizadas'], Object.keys(porAcompanante).map(function(k) {
+            return [escapar(k), String(porAcompanante[k].total), String(porAcompanante[k].realizadas)];
+          }))) +
+          tarjeta('Detalle', 'Entrevistas solicitadas durante el período.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c || '—'); }); })),
+            'bases Entrevistas, Estudiantes y Criticidad');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 6: AVANCE CURRICULAR (PROVISORIO)
+      // ---------------------------------------------------------
+      function informeAvance() {
+        var lista = estudiantesFiltrados().filter(function(e) { return e.es_primer_anio !== 'si'; }).map(function(e) {
+          var envio = RESPUESTAS.filter(function(r) { return r.id_usuario === e.id_usuario && r.periodo <= estado.periodo; })
+            .sort(function(a, b) { return a.created_at < b.created_at ? -1 : 1; }).pop();
+          var cred = envio ? (respuestaItem(envio, ITEMS.creditos) || [null])[0] : null;
+          return { e: e, creditos: cred, periodo: envio ? envio.periodo : '' };
+        });
+        var cohortes = {};
+        lista.forEach(function(x) { if (x.creditos === null) return; var c = cohorteDe(x.e); (cohortes[c] = cohortes[c] || []).push(x.creditos); });
+        var columnasCoh = ['Cohorte', 'Estudiantes con dato', 'Créditos promedio', 'Mínimo', 'Máximo', 'Avance promedio sobre el plan'];
+        var datosCoh = Object.keys(cohortes).sort().map(function(c) {
+          var v = cohortes[c];
+          return [c, v.length, redondear(promedio(v), 1), Math.min.apply(null, v), Math.max.apply(null, v), Math.round(promedio(v) / CREDITOS_PLAN * 100) + ' %'];
+        });
+        var conDato = lista.filter(function(x) { return x.creditos !== null; });
+        var resumen = [
+          { titulo: 'Estudiantes con dato', valor: conDato.length, detalle: 'de ' + lista.length + ' de 2.º año en adelante' },
+          { titulo: 'Avance promedio', valor: conDato.length ? Math.round(promedio(conDato.map(function(x) { return x.creditos; })) / CREDITOS_PLAN * 100) + ' %' : '—', detalle: 'sobre 223 créditos' },
+          { titulo: 'Bajo el 38,97 %', valor: conDato.filter(function(x) { return x.creditos / CREDITOS_PLAN < 0.3897; }).length, detalle: 'umbral de García Lambert' }
+        ];
+        var columnas = ['Estudiante', 'Cohorte', 'Créditos aprobados', 'Avance sobre el plan', 'Período del dato'];
+        var datos = lista.map(function(x) { return [nombreDe(x.e), cohorteDe(x.e), x.creditos === null ? '' : x.creditos, x.creditos === null ? '' : Math.round(x.creditos / CREDITOS_PLAN * 100) + ' %', x.periodo]; });
+        ultimo = { titulo: 'Avance curricular ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) +
+          '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
+          '<span style="color: #47536b !important;">' + icono('info', 18) + '</span><span>Provisorio: el avance se mide sobre el total del plan. La comparación con lo esperado según el tiempo desde el ingreso está en análisis.</span></div>' +
+          tarjeta('Por cohorte', '', tabla(columnasCoh, datosCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
+          tarjeta('Por estudiante', 'Créditos de la última Encuesta Cuatrimestral respondida hasta el período elegido.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c === '' ? '—' : c); }); })),
+            'bases Estudiantes y Respuestas (cuadro de créditos)');
+      }
+
+      // ---------------------------------------------------------
+      // EXPORTAR: CSV E IMPRESIÓN (PDF CON EL DIÁLOGO DEL NAVEGADOR)
+      // ---------------------------------------------------------
+      function celdaCsv(v) {
+        var texto = String(v === null || v === undefined ? '' : decimal(v));
+        if (/^[=+\-@\t\r]/.test(texto)) texto = "'" + texto; // neutraliza fórmulas de planilla
+        return '"' + texto.replace(/"/g, '""') + '"';
+      }
+
+      function nombreArchivo() {
+        return (ultimo.titulo + '_' + estado.cohorte + '_' + estado.tramo).toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      }
+
+      function textoFiltros() {
+        return 'Período ' + estado.periodo + ' · ' + (estado.cohorte === 'todas' ? 'todas las cohortes' : 'cohorte ' + estado.cohorte) + ' · ' +
+          ({ todos: 'todos los años', primero: '1.er año', superior: '2.º año en adelante' })[estado.tramo];
+      }
+
+      function exportarCsv() {
+        if (!ultimo) return;
+        var lineas = [ultimo.columnas.map(celdaCsv).join(';')].concat(ultimo.filas.map(function(f) { return f.map(celdaCsv).join(';'); }));
+        var blob = new Blob(['﻿' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nombreArchivo() + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+      }
+
+      // VENTANA CON SOLO EL INFORME, LISTA PARA "GUARDAR COMO PDF"
+      function imprimir() {
+        if (!ultimo) return;
+        var w = window.open('', '_blank');
+        if (!w) { alert('El navegador bloqueó la ventana del informe. Permita las ventanas emergentes del campus e intente de nuevo.'); return; }
+        var celda = 'border: 1px solid #dadee7; padding: 4px 6px; text-align: left; vertical-align: top;';
+        w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>' + escapar(ultimo.titulo) + '<\/title><\/head>' +
+          '<body style="font-family: Inter, Segoe UI, Arial, sans-serif; color: #0b0e14; margin: 24px; font-size: 12px;">' +
+          '<div style="font-size: 11px; color: #47536b; text-transform: uppercase; letter-spacing: 0.5px;">Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP<\/div>' +
+          '<h1 style="font-size: 20px; margin: 4px 0;">' + escapar(ultimo.titulo) + '<\/h1>' +
+          '<div style="color: #47536b; margin-bottom: 12px;">' + escapar(textoFiltros()) + ' · Generado el ' + new Date().toLocaleDateString('es-AR') + '<\/div>' +
+          '<table style="border-collapse: collapse; margin-bottom: 16px;"><tr>' + ultimo.resumen.map(function(k) {
+            return '<td style="' + celda + '"><div style="color: #47536b;">' + escapar(k.titulo) + '<\/div><b style="font-size: 16px;">' + escapar(k.valor) + '<\/b>' + (k.detalle ? ' <span style="color: #47536b;">' + escapar(k.detalle) + '<\/span>' : '') + '<\/td>';
+          }).join('') + '<\/tr><\/table>' +
+          '<table style="border-collapse: collapse; width: 100%;"><thead><tr>' + ultimo.columnas.map(function(c) { return '<th style="' + celda + ' background: #f5f6fa;">' + escapar(c) + '<\/th>'; }).join('') + '<\/tr><\/thead><tbody>' +
+          ultimo.filas.map(function(f) { return '<tr>' + f.map(function(c) { return '<td style="' + celda + '">' + escapar(c) + '<\/td>'; }).join('') + '<\/tr>'; }).join('') +
+          '<\/tbody><\/table>' +
+          '<div style="margin-top: 16px; font-size: 11px; color: #47536b;">Zhakyz \x26amp; Asociados<\/div><\/body><\/html>');
+        w.document.close();
+        w.focus();
+        w.print();
+      }
+
+      // ---------------------------------------------------------
+      // RENDERIZADO
+      // ---------------------------------------------------------
+      function selectFiltro(id, etiqueta, opciones, valor) {
+        return '<div style="display: flex !important; flex-direction: column !important; justify-content: space-between !important; gap: 4px !important;"><label style="' + EST.label + ' margin-bottom: 0 !important;" for="filtro-' + id + '-reportes">' + etiqueta + '</label>' +
+          '<select id="filtro-' + id + '-reportes" data-filtro="' + id + '" style="' + EST.input + '">' + opciones.map(function(o) {
+            return '<option value="' + escapar(o[0]) + '"' + (o[0] === valor ? ' selected' : '') + '>' + escapar(o[1]) + '</option>';
+          }).join('') + '</select></div>';
+      }
+
+      function renderizarFiltros() {
+        var cohortes = ESTUDIANTES.map(cohorteDe).filter(function(v, i, a) { return a.indexOf(v) === i; }).sort().reverse();
+        document.getElementById('filtros-reportes').innerHTML =
+          selectFiltro('periodo', 'Período', PERIODOS.map(function(p) { return [p.periodo, p.periodo]; }).reverse(), estado.periodo) +
+          selectFiltro('cohorte', 'Cohorte (año y cuatrimestre de ingreso)', [['todas', 'Todas']].concat(cohortes.map(function(c) { return [c, c]; })), estado.cohorte) +
+          selectFiltro('tramo', 'Año de la carrera', [['todos', 'Todos'], ['primero', '1.er año'], ['superior', '2.º año en adelante']], estado.tramo);
+      }
+
+      function renderizarSelector() {
+        document.getElementById('selector-reportes').innerHTML = INFORMES.map(function(p) {
+          var activa = p.id === estado.informe;
+          return '<button role="tab" data-informe="' + p.id + '" aria-selected="' + activa + '" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 0; border-bottom: 2px solid ' + (activa ? '#0b0e14' : 'transparent') + '; background: transparent; padding: 8px 10px; margin-bottom: -1px; font-family: inherit; font-size: 13px; font-weight: ' + (activa ? 600 : 500) + '; color: ' + (activa ? '#0b0e14' : '#47536b') + ';">' +
+            icono(p.icono, 16) + escapar(p.titulo) + '</button>';
+        }).join('');
+      }
+
+      function renderizar() {
+        renderizarFiltros();
+        renderizarSelector();
+        var informes = { criticidad: informeCriticidad, respuesta: informeRespuesta, resultados: informeResultados, primero: informePrimero, entrevistas: informeEntrevistas, avance: informeAvance };
+        var cuerpo = informes[estado.informe]();
+        var acciones = '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-bottom: 16px !important;">' +
+          '<div><div style="font-size: 18px !important; font-weight: 600 !important;">' + escapar(ultimo.titulo) + '</div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(textoFiltros()) + '</div></div>' +
+          '<div style="display: flex !important; gap: 8px !important;">' +
+          '<button id="btn-csv-reportes" style="' + EST.boton + '">' + icono('descargar', 18) + 'Descargar CSV</button>' +
+          '<button id="btn-pdf-reportes" style="' + EST.boton + '">' + icono('imprimir', 18) + 'Imprimir o guardar en PDF</button></div></div>';
+        document.getElementById('contenido-reportes').innerHTML = acciones + cuerpo;
+      }
+
+      // ---------------------------------------------------------
+      // ROL Y VISTA PREVIA LOCAL
+      // ---------------------------------------------------------
+      function chipRol(rol) {
+        return '<span style="font-size: 11px !important; font-weight: 600 !important; color: #47536b !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 1px 8px !important; line-height: 18px !important;">' + rol + '</span>';
+      }
+
+      function aplicarRol(rol) {
+        document.getElementById('badge-rol-reportes').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
+        var botones = document.querySelectorAll('#reportes-gestion [data-preview-rol]');
+        for (var i = 0; i < botones.length; i++) {
+          var activo = botones[i].getAttribute('data-preview-rol') === rol;
+          botones[i].style.backgroundColor = activo ? '#ffffff' : 'transparent';
+          botones[i].style.color = activo ? '#0b0e14' : '#c2c9d6';
+        }
+      }
+
+      // BARRA PARA CAMBIAR DE ROL: SOLO EXISTE AL ABRIR EL ARCHIVO EN LOCAL
+      function crearBarraPreview() {
+        var barra = document.createElement('div');
+        barra.setAttribute('style', 'display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; margin: 0 0 20px 0 !important; background-color: #0b0e14 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important;');
+        barra.innerHTML = '<span style="display: inline-flex !important; align-items: center !important; gap: 8px !important; font-weight: 500 !important; margin-right: 4px !important;">' +
+          icono('ver', 18) + 'Vista previa local · ver como</span>' + Object.keys(ROLES).map(function(rol) {
+          return '<button data-preview-rol="' + rol + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">' + rol + '</button>';
+        }).join('');
+        var cont = document.querySelector('#reportes-gestion > nolink') || document.getElementById('reportes-gestion');
+        cont.insertBefore(barra, cont.firstChild);
+      }
+
+      // ---------------------------------------------------------
+      // DELEGACIÓN DE EVENTOS
+      // ---------------------------------------------------------
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#reportes-gestion')) return;
+        var btnRol = t.closest('[data-preview-rol]');
+        if (btnRol) return aplicarRol(btnRol.getAttribute('data-preview-rol'));
+        var inf = t.closest('[data-informe]');
+        if (inf) { estado.informe = inf.getAttribute('data-informe'); return renderizar(); }
+        if (t.closest('#btn-csv-reportes')) return exportarCsv();
+        if (t.closest('#btn-pdf-reportes')) return imprimir();
+      });
+
+      document.addEventListener('change', function(e) {
+        var t = e.target;
+        if (!t.closest || !t.closest('#reportes-gestion') || !t.hasAttribute('data-filtro')) return;
+        estado[t.getAttribute('data-filtro')] = t.value;
+        renderizar();
+      });
+
+      // ---------------------------------------------------------
+      // ACCESO A DATOS EN MOODLE (COMO EL TABLERO: BIBLIOTECA DE TOOLS + LeerBase)
+      // ---------------------------------------------------------
+      var incompletas = []; // bases que LeerBase no leyó enteras
+
+      // BIBLIOTECA DE TOOLS (UNA SOLA LECTURA POR PÁGINA)
+      function cargarTools() {
+        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
+        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
+        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
+        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
+            return r.text();
+          })
+          .then(function(html) {
+            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
+            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
+            var s = document.createElement('script');
+            s.setAttribute('data-base', url);
+            s.textContent = biblioteca.textContent;
+            document.head.appendChild(s);
+            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
+            return window.ZhakyzTools;
+          });
+        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
+        return window.ZhakyzToolsCarga;
+      }
+
+      function conLimite(promesa, ms, que) {
+        return Promise.race([promesa, new Promise(function(r, rechazar) {
+          setTimeout(function() { rechazar(new Error(que + ' tardó más de ' + (ms / 1000) + ' segundos.')); }, ms);
+        })]);
+      }
+
+      // ENTRADAS DE UNA BASE CON SUS CAMPOS COMO TEXTO Y EL rid
+      function leerBase(Tools, nombre, opciones) {
+        return conLimite(Tools.LeerBase(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+          if (r.completa === false) incompletas.push(nombre);
+          return r.entradas.map(function(e) {
+            var c = {};
+            Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+            c.rid = e.rid ? Number(e.rid) : 0;
+            return c;
+          });
+        });
+      }
+
+      function numero(v) {
+        if (v === null || v === undefined || String(v).trim() === '') return null;
+        var n = Number(String(v).replace(',', '.'));
+        return isFinite(n) ? n : null;
+      }
+
+      // LA ENTRADA DE rid MAYOR DE CADA CLAVE (LAS BASES SOLO AGREGAN: LA VIGENTE ES LA MÁS NUEVA)
+      function vigentes(lista, clave) {
+        var m = {};
+        lista.forEach(function(e) { var k = clave(e); if (k && (!m[k] || e.rid > m[k].rid)) m[k] = e; });
+        return Object.keys(m).map(function(k) { return m[k]; });
+      }
+
+      // CONVIERTE LAS ENTRADAS DE MOODLE A LA FORMA QUE USAN LOS INFORMES
+      function normalizar(b) {
+        var estudiantes = vigentes(b.estudiantes, function(e) { return e.id_usuario; }).map(function(e) {
+          return { id_usuario: Number(e.id_usuario), dni: e.dni, nombre: e.nombre, apellido: e.apellido, es_primer_anio: e.es_primer_anio,
+            anio_ingreso: numero(e.anio_ingreso), cuatrimestre_ingreso: e.cuatrimestre_ingreso };
+        });
+        var porDni = {};
+        estudiantes.forEach(function(e) { porDni[String(e.dni)] = e.id_usuario; });
+        var encuestaDe = {};
+        b.respuestas.forEach(function(r) { encuestaDe[String(r.rid)] = r.codigo_encuesta; });
+        // Solo las Cuatrimestrales con el formato del ADR-007 ({ item_id, respuestas }); las versiones anteriores se ignoran
+        var respuestas = b.respuestas.filter(function(r) { return r.codigo_encuesta === 'cuatrimestral'; }).map(function(r) {
+          var json = null;
+          try { json = JSON.parse(r.json_respuesta); } catch (e) { json = null; }
+          if (!Array.isArray(json) || !json.every(function(x) { return x && x.item_id; })) return null;
+          return { id_usuario: Number(r.id_usuario), periodo: r.periodo, created_at: r.created_at, json: json.map(function(x) { return { item_id: Number(x.item_id), respuestas: x.respuestas }; }) };
+        }).filter(Boolean);
+        var criticidad = b.criticidad.map(function(c) {
+          return { id_usuario: Number(c.id_usuario), periodo: c.periodo, origen: c.origen, fuente: c.fuente, encuesta: encuestaDe[String(c.rid_fuente)] || '',
+            indice: numero(c.indice), semaforo: c.semaforo, motivo: c.motivo, created_at: c.created_at };
+        });
+        var periodos = vigentes(b.periodos.filter(function(p) { return /^\d{4}-[12]$/.test(p.periodo); }), function(p) { return p.periodo; })
+          .sort(function(a, x) { return a.periodo < x.periodo ? -1 : 1; })
+          .map(function(p) { return { periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: p.fecha_limite_encuesta }; });
+        // Notas: un recuperatorio (Recupera_a) reemplaza la instancia que indica, como IndiceNotasPrimero
+        var instancias = {};
+        b.parciales.forEach(function(p) {
+          var id = porDni[String(p.DNI)];
+          if (!id) return;
+          var reemplaza = String(p.Recupera_a || '').trim();
+          var clave = id + '|' + p.Materia + '|' + (reemplaza || p.Instancia);
+          if (!reemplaza && instancias[clave]) return;
+          instancias[clave] = { id_usuario: id, materia: p.Materia, instancia: reemplaza || p.Instancia, fecha: p.Fecha, nota: numero(p.Nota),
+            estado: /ausente/i.test(p.Estado) ? 'Ausente' : /desaprobado/i.test(p.Estado) ? 'Desaprobado' : /aprobado/i.test(p.Estado) ? 'Aprobado' : p.Estado };
+        });
+        var materiasPrimero = vigentes(b.materiasPrimero, function(m) { return m.Materia; }).map(function(m) {
+          var umbral = numero(m.Umbral);
+          return { materia: m.Materia, critica: ['S', 'SI', 'SÍ', 'TRUE', '1'].indexOf(String(m.esCritica).toUpperCase()) !== -1, umbral: umbral ? umbral : null };
+        });
+        var materias = {};
+        vigentes(b.materias.filter(function(m) { return String(m.plan) === '2024'; }), function(m) { return m.codigo; })
+          .forEach(function(m) { materias[m.codigo] = m.nombre; });
+        var entrevistas = b.entrevistas.map(function(x) {
+          return { id_usuario_estudiante: numero(x.id_usuario_estudiante), nombre_acompanante: x.nombre_acompanante, tipo_acompanante: x.tipo_acompanante,
+            originada_por: x.originada_por, estado: x.estado, fecha_solicitud: String(x.fecha_solicitud || '').slice(0, 10), fecha_realizada: String(x.fecha_realizada || '').slice(0, 10) };
+        });
+        return { periodos: periodos, estudiantes: estudiantes, criticidad: criticidad, respuestas: respuestas, materias: materias,
+          materiasPrimero: materiasPrimero, parciales: Object.keys(instancias).map(function(k) { return instancias[k]; }), entrevistas: entrevistas };
+      }
+
+      function cargarDatos() {
+        if (ES_VISTA_LOCAL || !window.M || !M.cfg) {
+          return Promise.resolve({ periodos: PERIODOS_PRUEBA, estudiantes: ESTUDIANTES_PRUEBA, criticidad: CRITICIDAD_PRUEBA, respuestas: RESPUESTAS_PRUEBA,
+            materias: MATERIAS_PRUEBA, materiasPrimero: MATERIAS_PRIMERO_PRUEBA, parciales: PARCIALES_PRUEBA, entrevistas: ENTREVISTAS_PRUEBA });
+        }
+        document.getElementById('aviso-datos-prueba-reportes').style.setProperty('display', 'none', 'important');
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+          return Promise.all([
+            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD }),
+            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS }),
+            leerBase(Tools, 'Períodos', { dataid: DATAID_PERIODOS }),
+            leerBase(Tools, 'CargaParcialesPrimero', { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES }),
+            leerBase(Tools, 'CargaMateriasPrimero', { dataid: DATAID_MATERIAS_PRIMERO }),
+            leerBase(Tools, 'Materias', { dataid: DATAID_MATERIAS }),
+            leerBase(Tools, 'Entrevistas', { dataid: DATAID_ENTREVISTAS })
+          ]);
+        }).then(function(r) {
+          return normalizar({ estudiantes: r[0], criticidad: r[1], respuestas: r[2], periodos: r[3], parciales: r[4], materiasPrimero: r[5], materias: r[6], entrevistas: r[7] });
+        });
+      }
+
+      function aviso(texto, tono) {
+        var c = tono === 'error' ? { fondo: '#fff0f0', borde: '#fdcece', icono: '#c20a0a' } : { fondo: '#f5f6fa', borde: '#dadee7', icono: '#47536b' };
+        return '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: ' + c.fondo + ' !important; border: 1px solid ' + c.borde + ' !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important;">' +
+          '<span style="color: ' + c.icono + ' !important; padding-top: 1px !important;">' + icono(tono === 'error' ? 'alerta' : 'info', 20) + '</span><span>' + texto + '</span></div>';
+      }
+
+      // ---------------------------------------------------------
+      // INICIO
+      // ---------------------------------------------------------
+      var huecos = document.querySelectorAll('#reportes-gestion [data-icono]');
+      for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
+      if (ES_VISTA_LOCAL) crearBarraPreview();
+      aplicarRol(ROL_INICIAL);
+      document.getElementById('contenido-reportes').innerHTML = aviso('Leyendo las bases de Zhakyz…');
+      cargarDatos().then(function(d) {
+        PERIODOS = d.periodos.length ? d.periodos : [{ periodo: '2026-2', fecha_inicio: '', fecha_limite_encuesta: '' }];
+        ESTUDIANTES = d.estudiantes; CRITICIDAD = d.criticidad; RESPUESTAS = d.respuestas; MATERIAS = d.materias;
+        MATERIAS_PRIMERO = d.materiasPrimero; PARCIALES = d.parciales; ENTREVISTAS = d.entrevistas;
+        estado.periodo = PERIODOS[PERIODOS.length - 1].periodo;
+        renderizar();
+        if (incompletas.length) {
+          document.getElementById('contenido-reportes').insertAdjacentHTML('afterbegin', aviso('<b style="font-weight: 600 !important;">Lectura incompleta:</b> ' + escapar(incompletas.join(', ')) + '. Los informes pueden no incluir todas las entradas.', 'error'));
+        }
+      }).catch(function(err) {
+        document.getElementById('contenido-reportes').innerHTML = aviso('<b style="font-weight: 600 !important;">No se pudieron leer las bases.</b> ' + escapar(err && err.message ? err.message : err) + ' Vuelva a cargar la página.', 'error');
+      });
+    })();
+  </script>
+  </nolink>
+</div>
