@@ -62,7 +62,8 @@
     "informacion_personal": 60265,
     "utils_tools": 59941,
     "indicadores_cohorte": 60283,
-    "configuracion": 60294
+    "configuracion": 60294,
+    "reportes": null
   },
   "encuestas": {
     "inicial": {
