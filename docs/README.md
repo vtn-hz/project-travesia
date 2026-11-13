@@ -49,7 +49,8 @@ docs/
 │   ├── carga-parciales-primero.md
 │   ├── entrevistas.md
 │   ├── indicadores-cohorte.md
-│   └── configuracion.md
+│   ├── configuracion.md
+│   └── reportes.md
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 
@@ -106,6 +107,7 @@ Sirve como vista rápida de la historia del proyecto.
 - [Índice de las notas de 1.er año](models/criticidad/MODELO_CRITICIDAD_NOTAS_PRIMERO.md) — ICm por materia e ICG por estudiante
 - [Indicadores no implementados](models/INDICADORES_NO_IMPLEMENTADOS.md) — Qué indicadores quedan fuera por las limitaciones de Moodle y qué haría falta
 - [Indicadores de Cohorte](specs/indicadores-cohorte.md) — Sección provisoria con la definición y el cálculo de cada indicador
+- [Reportes](specs/reportes.md) — Informes de gestión del período, con descarga en CSV y PDF
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [ADR-008](decisions/008-encuesta-inicial-y-datos-personales.md) — Pregunta abierta: reemplazar la Encuesta Inicial por la Información personal
 - [ADR-009](decisions/009-cierre-de-periodo-y-omision.md) — Cierre de período y alerta por omisión: base Períodos y Página Configuración del Sistema
