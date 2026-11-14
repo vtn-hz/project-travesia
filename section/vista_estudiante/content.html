@@ -1,6 +1,6 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Mi Trayectoria" (cmid 60264) · 2026-11-03 -->
 <!-- SECCIÓN: VISTA DEL ESTUDIANTE · MI TRAVESÍA (ROL EST) · SCRUM-24 -->
-<!-- QUÉ ES: la pantalla de entrada del estudiante, con el diseño del detalle del estudiante (perfil a la izquierda). Hasta que el estudiante carga su información personal (entrada en la base Estudiantes), todas las opciones están deshabilitadas y un aviso lo indica. Con la entrada, habilita las de su tramo: 1.er año (Parciales de primer año y Entrevistas y Tutorías) o 2.º año en adelante (Encuesta Inicial, Encuesta Cuatrimestral y Entrevistas y Tutorías). La información personal se carga y se edita en otra Página: section/informacion_personal. Spec: docs/specs/vista-estudiante.md -->
+<!-- QUÉ ES: la pantalla de entrada del estudiante, con el diseño del detalle del estudiante (perfil a la izquierda). Hasta que el estudiante carga su información personal (entrada en la base Estudiantes), todas las opciones están deshabilitadas y un aviso lo indica. Con la entrada, habilita Parciales de primer año y Entrevistas y Tutorías en los dos tramos, y la Encuesta Cuatrimestral desde 2.º año. La Encuesta Inicial se retiró (SCRUM-27, ADR-008). La información personal se carga y se edita en otra Página: section/informacion_personal. Spec: docs/specs/vista-estudiante.md -->
 <!-- DATOS: solo lectura. Lee la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null) y las respuestas propias de la base Respuestas (d=166) para el estado de las encuestas. Antes de cargar la información personal, el perfil muestra los datos de la cuenta de Moodle; después, los de la base -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -90,7 +90,6 @@
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
-      var CMID_INICIAL = 59710; // @config encuestas.inicial.cmid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
       var CMID_CARGA_NOTAS = 60209; // @config paginas.carga_notas_primero
       var CMID_ENTREVISTAS = 60198; // @config paginas.entrevistas
@@ -99,9 +98,9 @@
 
       // Tramo que habilita cada opción (null: los dos) y el texto del botón cuando el tramo no la habilita
       var DISPONIBILIDAD = {
-        inicial: { tramo: 'superior', bloqueo: 'Disponible a partir de 2.º año' },
         cuatrimestral: { tramo: 'superior', bloqueo: 'Disponible a partir de 2.º año' },
-        parciales: { tramo: 'primero', bloqueo: 'Disponible solo en 1.er año' },
+        // Desde 2.º año se siguen cargando notas: quien recursa materias de 1.er año todavía rinde sus parciales (SCRUM-27)
+        parciales: { tramo: null, bloqueo: '' },
         entrevistas: { tramo: null, bloqueo: '' }
       };
       var BLOQUEO_SIN_INFO = 'Requiere cargar la información personal';
@@ -116,7 +115,6 @@
         informacion: CMID_INFO_PERSONAL ? '/mod/page/view.php?id=' + CMID_INFO_PERSONAL : null,
         // Portada de la encuesta (view.php): al estudiante le muestra el botón para responder. complete.php da error a quien
         // no puede responder (el equipo, con rol de profesor)
-        inicial: '/mod/feedback/view.php?id=' + CMID_INICIAL,
         cuatrimestral: '/mod/feedback/view.php?id=' + CMID_CUATRIMESTRAL,
         parciales: CMID_CARGA_NOTAS ? '/mod/page/view.php?id=' + CMID_CARGA_NOTAS : null,
         entrevistas: CMID_ENTREVISTAS ? '/mod/page/view.php?id=' + CMID_ENTREVISTAS : null
@@ -154,9 +152,9 @@
         { usuario: 3770, cuenta: { dni: '99000005', nombre: 'Luca', apellido: 'Zuanetti', email: 'luca.zuanetti@ejemplo.edu.ar' }, caso: '1.er año, información personal cargada' },
         { usuario: 2806, cuenta: { dni: '99000001', nombre: 'Gian Luca', apellido: 'Distefano', email: 'gian.distefano@ejemplo.edu.ar' }, caso: '1.er año; la base tiene otro correo que la cuenta' },
         { usuario: 3751, cuenta: { dni: '99000004', nombre: 'Santiago Nicolás', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar' }, caso: 'Sin información personal: todo deshabilitado' },
-        { usuario: 3773, cuenta: { dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar' }, caso: '2.º año en adelante, Encuesta Cuatrimestral pendiente' },
-        { usuario: 3623, cuenta: { dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar' }, caso: '2.º año en adelante, encuestas respondidas' },
-        { usuario: 2048, cuenta: { dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar' }, caso: '2.º año en adelante, sin encuestas respondidas' }
+        { usuario: 3773, cuenta: { dni: '99000006', nombre: 'Nicolás Gabriel', apellido: 'Zuviria', email: 'nicolas.zuviria@ejemplo.edu.ar' }, caso: '2.º año en adelante, Encuesta Cuatrimestral del período anterior: debe volver a responder' },
+        { usuario: 3623, cuenta: { dni: '99000003', nombre: 'Nahuel', apellido: 'Spikerman', email: 'nahuel.spikerman@ejemplo.edu.ar' }, caso: '2.º año en adelante, Encuesta Cuatrimestral respondida' },
+        { usuario: 2048, cuenta: { dni: '99000002', nombre: 'Valentino', apellido: 'Hernández Pascual', email: 'valentino.hernandez@ejemplo.edu.ar' }, caso: '2.º año en adelante, Encuesta Cuatrimestral pendiente' }
       ];
       // Entradas de la base Estudiantes (Santiago no tiene). Lo que se carga en la vista previa de section/informacion_personal
       // queda en localStorage (CLAVE_PREVIEW) y reemplaza estas entradas
@@ -169,7 +167,8 @@
       ];
       var CLAVE_PREVIEW = 'zk-preview-estudiantes';
       var USUARIO_INICIAL_PREVIEW = 3751;
-      // Entradas de la base Respuestas: solo importan la encuesta, el período y la fecha
+      // Entradas de la base Respuestas: solo importan la encuesta, el período y la fecha. Las de la Encuesta Inicial son historial
+      // (la encuesta se retiró) y la vista no las usa
       var RESPUESTAS_PRUEBA = [
         { id_usuario: 3773, codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00' },
         { id_usuario: 3773, codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30' },
@@ -425,7 +424,7 @@
         return '<span style="width: 36px !important; height: 36px !important; border-radius: 8px !important; ' + colores + ' display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 auto !important;">' + icono(nombre, 20) + '</span>';
       }
 
-      // TARJETA DE OPCIÓN (GRILLA 2 × 2): { id, icono, titulo, texto, chip, boton, habilitada, pendiente }
+      // TARJETA DE OPCIÓN (GRILLA DE 3): { id, icono, titulo, texto, chip, boton, habilitada, pendiente }
       function tarjetaOpcion(t) {
         return '<div id="' + t.id + '"' + (t.habilitada ? '' : ' aria-disabled="true"') + ' style="flex: 1 1 260px !important; min-width: 0 !important; background-color: ' + (t.habilitada ? '#ffffff' : '#fcfcfc') + ' !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; display: flex !important; flex-direction: column !important; gap: 12px !important; box-sizing: border-box !important;">' +
           '<div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: wrap !important; min-height: 36px !important;">' +
@@ -516,7 +515,7 @@
       }
 
       // ---------------------------------------------------------
-      // RENDERIZADO: OPCIONES (ENCUESTAS, PARCIALES Y ENTREVISTAS)
+      // RENDERIZADO: OPCIONES (ENCUESTA, PARCIALES Y ENTREVISTAS)
       // ---------------------------------------------------------
       // ESTADO DE UNA ENCUESTA: { leida, respondida } (la cuatrimestral, en el período actual)
       function estadoEncuesta(codigo) {
@@ -561,12 +560,12 @@
 
       function renderizarOpciones() {
         var est = estado.estudiante, tramo = tramoDe(est), conInfo = !!est && !estado.error;
-        var inicial = estadoEncuesta('inicial'), cuatri = estadoEncuesta('cuatrimestral');
+        var cuatri = estadoEncuesta('cuatrimestral');
         var paraTramo = function(accion) { return !DISPONIBILIDAD[accion].tramo || DISPONIBILIDAD[accion].tramo === tramo; };
         var habilitada = function(accion) { return conInfo && paraTramo(accion) && !!destino(accion); };
-        // Una sola acción principal: parciales en 1.er año; en 2.º en adelante, la primera encuesta que falte, y si no, entrevistas
+        // Una sola acción principal: parciales en 1.er año; en 2.º en adelante, la Cuatrimestral si falta, y si no, entrevistas
         var principal = !conInfo ? null : tramo === 'primero' ? 'parciales'
-          : inicial.leida && !inicial.respondida ? 'inicial' : cuatri.leida && !cuatri.respondida ? 'cuatrimestral' : 'entrevistas';
+          : cuatri.leida && !cuatri.respondida ? 'cuatrimestral' : 'entrevistas';
         var botonDe = function(accion, texto) {
           if (!conInfo) return boton(accion, BLOQUEO_SIN_INFO, 'bloqueado');
           if (!paraTramo(accion)) return boton(accion, DISPONIBILIDAD[accion].bloqueo, 'bloqueado');
@@ -574,13 +573,6 @@
           return boton(accion, texto, principal === accion ? 'principal' : 'secundario');
         };
         var opciones = [
-          {
-            id: 'card-encuesta-inicial', icono: 'encuestas', titulo: 'Encuesta Inicial',
-            texto: 'Créditos aprobados, año y cuatrimestre de ingreso y situación laboral.',
-            habilitada: habilitada('inicial'), pendiente: habilitada('inicial') && inicial.leida && !inicial.respondida,
-            chip: habilitada('inicial') ? chipEncuesta(inicial) : '',
-            boton: botonDe('inicial', inicial.respondida ? 'Actualizar la respuesta' : 'Responder la encuesta')
-          },
           {
             id: 'card-encuesta-cuatrimestral', icono: 'encuestas', titulo: 'Encuesta Cuatrimestral',
             texto: textoCuatrimestral(cuatri.respondida),
@@ -590,7 +582,9 @@
           },
           {
             id: 'card-parciales-primero', icono: 'importar', titulo: 'Parciales de primer año',
-            texto: 'Carga de las notas de los parciales de las materias de 1.er año, para el cálculo de la criticidad.',
+            texto: tramo === 'superior'
+              ? 'Carga de las notas de los parciales de las materias de 1.er año que todavía se cursan.'
+              : 'Carga de las notas de los parciales de las materias de 1.er año, para el cálculo de la criticidad.',
             habilitada: habilitada('parciales'),
             boton: botonDe('parciales', 'Cargar parciales')
           },
@@ -617,7 +611,7 @@
       function destino(accion) {
         if (!EN_MOODLE) {
           if (DESTINOS_LOCAL[accion]) return DESTINOS_LOCAL[accion] + (accion === 'informacion' ? '#usuario=' + estado.usuario.id : '');
-          return accion === 'inicial' || accion === 'cuatrimestral' ? 'simulacion' : null;
+          return accion === 'cuatrimestral' ? 'simulacion' : null;
         }
         return DESTINOS_MOODLE[accion] ? M.cfg.wwwroot + DESTINOS_MOODLE[accion] : null;
       }
