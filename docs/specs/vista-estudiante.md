@@ -2,13 +2,13 @@
 
 > Documento vivo: se actualiza a medida que se refinan los requerimientos.
 
-- **Ticket:** [SCRUM-24](https://zhakyz.atlassian.net/browse/SCRUM-24) · rama `feat/SCRUM-24-vista-estudiante`
+- **Ticket:** [SCRUM-24](https://zhakyz.atlassian.net/browse/SCRUM-24) · rama `feat/SCRUM-24-vista-estudiante`. Cambios posteriores: [SCRUM-27](https://zhakyz.atlassian.net/browse/SCRUM-27) (sin Encuesta Inicial y parciales en los dos tramos) y [SCRUM-29](https://zhakyz.atlassian.net/browse/SCRUM-29) (sin la pregunta de Ingeniería Industrial)
 - **Archivos (dos Páginas de Moodle):**
   - [`section/vista_estudiante/content.html`](../../section/vista_estudiante/content.html): Mi Trayectoria, la pantalla de entrada del estudiante;
   - [`section/informacion_personal/content.html`](../../section/informacion_personal/content.html): carga y edición de la información personal.
 - **Rol:** EST (estudiante).
-- **Estado:** **publicado el 2026-11-02** (Mi Trayectoria, cmid 60264; Información personal, cmid 60265; base Estudiantes, d=206; [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) las dos Páginas leen el período vigente de la base Períodos.
-- **Última actualización:** 2026-11-02
+- **Estado:** SCRUM-27 y SCRUM-29 en **local, sin publicar** (2026-11-14): en Moodle sigue la versión anterior. Antes, **publicado el 2026-11-02** (Mi Trayectoria, cmid 60264; Información personal, cmid 60265; base Estudiantes, d=206; [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) las dos Páginas leen el período vigente de la base Períodos.
+- **Última actualización:** 2026-11-14 (SCRUM-27 y SCRUM-29)
 
 ---
 
@@ -18,16 +18,17 @@
 |---|---|---|
 | Datos personales | Van en la base **Estudiantes**, una entrada por estudiante que se edita. No son una encuesta | No deben generar historial en Respuestas ni disparar criticidad |
 | Dónde se cargan | En una **Página propia de Moodle** (Información personal), no dentro de Mi Trayectoria | Pedido del equipo |
-| Encuesta Inicial | **No cambia** | Se decidió separar los datos personales en lugar de modificarla. Pregunta abierta: reemplazarla por la Información personal ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md)) |
+| Encuesta Inicial | **Retirada** (SCRUM-27, 2026-11-14): Mi Trayectoria no la muestra | Sus preguntas ya están en la Información personal y en la Cuatrimestral ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md), opción C). Está decidido borrar la actividad y sus entradas en Respuestas; todavía sin ejecutar |
+| Parciales de primer año | Habilitada en **los dos tramos** (SCRUM-27) | Quien está en 2.º año y recursa materias de 1.er año sigue rindiendo sus parciales |
 | Tramo | Campo `es_primer_anio`. Sale de "¿Cursa o aprobó Proyecto de Ingeniería Industrial I?": No → `si` (1.er año); Sí → `no` (2.º año en adelante) | Criterio de la [spec de la carga de notas](carga-parciales-primero.md); el campo nombra el tramo y no la pregunta |
-| Ingeniería Industrial | La primera vez, antes del formulario: "¿Es estudiante de Ingeniería Industrial?". Con "No" se muestra que por el momento el sistema está limitado a Ingeniería Industrial y no se guarda nada | Filtro de entrada; no hace falta guardarla |
+| Ingeniería Industrial | **No se pregunta** (SCRUM-29, 2026-11-14): el formulario aparece directo. Antes, la primera vez se preguntaba "¿Es estudiante de Ingeniería Industrial?" y con "No" no se guardaba nada | Pedido del equipo |
 | Nombre de la sección | **Mi Trayectoria** (la carpeta sigue siendo `section/vista_estudiante`) | Pedido del equipo |
 | Nombre, apellido y correo | La primera vez se precargan con la cuenta de Moodle. Al guardar quedan en la base, y desde ese momento se usan los de la base | Pedido del equipo |
 | Criticidad e historial de estados | No se muestran (por ahora) | Pedido del equipo |
 
 ## Mi Trayectoria
 
-Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, la tarjeta **Información personal** y la grilla de 4 secciones.
+Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, la tarjeta **Información personal** y la grilla de 3 secciones.
 
 - **Perfil:** iniciales o foto del campus, nombre y apellido, tramo y cohorte, id de usuario, DNI, correo y fecha de carga. Antes de cargar la información personal muestra los datos de la cuenta ("Perfil del campus"); después, los de la base ("Perfil del estudiante").
 - **Tarjeta Información personal:**
@@ -44,22 +45,20 @@ Diseño del detalle del estudiante: **perfil a la izquierda** y, a la derecha, l
 
 | Sección | Sin información personal | 1.er año | 2.º año en adelante |
 |---|---|---|---|
-| Encuesta Inicial | Deshabilitada: "Requiere cargar la información personal" | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado Pendiente o Respondida |
-| Encuesta Cuatrimestral | Deshabilitada | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado del período vigente (base Períodos, [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md)) y su fecha límite |
-| Parciales de primer año | Deshabilitada | **Habilitada** (Página 60209) | Deshabilitada: "Disponible solo en 1.er año" |
+| Encuesta Cuatrimestral | Deshabilitada: "Requiere cargar la información personal" | Deshabilitada: "Disponible a partir de 2.º año" | Habilitada, con estado del período vigente (base Períodos, [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md)) y su fecha límite |
+| Parciales de primer año | Deshabilitada | **Habilitada** (Página 60209) | **Habilitada** (SCRUM-27): notas de las materias de 1.er año que todavía se cursan |
 | Entrevistas y Tutorías | Deshabilitada | **Habilitada** (Página 60198) | **Habilitada** |
 
 - El botón de una sección deshabilitada dice qué falta o desde cuándo está disponible; nunca "No disponible".
-- Una sola acción principal: sin información personal, *Cargar información personal*; en 1.er año, Parciales; en 2.º año en adelante, la primera encuesta pendiente y, si no hay, Entrevistas.
-- Las encuestas se abren con su portada, `/mod/feedback/view.php?id=<cmid>`, que al estudiante le muestra el botón para responder. `complete.php` da error a quien no puede responder (el equipo, con rol de profesor). Al terminar, la encuesta muestra "Sus respuestas han sido guardadas. Gracias." y a los 5 segundos vuelve a Mi Trayectoria ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html), en la "Página después de enviar" de las dos encuestas). Su estado sale de las entradas propias de Respuestas (la cuatrimestral, del período actual).
+- Una sola acción principal: sin información personal, *Cargar información personal*; en 1.er año, Parciales; en 2.º año en adelante, la Encuesta Cuatrimestral si está pendiente y, si no, Entrevistas.
+- La encuesta se abre con su portada, `/mod/feedback/view.php?id=<cmid>`, que al estudiante le muestra el botón para responder. `complete.php` da error a quien no puede responder (el equipo, con rol de profesor). Al terminar, la encuesta muestra "Sus respuestas han sido guardadas. Gracias." y a los 5 segundos vuelve a Mi Trayectoria ([`section/encuestas_despues_de_enviar`](../../section/encuestas_despues_de_enviar/content.html), en la "Página después de enviar"). Su estado sale de las entradas propias de Respuestas del período actual.
+- Las notas que carga un estudiante de 2.º año en adelante quedan en CargaParcialesPrimero y en el historial de Criticidad, pero su criticidad calculada sigue saliendo de la última Cuatrimestral ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md)).
 
 ## Información personal (Página propia)
 
 - **Encabezado:** "Cargar información personal" o "Editar información personal", y el botón *Volver a Mi Trayectoria*.
-- **Primera vez:** solo se ve "¿Es estudiante de Ingeniería Industrial?".
-  - Con **No**: aviso "Por el momento, el Proyecto Travesía está limitado a estudiantes de Ingeniería Industrial" y el botón Guardar deshabilitado.
-  - Con **Sí**: aparece el formulario, con nombre, apellido, correo y DNI precargados de la cuenta de Moodle.
-- **Edición:** el formulario aparece directo, precargado con los datos de la base. No se vuelve a preguntar por Ingeniería Industrial.
+- **Primera vez:** el formulario aparece directo, con nombre, apellido, correo y DNI precargados de la cuenta de Moodle. Desde SCRUM-29 no se pregunta si es estudiante de Ingeniería Industrial.
+- **Edición:** el mismo formulario, precargado con los datos de la base.
 - Al guardar, un aviso confirma y enlaza a Mi Trayectoria. *Cancelar* vuelve a Mi Trayectoria sin guardar.
 
 | Bloque | Campo | Reglas |
@@ -88,7 +87,7 @@ Definición: [`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json).
 | `anio_ingreso`, `cuatrimestre_ingreso` | Cohorte del perfil e indicadores por cohorte |
 | `periodo_paso_superior` | Cuándo pasó a 2.º año, sin guardar un historial |
 
-Configuración: "requiere aprobación" sin aprobar entradas (cada estudiante ve y edita solo la suya; el equipo, todas). No se guardan: la situación laboral (la preguntan la Encuesta Inicial y la Cuatrimestral), si es de Ingeniería Industrial, el tramo (se calcula), el plan, la criticidad ni las fechas de alta y modificación (las guarda Moodle).
+Configuración: "requiere aprobación" sin aprobar entradas (cada estudiante ve y edita solo la suya; el equipo, todas). No se guardan: la situación laboral (la pregunta la Encuesta Cuatrimestral), el tramo (se calcula), el plan, la criticidad ni las fechas de alta y modificación (las guarda Moodle).
 
 ## Vista previa local
 
@@ -99,11 +98,13 @@ Abrir `section/vista_estudiante/content.html` en el navegador. La barra permite 
 | Luca Zuanetti | 1.er año, información cargada |
 | Gian Luca Distefano | 1.er año; la base tiene otro correo que la cuenta (se ve el de la base) |
 | Santiago Nicolás Yanosky | Sin información personal: todo deshabilitado |
-| Nicolás Gabriel Zuviria | 2.º año en adelante, Cuatrimestral pendiente |
-| Nahuel Spikerman | 2.º año en adelante, encuestas respondidas |
-| Valentino Hernández Pascual | 2.º año en adelante, sin encuestas respondidas |
+| Nicolás Gabriel Zuviria | 2.º año en adelante, Cuatrimestral del período anterior: debe volver a responder |
+| Nahuel Spikerman | 2.º año en adelante, Cuatrimestral respondida |
+| Valentino Hernández Pascual | 2.º año en adelante, Cuatrimestral pendiente |
 
 **Verificado (2026-11-02, Playwright, `file://`):** Mi Trayectoria en los casos de 1.er año, 2.º año y sin información, a 1000 px y 400 px, sin desborde ni errores de consola, sin el subtítulo ni la descripción de la Encuesta Inicial y sin pestañas. Con Santiago: *Cargar información personal* abre la otra Página; sin respuesta y con "No", el formulario queda oculto y Guardar deshabilitado ("No" muestra el aviso de Ingeniería Industrial); con "Sí", aparece precargado con la cuenta; errores de validación; guardado como 1.er año; *Volver a Mi Trayectoria* muestra las secciones de 1.er año con los datos de la base; editar (sin la pregunta de Industrial) y pasar a 2.º año cambia las secciones; *Restablecer datos de prueba* vuelve a deshabilitar todo.
+
+**Verificado (2026-11-14, Playwright, `file://`, SCRUM-27 y SCRUM-29):** Mi Trayectoria con los 5 casos, a 1000 px y 400 px, sin desborde ni errores de consola: tres tarjetas, sin la Encuesta Inicial; en 1.er año la Cuatrimestral dice "Disponible a partir de 2.º año" y la acción principal es Parciales; en 2.º año en adelante, Parciales habilitada y la acción principal es la Cuatrimestral pendiente o, respondida, Entrevistas. Información personal con Santiago: el formulario aparece directo y precargado, sin la pregunta de Ingeniería Industrial; errores de validación; guardado como 2.º año y vuelta a Mi Trayectoria con sus secciones.
 
 ## Documentos relacionados
 

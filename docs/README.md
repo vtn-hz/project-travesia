@@ -37,7 +37,7 @@ docs/
 │   ├── 005-modelo-de-bases-moodle.md
 │   ├── 006-versionado-de-encuestas.md
 │   ├── 007-encuestas-respuestas-y-criticidad.md
-│   ├── 008-encuesta-inicial-y-datos-personales.md ← pendiente
+│   ├── 008-encuesta-inicial-y-datos-personales.md
 │   └── 009-cierre-de-periodo-y-omision.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md

@@ -1,9 +1,9 @@
 # ADR-008: ¿Reemplazar la Encuesta Inicial por la Información personal?
 
-- **Estado:** pendiente (pregunta abierta)
+- **Estado:** aceptada el 2026-11-14 (**opción C**, [SCRUM-27](https://zhakyz.atlassian.net/browse/SCRUM-27))
 - **Fecha:** 2026-11-03
 - **Consulta:** "Preguntas 03/11", primera pregunta, en el documento de requerimientos del equipo
-- **Mientras tanto:** quedan **las dos encuestas** como están. Mi Trayectoria muestra la Inicial y la Cuatrimestral desde 2.º año ([spec](../specs/vista-estudiante.md)).
+- **Hasta el 2026-11-14:** quedaron las dos encuestas. Desde SCRUM-27, Mi Trayectoria ya no muestra la Inicial ([spec](../specs/vista-estudiante.md)).
 
 ## Pregunta
 
@@ -48,4 +48,12 @@ Con la Página Información personal (SCRUM-24, base Estudiantes), la Encuesta I
 
 ## Decisión
 
-Pendiente de la respuesta a la consulta del 03/11.
+**Opción C** (2026-11-14, [SCRUM-27](https://zhakyz.atlassian.net/browse/SCRUM-27)): se retira la Encuesta Inicial y la Cuatrimestral sigue habilitada desde 2.º año.
+
+- **Mi Trayectoria** no tiene la tarjeta de la Encuesta Inicial. En 2.º año en adelante, la acción principal es la Cuatrimestral del período si falta y, si no, Entrevistas.
+- **Parciales de primer año en los dos tramos.** El mismo ticket habilita la carga de notas también desde 2.º año: quien recursa materias de 1.er año sigue rindiendo sus parciales. La criticidad calculada de 2.º año en adelante sigue saliendo de la última Cuatrimestral (`CriticidadEstudiante`): esas notas quedan en CargaParcialesPrimero y en el historial de Criticidad, pero no cambian el calculado.
+- **En Moodle (decidido el 2026-11-14, sin ejecutar):** se borra la actividad Encuesta Inicial (cmid 59710) y también las entradas de la Inicial en la base Respuestas. Es irreversible y se hace con un pedido explícito en el momento. Mientras tanto la encuesta sigue visible en la subsección Encuestas y Preguntas y el historial se sigue mostrando como "Encuesta Inicial".
+- **Pendientes del borrado:**
+  - definir qué pasa con las entradas de Criticidad que apuntan a esas respuestas (`rid_fuente`): sin la respuesta, el Tablero, el Detalle y Reportes no pueden saber de qué encuesta eran;
+  - quitar del repo lo que queda sin destino: `section/encuesta_inicial`, `ENCUESTA_INICIAL.xml`, `encuestas.inicial` de `moodle.config.json`, la Inicial en Tools (`CMID_INICIAL` y su simulación), el ítem de copia 8772, la "Página después de enviar" de la Inicial y las versiones de la Inicial en la base Encuestas;
+  - la Página Indicadores de Cohorte todavía describe la Inicial como fuente de criticidad y tiene su calculadora.
