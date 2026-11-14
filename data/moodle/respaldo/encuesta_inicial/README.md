@@ -1,8 +1,8 @@
 # Respaldo de la Encuesta Inicial
 
-Copia de la Encuesta Inicial (cmid 59710, subsección Encuestas y Preguntas de Zhakyz), tomada el **2026-11-14**, antes de borrarla del campus ([SCRUM-27](https://zhakyz.atlassian.net/browse/SCRUM-27), [ADR-008](../../../../docs/decisions/008-encuesta-inicial-y-datos-personales.md)). Sirve para volver a crear la encuesta si hace falta.
+Copia de la Encuesta Inicial (cmid 59710, subsección Encuestas y Preguntas de Zhakyz), tomada el **2026-11-14**, antes de borrarla del campus ese mismo día ([SCRUM-27](https://zhakyz.atlassian.net/browse/SCRUM-27), [ADR-008](../../../../docs/decisions/008-encuesta-inicial-y-datos-personales.md)). Sirve para volver a crear la encuesta si hace falta.
 
-**Respalda las preguntas y la configuración, no las respuestas.** Las respuestas que guarda Moodle (3 al 2026-11-14) y las entradas de la Inicial en las bases Respuestas y Criticidad no están acá.
+**Respalda las preguntas y la configuración, no las respuestas.** Las 3 respuestas que guardaba Moodle y las entradas de la Inicial en las bases Respuestas y Criticidad se borraron y no están acá.
 
 ## Archivos
 
