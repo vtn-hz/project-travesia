@@ -1,6 +1,6 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Información personal" (cmid 60265) · 2026-11-03 -->
 <!-- SECCIÓN: INFORMACIÓN PERSONAL DEL ESTUDIANTE (ROL EST) · SCRUM-24 -->
-<!-- QUÉ ES: Página propia donde el estudiante carga y edita su información personal. Se abre desde Mi Trayectoria (section/vista_estudiante), que deshabilita todas las secciones hasta que exista esta entrada. La primera vez pregunta si es estudiante de Ingeniería Industrial: con "No" muestra que por el momento el sistema está limitado a Ingeniería Industrial y no guarda nada. Spec: docs/specs/vista-estudiante.md -->
+<!-- QUÉ ES: Página propia donde el estudiante carga y edita su información personal. Se abre desde Mi Trayectoria (section/vista_estudiante), que deshabilita todas las secciones hasta que exista esta entrada. Spec: docs/specs/vista-estudiante.md -->
 <!-- DATOS: lee y escribe la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null). La primera vez precarga nombre, apellido, correo y DNI con la cuenta de Moodle; después, con los datos de la base. No genera entradas en Respuestas ni en Criticidad -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -162,7 +162,6 @@
         usuario: null,     // { id }
         cuenta: null,      // { dni, nombre, apellido, email } de la cuenta de Moodle (precarga la primera vez)
         estudiante: null,  // entrada propia de Estudiantes (null: todavía no la cargó)
-        industrial: '',    // respuesta a "¿Es estudiante de Ingeniería Industrial?" ('', 'si' o 'no')
         error: '',
         guardando: false
       };
@@ -445,9 +444,7 @@
           ? 'Datos guardados el ' + fechaVisible(est.modificada) + '.'
           : 'Para usar todas las secciones de Mi Trayectoria se debe cargar esta información. Los datos personales están precargados con la cuenta de Moodle: verificarlos antes de guardar.';
         $('cuerpo-form-info').innerHTML =
-          (est ? '' : grupoSiNo('industrial', '¿Es estudiante de Ingeniería Industrial?', estado.industrial)) +
-          '<div id="aviso-industrial-info" style="display: none;"></div>' +
-          '<div id="campos-info" style="display: ' + (est || estado.industrial === 'si' ? 'flex' : 'none') + '; flex-direction: column !important; gap: 16px !important;">' +
+          '<div id="campos-info" style="display: flex !important; flex-direction: column !important; gap: 16px !important;">' +
           subtitulo('Datos personales') +
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' +
           campoTexto('campo-nombre-info', 'nombre', 'Nombre', p.nombre) +
@@ -464,23 +461,6 @@
           ['1', '2'].map(function(x) { return '<option value="' + x + '"' + (String(p.cuatrimestre_ingreso) === x ? ' selected' : '') + '>' + (x === '1' ? '1.er cuatrimestre' : '2.º cuatrimestre') + '</option>'; }).join('') +
           '</select></div></div></div>';
         mostrarErrores([]);
-        actualizarIndustrial();
-      }
-
-      // "¿ES ESTUDIANTE DE INGENIERÍA INDUSTRIAL?": CON "NO", EL MENSAJE Y NADA MÁS; CON "SÍ", EL RESTO DEL FORMULARIO
-      function actualizarIndustrial() {
-        var nuevo = !estado.estudiante;
-        var no = nuevo && estado.industrial === 'no';
-        var avisoEl = $('aviso-industrial-info');
-        avisoEl.innerHTML = no ? aviso('info', 'Por el momento, el Proyecto Travesía está limitado a estudiantes de Ingeniería Industrial.') : '';
-        mostrar(avisoEl, no, 'block');
-        mostrar($('campos-info'), !nuevo || estado.industrial === 'si');
-        // Sin respuesta o con "No" no hay nada para guardar
-        var puedeGuardar = !nuevo || estado.industrial === 'si';
-        $('btn-guardar-info').disabled = !puedeGuardar;
-        $('btn-guardar-info').style.setProperty('opacity', puedeGuardar ? '1' : '0.5');
-        $('btn-guardar-info').style.setProperty('cursor', puedeGuardar ? 'pointer' : 'not-allowed', 'important');
-        if (no) mostrarErrores([]);
       }
 
       function valorRadio(nombre) {
@@ -532,7 +512,6 @@
 
       function alGuardar() {
         if (estado.guardando) return;
-        if (!estado.estudiante && estado.industrial !== 'si') return;
         var r = leerFormulario();
         if (r.errores) return mostrarErrores(r.errores);
         estado.guardando = true;
@@ -554,7 +533,7 @@
           mostrarErrores(['No se pudo guardar en Moodle: ' + String(e && e.message ? e.message : e)]);
         }).then(function() {
           $('txt-guardar-info').textContent = 'Guardar información';
-          actualizarIndustrial();
+          $('btn-guardar-info').disabled = false;
         });
       }
 
@@ -571,7 +550,6 @@
         estado.usuario = { id: x.usuario };
         estado.cuenta = x.cuenta;
         estado.estudiante = leerPreview()[x.usuario] || ESTUDIANTES_PRUEBA.filter(function(e) { return e.id_usuario === x.usuario; })[0] || null;
-        estado.industrial = '';
         fijarPeriodo(periodoDePrueba());
         try { history.replaceState(null, '', '#usuario=' + x.usuario); } catch (e) { /* sin historial */ }
         mostrar($('aviso-estado-info'), false);
@@ -614,14 +592,6 @@
         if (e.target.id !== 'form-info-personal') return;
         e.preventDefault();
         alGuardar();
-      });
-
-      document.addEventListener('change', function(e) {
-        if (!e.target.closest || !e.target.closest('#form-info-personal')) return;
-        if (e.target.name === 'industrial') {
-          estado.industrial = e.target.value;
-          actualizarIndustrial();
-        }
       });
 
       // ---------------------------------------------------------
