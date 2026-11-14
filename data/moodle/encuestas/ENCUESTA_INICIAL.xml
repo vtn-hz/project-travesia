@@ -536,7 +536,7 @@
                     <![CDATA[cuatri_cohorte]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[r>>>>>1|2]]>
+                    <![CDATA[r>>>>>1|2]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
@@ -559,7 +559,7 @@
                     <![CDATA[trabaja]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[r>>>>>Si|No]]>
+                    <![CDATA[r>>>>>Si|No]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
@@ -582,7 +582,7 @@
                     <![CDATA[]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[r>>>>>Comencé antes de ingresar a la carrera|Comencé en 1.º año]]>
+                    <![CDATA[r>>>>>Comencé antes de ingresar a la carrera|Comencé en 1.º año]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
