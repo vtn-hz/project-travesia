@@ -18,7 +18,7 @@
 |---|---|---|
 | Datos personales | Van en la base **Estudiantes**, una entrada por estudiante que se edita. No son una encuesta | No deben generar historial en Respuestas ni disparar criticidad |
 | Dónde se cargan | En una **Página propia de Moodle** (Información personal), no dentro de Mi Trayectoria | Pedido del equipo |
-| Encuesta Inicial | **Retirada** (SCRUM-27, 2026-11-14): Mi Trayectoria no la muestra | Sus preguntas ya están en la Información personal y en la Cuatrimestral ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md), opción C). Está decidido borrar la actividad y sus entradas en Respuestas; todavía sin ejecutar |
+| Encuesta Inicial | **Retirada** (SCRUM-27, 2026-11-14): Mi Trayectoria no la muestra | Sus preguntas ya están en la Información personal y en la Cuatrimestral ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md), opción C). Está decidido borrar la actividad y sus entradas en Respuestas y en Criticidad; todavía sin ejecutar |
 | Parciales de primer año | Habilitada en **los dos tramos** (SCRUM-27) | Quien está en 2.º año y recursa materias de 1.er año sigue rindiendo sus parciales |
 | Tramo | Campo `es_primer_anio`. Sale de "¿Cursa o aprobó Proyecto de Ingeniería Industrial I?": No → `si` (1.er año); Sí → `no` (2.º año en adelante) | Criterio de la [spec de la carga de notas](carga-parciales-primero.md); el campo nombra el tramo y no la pregunta |
 | Ingeniería Industrial | **No se pregunta** (SCRUM-29, 2026-11-14): el formulario aparece directo. Antes, la primera vez se preguntaba "¿Es estudiante de Ingeniería Industrial?" y con "No" no se guardaba nada | Pedido del equipo |
