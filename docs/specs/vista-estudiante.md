@@ -7,7 +7,7 @@
   - [`section/vista_estudiante/content.html`](../../section/vista_estudiante/content.html): Mi Trayectoria, la pantalla de entrada del estudiante;
   - [`section/informacion_personal/content.html`](../../section/informacion_personal/content.html): carga y edición de la información personal.
 - **Rol:** EST (estudiante).
-- **Estado:** SCRUM-27 y SCRUM-29 en **local, sin publicar** (2026-11-14): en Moodle sigue la versión anterior. Antes, **publicado el 2026-11-02** (Mi Trayectoria, cmid 60264; Información personal, cmid 60265; base Estudiantes, d=206; [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) las dos Páginas leen el período vigente de la base Períodos.
+- **Estado:** SCRUM-27 y SCRUM-29 **publicados el 2026-11-14** (las dos Páginas republicadas). Antes, **publicado el 2026-11-02** (Mi Trayectoria, cmid 60264; Información personal, cmid 60265; base Estudiantes, d=206; [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) las dos Páginas leen el período vigente de la base Períodos.
 - **Última actualización:** 2026-11-14 (SCRUM-27 y SCRUM-29)
 
 ---
