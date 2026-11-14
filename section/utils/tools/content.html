@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 6;
+      var VERSION = 7;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1730,6 +1730,133 @@
         return desde(0);
       }
 
+      // =========================================================
+      // HERRAMIENTA CriticidadEstudiante: ESTADO CALCULADO, ASIGNADO Y VIGENTE DE UN ESTUDIANTE EN UN PERÍODO
+      // =========================================================
+      // La regla del Tablero de Criticidad y del Detalle del estudiante (docs/specs/tablero-estudiantes.md), en un solo lugar:
+      //   calculado: 1.er año → la última entrada automática de notas (notas_1ro o materias) del período; 2.º año en adelante → la última
+      //   Encuesta Cuatrimestral u omisión del período. Sin entradas en el período, vale la última del período anterior (ADR-009).
+      //   asignado: la última entrada manual de cualquier período, salvo sin_asignar. vigente: el asignado si existe; si no, el calculado.
+      // CriticidadEstudiante(entradas, { primerAnio, periodo, encuestas })
+      //   → { calculado: { nivel, indice, tipo, periodo, anterior, entrada }, asignado, vigente }
+      //   entradas: las de la base Criticidad del estudiante (campos en texto o número). encuestas: { rid de Respuestas → codigo_encuesta },
+      //   para saber de qué encuesta es cada entrada de fuente respuestas. nivel y vigente: verde, amarillo, rojo o sin_datos.
+      //   tipo: notas, cuatrimestral, omision, inicial o encuesta (una respuesta que no está en el mapa de encuestas)
+      var SEMAFOROS_ASIGNABLES = ['rojo', 'amarillo', 'verde'];
+
+      function momentoDe(c) {
+        var t = Date.parse(c.created_at);
+        if (isFinite(t)) return t;
+        var a = Number(c.alta);
+        return isFinite(a) ? a * 1000 : 0;
+      }
+
+      function masNueva(lista) {
+        return lista.slice().sort(function(a, b) { return momentoDe(a) - momentoDe(b) || (Number(a.rid) || 0) - (Number(b.rid) || 0); }).pop() || null;
+      }
+
+      function tipoDeCriticidad(c, encuestas) {
+        if (c.fuente === 'notas_1ro' || c.fuente === 'materias') return 'notas';
+        if (c.fuente === 'omision') return 'omision';
+        if (c.fuente === 'respuestas') return (encuestas && encuestas[String(c.rid_fuente)]) || c.encuesta || 'encuesta';
+        return null;
+      }
+
+      function CriticidadEstudiante(entradas, opciones) {
+        var o = opciones || {};
+        var periodo = String(o.periodo || PERIODO_ACTUAL);
+        var lista = entradas || [];
+        var delPeriodo = function(p) {
+          return lista.filter(function(c) {
+            if (c.origen !== 'automatica' || String(c.periodo) !== p || numeroMoodle(c.indice) === null) return false;
+            var tipo = tipoDeCriticidad(c, o.encuestas);
+            return o.primerAnio ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+          });
+        };
+        var ultima = masNueva(delPeriodo(periodo)) || masNueva(delPeriodo(periodoAnterior(periodo)));
+        var calculado = { nivel: 'sin_datos', indice: null, tipo: null, periodo: periodo, anterior: false, entrada: null };
+        if (ultima) {
+          var indice = numeroMoodle(ultima.indice);
+          calculado = { nivel: semaforoDe(indice) || 'sin_datos', indice: indice, tipo: tipoDeCriticidad(ultima, o.encuestas),
+            periodo: String(ultima.periodo), anterior: String(ultima.periodo) !== periodo, entrada: ultima };
+        }
+        var manual = masNueva(lista.filter(function(c) { return c.origen === 'manual'; }));
+        var asignado = manual && SEMAFOROS_ASIGNABLES.indexOf(manual.semaforo) !== -1 ? manual : null;
+        return { calculado: calculado, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
+      }
+
+      // =========================================================
+      // HERRAMIENTA DefinicionEncuesta: UNA VERSIÓN DE UNA ENCUESTA DE LA BASE ENCUESTAS
+      // =========================================================
+      // DefinicionEncuesta(codigo) → Promise de la versión vigente (la de mayor version); DefinicionEncuesta(codigo, version) → esa versión.
+      // La definición es la que usa CopiaRespuestas: { codigo_encuesta, version, preguntas, porPeriodo, puntajeMaximo, created_at, paginas }.
+      // Cada pregunta trae item_id, variable, tipo y, si es de opciones, opciones: [{ opcion, texto, criticidad }]. Una sola lectura de la base por página
+      function DefinicionEncuesta(codigo, version) {
+        if (version === undefined || version === null || version === '') return definicionVigente(String(codigo));
+        if (!entradasEncuestasCarga) entradasEncuestasCarga = entradasEncuestas();
+        var carga = entradasEncuestasCarga;
+        return carga.then(function(e) {
+          var x = e.filter(function(c) { return String(c.codigo_encuesta) === String(codigo) && Number(c.version) === Number(version); })[0];
+          if (!x) throw new Error('La base Encuestas no tiene la versión ' + version + ' de la encuesta ' + codigo + '.');
+          return definicionDeEntrada(x);
+        }, function(err) {
+          if (entradasEncuestasCarga === carga) entradasEncuestasCarga = null;
+          throw err;
+        });
+      }
+
+      // =========================================================
+      // HERRAMIENTA RespuestasMoodle: QUIÉNES RESPONDIERON UNA ENCUESTA EN MOODLE, CON LA FECHA
+      // =========================================================
+      // Lee show_entries.php de la encuesta (todos los grupos). Sirve para contar como respondida una encuesta cuya copia no llegó a la
+      // base Respuestas (ADR-009). Moodle guarda una sola respuesta por estudiante (la última), con su fecha.
+      // RespuestasMoodle({ cmid }) → Promise de { id_usuario: milisegundos, o null si no se entiende la fecha }. Sin cmid, la Encuesta Cuatrimestral
+      var MESES_MOODLE = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12,
+        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12 };
+      var POR_PAGINA_RESPUESTAS_MOODLE = 200;
+
+      // COLUMNA "Fecha" DE MOODLE ("lunes, 2 de noviembre de 2026, 21:46") → MILISEGUNDOS, O null SI NO SE ENTIENDE
+      function fechaDeMoodle(texto) {
+        var t = String(texto || '').toLowerCase();
+        var m = t.match(/(\d{1,2}) de ([a-záéíóú]+) de (\d{4})(?:\D+(\d{1,2}):(\d{2}))?/) || t.match(/(\d{1,2}) ([a-z]+) (\d{4})(?:\D+(\d{1,2}):(\d{2}))?/);
+        if (!m || !MESES_MOODLE[m[2]]) return null;
+        var d = new Date(Number(m[3]), MESES_MOODLE[m[2]] - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0));
+        return isFinite(d.getTime()) ? d.getTime() : null;
+      }
+
+      function RespuestasMoodle(opciones) {
+        var cmid = (opciones && opciones.cmid) || CMID_CUATRIMESTRAL;
+        if (!(window.M && M.cfg && M.cfg.wwwroot)) return Promise.reject(new Error('RespuestasMoodle solo funciona dentro de Moodle.'));
+        var vistas = {};
+        function pagina(n) {
+          var url = M.cfg.wwwroot + '/mod/feedback/show_entries.php?id=' + cmid + '&group=0&perpage=' + POR_PAGINA_RESPUESTAS_MOODLE + '&page=' + n;
+          return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+            if (!r.ok || /\/login\//.test(r.url || '')) throw new Error('Moodle no mostró las respuestas de la encuesta (HTTP ' + r.status + ').');
+            return r.text();
+          }).then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var tabla = doc.querySelector('#showentrytable');
+            var nuevas = 0;
+            if (tabla) {
+              var columna = Array.prototype.map.call(tabla.querySelectorAll('thead th'), function(th) { return th.textContent.trim().toLowerCase(); })
+                .reduce(function(c, t, i) { return c === -1 && (t === 'fecha' || t === 'date') ? i : c; }, -1);
+              Array.prototype.forEach.call(tabla.querySelectorAll('tbody tr'), function(tr) {
+                var a = tr.querySelector('a[href*="showcompleted="]');
+                var u = a && (a.getAttribute('href').match(/[?&]userid=(\d+)/) || [])[1];
+                if (!u || u in vistas) return;
+                vistas[u] = columna >= 0 && tr.cells[columna] ? fechaDeMoodle(tr.cells[columna].textContent) : null;
+                nuevas++;
+              });
+            } else if (!doc.querySelector('#region-main')) {
+              throw new Error('No se pudo leer la página de respuestas de la encuesta.');
+            }
+            // Sigue mientras cada página traiga estudiantes nuevos (tope de 50 páginas): la primera sin estudiantes nuevos es la última
+            return nuevas > 0 && n < 50 ? pagina(n + 1) : vistas;
+          });
+        }
+        return pagina(0);
+      }
+
       // ---------------------------------------------------------
       // EXPORTACIÓN
       // ---------------------------------------------------------
@@ -1740,7 +1867,11 @@
         IndiceNotasPrimero: IndiceNotasPrimero,
         CriticidadNotas: CriticidadNotas,
         PeriodoVigente: PeriodoVigente,
-        LeerBase: LeerBase
+        LeerBase: LeerBase,
+        CriticidadEstudiante: CriticidadEstudiante,
+        DefinicionEncuesta: DefinicionEncuesta,
+        RespuestasMoodle: RespuestasMoodle,
+        NormalizarMateria: normalizarMateria
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
       try { document.dispatchEvent(new CustomEvent('zk-tools', { detail: window.ZhakyzTools })); } catch (e) { /* sin CustomEvent: la vista usa window.ZhakyzTools */ }
@@ -1789,6 +1920,26 @@
           descripcion: 'Devuelve el período vigente de la base Períodos (la última entrada), con su fecha de inicio y la fecha límite de la Encuesta Cuatrimestral (ADR-009). Nunca falla: si la base no se puede leer, usa el último período leído en ese navegador o el período por defecto, y lo informa en error. CopiaRespuestas y CriticidadNotas guardan con este período.',
           uso: 'CopiaRespuestas, CriticidadNotas, Mi Trayectoria, Información personal, Tablero de Criticidad, Detalle del estudiante y Configuración del Sistema',
           carga: 'Tools.PeriodoVigente() → { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }'
+        },
+        CriticidadEstudiante: {
+          descripcion: 'Devuelve el estado calculado, el asignado y el vigente de un estudiante en un período, con la regla del Tablero de Criticidad: en 1.er año, el último índice de notas del período; desde 2.º año, la última Encuesta Cuatrimestral u omisión; sin entradas en el período, la última del anterior. El asignado es la última entrada manual, salvo sin_asignar. No lee ni guarda nada.',
+          uso: 'Reportes',
+          carga: 'Tools.CriticidadEstudiante(entradas, { primerAnio, periodo, encuestas }) → { calculado, asignado, vigente }'
+        },
+        DefinicionEncuesta: {
+          descripcion: 'Devuelve la definición de una encuesta de la base Encuestas: la versión vigente o la versión pedida, con sus preguntas, variables y textos de las opciones.',
+          uso: 'Reportes',
+          carga: 'Tools.DefinicionEncuesta(codigo) · Tools.DefinicionEncuesta(codigo, version) → Promise de la definición'
+        },
+        RespuestasMoodle: {
+          descripcion: 'Lee quiénes respondieron una encuesta en Moodle y la fecha de su última respuesta, para contar las que no llegaron a la base Respuestas (ADR-009).',
+          uso: 'Reportes',
+          carga: 'Tools.RespuestasMoodle({ cmid }) → Promise de { id_usuario: milisegundos } (sin cmid, la Encuesta Cuatrimestral)'
+        },
+        NormalizarMateria: {
+          descripcion: 'Normaliza el nombre de una materia de 1.er año para compararlo (minúsculas, sin espacios, guiones ni guiones bajos), como IndiceNotasPrimero.',
+          uso: 'IndiceNotasPrimero y Reportes',
+          carga: 'Tools.NormalizarMateria(nombre) → texto'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
