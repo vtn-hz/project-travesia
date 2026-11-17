@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Tablero de Criticidad" (cmid 60287) · 2026-11-03 -->
 <!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) · "VER DETALLE" ABRE detalle_estudiante -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: bases Estudiantes (lista de estudiantes), Criticidad (calculado y asignado, ADR-007) y Respuestas (qué encuesta es cada envío). El calculado lo arma esta página: notas de parciales en 1.er año, última Encuesta Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
+<!-- DATOS: bases Estudiantes (lista de estudiantes), Criticidad (calculado y asignado, ADR-007) y Respuestas (qué encuesta es cada envío). Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -27,7 +27,7 @@
         Tablero de Criticidad</h3>
       <p
         style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
-        Período <b id="txt-periodo-tablero" style="color: #0b0e14 !important; font-weight: 600 !important;"></b> · ordenado por estado vigente (el asignado, si existe; si no, el calculado).</p>
+        Período <b id="txt-periodo-tablero" style="color: #0b0e14 !important; font-weight: 600 !important;"></b> · parciales y encuesta por separado · ordenado por estado vigente: el asignado, si existe; si no, el calculado (parciales en 1.er año, Cuatrimestral desde 2.º año).</p>
     </div>
     <div id="badge-rol-tablero"
       style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 12px 4px 6px !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important;">
@@ -73,12 +73,13 @@
   <!-- TABLA DE ESTUDIANTES -->
   <div style="position: relative !important; overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
     <table id="tabla-estudiantes" tabindex="-1"
-      style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 720px !important; margin: 0 !important;">
+      style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 860px !important; margin: 0 !important;">
       <thead>
         <tr style="background-color: #f5f6fa !important;">
           <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 16px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estudiante</th>
           <th style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Cohorte</th>
-          <th title="Lo arma el sistema: notas de parciales en 1.er año, última Encuesta Cuatrimestral desde 2.º año" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Criticidad calculada</th>
+          <th title="Última entrada de notas de parciales de 1.er año del período. En 1.er año es el estado calculado; desde 2.º año cuenta solo si rinde parciales de 1.er año en el período" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Parciales</th>
+          <th title="Última Encuesta Cuatrimestral (u omisión) del período. Desde 2.º año es el estado calculado" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Encuesta</th>
           <th title="Lo asigna un tutor o administrador y manda sobre el calculado" style="border: 0 !important; height: 52px !important; text-align: left !important; padding: 0 8px !important; font-size: 14px !important; font-weight: 500 !important; color: #47536b !important;">Estado asignado</th>
           <th style="border: 0 !important; height: 52px !important; padding: 0 16px !important;"><span style="position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important;">Acciones</span></th>
         </tr>
@@ -269,11 +270,13 @@
         automatica(1035, '3773', '99000006', '2025-2', 'respuestas', '5003', 45, '2025-09-10T15:00:00-03:00'),
         automatica(1036, '3773', '99000006', '2026-1', 'respuestas', '5004', 40, '2026-04-10T14:30:00-03:00'),
         manual(1037, '3773', '99000006', '2026-2', 'rojo', 'Entrevista: está por dejar dos materias por el trabajo.', 'Valentino Hernández Pascual', '2026-10-08T16:00:00-03:00'),
-        // Nahuel: 2.º año en adelante; una omisión en 2026-1; el tutor lo ve mejor que el calculado
+        // Nahuel: 2.º año en adelante; una omisión en 2026-1; recursa una materia de 1.er año; el tutor lo ve mejor que el calculado
         automatica(1041, '3623', '99000003', '2022-1', 'respuestas', '5011', 0, '2022-04-20T16:40:00-03:00'),
         automatica(1042, '3623', '99000003', '2025-2', 'respuestas', '5012', 30, '2025-09-05T11:00:00-03:00'),
         automatica(1043, '3623', '99000003', '2026-1', 'omision', '', 60, '2026-07-31T23:59:00-03:00', 'No respondió la Encuesta Cuatrimestral 2026-1'),
         automatica(1044, '3623', '99000003', '2026-2', 'respuestas', '5013', 47, '2026-09-02T11:48:00-03:00'),
+        // Nahuel recursa Análisis Matemático I: sus parciales de 2026-2 se ven aparte de la Cuatrimestral (ADR-010)
+        automatica(1046, '3623', '99000003', '2026-2', 'notas_1ro', '541', 76, '2026-10-02T19:00:00-03:00'),
         manual(1045, '3623', '99000003', '2026-2', 'verde', 'Entrevista: cursa al día y no reporta dificultades.', 'Luca Zuanetti', '2026-10-12T11:00:00-03:00')
         // Valentino: 2.º año en adelante, sin entradas
       ];
@@ -384,32 +387,45 @@
         return null;
       }
 
-      // CALCULADO: 1.er año → última entrada de notas del período; 2.º en adelante → última Cuatrimestral (u omisión) del período.
-      // ASIGNADO: la última entrada manual de cualquier período, salvo que sea sin_asignar
-      function criticidadDe(tramo, entradas, encuestas) {
+      // FUENTES (ADR-010): parciales → última entrada de notas del período; cuatrimestral → última Cuatrimestral (u omisión) del período.
+      // Se muestran por separado, sin combinarlas. El CALCULADO es la fuente del año de la carrera (parciales en 1.er año, Cuatrimestral
+      // desde 2.º) y solo esa, sin entradas en el período, toma la del anterior (ADR-009): las notas de 1.er año no se arrastran.
+      // ASIGNADO: la última entrada manual de cualquier período, salvo que sea sin_asignar. Misma regla que CriticidadEstudiante de Tools
+      var FUENTES = {
+        parciales: { titulo: 'Parciales', tipos: ['notas'], sinDatos: 'Sin notas de parciales en ' },
+        cuatrimestral: { titulo: 'Encuesta', tipos: ['cuatrimestral', 'omision'], sinDatos: 'Sin encuesta en ' }
+      };
+
+      function fuenteDe(clave, entradas, encuestas, conAnterior) {
         var delPeriodo = function(periodo) {
           return entradas.filter(function(c) {
             if (c.origen !== 'automatica' || String(c.periodo) !== periodo || numero(c.indice) === null) return false;
-            var tipo = tipoDeEntrada(c, encuestas);
-            return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+            return FUENTES[clave].tipos.indexOf(tipoDeEntrada(c, encuestas)) !== -1;
           });
         };
-        // Sin entradas en el período vigente vale la última del anterior, marcada con su período (ADR-009)
-        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || masReciente(delPeriodo(PERIODO_ANTERIOR));
-        var calculado;
-        if (ultima) {
-          var indice = numero(ultima.indice);
-          var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
-          calculado = { nivel: nivelDeIndice(indice), indice: indice, tipo: tipoDeEntrada(ultima, encuestas), fecha: ultima.created_at, entrada: ultima,
-            periodo: String(ultima.periodo), anterior: anterior,
-            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
-        } else {
-          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
-            motivo: tramo === 'primero' ? 'Sin notas de parciales en ' + PERIODO_ACTUAL + '.' : 'Sin Encuesta Cuatrimestral en ' + PERIODO_ACTUAL + '.' };
+        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || (conAnterior ? masReciente(delPeriodo(PERIODO_ANTERIOR)) : null);
+        if (!ultima) {
+          return { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
+            motivo: FUENTES[clave].sinDatos + PERIODO_ACTUAL + '.' };
         }
+        var indice = numero(ultima.indice);
+        var tipo = tipoDeEntrada(ultima, encuestas);
+        var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
+        return { nivel: nivelDeIndice(indice), indice: indice, tipo: tipo, fecha: ultima.created_at, entrada: ultima,
+          periodo: String(ultima.periodo), anterior: anterior,
+          motivo: TIPOS[tipo] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
+      }
+
+      function criticidadDe(tramo, entradas, encuestas) {
+        var principal = tramo === 'primero' ? 'parciales' : 'cuatrimestral';
+        var fuentes = {
+          parciales: fuenteDe('parciales', entradas, encuestas, principal === 'parciales'),
+          cuatrimestral: fuenteDe('cuatrimestral', entradas, encuestas, principal === 'cuatrimestral')
+        };
+        var calculado = fuentes[principal];
         var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
         var asignado = ultimaManual && ASIGNABLES.indexOf(ultimaManual.semaforo) !== -1 ? ultimaManual : null;
-        return { calculado: calculado, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
+        return { calculado: calculado, fuentes: fuentes, principal: principal, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
       }
 
       // ---------------------------------------------------------
@@ -577,7 +593,7 @@
           return {
             id: id, dni: dni, nombre: nombre || 'DNI ' + dni, conInfo: !!e, tramo: tramo,
             cohorte: e && e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '',
-            calculado: crit.calculado, asignado: crit.asignado, vigente: crit.vigente
+            calculado: crit.calculado, fuentes: crit.fuentes, principal: crit.principal, asignado: crit.asignado, vigente: crit.vigente
           };
         });
       }
@@ -657,11 +673,14 @@
         }).join('');
       }
 
-      // CELDA DEL CALCULADO: CHIP, ÍNDICE Y DE DÓNDE SALE
-      function celdaCalculado(f) {
-        var c = f.calculado;
+      // CELDA DE UNA FUENTE: CHIP, ÍNDICE Y FECHA, O POR QUÉ NO HAY. En 1.er año la Cuatrimestral está deshabilitada: solo una raya
+      function celdaFuente(f, clave) {
+        var c = f.fuentes[clave];
+        if (c.indice === null && clave === 'cuatrimestral' && f.tramo === 'primero') {
+          return '<span style="color: #94a0b8 !important;">—</span><div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">Desde 2.º año</div>';
+        }
         var detalle = c.indice !== null
-          ? '<b style="font-weight: 600 !important; color: #0b0e14 !important; font-variant-numeric: tabular-nums !important;">' + c.indice + '</b> / 100 · ' + escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha)
+          ? '<b style="font-weight: 600 !important; color: #0b0e14 !important; font-variant-numeric: tabular-nums !important;">' + c.indice + '</b> / 100 · ' + (c.tipo === 'omision' ? 'no respondió · ' : '') + fechaVisible(c.fecha)
           : escapar(c.motivo);
         if (c.indice !== null && c.anterior) detalle += ' · período ' + escapar(c.periodo);
         return chipNivel(c.nivel) + '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 2px !important;">' + detalle + '</div>';
@@ -685,11 +704,12 @@
             '<td style="' + td + ' padding-left: 16px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(f.nombre) + '</div>' +
             '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(textoTramo(f)) + '</div></td>' +
             '<td style="' + td + ' color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (f.cohorte ? escapar(f.cohorte) : '—') + '</td>' +
-            '<td style="' + td + (f.asignado ? ' opacity: 0.6 !important;' : '') + '">' + celdaCalculado(f) + '</td>' +
+            '<td style="' + td + (f.asignado ? ' opacity: 0.6 !important;' : '') + '">' + celdaFuente(f, 'parciales') + '</td>' +
+            '<td style="' + td + (f.asignado ? ' opacity: 0.6 !important;' : '') + '">' + celdaFuente(f, 'cuatrimestral') + '</td>' +
             '<td style="' + td + '">' + asignado + '</td>' +
             '<td style="' + td + ' text-align: right !important; padding-right: 16px !important;"><div style="display: inline-flex !important; align-items: center !important; gap: 12px !important;">' + botonAsignar(f) +
             '<span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #026bd4 !important; font-weight: 500 !important; white-space: nowrap !important;">Ver detalle' + icono('chevron', 18) + '</span></div></td></tr>';
-        }).join('') : '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes con esos filtros.</td></tr>';
+        }).join('') : '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes con esos filtros.</td></tr>';
         $('txt-total-filtrados').textContent =
           'Mostrando ' + lista.length + ' de ' + filas.length + ' estudiantes.';
       }
@@ -725,7 +745,8 @@
           '<div id="btn-cerrar-modal-asignar" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
           '<div style="color: #47536b !important; margin-bottom: 16px !important;"><b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(f.nombre) + '</b> · ' + escapar(textoTramo(f)) + '</div>' +
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px 16px !important; align-items: center !important; padding: 10px 12px !important; border-radius: 8px !important; background-color: #f5f6fa !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
-          '<span style="color: #47536b !important;">Calculado</span>' + chipNivel(f.calculado.nivel) +
+          '<span style="color: #47536b !important;">Parciales</span>' + chipNivel(f.fuentes.parciales.nivel) +
+          '<span style="color: #47536b !important;">Encuesta</span>' + chipNivel(f.fuentes.cuatrimestral.nivel) +
           '<span style="color: #47536b !important;">Asignado</span>' + (f.asignado ? chipNivel(f.asignado.semaforo) : '<span style="color: #94a0b8 !important;">—</span>') + '</div>' +
           '<fieldset style="border: 0 !important; padding: 0 !important; margin: 0 0 12px 0 !important; min-width: 0 !important;">' +
           '<legend style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin: 0 0 8px 0 !important; padding: 0 !important;">Estado</legend>' +
@@ -831,10 +852,14 @@
       }
 
       function exportarCsv() {
-        var columnas = ['Estudiante', 'DNI', 'Año de la carrera', 'Cohorte', 'Estado calculado', 'Índice calculado', 'Origen del calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
+        var columnas = ['Estudiante', 'DNI', 'Año de la carrera', 'Cohorte', 'Parciales: estado', 'Parciales: índice', 'Parciales: origen',
+          'Encuesta: estado', 'Encuesta: índice', 'Encuesta: origen', 'Estado calculado', 'Estado asignado', 'Asignado por', 'Motivo asignado', 'Estado vigente'];
         var lineas = filasFiltradas().map(function(f) {
+          var p = f.fuentes.parciales, q = f.fuentes.cuatrimestral;
           return [f.nombre, f.dni, textoTramo(f), f.cohorte,
-            NIVELES[f.calculado.nivel].texto, f.calculado.indice === null ? '' : f.calculado.indice, f.calculado.motivo,
+            NIVELES[p.nivel].texto, p.indice === null ? '' : p.indice, p.motivo,
+            NIVELES[q.nivel].texto, q.indice === null ? '' : q.indice, q.motivo,
+            NIVELES[f.calculado.nivel].texto + ' (' + FUENTES[f.principal].titulo + ')',
             f.asignado ? NIVELES[f.asignado.semaforo].texto : '', f.asignado ? f.asignado.autor : '', f.asignado ? f.asignado.motivo : '',
             NIVELES[f.vigente].texto
           ].map(celdaCsv).join(';');
@@ -975,7 +1000,7 @@
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
       $('cuerpo-tabla-estudiantes').innerHTML =
-        '<tr><td colspan="5" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
+        '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
       cargarDatos().then(function(d) {
         datos = d;
         $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
@@ -989,7 +1014,7 @@
         }
       }).catch(function(e) {
         $('cuerpo-tabla-estudiantes').innerHTML =
-          '<tr><td colspan="5" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
+          '<tr><td colspan="6" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
       });
     })();
   </script>

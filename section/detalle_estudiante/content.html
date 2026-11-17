@@ -238,6 +238,7 @@
         automatica(1042, '3623', '99000003', '2025-2', 'respuestas', '5012', 30, '2025-09-05T11:00:00-03:00'),
         automatica(1043, '3623', '99000003', '2026-1', 'omision', '', 60, '2026-07-31T23:59:00-03:00', 'No respondió la Encuesta Cuatrimestral 2026-1'),
         automatica(1044, '3623', '99000003', '2026-2', 'respuestas', '5013', 47, '2026-09-02T11:48:00-03:00'),
+        automatica(1046, '3623', '99000003', '2026-2', 'notas_1ro', '541', 76, '2026-10-02T19:00:00-03:00'),
         manual(1045, '3623', '99000003', '2026-2', 'verde', 'Entrevista: cursa al día y no reporta dificultades.', 'Luca Zuanetti', '2026-10-12T11:00:00-03:00')
       ];
 
@@ -258,7 +259,8 @@
         { rid: 521, DNI: '99000004', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '5', Estado: 'Desaprobado' },
         { rid: 522, DNI: '99000004', Materia: 'Fundamentos de Química', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '2', Estado: 'Desaprobado' },
         { rid: 531, DNI: '99000006', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2024-1', Nota: '4', Estado: 'Desaprobado' },
-        { rid: 532, DNI: '99000006', Materia: 'Álgebra I- B', Instancia: 'Parcial 2', Periodo: '2024-2', Nota: '6', Estado: 'Aprobado' }
+        { rid: 532, DNI: '99000006', Materia: 'Álgebra I- B', Instancia: 'Parcial 2', Periodo: '2024-2', Nota: '6', Estado: 'Aprobado' },
+        { rid: 541, DNI: '99000003', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '3', Estado: 'Desaprobado' }
       ];
 
       // Base Entrevistas
@@ -389,30 +391,43 @@
         return null;
       }
 
-      function criticidadDe(tramo, entradas, encuestas) {
+      // FUENTES (ADR-010): parciales y Encuesta Cuatrimestral por separado. El calculado es la del año de la carrera y solo esa,
+      // sin entradas en el período, toma la del anterior (ADR-009)
+      var FUENTES = {
+        parciales: { titulo: 'Parciales', tipos: ['notas'], sinDatos: 'Sin notas de parciales en ' },
+        cuatrimestral: { titulo: 'Encuesta', tipos: ['cuatrimestral', 'omision'], sinDatos: 'Sin encuesta en ' }
+      };
+
+      function fuenteDe(clave, entradas, encuestas, conAnterior) {
         var delPeriodo = function(periodo) {
           return entradas.filter(function(c) {
             if (c.origen !== 'automatica' || String(c.periodo) !== periodo || numero(c.indice) === null) return false;
-            var tipo = tipoDeEntrada(c, encuestas);
-            return tramo === 'primero' ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
+            return FUENTES[clave].tipos.indexOf(tipoDeEntrada(c, encuestas)) !== -1;
           });
         };
-        // Sin entradas en el período vigente vale la última del anterior, marcada con su período (ADR-009)
-        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || masReciente(delPeriodo(PERIODO_ANTERIOR));
-        var calculado;
-        if (ultima) {
-          var indice = numero(ultima.indice);
-          var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
-          calculado = { nivel: nivelDeIndice(indice), indice: indice, tipo: tipoDeEntrada(ultima, encuestas), fecha: ultima.created_at, entrada: ultima,
-            periodo: String(ultima.periodo), anterior: anterior,
-            motivo: TIPOS[tipoDeEntrada(ultima, encuestas)] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
-        } else {
-          calculado = { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
-            motivo: tramo === 'primero' ? 'Sin notas de parciales en ' + PERIODO_ACTUAL + '.' : 'Sin Encuesta Cuatrimestral en ' + PERIODO_ACTUAL + '.' };
+        var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || (conAnterior ? masReciente(delPeriodo(PERIODO_ANTERIOR)) : null);
+        if (!ultima) {
+          return { nivel: 'sin_datos', indice: null, tipo: null, fecha: null, entrada: null, periodo: PERIODO_ACTUAL, anterior: false,
+            motivo: FUENTES[clave].sinDatos + PERIODO_ACTUAL + '.' };
         }
+        var indice = numero(ultima.indice);
+        var tipo = tipoDeEntrada(ultima, encuestas);
+        var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
+        return { nivel: nivelDeIndice(indice), indice: indice, tipo: tipo, fecha: ultima.created_at, entrada: ultima,
+          periodo: String(ultima.periodo), anterior: anterior,
+          motivo: TIPOS[tipo] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
+      }
+
+      function criticidadDe(tramo, entradas, encuestas) {
+        var principal = tramo === 'primero' ? 'parciales' : 'cuatrimestral';
+        var fuentes = {
+          parciales: fuenteDe('parciales', entradas, encuestas, principal === 'parciales'),
+          cuatrimestral: fuenteDe('cuatrimestral', entradas, encuestas, principal === 'cuatrimestral')
+        };
+        var calculado = fuentes[principal];
         var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
         var asignado = ultimaManual && ASIGNABLES.indexOf(ultimaManual.semaforo) !== -1 ? ultimaManual : null;
-        return { calculado: calculado, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
+        return { calculado: calculado, fuentes: fuentes, principal: principal, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
       }
 
       // ---------------------------------------------------------
@@ -1052,16 +1067,29 @@
       // ---------------------------------------------------------
       // RENDERIZADO
       // ---------------------------------------------------------
+      // TARJETA DE UNA FUENTE: ÍNDICE, SEMÁFORO Y DE DÓNDE SALE. La del año de la carrera dice que es el estado calculado
+      function tarjetaFuente(clave) {
+        var c = est.crit.fuentes[clave];
+        var esCalculado = est.crit.principal === clave;
+        var noAplica = c.indice === null && clave === 'cuatrimestral' && est.tramo === 'primero';
+        var valor = c.indice !== null
+          ? c.indice + '<span style="font-size: 14px !important; color: #47536b !important; font-weight: 400 !important; margin-left: 4px !important;">/ 100</span><span style="margin-left: 8px !important; display: inline-flex !important;">' + chipNivel(c.nivel) + '</span>'
+          : '—';
+        var pie = noAplica ? 'Se responde desde 2.º año.'
+          : c.indice !== null ? (c.tipo === 'omision' ? 'No respondió · ' : '') + fechaVisible(c.fecha) + (c.anterior ? ' · período ' + escapar(c.periodo) : '') : escapar(c.motivo);
+        pie += esCalculado ? ' · <b style="font-weight: 600 !important; color: #0b0e14 !important;">estado calculado</b>' : '';
+        return [FUENTES[clave].titulo, valor, pie];
+      }
+
       function resumen() {
-        var c = est.crit.calculado, a = est.crit.asignado;
+        var a = est.crit.asignado;
         var puede = ROLES[rolActual].puedeAsignar;
         var accion = puede
           ? '<div id="btn-abrir-asignacion" role="button" tabindex="0" style="margin-top: 4px !important; align-self: flex-start !important; height: 32px !important; padding: 0 10px !important; border-radius: 8px !important; border: 1px solid #333c4d !important; background-image: linear-gradient(to bottom, #333c4d, #0b0e14) !important; color: #ffffff !important; font-size: 13px !important; font-weight: 500 !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; cursor: pointer !important; box-sizing: border-box !important;">' + icono('editar', 16) + 'Asignar estado</div>'
           : '<div style="font-size: 12px !important; color: #47536b !important;">Solo tutores y administradores pueden asignar estados.</div>';
         var tarjetas = [
-          ['Criticidad calculada', c.indice !== null ? c.indice + '<span style="font-size: 14px !important; color: #47536b !important; font-weight: 400 !important; margin-left: 4px !important;">/ 100</span>' : '—',
-            c.indice !== null ? escapar(TIPOS[c.tipo]) + ' · ' + fechaVisible(c.fecha) + (c.anterior ? ' · período ' + escapar(c.periodo) : '') : escapar(c.motivo)],
-          ['Estado calculado', chipNivel(c.nivel), (est.tramo === 'primero' ? 'notas de parciales de ' : 'última Encuesta Cuatrimestral de ') + escapar(c.periodo || PERIODO_ACTUAL)],
+          tarjetaFuente('parciales'),
+          tarjetaFuente('cuatrimestral'),
           ['Estado asignado', a ? chipNivel(a.semaforo) : '<span style="color: #94a0b8 !important;">—</span>', a ? 'por ' + escapar(a.autor || 'sin autor') + ' · ' + fechaVisible(a.created_at) : 'manda el calculado', accion]
         ];
         return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important;">' + tarjetas.map(function(k) {
@@ -1129,7 +1157,8 @@
           '<div id="btn-cerrar-modal-asignar" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
           '<div style="color: #47536b !important; margin-bottom: 16px !important;"><b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(est.nombre) + '</b> · ' + escapar(textoTramo()) + '</div>' +
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px 16px !important; align-items: center !important; padding: 10px 12px !important; border-radius: 8px !important; background-color: #f5f6fa !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
-          '<span style="color: #47536b !important;">Calculado</span>' + chipNivel(est.crit.calculado.nivel) +
+          '<span style="color: #47536b !important;">Parciales</span>' + chipNivel(est.crit.fuentes.parciales.nivel) +
+          '<span style="color: #47536b !important;">Encuesta</span>' + chipNivel(est.crit.fuentes.cuatrimestral.nivel) +
           '<span style="color: #47536b !important;">Asignado</span>' + (a ? chipNivel(a.semaforo) : '<span style="color: #94a0b8 !important;">—</span>') + '</div>' +
           '<fieldset style="border: 0 !important; padding: 0 !important; margin: 0 0 12px 0 !important; min-width: 0 !important;">' +
           '<legend style="font-size: 14px !important; font-weight: 500 !important; color: #0b0e14 !important; margin: 0 0 8px 0 !important; padding: 0 !important;">Estado</legend>' +
