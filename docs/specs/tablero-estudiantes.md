@@ -8,7 +8,7 @@
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados)
 - **Ticket:** [SCRUM-21](https://zhakyz.atlassian.net/browse/SCRUM-21) · rama `feat/SCRUM-21-tablero-criticidad`
 - **Estado:** desarrollado en local con datos de prueba sobre las bases del ADR-007 (Estudiantes, Criticidad y Respuestas), con el sistema de diseño ([skill `diseno-ui`](../../.skills/diseno-ui/SKILL.md), ADR-004). **Publicado el 2026-11-03** como Página oculta (cmid 60287, [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) lee el período vigente de la base Períodos
-- **Última actualización:** 2026-11-17 ([ADR-010](../decisions/010-criticidad-por-fuente.md), en local: parciales y Cuatrimestral en columnas separadas)
+- **Última actualización:** 2026-11-17 ([ADR-010](../decisions/010-criticidad-por-fuente.md), publicado el 2026-11-17: parciales y Cuatrimestral en columnas separadas)
 
 ## Dos estados por estudiante
 
