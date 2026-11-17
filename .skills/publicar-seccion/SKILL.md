@@ -123,6 +123,9 @@ El script borra todos los campos y los crea de nuevo en el orden del JSON. **Sol
 
 Mover (`mover_actividades.js --subseccion "<nombre>" --cmids <id,id>`) y renombrar (`renombrar_actividades.js --renombrar "<cmid>=<nombre>,…"`) conservan el cmid y el dataid, la configuración, los permisos, las plantillas y las entradas: lo que usa ids (Tools, páginas, plantillas JS) sigue funcionando. Los dos simulan por defecto y escriben con `--confirmar`. Nunca borrar y recrear una actividad para "moverla": cambian los ids.
 
+- **Mover algo oculto a una subsección visible:** Moodle puede volver a mostrarlo. Pasar `--ocultar <id,id>` a `mover_actividades.js`: las oculta apenas se mueven y el resultado dice si quedaron ocultas.
+- **Borrar** actividades o subsecciones de Zhakyz: `borrar_actividades.js --cmids <id,id>` (simula; borra con `--confirmar`). Una subsección solo se borra vacía, o con su contenido listado antes en `--cmids`, porque Moodle borra todo lo que tenga adentro. Lo borrado queda 7 días en la papelera del curso, que es compartida con los otros equipos. Con el campus lento, el script puede cortar por tiempo después de borrar: volver a simular para ver qué quedó, nunca repetir a ciegas.
+
 Antes de mover, revisar que la subsección de destino tenga la misma visibilidad para los estudiantes: una actividad hereda la de su subsección, y las bases donde escriben los estudiantes dejan de funcionar si quedan ocultas. Después, actualizar `moodle.config.json` (`subseccion`), el `nombre` del JSON de la base, `RULES.md` y `DEPLOY.md`.
 
 ## Qué NO hace
