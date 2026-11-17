@@ -7,8 +7,8 @@
 - **Roles:** ADM, GES y TUT. Solo **TUT y ADM** pueden asignar estados.
 - **Requerimientos:** Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados).
 - **Ticket:** [SCRUM-21](https://zhakyz.atlassian.net/browse/SCRUM-21) · rama `feat/SCRUM-21-tablero-criticidad`
-- **Estado:** **publicado el 2026-11-03** como Página oculta (cmid 60288, [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) lee el período vigente de la base Períodos y, sin entradas del período, usa las del anterior, como el tablero
-- **Última actualización:** 2026-11-03
+- **Estado:** **publicado el 2026-11-03** como Página oculta (cmid 60288, [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) lee el período vigente de la base Períodos y, sin entradas del período, usa las del anterior, como el tablero. Desde el [ADR-010](../decisions/010-criticidad-por-fuente.md) (en local) el resumen muestra los parciales y la Cuatrimestral por separado
+- **Última actualización:** 2026-11-17
 
 > **En revisión.** Cargar en el frontend los datos de todos los estudiantes para esta visualización puede ser muy pesado. El modelo de bases y la pregunta abierta están en el [ADR-005](../decisions/005-modelo-de-bases-moodle.md).
 
@@ -16,7 +16,7 @@
 
 | Izquierda | Derecha |
 |---|---|
-| **Perfil del estudiante:** foto del campus (o iniciales), nombre, año de la carrera, cohorte y estado vigente; id de usuario, DNI, correo, ingreso, paso a 2.º año y fecha de la información personal (base Estudiantes). En el campus se suman los datos del perfil del curso | **Resumen:** criticidad calculada (índice y de dónde sale), estado calculado y estado asignado, con el botón **Asignar estado** (TUT y ADM) |
+| **Perfil del estudiante:** foto del campus (o iniciales), nombre, año de la carrera, cohorte y estado vigente; id de usuario, DNI, correo, ingreso, paso a 2.º año y fecha de la información personal (base Estudiantes). En el campus se suman los datos del perfil del curso | **Resumen** ([ADR-010](../decisions/010-criticidad-por-fuente.md)): una tarjeta por fuente, **Parciales** y **Encuesta** (la Cuatrimestral; índice, semáforo y fecha del período; la del año de la carrera dice "estado calculado"; en 1.er año la Cuatrimestral dice "Se responde desde 2.º año"), y el estado asignado, con el botón **Asignar estado** (TUT y ADM) |
 | | **Evolución de la criticidad:** gráfico con dos series |
 | | **Trayectoria:** la cronología, con filtros por tipo |
 | | **Historial de cambios de estado:** calculados y asignados |

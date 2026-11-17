@@ -54,7 +54,7 @@ Solo figuran los estudiantes con entrada en la base Estudiantes (si hay varias, 
 | `origen` / `fuente` | `automatica` / `omision` |
 | `rid_fuente` | Vacío |
 | `indice` | 70 ([modelo](../models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md#omisión)) |
-| `indice_total` | Promedio del último índice de cada grupo de fuentes del estudiante en el período, contando la omisión (la regla de la Página Tools) |
+| `indice_total` | El índice de la omisión, 70 (la regla de la Página Tools desde la v8, [ADR-010](../decisions/010-criticidad-por-fuente.md)). Hasta la v7, el promedio con las notas de 1.er año del período |
 | `semaforo` | El del `indice_total` (40 y 70) |
 | `motivo` | `No respondió la Encuesta Cuatrimestral <período>.` |
 | `created_at` | Fecha y hora del cierre |

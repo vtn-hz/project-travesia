@@ -51,10 +51,10 @@ Tres bases, todas en la subsección Database, que **solo agregan entradas**:
   - `omision`: el estudiante no respondió la encuesta del período;
   - `origen = manual`: un tutor asigna un estado (Req 10).
 - **`rid_fuente` es el "por qué":** el `rid` de la entrada que disparó el cálculo. Es la única referencia: no se copian los valores usados. Va vacío en `omision` y en las manuales.
-- **`indice_total`:** el promedio del último índice de cada grupo de fuentes del estudiante en el período, contando la entrada nueva. Los grupos son *notas* (`notas_1ro` y `materias`) y *encuestas* (`respuestas` y `omision`). Se guarda porque el estudiante escribe las dos fuentes principales, así que su navegador puede leer sus propias entradas.
+- **`indice_total`:** el promedio del último índice de cada grupo de fuentes del estudiante en el período, contando la entrada nueva. Los grupos son *notas* (`notas_1ro` y `materias`) y *encuestas* (`respuestas` y `omision`). Se guarda porque el estudiante escribe las dos fuentes principales, así que su navegador puede leer sus propias entradas. **Cambiado por el [ADR-010](010-criticidad-por-fuente.md) (Tools v8, en local):** es el índice de la propia entrada; las fuentes se muestran por separado y no se promedian.
 - **`semaforo`:** en las automáticas, el del `indice_total` (0–39 verde, 40–69 amarillo, 70–100 rojo). En las manuales, el estado asignado; `sin_asignar` quita una asignación anterior.
 - **La asignación manual persiste:** vale la última manual del estudiante, de cualquier período, mientras no sea `sin_asignar`. `periodo` dice cuándo se asignó, pero no limita su vigencia.
-- **El tablero muestra las dos cosas, sin que una reemplace a la otra:** el calculado (`indice_total` de la última automática del período) y el asignado (la última manual). Las automáticas se siguen guardando mientras haya un estado asignado.
+- **El tablero muestra las dos cosas, sin que una reemplace a la otra:** el calculado (el `indice` de la última automática de la fuente del año de la carrera en el período; desde el [ADR-010](010-criticidad-por-fuente.md), además, cada fuente en su columna) y el asignado (la última manual). Las automáticas se siguen guardando mientras haya un estado asignado.
 - **`motivo` es opcional,** salvo en las manuales.
 - **`id_usuario` siempre está:** todo estudiante tiene cuenta (hallazgo 7).
 

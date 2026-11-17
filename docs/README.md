@@ -38,7 +38,8 @@ docs/
 │   ├── 006-versionado-de-encuestas.md
 │   ├── 007-encuestas-respuestas-y-criticidad.md
 │   ├── 008-encuesta-inicial-y-datos-personales.md
-│   └── 009-cierre-de-periodo-y-omision.md
+│   ├── 009-cierre-de-periodo-y-omision.md
+│   └── 010-criticidad-por-fuente.md
 ├── specs/                 ← Especificaciones vivas por sección
 │   ├── main-menu.md
 │   ├── tablero-estudiantes.md
@@ -111,6 +112,7 @@ Sirve como vista rápida de la historia del proyecto.
 - [ADR-007](decisions/007-encuestas-respuestas-y-criticidad.md) — Bases Encuestas, Respuestas y Criticidad
 - [ADR-008](decisions/008-encuesta-inicial-y-datos-personales.md) — Pregunta abierta: reemplazar la Encuesta Inicial por la Información personal
 - [ADR-009](decisions/009-cierre-de-periodo-y-omision.md) — Cierre de período y alerta por omisión: base Períodos y Página Configuración del Sistema
+- [ADR-010](decisions/010-criticidad-por-fuente.md) — Criticidad por fuente: parciales y Encuesta Cuatrimestral por separado, sin índice total combinado
 - [Configuración del Sistema](specs/configuracion.md) — Período vigente y cierre del período, con las omisiones de la Encuesta Cuatrimestral
 - [Carga de parciales de 1.er año](specs/carga-parciales-primero.md) — Guía para el apartado donde los estudiantes suben sus notas, y cómo se calcula su criticidad
 - [Vista del estudiante](specs/vista-estudiante.md) — Mi Trayectoria e Información personal (SCRUM-24): base Estudiantes, secciones deshabilitadas hasta cargarla y habilitadas por tramo (`es_primer_anio`)

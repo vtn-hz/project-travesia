@@ -8,7 +8,7 @@
 - **Requerimientos:** Req 2 (alerta por omisión), Req 4 (semáforos), Req 5 (dashboard docente) y Req 10 (gestión de estados)
 - **Ticket:** [SCRUM-21](https://zhakyz.atlassian.net/browse/SCRUM-21) · rama `feat/SCRUM-21-tablero-criticidad`
 - **Estado:** desarrollado en local con datos de prueba sobre las bases del ADR-007 (Estudiantes, Criticidad y Respuestas), con el sistema de diseño ([skill `diseno-ui`](../../.skills/diseno-ui/SKILL.md), ADR-004). **Publicado el 2026-11-03** como Página oculta (cmid 60287, [`DEPLOY.md`](../../DEPLOY.md)). Desde el [ADR-009](../decisions/009-cierre-de-periodo-y-omision.md) (local, sin publicar) lee el período vigente de la base Períodos
-- **Última actualización:** 2026-11-03
+- **Última actualización:** 2026-11-17 ([ADR-010](../decisions/010-criticidad-por-fuente.md), en local: parciales y Cuatrimestral en columnas separadas)
 
 ## Dos estados por estudiante
 
@@ -25,11 +25,12 @@ Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sal
 
 ### De dónde salen (base Criticidad, [ADR-007](../decisions/007-encuestas-respuestas-y-criticidad.md))
 
-- **Calculado:** lo arma el tablero al leer (sin `indice_total`, que se saca de la base Criticidad):
+- **Por fuente** ([ADR-010](../decisions/010-criticidad-por-fuente.md)): la tabla muestra por separado **Parciales** (la última entrada `notas_1ro` o `materias` del período) y **Encuesta Cuatrimestral** (la última Cuatrimestral u `omision` del período), cada una con su índice y su semáforo, sin combinarlas. Así se ven las notas de 1.er año de quien las rinde desde 2.º año. En 1.er año, la columna Encuesta dice "Desde 2.º año".
+- **Calculado:** lo arma el tablero al leer, con el `indice` de cada entrada (no usa `indice_total`). Es la fuente del año de la carrera:
   - **1.er año** (`es_primer_anio = si`): el `indice` de la última entrada automática de notas (`notas_1ro` o `materias`) del período.
   - **2.º año en adelante:** el `indice` de la **última Cuatrimestral** (`fuente = respuestas` de la Cuatrimestral, u `omision`). La Inicial se ve en el detalle, pero no entra en el número: vale 0, 33 o 100 según si el estudiante trabaja ([ADR-008](../decisions/008-encuesta-inicial-y-datos-personales.md)).
   - El semáforo sale de ese índice (40 y 70). Sin ninguna entrada automática, **Sin calcular**.
-  - **Período** ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local): el vigente de la base Períodos. Si el estudiante no tiene entradas en ese período, vale la última del **período anterior**, marcada "período 2026-2": así, después del cierre, se siguen viendo las omisiones del período cerrado.
+  - **Período** ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local): el vigente de la base Períodos. Si el estudiante no tiene entradas en ese período, vale la última del **período anterior**, marcada "período 2026-2": así, después del cierre, se siguen viendo las omisiones del período cerrado. Solo la fuente del calculado toma el período anterior: la otra columna muestra solo el período vigente, así las notas de 1.er año de quien está en 2.º año no se arrastran.
 - **Asignado:** la última entrada manual del estudiante, de cualquier período, si no es `sin_asignar`. **Persiste** entre períodos hasta que un tutor la quita, y al quitarla se agrega una entrada manual con `sin_asignar`.
 - **El tablero muestra los dos.** El asignado no reemplaza al calculado: el calculado se sigue guardando y mostrando. Si no coinciden, se marca la diferencia ("asignado verde · calculado rojo").
 - **Lectura:** las entradas automáticas del período actual y del anterior, y todas las manuales.
@@ -49,7 +50,7 @@ Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sal
 
 1. **Resumen por estado vigente:** total, riesgo alto, riesgo medio, sin riesgo, sin calcular y con estado asignado. Cada tarjeta filtra la tabla (también con el teclado).
 2. **Filtros:** nombre o DNI, estado vigente, año de la carrera (1.er año / 2.º en adelante) y cohorte; **exportar a CSV** (con el índice calculado, de dónde sale y el asignado con su motivo).
-3. **Tabla:** estudiante (con el año de la carrera), cohorte, **criticidad calculada** (chip, índice de 0 a 100, de dónde sale y la fecha, o por qué no hay) y **estado asignado** (chip, autor y fecha). Con estado asignado, el calculado queda atenuado.
+3. **Tabla:** estudiante (con el año de la carrera), cohorte, **Parciales** y **Encuesta** (la Cuatrimestral; cada una con chip, índice de 0 a 100 y fecha, o por qué no hay) y **estado asignado** (chip, autor y fecha). Con estado asignado, las dos fuentes quedan atenuadas. El CSV lleva el estado, el índice y el origen de cada fuente, el estado calculado (con su fuente), el asignado y el vigente.
 4. **Asignar estado** (TUT y ADM): botón en cada fila que abre el diálogo. Se elige verde, amarillo o rojo (o *Quitar el estado asignado*, si hay uno) y el motivo es obligatorio. Se cierra con Escape, *Cancelar* o un clic afuera, y el foco vuelve al botón de la fila.
 5. **Detalle:** clic o Enter en la fila abre el [Detalle del estudiante](detalle-estudiante.md) con `#usuario=<id>`.
 
@@ -73,7 +74,7 @@ Son los **6 integrantes de Zhakyz** ([EQUIPO_ZHAKYZ](../context/EQUIPO_ZHAKYZ.md
 | Gian Luca Distefano | 1.er año | Riesgo medio, 64 (recálculo por un cambio de umbral) | — | Riesgo medio |
 | Valentino Hernández Pascual | 2.º en adelante | Sin calcular: sin entradas | — | Sin calcular |
 | Luca Zuanetti | 1.er año | Sin riesgo, 22 (notas) | — | Sin riesgo |
-| Nahuel Spikerman | 2.º en adelante | Riesgo medio, 47 (Cuatrimestral; su Inicial vale 0 y no cuenta) | Sin riesgo, por Luca Zuanetti | Sin riesgo |
+| Nahuel Spikerman | 2.º en adelante | Riesgo medio, 47 (Cuatrimestral; su Inicial vale 0 y no cuenta). Recursa Análisis Matemático I: Parciales en riesgo alto, 76, en su columna | Sin riesgo, por Luca Zuanetti | Sin riesgo |
 
 ## Verificación (2026-11-03, Playwright, `file://`)
 

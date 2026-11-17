@@ -43,5 +43,5 @@ Los resultados coinciden con los del Dashboard, que redondea a un decimal.
 ## Pendientes
 
 - **Validar la fórmula y los pesos** con el equipo: no tienen fundamento en `docs/context/research`. El requerimiento de 1.er año propone otro criterio (aprobación < 20 % rojo; de 20 % a 60 % amarillo).
-- **Semáforo:** el Dashboard corta en 40 y 65; la base Criticidad usa 40 y 70 para el `indice_total`, igual que las encuestas.
+- **Semáforo:** el Dashboard corta en 40 y 65; la base Criticidad usa 40 y 70, igual que las encuestas. Desde 2.º año, el Tablero muestra estas notas en su propia columna, sin cambiar el estado calculado ([ADR-010](../../decisions/010-criticidad-por-fuente.md)).
 - **Materias por nombre:** CargaParcialesPrimero identifica la materia por su nombre ("Álgebra I- B"), y Materias y Respuestas, por su código. Para cruzarlas hace falta el código en las notas.

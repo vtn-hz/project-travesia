@@ -7,7 +7,7 @@
 - **Qué calcula:** un índice de **0 a 100** para cada envío de una encuesta.
   - **0** significa sin señales de riesgo.
   - **100** es la combinación de respuestas más crítica posible **entre las preguntas que puntúan en esa versión**.
-- **Cómo se guarda:** cada envío agrega una entrada a la base **Criticidad** (`fuente = respuestas`, `rid_fuente` = la respuesta), con su `indice`, el `indice_total` del estudiante y el semáforo. Respuestas no guarda puntos.
+- **Cómo se guarda:** cada envío agrega una entrada a la base **Criticidad** (`fuente = respuestas`, `rid_fuente` = la respuesta), con su `indice`, el `indice_total` y el semáforo. Desde Tools v8 ([ADR-010](../../decisions/010-criticidad-por-fuente.md), en local) el `indice_total` es el mismo `indice`: la Cuatrimestral ya no se promedia con las notas de 1.er año y llega a 100. Respuestas no guarda puntos.
   - El índice se calcula al enviar y no se recalcula después. Si cambian los valores, las entradas viejas conservan el suyo.
   - **El estudiante no lo ve en la encuesta,** pero puede ver sus propias entradas de Criticidad (ADR-007).
 
@@ -30,7 +30,7 @@
 Quien no responde la Encuesta Cuatrimestral de un período recibe, al cerrar el período, una entrada en Criticidad con `fuente = omision` ([ADR-009](../../decisions/009-cierre-de-periodo-y-omision.md)).
 
 - **Índice: 70**, el piso del rojo. El tutor la ve como riesgo alto, pero no pesa más que la peor combinación de respuestas (100).
-- **Grupo:** *encuestas*, como `respuestas`: en el `indice_total` ocupa el lugar de la encuesta que no se respondió.
+- **Fuente:** *Encuesta Cuatrimestral*, como `respuestas`: en el Tablero ocupa el lugar de la encuesta que no se respondió ([ADR-010](../../decisions/010-criticidad-por-fuente.md)). Hasta Tools v7, en el `indice_total` se promediaba con las notas.
 - **Solo 2.º año en adelante** con información personal cargada, y no a quien pasó a 2.º año durante el período que se cierra.
 - La agrega la Página Configuración del Sistema al cerrar el período y se desaprueba al crearla: el estudiante no la ve.
 
@@ -153,7 +153,7 @@ En **Encuestas**, cada opción lleva sus puntos y las preguntas calculadas lleva
 En **Respuestas**, solo lo respondido (`{ "item_id": 8265, "respuestas": [1] }`). En **Criticidad**, el resultado:
 
 ```json
-{ "fuente": "respuestas", "rid_fuente": 102, "indice": 47, "indice_total": 50, "semaforo": "amarillo" }
+{ "fuente": "respuestas", "rid_fuente": 102, "indice": 47, "indice_total": 47, "semaforo": "amarillo" }
 ```
 
 - En la dificultad, cada materia aporta su parte del promedio: (dificultad − 1) × `dificultad_max` ÷ 4 ÷ cantidad de materias cursadas.

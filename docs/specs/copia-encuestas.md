@@ -107,12 +107,12 @@ Después de guardar la respuesta, la copia agrega a Criticidad:
 
 ```json
 { "id_usuario": 3773, "dni": "00000004", "periodo": "2026-2", "origen": "automatica", "fuente": "respuestas", "rid_fuente": 102,
-  "indice": 47, "indice_total": 50, "semaforo": "amarillo", "motivo": "", "created_at": "2026-11-01T09:13:22-03:00" }
+  "indice": 47, "indice_total": 47, "semaforo": "amarillo", "motivo": "", "created_at": "2026-11-01T09:13:22-03:00" }
 ```
 
 - **`indice`:** `CriticidadEncuesta(registro, definicion)`, con los puntos de la versión vigente. En el ejemplo: 33 puntos ÷ 70 = 47.
-- **`indice_total`:** el promedio del último índice de las notas de 1.er año y el de esta encuesta, en el período. En el ejemplo, las notas tenían 52: (52 + 47) ÷ 2 = 50. Si el estudiante no tiene notas en el período, es igual al índice.
-- **`semaforo`:** el del `indice_total` (40 y 70).
+- **`indice_total`:** desde Tools v8 ([ADR-010](../decisions/010-criticidad-por-fuente.md), en local), igual al `indice`: la encuesta ya no se promedia con las notas de 1.er año. Hasta la v7 era el promedio: en el ejemplo, con notas de 52, (52 + 47) ÷ 2 = 50.
+- **`semaforo`:** el del `indice_total` (40 y 70), o sea, el de la encuesta.
 - **Si no se puede calcular el índice** (por ejemplo, una definición con errores), la respuesta se guarda igual y no se agrega la entrada de Criticidad.
 - **El periodo** de la entrada es el de la respuesta. En la Inicial, que no lleva período, es el período vigente. Desde Tools v6 ([ADR-009](../decisions/009-cierre-de-periodo-y-omision.md), local) el período vigente sale de la base Períodos (`PeriodoVigente()`), leído al abrir la encuesta y otra vez al enviarla, con una espera máxima de 4 segundos.
 
@@ -161,7 +161,7 @@ Al abrir el ítem ([`section/copia_encuestas`](../../section/copia_encuestas/con
 - tiene un cuadro de créditos simplificado y, en la Cuatrimestral (5 páginas, como en Moodle), el JSON del selector en un campo editable;
 - lee la versión vigente de `data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json`, como si fuera la base Encuestas;
 - usa el usuario de prueba Nicolás Zuviria, con DNI ficticio;
-- muestra las entradas que se agregarían a Respuestas y a Criticidad. Criticidad empieza con una entrada de notas de 1.er año de ejemplo (índice 52), para ver el `indice_total`. Si Moodle guardara sin que la copia lo tomara, avisa.
+- muestra las entradas que se agregarían a Respuestas y a Criticidad. Criticidad empieza con una entrada de notas de 1.er año de ejemplo (índice 52); desde Tools v8 no cambia el `indice_total` de la encuesta. Si Moodle guardara sin que la copia lo tomara, avisa.
 
 ## Pruebas hechas
 
