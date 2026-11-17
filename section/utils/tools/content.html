@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 7;
+      var VERSION = 8;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -927,7 +927,8 @@
       // Materias del cuadro de créditos simulado (Plan 2024, 1.er año)
       var MATERIAS_CUADRO = [{ codigo: 'INGM101', nombre: 'Análisis Matemático I', creditos: 6 }, { codigo: 'INGM105', nombre: 'Álgebra I- B', creditos: 4 }, { codigo: 'ING1103', nombre: 'Fundamentos de Química', creditos: 4 }];
 
-      // base: entradas de Respuestas; criticidad: entradas de Criticidad (con una de notas de 1.er año de ejemplo, para ver indice_total)
+      // base: entradas de Respuestas; criticidad: entradas de Criticidad (con una de notas de 1.er año de ejemplo: desde la versión 8 no cambia
+      // el indice_total de la encuesta, que es su propio índice)
       var sim = { cmid: CMID_INICIAL, pagina: 0, valores: {}, base: [], criticidad: [], error: '', guardado: '' };
       function criticidadDeEjemplo() {
         return [{ rid: 1, id_usuario: USUARIO_PRUEBA.id, dni: USUARIO_PRUEBA.dni, periodo: PERIODO_ACTUAL, origen: 'automatica', fuente: 'notas_1ro', rid_fuente: 1,
@@ -1080,7 +1081,7 @@
           '<button type="button" data-sim-encuesta="' + CMID_CUATRIMESTRAL + '" style="cursor: pointer; border: 1px solid #333c4d; border-radius: 6px; padding: 3px 10px; font-family: inherit; font-weight: 600; font-size: 12px;">Cuatrimestral</button></div>' +
           '<div style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">Proyecto Travesía · SBIRE</div>' +
           '<h3 style="margin: 0 0 4px 0 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">Copia de respuestas de las encuestas</h3>' +
-          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro a la base Respuestas y una entrada a la base Criticidad (las dos simuladas), con la versión vigente de data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json. Criticidad empieza con una entrada de notas de ejemplo, para ver el índice total. Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
+          '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Vista previa local. Simula una Encuesta de Moodle con el mismo HTML que genera el campus. Al enviarla, el script agrega el registro a la base Respuestas y una entrada a la base Criticidad (las dos simuladas), con la versión vigente de data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json. Criticidad empieza con una entrada de notas de ejemplo: el índice total de la encuesta no la promedia, es su propio índice. Usuario de prueba: ' + escapar(USUARIO_PRUEBA.nombre) + ' (DNI ficticio).</p>' +
           '<div id="formulario-simulado" style="background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; padding: 16px !important; margin-bottom: 16px !important;"></div>' +
           '<div id="registros-simulados"></div>' +
           '<div id="footer-zhakyz" style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important;">' +
@@ -1307,42 +1308,27 @@
       // ---------------------------------------------------------
       // BASE CRITICIDAD: SEMÁFORO, ÍNDICE TOTAL Y ALTA DE UNA ENTRADA AUTOMÁTICA (LA USAN LA COPIA Y CriticidadNotas)
       // ---------------------------------------------------------
-      // Semáforo del índice total: los mismos cortes que el ICE y el modelo de las encuestas
+      // Semáforo del índice: los mismos cortes que el ICE y el modelo de las encuestas
       var CORTES_SEMAFORO = { amarillo: 40, rojo: 70 };
-      // Grupos de fuentes para indice_total: materias es un recálculo de las notas, y omision ocupa el lugar de la encuesta no respondida
-      var GRUPO_FUENTE = { notas_1ro: 'notas', materias: 'notas', respuestas: 'encuestas', omision: 'encuestas' };
 
       function semaforoDe(indice) {
         if (typeof indice !== 'number' || !isFinite(indice)) return null;
         return indice >= CORTES_SEMAFORO.rojo ? 'rojo' : indice >= CORTES_SEMAFORO.amarillo ? 'amarillo' : 'verde';
       }
 
-      function tiempoDe(iso) {
-        var t = new Date(iso).getTime();
-        return isFinite(t) ? t : 0;
+      // indice_total = EL ÍNDICE DE LA PROPIA ENTRADA (ADR-010, DESDE LA VERSIÓN 8). Hasta la versión 7 promediaba el último índice
+      // de las notas y el de las encuestas del período, así que una Cuatrimestral de 100 con notas de 1.er año de 10 quedaba en 55.
+      // Ahora cada fuente (parciales y Cuatrimestral) se muestra por separado y no se combinan: el campo se conserva para no cambiar la base
+      function indiceTotal(nueva) {
+        return numeroMoodle(nueva.indice);
       }
 
-      // indice_total = PROMEDIO DEL ÚLTIMO ÍNDICE DE CADA GRUPO DE FUENTES DEL ESTUDIANTE EN EL PERÍODO, CONTANDO LA ENTRADA NUEVA.
-      // Solo entradas automáticas: las manuales no cambian el calculado (el tablero muestra los dos)
-      function indiceTotal(nueva, propias) {
-        var ultimas = {};
-        propias.concat([nueva]).forEach(function(c) {
-          var grupo = GRUPO_FUENTE[c.fuente];
-          var indice = numeroMoodle(c.indice);
-          if (!grupo || c.origen !== 'automatica' || String(c.periodo) !== String(nueva.periodo) || indice === null) return;
-          var t = c === nueva ? Infinity : tiempoDe(c.created_at);
-          if (!ultimas[grupo] || t >= ultimas[grupo].t) ultimas[grupo] = { indice: indice, t: t };
-        });
-        var valores = Object.keys(ultimas).map(function(g) { return ultimas[g].indice; });
-        return valores.length ? Math.round(valores.reduce(function(a, b) { return a + b; }, 0) / valores.length) : null;
-      }
-
-      // AGREGA UNA ENTRADA AUTOMÁTICA: LEE LAS ENTRADAS PROPIAS (CON "REQUIERE APROBACIÓN", LAS DEL ESTUDIANTE), CALCULA indice_total
+      // AGREGA UNA ENTRADA AUTOMÁTICA: LEE LAS ENTRADAS PROPIAS (CON "REQUIERE APROBACIÓN", LAS DEL ESTUDIANTE), COMPLETA indice_total
       // Y semaforo, Y LA GUARDA. base: { leer(idUsuario), guardar(entrada) }. opciones.yaEsta(entrada): no guardar si ya hay una así
       function registrarCriticidad(base, entrada, opciones) {
         return base.leer(entrada.id_usuario).then(function(propias) {
           if (opciones && opciones.yaEsta && propias.some(opciones.yaEsta)) return null;
-          entrada.indice_total = indiceTotal(entrada, propias);
+          entrada.indice_total = indiceTotal(entrada);
           entrada.semaforo = semaforoDe(entrada.indice_total);
           return base.guardar(entrada).then(function() { return entrada; });
         });
@@ -1737,11 +1723,13 @@
       // HERRAMIENTA CriticidadEstudiante: ESTADO CALCULADO, ASIGNADO Y VIGENTE DE UN ESTUDIANTE EN UN PERÍODO
       // =========================================================
       // La regla del Tablero de Criticidad y del Detalle del estudiante (docs/specs/tablero-estudiantes.md), en un solo lugar:
-      //   calculado: 1.er año → la última entrada automática de notas (notas_1ro o materias) del período; 2.º año en adelante → la última
-      //   Encuesta Cuatrimestral u omisión del período. Sin entradas en el período, vale la última del período anterior (ADR-009).
+      //   fuentes (ADR-010, desde la versión 8): parciales → la última entrada automática de notas (notas_1ro o materias) del período;
+      //   cuatrimestral → la última Encuesta Cuatrimestral u omisión del período. Cada una con su índice y su nivel, sin combinarlas.
+      //   calculado: la fuente del año de la carrera (parciales en 1.er año, cuatrimestral desde 2.º). Solo esa, sin entradas en el
+      //   período, toma la última del período anterior (ADR-009); la otra cuenta solo en el período, así las notas de 1.er año no se arrastran.
       //   asignado: la última entrada manual de cualquier período, salvo sin_asignar. vigente: el asignado si existe; si no, el calculado.
       // CriticidadEstudiante(entradas, { primerAnio, periodo, encuestas })
-      //   → { calculado: { nivel, indice, tipo, periodo, anterior, entrada }, asignado, vigente }
+      //   → { calculado: { nivel, indice, tipo, periodo, anterior, entrada }, fuentes: { parciales, cuatrimestral }, principal, asignado, vigente }
       //   entradas: las de la base Criticidad del estudiante (campos en texto o número). encuestas: { rid de Respuestas → codigo_encuesta },
       //   para saber de qué encuesta es cada entrada de fuente respuestas. nivel y vigente: verde, amarillo, rojo o sin_datos.
       //   tipo: notas, cuatrimestral, omision, inicial o encuesta (una respuesta que no está en el mapa de encuestas)
@@ -1765,27 +1753,32 @@
         return null;
       }
 
+      // Tipos de entrada de cada fuente
+      var TIPOS_FUENTE = { parciales: ['notas'], cuatrimestral: ['cuatrimestral', 'omision'] };
+
       function CriticidadEstudiante(entradas, opciones) {
         var o = opciones || {};
         var periodo = String(o.periodo || PERIODO_ACTUAL);
         var lista = entradas || [];
-        var delPeriodo = function(p) {
-          return lista.filter(function(c) {
-            if (c.origen !== 'automatica' || String(c.periodo) !== p || numeroMoodle(c.indice) === null) return false;
-            var tipo = tipoDeCriticidad(c, o.encuestas);
-            return o.primerAnio ? tipo === 'notas' : tipo === 'cuatrimestral' || tipo === 'omision';
-          });
-        };
-        var ultima = masNueva(delPeriodo(periodo)) || masNueva(delPeriodo(periodoAnterior(periodo)));
-        var calculado = { nivel: 'sin_datos', indice: null, tipo: null, periodo: periodo, anterior: false, entrada: null };
-        if (ultima) {
+        var principal = o.primerAnio ? 'parciales' : 'cuatrimestral';
+        var fuenteDe = function(clave) {
+          var delPeriodo = function(p) {
+            return lista.filter(function(c) {
+              if (c.origen !== 'automatica' || String(c.periodo) !== p || numeroMoodle(c.indice) === null) return false;
+              return TIPOS_FUENTE[clave].indexOf(tipoDeCriticidad(c, o.encuestas)) !== -1;
+            });
+          };
+          var ultima = masNueva(delPeriodo(periodo)) || (clave === principal ? masNueva(delPeriodo(periodoAnterior(periodo))) : null);
+          if (!ultima) return { nivel: 'sin_datos', indice: null, tipo: null, periodo: periodo, anterior: false, entrada: null };
           var indice = numeroMoodle(ultima.indice);
-          calculado = { nivel: semaforoDe(indice) || 'sin_datos', indice: indice, tipo: tipoDeCriticidad(ultima, o.encuestas),
+          return { nivel: semaforoDe(indice) || 'sin_datos', indice: indice, tipo: tipoDeCriticidad(ultima, o.encuestas),
             periodo: String(ultima.periodo), anterior: String(ultima.periodo) !== periodo, entrada: ultima };
-        }
+        };
+        var fuentes = { parciales: fuenteDe('parciales'), cuatrimestral: fuenteDe('cuatrimestral') };
+        var calculado = fuentes[principal];
         var manual = masNueva(lista.filter(function(c) { return c.origen === 'manual'; }));
         var asignado = manual && SEMAFOROS_ASIGNABLES.indexOf(manual.semaforo) !== -1 ? manual : null;
-        return { calculado: calculado, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
+        return { calculado: calculado, fuentes: fuentes, principal: principal, asignado: asignado, vigente: asignado ? asignado.semaforo : calculado.nivel };
       }
 
       // =========================================================
@@ -1926,9 +1919,9 @@
           carga: 'Tools.PeriodoVigente() → { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }'
         },
         CriticidadEstudiante: {
-          descripcion: 'Devuelve el estado calculado, el asignado y el vigente de un estudiante en un período, con la regla del Tablero de Criticidad: en 1.er año, el último índice de notas del período; desde 2.º año, la última Encuesta Cuatrimestral u omisión; sin entradas en el período, la última del anterior. El asignado es la última entrada manual, salvo sin_asignar. No lee ni guarda nada.',
+          descripcion: 'Devuelve la criticidad de cada fuente (parciales y Encuesta Cuatrimestral, por separado), el estado calculado, el asignado y el vigente de un estudiante en un período, con la regla del Tablero de Criticidad: el calculado es la fuente de su año de la carrera (parciales en 1.er año, Cuatrimestral u omisión desde 2.º) y, sin entradas en el período, la última del anterior. El asignado es la última entrada manual, salvo sin_asignar. No lee ni guarda nada.',
           uso: 'Reportes',
-          carga: 'Tools.CriticidadEstudiante(entradas, { primerAnio, periodo, encuestas }) → { calculado, asignado, vigente }'
+          carga: 'Tools.CriticidadEstudiante(entradas, { primerAnio, periodo, encuestas }) → { calculado, fuentes: { parciales, cuatrimestral }, principal, asignado, vigente }'
         },
         DefinicionEncuesta: {
           descripcion: 'Devuelve la definición de una encuesta de la base Encuestas: la versión vigente o la versión pedida, con sus preguntas, variables y textos de las opciones.',

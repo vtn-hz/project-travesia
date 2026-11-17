@@ -93,9 +93,8 @@
 
       // Índice de una omisión: el piso del rojo (ADR-009, docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md → Omisión)
       var INDICE_OMISION = 70;
-      // Semáforo y grupos de fuentes del índice total: las mismas reglas que la Página Tools (ADR-007)
+      // Semáforo del índice: la misma regla que la Página Tools (ADR-007)
       var CORTES = { amarillo: 40, rojo: 70 };
-      var GRUPO_FUENTE = { notas_1ro: 'notas', materias: 'notas', respuestas: 'encuestas', omision: 'encuestas' };
       // Campos de cada base que escribe esta página. Se ubican por su etiqueta en el formulario de alta
       var CAMPOS_OMISION = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'indice_total', 'semaforo', 'motivo', 'created_at'];
       var CAMPOS_PERIODO = ['periodo', 'fecha_inicio', 'fecha_limite_encuesta', 'created_at'];
@@ -290,7 +289,7 @@
       }
 
       // ---------------------------------------------------------
-      // ÍNDICE TOTAL Y SEMÁFORO (LA MISMA REGLA QUE indiceTotal Y semaforoDe DE LA PÁGINA TOOLS, ADR-007)
+      // ÍNDICE TOTAL Y SEMÁFORO (LA MISMA REGLA QUE indiceTotal Y semaforoDe DE LA PÁGINA TOOLS, ADR-007 Y ADR-010)
       // ---------------------------------------------------------
       function semaforoDe(indice) {
         if (typeof indice !== 'number' || !isFinite(indice)) return null;
@@ -302,18 +301,9 @@
         return isFinite(t) ? t : 0;
       }
 
-      // Promedio del último índice de cada grupo de fuentes del estudiante en el período, contando la entrada nueva (solo automáticas)
-      function indiceTotal(nueva, propias) {
-        var ultimas = {};
-        propias.concat([nueva]).forEach(function(c) {
-          var grupo = GRUPO_FUENTE[c.fuente];
-          var indice = numero(c.indice);
-          if (!grupo || c.origen !== 'automatica' || String(c.periodo) !== String(nueva.periodo) || indice === null) return;
-          var t = c === nueva ? Infinity : tiempoDe(c.created_at);
-          if (!ultimas[grupo] || t >= ultimas[grupo].t) ultimas[grupo] = { indice: indice, t: t };
-        });
-        var valores = Object.keys(ultimas).map(function(g) { return ultimas[g].indice; });
-        return valores.length ? Math.round(valores.reduce(function(a, b) { return a + b; }, 0) / valores.length) : null;
+      // El índice de la propia entrada (ADR-010): las notas de 1.er año y la Cuatrimestral ya no se promedian, así que la omisión queda en 70
+      function indiceTotal(nueva) {
+        return numero(nueva.indice);
       }
 
       // ---------------------------------------------------------
@@ -555,7 +545,7 @@
               id_usuario: Number(id), dni: e.dni, periodo: periodo, origen: 'automatica', fuente: 'omision', rid_fuente: '',
               indice: INDICE_OMISION, indice_total: null, semaforo: null, motivo: 'No respondió la Encuesta Cuatrimestral ' + periodo + '.', created_at: null
             };
-            nueva.indice_total = indiceTotal(nueva, entradas);
+            nueva.indice_total = indiceTotal(nueva);
             nueva.semaforo = semaforoDe(nueva.indice_total);
             fila.omision = nueva;
           }
