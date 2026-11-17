@@ -118,11 +118,19 @@
         filasParciales.forEach((fila) => {
           const celdas = fila.querySelectorAll('td');
           if (celdas.length >= 8) {
+            // Columna Periodo (AAAA-C, por ejemplo 2026-2) desde el 2026-11-17 (Zhakyz, local). Las notas cargadas antes
+            // tienen la fecha del parcial (AAAA-MM-DD) y se filtran como antes
             const fechaStr = celdas[4]?.innerText.trim() ||
-              ''; // Formato YYYY-MM-DD
+              ''; // Formato YYYY-MM-DD o AAAA-C
 
             let cumpleFecha = false;
-            if (fechaStr.length >= 10) {
+            const periodoNota = /^(\d{4})-([12])$/.exec(fechaStr);
+            if (periodoNota) {
+              // Mismo año y mismo cuatrimestre que el actual, según el corte de esta página
+              const cuatrimestreActual = fechaMinimaMMDD === INICIO_SEGUNDO_CUATRIMESTRE_MMDD ? 2 : 1;
+              cumpleFecha = parseInt(periodoNota[1], 10) === ANIO_ACTUAL &&
+                parseInt(periodoNota[2], 10) === cuatrimestreActual;
+            } else if (fechaStr.length >= 10) {
               const [anio, mes, dia] = fechaStr.split('-');
               const mmddReg = `${mes}-${dia}`;
 

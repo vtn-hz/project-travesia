@@ -1419,13 +1419,16 @@
       //     la nota ya guardada, calcula y agrega la entrada. Devuelve una promesa de la entrada (null si no hay notas en el período).
       //     Si falla, queda pendiente y la promesa se rechaza (docs/specs/carga-parciales-primero.md).
       //   CriticidadNotas({}) → solo reintenta las pendientes.
-      // El período de una nota sale de su fecha: enero a julio → AAAA-1, agosto a diciembre → AAAA-2 (provisorio).
-      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
+      // El período de una nota es su campo Periodo (AAAA-C), que elige el estudiante. Las notas guardadas antes tenían una fecha
+      // (AAAA-MM-DD): se traduce con la regla anterior, enero a julio → AAAA-1 y agosto a diciembre → AAAA-2.
+      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'periodo', 'nota', 'estado', 'recupera_a'];
       var COLUMNAS_MATERIAS_PRIMERO = ['materia', 'es_critica', 'umbral'];
       var ESPERA_NOTAS = 8000; // milisegundos que se espera la criticidad antes de seguir a la página de Moodle
 
-      function periodoDeFecha(fecha) {
-        var m = String(fecha || '').match(/^(\d{4})-(\d{2})/);
+      function periodoDeNota(valor) {
+        var v = String(valor || '').trim();
+        if (/^\d{4}-[12]$/.test(v)) return v;
+        var m = v.match(/^(\d{4})-(\d{2})-\d{2}$/);
         return m ? m[1] + '-' + (Number(m[2]) <= 7 ? 1 : 2) : null;
       }
 
@@ -1437,7 +1440,7 @@
         ]).then(function(r) {
           return {
             parciales: r[0].entradas.map(function(e) { return e.campos; }).filter(function(c) {
-              return String(c.dni || '').trim() === dni && periodoDeFecha(c.fecha) === PERIODO_ACTUAL;
+              return String(c.dni || '').trim() === dni && periodoDeNota(c.periodo) === PERIODO_ACTUAL;
             }),
             materias: r[1].entradas.map(function(e) { return e.campos; })
           };
@@ -1871,7 +1874,8 @@
         CriticidadEstudiante: CriticidadEstudiante,
         DefinicionEncuesta: DefinicionEncuesta,
         RespuestasMoodle: RespuestasMoodle,
-        NormalizarMateria: normalizarMateria
+        NormalizarMateria: normalizarMateria,
+        PeriodoDeNota: periodoDeNota
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
       try { document.dispatchEvent(new CustomEvent('zk-tools', { detail: window.ZhakyzTools })); } catch (e) { /* sin CustomEvent: la vista usa window.ZhakyzTools */ }
@@ -1940,6 +1944,11 @@
           descripcion: 'Normaliza el nombre de una materia de 1.er año para compararlo (minúsculas, sin espacios, guiones ni guiones bajos), como IndiceNotasPrimero.',
           uso: 'IndiceNotasPrimero y Reportes',
           carga: 'Tools.NormalizarMateria(nombre) → texto'
+        },
+        PeriodoDeNota: {
+          descripcion: 'Período (AAAA-C) de una nota de 1.er año: el campo Periodo de CargaParcialesPrimero. Las notas guardadas antes del cambio tienen la fecha del parcial (AAAA-MM-DD): enero a julio es AAAA-1 y agosto a diciembre, AAAA-2.',
+          uso: 'CriticidadNotas y Reportes',
+          carga: 'Tools.PeriodoDeNota(valor) → AAAA-C, o null si no se entiende'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',

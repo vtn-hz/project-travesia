@@ -112,7 +112,7 @@
       var VALOR_ASIGNADO = { verde: 20, amarillo: 55, rojo: 85 };
       // CargaParcialesPrimero usa la plantilla de lista de Moodle sin data-campo: se lee por columnas
       var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
-      var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Fecha', 'Nota', 'Estado', 'Recupera_a'];
+      var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
       var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
       var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
       // Espera máxima (milisegundos) de la Página Tools, de cada base y de las bases que solo completan la cronología
@@ -249,16 +249,16 @@
       ];
 
       var PARCIALES_PRUEBA = [
-        { rid: 501, DNI: '99000005', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Fecha: '2026-05-08', Nota: '3', Estado: 'Desaprobado' },
-        { rid: 502, DNI: '99000005', Materia: 'Álgebra I- B', Instancia: 'Parcial 1', Fecha: '2026-07-10', Nota: '7', Estado: 'Aprobado' },
-        { rid: 503, DNI: '99000005', Materia: 'Análisis Matemático I', Instancia: 'Recuperatorio 1', Fecha: '2026-09-20', Nota: '6', Estado: 'Aprobado' },
-        { rid: 504, DNI: '99000005', Materia: 'Fundamentos de Química', Instancia: 'Parcial 1', Fecha: '2026-10-09', Nota: '8', Estado: 'Aprobado' },
-        { rid: 511, DNI: '99000001', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Fecha: '2026-06-02', Nota: '2', Estado: 'Desaprobado' },
-        { rid: 512, DNI: '99000001', Materia: 'Álgebra I- B', Instancia: 'Parcial 1', Fecha: '2026-09-18', Nota: '', Estado: 'Ausente' },
-        { rid: 521, DNI: '99000004', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Fecha: '2026-09-25', Nota: '5', Estado: 'Desaprobado' },
-        { rid: 522, DNI: '99000004', Materia: 'Fundamentos de Química', Instancia: 'Parcial 1', Fecha: '2026-10-12', Nota: '2', Estado: 'Desaprobado' },
-        { rid: 531, DNI: '99000006', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Fecha: '2024-06-20', Nota: '4', Estado: 'Desaprobado' },
-        { rid: 532, DNI: '99000006', Materia: 'Álgebra I- B', Instancia: 'Parcial 2', Fecha: '2024-11-15', Nota: '6', Estado: 'Aprobado' }
+        { rid: 501, DNI: '99000005', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2026-1', Nota: '3', Estado: 'Desaprobado' },
+        { rid: 502, DNI: '99000005', Materia: 'Álgebra I- B', Instancia: 'Parcial 1', Periodo: '2026-1', Nota: '7', Estado: 'Aprobado' },
+        { rid: 503, DNI: '99000005', Materia: 'Análisis Matemático I', Instancia: 'Recuperatorio 1', Periodo: '2026-2', Nota: '6', Estado: 'Aprobado' },
+        { rid: 504, DNI: '99000005', Materia: 'Fundamentos de Química', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '8', Estado: 'Aprobado' },
+        { rid: 511, DNI: '99000001', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2026-1', Nota: '2', Estado: 'Desaprobado' },
+        { rid: 512, DNI: '99000001', Materia: 'Álgebra I- B', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '', Estado: 'Ausente' },
+        { rid: 521, DNI: '99000004', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '5', Estado: 'Desaprobado' },
+        { rid: 522, DNI: '99000004', Materia: 'Fundamentos de Química', Instancia: 'Parcial 1', Periodo: '2026-2', Nota: '2', Estado: 'Desaprobado' },
+        { rid: 531, DNI: '99000006', Materia: 'Análisis Matemático I', Instancia: 'Parcial 1', Periodo: '2024-1', Nota: '4', Estado: 'Desaprobado' },
+        { rid: 532, DNI: '99000006', Materia: 'Álgebra I- B', Instancia: 'Parcial 2', Periodo: '2024-2', Nota: '6', Estado: 'Aprobado' }
       ];
 
       // Base Entrevistas

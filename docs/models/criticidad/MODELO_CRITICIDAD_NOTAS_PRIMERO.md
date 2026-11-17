@@ -27,9 +27,9 @@ Primero se aplican los recuperatorios: una nota con `Recupera_a` reemplaza a la 
 
 ## Período
 
-Cuentan las notas del período actual (`PERIODO_ACTUAL` en Tools). El período de una nota sale de su fecha: de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`. **Es provisorio:**
-- el Dashboard usa otro corte (el 1 de abril como inicio del 2.º cuatrimestre), que deja en el 2.º cuatrimestre los parciales de mayo y junio;
-- hay que definirlo con la base Períodos.
+Cuentan las notas del período vigente (la base Períodos, con `PeriodoVigente()` de Tools). El período de una nota es su campo `Periodo` (`AAAA-C`), que elige el estudiante al cargarla (local, sin publicar, 2026-11-17). Hasta ese cambio el período se deducía de la fecha del parcial (de enero a julio, `AAAA-1`; de agosto a diciembre, `AAAA-2`), y las notas guardadas con fecha se siguen leyendo con esa regla.
+
+El Dashboard Estudiantes de Primero (cmid 60035) no sigue esta regla: usa su propio corte (el 1 de abril como inicio del 2.º cuatrimestre) para decidir cuál es el cuatrimestre actual, y con él filtra tanto las notas con período como las viejas con fecha.
 
 ## Ejemplos (datos de prueba de Carga_Parciales_Primero, leídos el 2026-11-01)
 

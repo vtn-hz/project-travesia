@@ -79,9 +79,13 @@
         Parcial que recupera
         <select id="campo-recupera-notas" name="recupera_a" data-zk-campo></select>
       </label>
-      <label for="campo-fecha-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
-        Fecha del parcial
-        <input id="campo-fecha-notas" name="fecha" type="date" data-zk-campo>
+      <label for="campo-anio-notas" style="flex: 0 1 110px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Año
+        <select id="campo-anio-notas" name="anio" data-zk-campo></select>
+      </label>
+      <label for="campo-cuatrimestre-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
+        Cuatrimestre
+        <select id="campo-cuatrimestre-notas" name="cuatrimestre" data-zk-campo></select>
       </label>
       <label for="campo-condicion-notas" style="flex: 1 1 150px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
         Condición
@@ -95,7 +99,7 @@
     </div>
     <p id="ayuda-form-notas" style="margin: 10px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">
       La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial que recupera: si se recuperó más de un parcial, cargar un recuperatorio por cada uno. Con la condición Ausente, la nota no se completa.
-      Al recursar una materia, cargar las notas nuevas con su fecha: las de la cursada anterior se conservan.</p>
+      El año y el cuatrimestre son los de la cursada en la que se rindió el parcial. Al recursar una materia, cargar las notas nuevas con el cuatrimestre de la nueva cursada: las de la cursada anterior se conservan.</p>
 
     <!-- ERRORES DEL FORMULARIO -->
     <div id="errores-form-notas"
@@ -162,11 +166,14 @@
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_PARCIALES = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_MATERIAS = 152; // @config bases.materias.dataid
-      // CriticidadNotas({ rid }) existe desde Tools v5. Con una versión anterior la nota se guarda igual, sin criticidad
-      var VERSION_MINIMA_TOOLS = 5;
+      // CriticidadNotas({ rid }) existe desde Tools v5, pero lee el campo Periodo de la nota desde la v7 (hasta la v6 leía la
+      // fecha). Con una versión anterior la nota se guarda igual, sin criticidad
+      var VERSION_MINIMA_TOOLS = 7;
 
       // Columnas de la plantilla de lista de CargaParcialesPrimero (data/moodle/plantillas/carga_parciales_primero/listtemplate.html), en orden
-      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'];
+      var COLUMNAS_PARCIALES = ['dni', 'estudiante', 'materia', 'instancia', 'periodo', 'nota', 'estado', 'recupera_a'];
+      // Período vigente si no se puede leer la base Períodos (Tools.PeriodoVigente, desde la v6), como en Tools
+      var PERIODO_POR_DEFECTO = '2026-2';
 
       // Cantidad de parciales de cada materia (docs/specs/carga-parciales-primero.md → Reglas de los campos). Los recuperatorios no se
       // configuran: cada uno indica qué parcial recupera. Provisorio, según lo que recuerda el equipo: pasa a CargaMateriasPrimero
@@ -179,7 +186,7 @@
       // El campo Nota es obligatorio en Moodle: con la condición Ausente se guarda 0, que el cálculo no usa (cuenta como ausencia)
       var NOTA_AUSENTE = '0';
       // Primer año del Plan 2024: ninguna nota puede ser anterior
-      var FECHA_MINIMA = '2024-01-01';
+      var ANIO_MINIMO = 2024;
 
       // Materias de 1.er año del Plan 2024 (cuatrimestres 1 y 2). En Moodle se leen de la base Materias; esta lista es el respaldo
       // y la vista local. Los nombres coinciden con CargaMateriasPrimero, que el cálculo usa para cruzar el umbral
@@ -229,18 +236,19 @@
       ];
       // Notas de todos los integrantes: la vista solo muestra las del estudiante simulado (igual que en Moodle)
       var NOTAS_PRUEBA = [
-        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2025-05-13', '2', 'Desaprobado', ''],
-        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '7', 'Aprobado', ''],
-        ['99000005', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '3', 'Desaprobado', ''],
-        ['99000005', 'Álgebra I- B', 'Recuperatorio', '2026-06-09', '6.5', 'Aprobado', 'Parcial 1'],
-        ['99000005', 'Fundamentos de Química', 'Parcial 1', '2026-05-26', '0', 'Ausente', ''],
+        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2025-1', '2', 'Desaprobado', ''],
+        ['99000005', 'Análisis Matemático I', 'Parcial 1', '2026-1', '7', 'Aprobado', ''],
+        ['99000005', 'Álgebra I- B', 'Parcial 1', '2026-1', '3', 'Desaprobado', ''],
+        ['99000005', 'Álgebra I- B', 'Recuperatorio', '2026-1', '6.5', 'Aprobado', 'Parcial 1'],
+        ['99000005', 'Fundamentos de Química', 'Parcial 1', '2026-1', '0', 'Ausente', ''],
+        // Nota guardada antes del cambio, con la fecha del parcial: se muestra en su cuatrimestre (2026-2)
         ['99000005', 'Análisis Matemático II', 'Parcial 1', '2026-09-22', '8', 'Aprobado', ''],
-        ['99000001', 'Análisis Matemático I', 'Parcial 1', '2026-05-12', '4', 'Desaprobado', ''],
-        ['99000001', 'Análisis Matemático I', 'Parcial 2', '2026-06-23', '5', 'Aprobado', ''],
-        ['99000004', 'Álgebra I- B', 'Parcial 1', '2026-05-19', '2', 'Desaprobado', ''],
-        ['99000006', 'Física A', 'Parcial 1', '2026-09-29', '9', 'Aprobado', ''],
-        ['99000006', 'Física A', 'Parcial 2', '2026-10-20', '5', 'Aprobado', ''],
-        ['99000003', 'Fundamentos de la Programación', 'Parcial 1', '2026-10-06', '7.5', 'Aprobado', '']
+        ['99000001', 'Análisis Matemático I', 'Parcial 1', '2026-1', '4', 'Desaprobado', ''],
+        ['99000001', 'Análisis Matemático I', 'Parcial 2', '2026-1', '5', 'Aprobado', ''],
+        ['99000004', 'Álgebra I- B', 'Parcial 1', '2026-1', '2', 'Desaprobado', ''],
+        ['99000006', 'Física A', 'Parcial 1', '2026-2', '9', 'Aprobado', ''],
+        ['99000006', 'Física A', 'Parcial 2', '2026-2', '5', 'Aprobado', ''],
+        ['99000003', 'Fundamentos de la Programación', 'Parcial 1', '2026-2', '7.5', 'Aprobado', '']
       ];
 
       // ---------------------------------------------------------
@@ -249,7 +257,8 @@
       var estado = {
         usuario: null,       // { id, dni, nombre }
         materias: [],        // nombres de las materias de 1.er año
-        notas: [],           // notas propias: { rid, dni, estudiante, materia, instancia, fecha, nota, estado, recupera_a }
+        notas: [],           // notas propias: { rid, dni, estudiante, materia, instancia, periodo, nota, estado, recupera_a }
+        periodoVigente: PERIODO_POR_DEFECTO, // AAAA-C: el que se propone para una nota nueva y el último que se puede elegir
         editando: null,      // rid de la nota en edición (null: nota nueva)
         guardando: false
       };
@@ -269,23 +278,14 @@
       // NOMBRE DE MATERIA COMPARABLE (COMO EL CÁLCULO DE TOOLS: SIN MAYÚSCULAS, ESPACIOS, GUIONES NI GUIONES BAJOS)
       function claveMateria(m) { return String(m || '').toLowerCase().replace(/[\s\-_]/g, ''); }
 
-      // FECHA DE HOY EN AAAA-MM-DD (HORA LOCAL)
-      function hoyIso() {
-        var d = new Date();
-        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-      }
-
-      // AAAA-MM-DD → DD-MM-AAAA (LO QUE SE MUESTRA)
-      function fechaVisible(iso) {
-        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '').trim());
-        return m ? m[3] + '-' + m[2] + '-' + m[1] : String(iso || '');
-      }
-
       function esAusente(n) { return String(n.estado || '').toLowerCase().indexOf('ausente') !== -1; }
 
-      // PERÍODO DE UNA FECHA, IGUAL QUE periodoDeFecha DE TOOLS: ENERO A JULIO → AAAA-1, AGOSTO A DICIEMBRE → AAAA-2
-      function periodoDeFecha(fecha) {
-        var m = /^(\d{4})-(\d{2})/.exec(String(fecha || ''));
+      // PERÍODO DE UNA NOTA, IGUAL QUE periodoDeNota DE TOOLS: EL CAMPO Periodo (AAAA-C). Las notas guardadas antes tenían la
+      // fecha del parcial (AAAA-MM-DD): enero a julio → AAAA-1, agosto a diciembre → AAAA-2
+      function periodoDeNota(valor) {
+        var v = String(valor || '').trim();
+        if (/^\d{4}-[12]$/.test(v)) return v;
+        var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(v);
         return m ? m[1] + '-' + (Number(m[2]) <= 7 ? 1 : 2) : '';
       }
 
@@ -455,7 +455,7 @@
           });
       }
 
-      // CRITICIDAD DE LAS NOTAS (Tools v5): NO BLOQUEA NI SE INFORMA AL ESTUDIANTE. Si falla, Tools la deja pendiente y la reintenta
+      // CRITICIDAD DE LAS NOTAS (Tools v7): NO BLOQUEA NI SE INFORMA AL ESTUDIANTE. Si falla, Tools la deja pendiente y la reintenta
       function registrarCriticidad(rid) {
         cargarTools().then(function(Tools) {
           if (!(Tools.version >= VERSION_MINIMA_TOOLS)) {
@@ -476,7 +476,7 @@
           $('aviso-datos-prueba-notas').style.setProperty('display', 'flex', 'important');
           memoriaLocal.notas = NOTAS_PRUEBA.map(function(f) {
             var n = { rid: memoriaLocal.proximoRid++ };
-            ['dni', 'materia', 'instancia', 'fecha', 'nota', 'estado', 'recupera_a'].forEach(function(k, i) { n[k] = f[i]; });
+            ['dni', 'materia', 'instancia', 'periodo', 'nota', 'estado', 'recupera_a'].forEach(function(k, i) { n[k] = f[i]; });
             var integrante = INTEGRANTES.filter(function(x) { return x.dni === n.dni; })[0];
             n.estudiante = integrante ? integrante.nombre : '';
             return n;
@@ -491,8 +491,13 @@
             console.warn('[Carga de notas] Materias desde la lista de respaldo: ' + e.message);
             return MATERIAS_PRIMERO.slice();
           });
-          return Promise.all([materias, leerNotasMoodle(Tools, u.dni)]).then(function(r) {
+          // Período vigente de la base Períodos (Tools v6 o más). Nunca falla: si no se puede leer, queda el período por defecto
+          var periodo = typeof Tools.PeriodoVigente === 'function'
+            ? Tools.PeriodoVigente().then(function(p) { return p && p.periodo; }, function() { return null; })
+            : Promise.resolve(null);
+          return Promise.all([materias, leerNotasMoodle(Tools, u.dni), periodo]).then(function(r) {
             estado.notas = r[1];
+            if (/^\d{4}-[12]$/.test(String(r[2] || ''))) estado.periodoVigente = String(r[2]);
             return { materias: r[0] };
           });
         });
@@ -525,7 +530,9 @@
         var materia = $('campo-materia-notas').value;
         var instancia = instanciaDe(materia, $('campo-instancia-notas').value);
         var recupera = instancia && instancia.recupera === null ? $('campo-recupera-notas').value : (instancia ? instancia.recupera : '');
-        var fecha = $('campo-fecha-notas').value;
+        var anio = $('campo-anio-notas').value;
+        var cuatrimestre = $('campo-cuatrimestre-notas').value;
+        var periodo = anio && cuatrimestre ? anio + '-' + cuatrimestre : '';
         var condicion = $('campo-condicion-notas').value;
         var notaTexto = $('campo-nota-notas').value.trim();
         var errores = [];
@@ -533,10 +540,12 @@
         if (!materia) errores.push('Materia: seleccionar una materia de la lista.');
         if (!instancia) errores.push('Instancia: seleccionar una instancia de la lista.');
         else if (instancia.recupera === null && !recupera) errores.push('Parcial que recupera: seleccionar el parcial que se recuperó.');
-        if (!fecha) errores.push('Fecha del parcial: completar la fecha.');
-        else if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) errores.push('Fecha del parcial: "' + fecha + '" no es una fecha válida.');
-        else if (fecha > hoyIso()) errores.push('Fecha del parcial: ' + fechaVisible(fecha) + ' es posterior a la fecha de hoy.');
-        else if (fecha < FECHA_MINIMA) errores.push('Fecha del parcial: ' + fechaVisible(fecha) + ' es anterior al inicio del Plan 2024.');
+        if (!anio) errores.push('Año: seleccionar el año de la cursada.');
+        if (!cuatrimestre) errores.push('Cuatrimestre: seleccionar el cuatrimestre de la cursada.');
+        if (periodo && !/^\d{4}-[12]$/.test(periodo)) errores.push('Año y cuatrimestre: "' + periodo + '" no es un cuatrimestre válido.');
+        // AAAA-C se compara como texto: 2026-2 > 2026-1 > 2025-2
+        else if (periodo && periodo > estado.periodoVigente) errores.push('Cuatrimestre: ' + periodoVisible(periodo) + ' es posterior al cuatrimestre actual (' + periodoVisible(estado.periodoVigente) + ').');
+        else if (periodo && Number(anio) < ANIO_MINIMO) errores.push('Año: ' + anio + ' es anterior al inicio del Plan 2024.');
         if (CONDICIONES.indexOf(condicion) === -1) errores.push('Condición: seleccionar Aprobado, Desaprobado o Ausente.');
 
         var nota = NOTA_AUSENTE;
@@ -555,7 +564,7 @@
             estudiante: estado.usuario.nombre,
             materia: materia,
             instancia: instancia ? instancia.valor : '',
-            fecha: fecha,
+            periodo: periodo,
             nota: nota,
             estado: condicion,
             recupera_a: recupera || ''
@@ -568,7 +577,7 @@
       function notaRepetida(registro) {
         return estado.notas.filter(function(n) {
           if (n.rid === estado.editando || claveMateria(n.materia) !== claveMateria(registro.materia) ||
-            periodoDeFecha(n.fecha) !== periodoDeFecha(registro.fecha)) return false;
+            periodoDeNota(n.periodo) !== registro.periodo) return false;
           var recupera = String(n.recupera_a || '').trim();
           if (registro.recupera_a) return recupera === registro.recupera_a;
           return !recupera && String(n.instancia).trim().toLowerCase() === registro.instancia.toLowerCase();
@@ -643,8 +652,14 @@
         $('campo-condicion-notas').innerHTML = '<option value="">Seleccionar la condición</option>' + CONDICIONES.map(function(c) {
           return '<option value="' + c + '">' + c + '</option>';
         }).join('');
-        $('campo-fecha-notas').setAttribute('max', hoyIso());
-        $('campo-fecha-notas').setAttribute('min', FECHA_MINIMA);
+        // Años del Plan 2024 hasta el del cuatrimestre actual, el más reciente primero
+        var anios = [];
+        for (var a = Number(estado.periodoVigente.slice(0, 4)); a >= ANIO_MINIMO; a--) anios.push(a);
+        $('campo-anio-notas').innerHTML = '<option value="">Seleccionar el año</option>' + anios.map(function(a) {
+          return '<option value="' + a + '">' + a + '</option>';
+        }).join('');
+        $('campo-cuatrimestre-notas').innerHTML = '<option value="">Seleccionar el cuatrimestre</option>' +
+          '<option value="1">1.er cuatrimestre</option><option value="2">2.º cuatrimestre</option>';
         var campos = document.querySelectorAll('#carga-notas-primero [data-zk-campo]');
         for (var i = 0; i < campos.length; i++) campos[i].setAttribute('style', ESTILO_CAMPO);
       }
@@ -658,8 +673,12 @@
       }
 
       function renderizarTabla() {
+        // El cuatrimestre más reciente primero; dentro de cada uno, por materia y por instancia (Parcial 1, Parcial 2, Recuperatorio)
         var notas = estado.notas.slice().sort(function(a, b) {
-          return a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : claveMateria(a.materia) < claveMateria(b.materia) ? -1 : 1;
+          var pa = periodoDeNota(a.periodo), pb = periodoDeNota(b.periodo);
+          if (pa !== pb) return pa < pb ? 1 : -1;
+          if (claveMateria(a.materia) !== claveMateria(b.materia)) return claveMateria(a.materia) < claveMateria(b.materia) ? -1 : 1;
+          return etiquetaNota(a) < etiquetaNota(b) ? -1 : etiquetaNota(a) > etiquetaNota(b) ? 1 : 0;
         });
         $('contador-notas').textContent = notas.length === 1 ? '1 nota' : notas.length + ' notas';
         if (!notas.length) {
@@ -668,18 +687,17 @@
         }
         var th = 'text-align: left !important; padding: 0 16px !important; height: 52px !important; background-color: #f5f6fa !important; color: #47536b !important; font-size: 14px !important; font-weight: 500 !important; border: 0 !important; white-space: nowrap !important;';
         var td = 'padding: 0 16px !important; height: 52px !important; border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 14px !important; color: #0b0e14 !important; vertical-align: middle !important;';
-        $('tabla-notas').innerHTML = '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 760px !important;">' +
+        $('tabla-notas').innerHTML = '<table style="width: 100% !important; border-collapse: collapse !important; margin: 0 !important; min-width: 660px !important;">' +
           '<thead><tr>' +
-          '<th style="' + th + '">Materia</th><th style="' + th + '">Instancia</th><th style="' + th + '">Fecha</th><th style="' + th + '">Cuatrimestre</th>' +
+          '<th style="' + th + '">Cuatrimestre</th><th style="' + th + '">Materia</th><th style="' + th + '">Instancia</th>' +
           '<th style="' + th + ' text-align: right !important;">Nota</th><th style="' + th + '">Condición</th><th style="' + th + '"><span style="position: absolute !important; left: -9999px !important;">Acciones</span></th>' +
           '</tr></thead><tbody>' +
           notas.map(function(n) {
             var enEdicion = n.rid === estado.editando;
             return '<tr style="border: 0 !important;' + (enEdicion ? ' background-color: #e5f2ff !important;' : '') + ' animation: zk-aparecer 0.25s ease both !important;">' +
+              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(periodoVisible(periodoDeNota(n.periodo))) + '</td>' +
               '<td style="' + td + '">' + escapar(n.materia) + '</td>' +
               '<td style="' + td + '">' + escapar(etiquetaNota(n)) + '</td>' +
-              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(fechaVisible(n.fecha)) + '</td>' +
-              '<td style="' + td + ' white-space: nowrap !important;">' + escapar(periodoVisible(periodoDeFecha(n.fecha))) + '</td>' +
               '<td style="' + td + ' text-align: right !important; font-variant-numeric: tabular-nums !important;">' + (esAusente(n) ? '<span style="color: #47536b !important;">—</span>' : escapar(n.nota)) + '</td>' +
               '<td style="' + td + '">' + chipCondicion(n.estado) + '</td>' +
               '<td style="' + td + ' text-align: right !important;">' +
@@ -705,7 +723,16 @@
         }
         actualizarInstancias(nota ? nota.instancia : '');
         actualizarRecupera(nota ? String(nota.recupera_a || '') : '');
-        $('campo-fecha-notas').value = nota ? nota.fecha : '';
+        // Nota nueva: el cuatrimestre actual. Al editar, el de la nota (un año fuera de la lista se agrega para no perderlo)
+        var periodo = (nota ? periodoDeNota(nota.periodo) : estado.periodoVigente).split('-');
+        if (periodo[0] && !$('campo-anio-notas').querySelector('option[value="' + periodo[0] + '"]')) {
+          var opAnio = document.createElement('option');
+          opAnio.value = periodo[0];
+          opAnio.textContent = periodo[0];
+          $('campo-anio-notas').appendChild(opAnio);
+        }
+        $('campo-anio-notas').value = periodo[0] || '';
+        $('campo-cuatrimestre-notas').value = periodo[1] || '';
         var condicion = nota ? CONDICIONES.filter(function(c) { return String(nota.estado).indexOf(c) !== -1; })[0] || '' : '';
         $('campo-condicion-notas').value = condicion;
         $('campo-nota-notas').value = nota && condicion !== 'Ausente' ? nota.nota : '';
@@ -783,7 +810,7 @@
         var repetida = notaRepetida(registro);
         if (repetida) {
           mostrarAviso('alerta', 'Ya existe una nota de ' + repetida.materia + ', ' + etiquetaNota(repetida) +
-            ', del ' + fechaVisible(repetida.fecha) + ', en el mismo cuatrimestre (' + periodoVisible(periodoDeFecha(repetida.fecha)) + '). Para corregirla, editar la nota registrada.', { texto: 'Editar la nota registrada', rid: repetida.rid });
+            ', en el mismo cuatrimestre (' + periodoVisible(registro.periodo) + '). Para corregirla, editar la nota registrada.', { texto: 'Editar la nota registrada', rid: repetida.rid });
           return;
         }
         var ridEdicion = estado.editando;

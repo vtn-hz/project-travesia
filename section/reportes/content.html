@@ -89,7 +89,7 @@
       var VERSION_TOOLS = 7; // CriticidadEstudiante, DefinicionEncuesta, RespuestasMoodle y NormalizarMateria
       // CargaParcialesPrimero usa la plantilla del equipo (sin data-campo): filas y nombre de cada celda, en orden
       var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
-      var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Fecha', 'Nota', 'Estado', 'Recupera_a'];
+      var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
       // Esperas máximas: una base que no responde no deja la página cargando para siempre
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
@@ -166,17 +166,17 @@
         { materia: 'Fundamentos de Química', critica: false, umbral: null }
       ];
       var PARCIALES_PRUEBA = [
-        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 1', fecha: '2026-09-15', nota: 6, estado: 'Aprobado' },
-        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 2', fecha: '2026-10-20', nota: 4, estado: 'Desaprobado' },
-        { id_usuario: 3773, materia: 'Álgebra I- B', instancia: 'Parcial 1', fecha: '2026-09-18', nota: 7, estado: 'Aprobado' },
-        { id_usuario: 3773, materia: 'Fundamentos de Química', instancia: 'Parcial 1', fecha: '2026-09-25', nota: 8, estado: 'Aprobado' },
-        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 1', fecha: '2026-09-15', nota: 3, estado: 'Desaprobado' },
-        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 2', fecha: '2026-10-20', nota: null, estado: 'Ausente' },
+        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 1', periodo: '2026-2', nota: 6, estado: 'Aprobado' },
+        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 2', periodo: '2026-2', nota: 4, estado: 'Desaprobado' },
+        { id_usuario: 3773, materia: 'Álgebra I- B', instancia: 'Parcial 1', periodo: '2026-2', nota: 7, estado: 'Aprobado' },
+        { id_usuario: 3773, materia: 'Fundamentos de Química', instancia: 'Parcial 1', periodo: '2026-2', nota: 8, estado: 'Aprobado' },
+        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 1', periodo: '2026-2', nota: 3, estado: 'Desaprobado' },
+        { id_usuario: 3751, materia: 'Análisis Matemático I', instancia: 'Parcial 2', periodo: '2026-2', nota: null, estado: 'Ausente' },
         // Escrita distinto que en CargaMateriasPrimero: se compara con NormalizarMateria de Tools
-        { id_usuario: 3751, materia: 'Álgebra I-B', instancia: 'Parcial 1', fecha: '2026-09-18', nota: 5, estado: 'Desaprobado' },
-        { id_usuario: 3751, materia: 'Fundamentos de Química', instancia: 'Parcial 1', fecha: '2026-09-25', nota: 6, estado: 'Aprobado' },
+        { id_usuario: 3751, materia: 'Álgebra I-B', instancia: 'Parcial 1', periodo: '2026-2', nota: 5, estado: 'Desaprobado' },
+        { id_usuario: 3751, materia: 'Fundamentos de Química', instancia: 'Parcial 1', periodo: '2026-2', nota: 6, estado: 'Aprobado' },
         // Materia que no está en CargaMateriasPrimero: se informa igual, como no crítica
-        { id_usuario: 3773, materia: 'Física A', instancia: 'Parcial 1', fecha: '2026-10-02', nota: 5, estado: 'Aprobado' }
+        { id_usuario: 3773, materia: 'Física A', instancia: 'Parcial 1', periodo: '2026-2', nota: 5, estado: 'Aprobado' }
       ];
       // Base Entrevistas
       var ENTREVISTAS_PRUEBA = [
@@ -606,7 +606,8 @@
       // ---------------------------------------------------------
       function informePrimero() {
         var ids = estudiantesFiltrados().filter(function(e) { return e.es_primer_anio === 'si'; }).map(function(e) { return e.id_usuario; });
-        var notas = PARCIALES.filter(function(p) { return ids.indexOf(p.id_usuario) !== -1; });
+        // Solo las notas del período elegido, como IndiceNotasPrimero
+        var notas = PARCIALES.filter(function(p) { return ids.indexOf(p.id_usuario) !== -1 && p.periodo === estado.periodo; });
         // Los nombres se comparan con NormalizarMateria de Tools, como IndiceNotasPrimero. Las materias con notas que no están en
         // CargaMateriasPrimero se informan igual, como no críticas
         var clave = Tools.NormalizarMateria;
@@ -1052,7 +1053,7 @@
           nombre: 'CargaParcialesPrimero', depende: ['estudiantes'],
           prueba: PARCIALES_PRUEBA.map(function(p) {
             // Como en la base: DNI y nombres de columna de la plantilla del equipo (el DNI de prueba es el id de usuario)
-            return { DNI: String(p.id_usuario), Materia: p.materia, Instancia: p.instancia, Fecha: p.fecha, Nota: p.nota === null ? '' : String(p.nota), Estado: p.estado, Recupera_a: '' };
+            return { DNI: String(p.id_usuario), Materia: p.materia, Instancia: p.instancia, Periodo: p.periodo, Nota: p.nota === null ? '' : String(p.nota), Estado: p.estado, Recupera_a: '' };
           }),
           leer: function() { return leerBase('CargaParcialesPrimero', { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES }); },
           guardar: function(lista) {
@@ -1064,9 +1065,11 @@
               var id = porDni[String(p.DNI).trim()];
               if (!id) return;
               var reemplaza = String(p.Recupera_a || '').trim();
-              var clave = id + '|' + Tools.NormalizarMateria(p.Materia) + '|' + (reemplaza || p.Instancia);
+              // Cada cuatrimestre por separado: al recursar, las notas nuevas no reemplazan las de la cursada anterior
+              var periodo = Tools.PeriodoDeNota(p.Periodo) || '';
+              var clave = id + '|' + periodo + '|' + Tools.NormalizarMateria(p.Materia) + '|' + (reemplaza || p.Instancia);
               if (!reemplaza && instancias[clave]) return;
-              instancias[clave] = { id_usuario: id, materia: String(p.Materia).trim(), instancia: reemplaza || p.Instancia, fecha: p.Fecha, nota: numero(p.Nota),
+              instancias[clave] = { id_usuario: id, materia: String(p.Materia).trim(), instancia: reemplaza || p.Instancia, periodo: periodo, nota: numero(p.Nota),
                 estado: /ausente/i.test(p.Estado) ? 'Ausente' : /desaprobado/i.test(p.Estado) ? 'Desaprobado' : /aprobado/i.test(p.Estado) ? 'Aprobado' : p.Estado };
             });
             PARCIALES = Object.keys(instancias).map(function(k) { return instancias[k]; });

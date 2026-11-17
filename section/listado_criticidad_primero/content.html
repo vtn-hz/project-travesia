@@ -46,7 +46,8 @@
               estudiante: celdas[1]?.innerText.trim() || '',
               materia: celdas[2]?.innerText.trim() || '',
               instancia: celdas[3]?.innerText.trim() || '',
-              fecha: celdas[4]?.innerText.trim() || '',
+              // Columna Periodo (AAAA-C) desde el 2026-11-17 (Zhakyz, local); las notas cargadas antes tienen la fecha
+              periodo: celdas[4]?.innerText.trim() || '',
               nota: celdas[5]?.innerText.trim() || '',
               estado: celdas[6]?.innerText.trim() ||
                 '' // "Aprobado", "Desaprobado" o "Ausente"
@@ -79,7 +80,7 @@
                       <th>Estudiante</th>
                       <th>Materia</th>
                       <th>Instancia</th>
-                      <th>Fecha</th>
+                      <th>Período</th>
                       <th>Nota</th>
                       <th>Estado</th>
                     </tr>
@@ -110,7 +111,7 @@
                   <td class="fw-bold">${regParcial.estudiante}</td>
                   <td>${regParcial.materia}</td>
                   <td>${regParcial.instancia}</td>
-                  <td>${regParcial.fecha}</td>
+                  <td>${regParcial.periodo}</td>
                   <td><span class="fw-bold">${regParcial.nota || '-'}</span></td>
                   <td>${badgeEstado}</td>
                 </tr>
