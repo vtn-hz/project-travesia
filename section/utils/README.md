@@ -69,7 +69,7 @@ Igual que la de widgets: un `<script type="text/plain" data-zk-biblioteca="tools
 | `DefinicionEncuesta(codigo, version)` | Versión 7 (local): la definición de una encuesta de la base Encuestas, la vigente o la versión pedida (preguntas, variables y textos de las opciones). La usa Reportes |
 | `RespuestasMoodle({ cmid })` | Versión 7 (local): quiénes respondieron una encuesta en Moodle (`show_entries.php`) y la fecha de su última respuesta; sin `cmid`, la Cuatrimestral. La usa Reportes; la Configuración del Sistema todavía tiene su propia copia |
 | `NormalizarMateria(nombre)` | Versión 7 (local): el nombre de una materia de 1.er año listo para comparar, como en `IndiceNotasPrimero` |
-| `PeriodoDeNota(valor)` | Versión 7 (local): el período (`AAAA-C`) de una nota de CargaParcialesPrimero, que sale de su campo `Periodo`. Una nota guardada antes del cambio tiene la fecha del parcial (`AAAA-MM-DD`): de enero a julio es `AAAA-1` y de agosto a diciembre, `AAAA-2`. La usan `CriticidadNotas` y Reportes. Desde la v7, `CriticidadNotas` lee el campo `Periodo` en lugar de `Fecha` |
+| `PeriodoDeNota(valor)` | Versión 7: el período (`AAAA-C`) de una nota de CargaParcialesPrimero, que sale de su campo `Periodo`. Una nota guardada antes del cambio tiene la fecha del parcial (`AAAA-MM-DD`): de enero a julio es `AAAA-1` y de agosto a diciembre, `AAAA-2`. La usan `CriticidadNotas` y Reportes. Desde la v7, `CriticidadNotas` lee el campo `Periodo` en lugar de `Fecha` |
 | `LeerBase(opciones)` | Lee todas las entradas de una base de datos, página por página (ver más abajo). La usan `CopiaRespuestas` (Encuestas, Respuestas y Criticidad) y `CriticidadNotas` |
 
 Al ejecutarse, la biblioteca avisa con el evento `zk-tools` en `document`, con las herramientas en `detail`.
