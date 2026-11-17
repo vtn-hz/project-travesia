@@ -1,7 +1,7 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-02 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-17 -->
 <!-- IMAGEN: assets/LOGO_ZHAKYZ_ANIMADO.gif, subida como zhakyz_logo.gif al área de archivos del resumen -->
 <!-- URL PÚBLICA: https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif -->
-<!-- ÚLTIMA PUBLICACIÓN: 2026-11-02 -->
+<!-- ÚLTIMA PUBLICACIÓN: 2026-11-17 -->
 <!-- SIN FILTROS DE MOODLE: <nolink> evita que "Sistema" y "Estudiantes" se conviertan en links a actividades de otros equipos -->
 <nolink>
 <p style="text-align: center;"><img class="img-fluid" style="display: block; margin-left: auto; margin-right: auto;" src="https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif" alt="Logo de Zhakyz &amp; Asociados" width="800" height="450"></p>
@@ -13,9 +13,11 @@
 <script>
   (function() {
     var SECCION_ZHAKYZ = 15647; // @config seccion.id (copiado con sincronizar_config.js)
-    // Páginas que no se listan en el curso (fuera del modo edición). Desde el 2026-11-02 ninguna: el Hub muestra sus Páginas
-    // debajo de la tarjeta, como Vista Estudiante (Entrevistas también se abre desde "Abrir agenda")
-    var PAGINAS_SIN_LISTAR = [];
+    // Actividades que no se listan en el curso (fuera del modo edición). El Hub y Vista Estudiante muestran sus Páginas debajo de la
+    // tarjeta, salvo la Encuesta Cuatrimestral (desde el 2026-11-17 en Vista Estudiante): se entra solo desde Mi Trayectoria, que la
+    // habilita desde 2.º año. Es solo visual: con el link, cualquiera la puede abrir
+    var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
+    var PAGINAS_SIN_LISTAR = [CMID_CUATRIMESTRAL];
 
     // <nolink> COMO BLOQUE (SI NO, EL NAVEGADOR LO TRATA COMO ELEMENTO EN LÍNEA Y PUEDE TAPAR CLICS)
     // Y PÁGINAS SIN LISTAR OCULTAS POR CSS (EL CAMPUS NO PERMITE "DISPONIBLE PERO NO MOSTRADO")

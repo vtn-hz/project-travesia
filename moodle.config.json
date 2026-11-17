@@ -15,21 +15,9 @@
       "id": 15706,
       "cmid": 59510
     },
-    "Encuestas y Preguntas": {
-      "id": 15705,
-      "cmid": 59505
-    },
     "Database": {
       "id": 15700,
       "cmid": 59497
-    },
-    "Pruebas": {
-      "id": 15701,
-      "cmid": 59499
-    },
-    "Plan de Estudios": {
-      "id": 15721,
-      "cmid": 59719
     },
     "Utils": {
       "id": 15749,
@@ -38,14 +26,6 @@
     "Vista Estudiante": {
       "id": 15791,
       "cmid": 60263
-    },
-    "Tablero de Criticidad": {
-      "id": 15796,
-      "cmid": 60286
-    },
-    "Configuración": {
-      "id": 15797,
-      "cmid": 60293
     }
   },
   "paginas": {
@@ -72,7 +52,7 @@
     },
     "cuatrimestral": {
       "cmid": 59712,
-      "subseccion": "Encuestas y Preguntas"
+      "subseccion": "Vista Estudiante"
     }
   },
   "bases": {
