@@ -56,15 +56,16 @@ function marcas(datos) {
 // NAVEGADOR CON GUARDIA DE RED
 // ---------------------------------------------------------
 // Lecturas: GET sin sesskey ni delete/approve. Escrituras, solo las que se habilitan en "permitido":
-//   alta (POST mod/data/edit.php con rid=0 en una de las 5 bases), desaprobar o borrar un rid de la lista.
+//   alta (POST mod/data/edit.php con rid=0 en una de las 5 bases), desaprobar o borrar un rid de la lista, y editar una entrada de
+//   Estudiantes de la lista (estado actual del ADR-011: solo los rid de estudiantes de prueba que anota aplicar.js).
 async function abrir() {
   if (!process.env.MOODLE_USUARIO || !process.env.MOODLE_CLAVE) salir('Faltan MOODLE_USUARIO y MOODLE_CLAVE en el entorno.');
   const browser = await chromium.launch({ headless: true });
   const ctx = await browser.newContext();
   ctx.setDefaultTimeout(150000);
   ctx.setDefaultNavigationTimeout(150000);
-  const permitido = { fase: 'login', altas: false, desaprobar: new Set(), borrar: new Set() };
-  const escrituras = { alta: 0, desaprobar: 0, borrar: 0 };
+  const permitido = { fase: 'login', altas: false, desaprobar: new Set(), borrar: new Set(), editar: new Set() };
+  const escrituras = { alta: 0, desaprobar: 0, borrar: 0, editar: 0 };
   const dataids = new Set(BASES.map((b) => String(b.dataid)));
   await ctx.route('**/*', (route) => {
     const req = route.request();
@@ -82,6 +83,10 @@ async function abrir() {
     if (permitido.altas && req.method() === 'POST' && url === `${BASE}/mod/data/edit.php`) {
       const campo = (n) => (cuerpo.match(new RegExp(`name="${n}"\\r\\n\\r\\n([^\\r]*)\\r\\n`)) || [])[1];
       if (dataids.has(campo('d')) && campo('rid') === '0') { escrituras.alta++; return route.continue(); }
+    }
+    if (req.method() === 'POST' && url === `${BASE}/mod/data/edit.php`) {
+      const campo = (n) => (cuerpo.match(new RegExp(`name="${n}"\\r\\n\\r\\n([^\\r]*)\\r\\n`)) || [])[1];
+      if (permitido.editar.has(`${campo('d')}:${campo('rid')}`)) { escrituras.editar++; return route.continue(); }
     }
     return route.abort();
   });
@@ -167,6 +172,18 @@ function instalar() {
     },
     desaprobar(dataid, rid) { return this.aviso(`${M.cfg.wwwroot}/mod/data/view.php?d=${dataid}&disapprove=${rid}&sesskey=${encodeURIComponent(M.cfg.sesskey)}`); },
     borrar(dataid, rid) { return this.aviso(`${M.cfg.wwwroot}/mod/data/view.php?d=${dataid}&delete=${rid}&confirm=1&sesskey=${encodeURIComponent(M.cfg.sesskey)}`); },
+    // ESTADO ACTUAL (ADR-011) de un estudiante de prueba con ActualizarEstadoActual de Tools (v10 o más). entradas: la última
+    // automática de cada fuente, con su rid real. Devuelve cuántas guardó; error si Tools es anterior o si la base no tiene los campos
+    async estadoActual(rid, entradas) {
+      if (typeof window.ZhakyzTools.ActualizarEstadoActual !== 'function') throw new Error('La Página Tools publicada es anterior a la v10 (no tiene ActualizarEstadoActual).');
+      let hechas = 0;
+      for (const e of entradas) {
+        // Sin campos del estudiante, ActualizarEstadoActual no compara fechas: escribe la entrada (es la última de su fuente)
+        if (await window.ZhakyzTools.ActualizarEstadoActual(e, { estudiante: { rid, campos: {} } })) hechas++;
+        else throw new Error('Tools no guardó el estado actual (¿la base Estudiantes no tiene los campos del ADR-011?).');
+      }
+      return hechas;
+    },
     // Todas las entradas de una base, con LeerBase de Tools (también las desaprobadas, que el equipo ve)
     async leer(opciones) {
       const r = await window.ZhakyzTools.LeerBase(opciones);
