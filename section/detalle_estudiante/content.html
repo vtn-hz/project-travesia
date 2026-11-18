@@ -119,6 +119,8 @@
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
       var ESPERA_OPCIONAL = 20000;
+      // Entradas por pedido al leer cada base (LeerBase usa 500 por defecto)
+      var POR_PAGINA = 1000;
 
       var ROLES = {
         // puedeEntrevistar: ve "Solicitar entrevista" (los roles que piden entrevistas en Entrevistas y Tutorías)
@@ -550,7 +552,16 @@
       // ---------------------------------------------------------
       var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_CRITICIDAD || !DATAID_RESPUESTAS;
 
-      function cargarDatos() {
+      // SOLO LAS ENTRADAS DE UN ESTUDIANTE: la búsqueda de la base filtra en el servidor (con filter=1; sin eso Moodle la ignora y no
+      // queda guardada en la sesión). Busca el texto en cualquier campo, así que puede traer de más: armarEstudiante vuelve a filtrar por
+      // id o DNI exacto. LeerBase arma la dirección con "d=" + dataid, así que el filtro viaja en ese valor (sirve con Tools v8 y v9).
+      // Medido en el campus el 2026-11-17: Criticidad bajó de 577 entradas en 7 a 14 s a 7 entradas en 0,8 s
+      function soloDe(dataid, texto) {
+        return String(dataid) + '&filter=1&search=' + encodeURIComponent(texto);
+      }
+
+      // DATOS DE UN ESTUDIANTE (idUsuario): en el campus se lee solo lo suyo; en la vista previa, todos los datos de prueba
+      function cargarDatos(idUsuario) {
         if (usaPrueba) {
           if (!ES_VISTA_LOCAL) $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
           fijarPeriodo(periodoDePrueba());
@@ -563,22 +574,31 @@
             encuestas: ENCUESTAS_PRUEBA
           });
         }
-        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
-          return leerPeriodo(Tools).then(function() { return Tools; });
-        }).then(function(Tools) {
+        var vacio = { estudiantes: [], criticidad: [], respuestas: [], parciales: [], entrevistas: [], encuestas: [] };
+        if (!idUsuario) return Promise.resolve(vacio);
+        var Tools;
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(T) {
+          Tools = T;
+          return leerPeriodo(Tools);
+        }).then(function() {
+          // Primero su información personal: de ahí sale el DNI, que identifica sus notas y sus entrevistas
+          return leerBase(Tools, 'Estudiantes', { dataid: soloDe(DATAID_ESTUDIANTES, idUsuario), porPagina: POR_PAGINA });
+        }).then(function(estudiantes) {
+          var info = estudiantes.filter(function(e) { return String(e.id_usuario) === String(idUsuario); })[0];
+          if (!info) return Object.assign({}, vacio, { estudiantes: estudiantes }); // sin información personal no se muestra
+          var dni = String(info.dni || '').trim();
           // Las notas y las entrevistas solo completan la cronología: si no se leen (o tardan), el detalle sigue sin ellas
           var opcional = function(p) { return p.catch(function() { return []; }); };
           return Promise.all([
-            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
-            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD }),
-            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS }),
-            DATAID_PARCIALES ? opcional(leerBase(Tools, 'CargaParcialesPrimero', { dataid: DATAID_PARCIALES, filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES }, ESPERA_OPCIONAL)) : [],
-            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: DATAID_ENTREVISTAS }, ESPERA_OPCIONAL)) : [],
-            // Textos de las preguntas para el detalle de cada encuesta
+            leerBase(Tools, 'Criticidad', { dataid: soloDe(DATAID_CRITICIDAD, idUsuario), porPagina: POR_PAGINA }),
+            leerBase(Tools, 'Respuestas', { dataid: soloDe(DATAID_RESPUESTAS, idUsuario), porPagina: POR_PAGINA }),
+            DATAID_PARCIALES && dni ? opcional(leerBase(Tools, 'CargaParcialesPrimero', { dataid: soloDe(DATAID_PARCIALES, dni), filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES, porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
+            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: soloDe(DATAID_ENTREVISTAS, dni || idUsuario), porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
+            // Textos de las preguntas para el detalle de cada encuesta (una entrada por versión: se lee entera)
             DATAID_ENCUESTAS ? opcional(leerBase(Tools, 'Encuestas', { dataid: DATAID_ENCUESTAS }, ESPERA_OPCIONAL)) : []
-          ]);
-        }).then(function(r) {
-          return { estudiantes: r[0], criticidad: r[1], respuestas: r[2], parciales: r[3], entrevistas: r[4], encuestas: r[5] };
+          ]).then(function(r) {
+            return { estudiantes: estudiantes, criticidad: r[0], respuestas: r[1], parciales: r[2], entrevistas: r[3], encuestas: r[4] };
+          });
         });
       }
 
@@ -1293,6 +1313,8 @@
         var deUrl = usuarioDeUrl();
         // En la vista previa, sin parámetro se muestra un estudiante de ejemplo; un parámetro inválido no se reemplaza
         usuario = deUrl === null ? (ES_VISTA_LOCAL ? '3773' : null) : deUrl || null;
+        // En el campus los datos son de un solo estudiante: si la URL pide otro, se vuelven a leer
+        if (!usaPrueba && datos && datosDe !== usuario) { cargarPara(usuario); return; }
         filtroActividad = '';
         perfil = null;
         var selector = $('selector-estudiante-prueba');
@@ -1308,6 +1330,28 @@
             renderizar();
           }).catch(function() { /* sin perfil: quedan los datos de la base */ });
         }
+      }
+
+      // LEER LOS DATOS (EN EL CAMPUS, DEL ESTUDIANTE u) Y MOSTRARLO. Si mientras tanto la URL pide otro estudiante, se descarta
+      var datosDe = null; // estudiante de los datos cargados (en la vista previa, todos)
+      function cargarPara(u) {
+        datos = null;
+        datosDe = u;
+        incompletas = [];
+        renderizar();
+        return cargarDatos(u).then(function(d) {
+          if (datosDe !== u) return;
+          datos = d;
+          if (incompletas.length) {
+            $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
+              ': la base tiene más entradas que las que lee la Página Tools, así que puede faltar parte de la trayectoria.';
+            $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
+          }
+          mostrarUsuario();
+        }).catch(function(e) {
+          if (datosDe !== u) return;
+          $('contenido-detalle').innerHTML = '<div style="padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</div>';
+        });
       }
 
       function volverAlTablero() {
@@ -1404,17 +1448,7 @@
       if (usaPrueba) $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
-      cargarDatos().then(function(d) {
-        datos = d;
-        if (incompletas.length) {
-          $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
-            ': la base tiene más entradas que las que lee la Página Tools, así que puede faltar parte de la trayectoria.';
-          $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
-        }
-        mostrarUsuario();
-      }).catch(function(e) {
-        $('contenido-detalle').innerHTML = '<div style="padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</div>';
-      });
+      cargarPara(usaPrueba ? null : (usuarioDeUrl() || null));
     })();
   </script>
   </nolink>
