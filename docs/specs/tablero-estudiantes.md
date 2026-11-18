@@ -59,7 +59,7 @@ Elegimos los nombres **calculado / asignado** porque cada uno dice de dónde sal
 
 ## Lectura y escritura en Moodle
 
-- **Lectura:** carga la Página Tools (`CMID_TOOLS`) y lee con `LeerBase` las bases Estudiantes, Criticidad y Respuestas (de Respuestas solo usa `codigo_encuesta`, para separar la Inicial de la Cuatrimestral). Si falta alguno de los `DATAID_*`, usa los datos de prueba y lo avisa.
+- **Lectura:** carga la Página Tools (`CMID_TOOLS`) y lee con `LeerBase` las bases Estudiantes y Criticidad, de a 1.000 entradas por pedido. **Desde el 2026-11-17 no lee Respuestas:** solo la usaba para separar la Inicial de la Cuatrimestral, y desde que se borró la Inicial (ADR-008) toda entrada con `fuente = respuestas` es de la Cuatrimestral. Si se suma otra encuesta, tiene que guardar su criticidad con otra fuente. Si falta alguno de los `DATAID_*`, usa los datos de prueba y lo avisa.
 - **Escritura:** una entrada manual en Criticidad (`origen = manual`, `fuente`, `rid_fuente` e `indice` vacíos, `semaforo` = el estado o `sin_asignar`). Los campos se ubican por su etiqueta en el formulario de alta, como en la Página Tools. **No escribe `indice_total`**, así que no depende de que se saque ese campo.
 - **Autor:** la plantilla de lista de Criticidad agrega la columna `autor` (`##user##`, [`listtemplate.html`](../../data/moodle/plantillas/criticidad/listtemplate.html)). Publicada el 2026-11-03.
 
