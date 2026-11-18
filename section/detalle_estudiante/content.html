@@ -1026,7 +1026,16 @@
             var p = parcialPorRid[String(c.rid_fuente)];
             var texto = c.fuente === 'materias' ? (c.motivo || 'Recálculo por un cambio en las materias de 1.er año.')
               : p ? p.Materia + ' · ' + p.Instancia + ' · ' + (p.Nota ? 'nota ' + p.Nota : 'sin nota') + (p.Estado ? ' (' + p.Estado + ')' : '') : 'Nota de un parcial de 1.er año.';
-            items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'notas', titulo: c.fuente === 'materias' ? 'Recálculo de las notas' : 'Cargó una nota', texto: texto, extra: extra });
+            // Período de la nota (campo Periodo; las viejas tienen la fecha del parcial: enero a julio → 1, agosto a diciembre → 2,
+            // como periodoDeNota de Tools) y período del índice (el vigente al cargarla). Si difieren, se aclaran los dos
+            var pn = p ? String(p.Periodo || '').trim() : '';
+            var fechaNota = pn.match(/^(\d{4})-(\d{2})-\d{2}$/);
+            if (fechaNota) pn = fechaNota[1] + '-' + (Number(fechaNota[2]) <= 7 ? 1 : 2);
+            var pc = String(c.periodo || '').trim();
+            var periodos = [];
+            if (pn && pc && pn !== pc) periodos.push(chipNeutro('Nota de ' + pn), chipNeutro('Índice de ' + pc));
+            else if (pn || pc) periodos.push(chipNeutro('Período ' + (pn || pc)));
+            items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'notas', titulo: c.fuente === 'materias' ? 'Recálculo de las notas' : 'Cargó una nota', texto: texto, extra: periodos.concat(extra) });
           } else if (tipo === 'omision') {
             items.push({ t: tiempoDe(c), ref: refDe(c), grupo: 'encuesta', titulo: 'No respondió la encuesta', texto: c.motivo || 'Encuesta Cuatrimestral ' + c.periodo, extra: extra });
           } else if (tipo) {
