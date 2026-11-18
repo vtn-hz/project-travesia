@@ -18,7 +18,8 @@
    - Resumen: estudiantes de 2.º año en adelante, respondieron, reciben omisión, ya tienen omisión, pasaron a 2.º año en el período y 1.er año (fuera del cierre).
    - Tabla de los estudiantes de 2.º año en adelante: la Encuesta Cuatrimestral del período (respondida y cuándo, o sin responder) y el resultado del cierre (*Recibe omisión*, con el índice, el índice total y el semáforo que va a quedar; *Ya tiene omisión*; *Fuera del cierre*; *Sin cambios*, "debe volver a responder en <período nuevo>").
    - *Volver a leer las bases* y *Cerrar el período <período>*.
-3. **Historial de períodos:** las entradas de la base Períodos, la vigente marcada.
+3. **Abandono de la carrera** (local, 2026-11-17; se muestra entre el período vigente y el cierre): cuántos períodos cerrados seguidos sin actividad (sin notas de 1.er año ni Encuesta Cuatrimestral) hacen que un estudiante cuente como abandono en los informes de Reportes. *Cambiar* abre un diálogo con un número entero de 1 a 20; al guardar, agrega a Períodos una entrada del período vigente con las mismas fechas y el valor nuevo (campo `periodos_abandono`). Cada entrada nueva (fecha límite o cierre) repite el valor vigente. Sin valor en ninguna entrada, vale 4 (acordado con el DII).
+4. **Historial de períodos:** las entradas de la base Períodos, la vigente marcada, con el parámetro de abandono de cada una.
 
 ## Cierre
 

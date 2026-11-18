@@ -97,7 +97,11 @@
       var CORTES = { amarillo: 40, rojo: 70 };
       // Campos de cada base que escribe esta página. Se ubican por su etiqueta en el formulario de alta
       var CAMPOS_OMISION = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'indice_total', 'semaforo', 'motivo', 'created_at'];
-      var CAMPOS_PERIODO = ['periodo', 'fecha_inicio', 'fecha_limite_encuesta', 'created_at'];
+      var CAMPOS_PERIODO = ['periodo', 'fecha_inicio', 'fecha_limite_encuesta', 'periodos_abandono', 'created_at'];
+      // Períodos seguidos sin actividad (sin notas ni Encuesta Cuatrimestral) para considerar que un estudiante abandonó: el de la
+      // última entrada de Períodos que lo define, como PeriodoVigente de la Página Tools (v9). Lo usan los informes de trayectoria
+      var PERIODOS_ABANDONO_POR_DEFECTO = 4;
+      var PERIODOS_ABANDONO_MAXIMO = 20;
       // Vista previa: los mismos períodos de prueba que la Página Tools, más los que se agregan al cerrar (localStorage, compartidos
       // con las demás vistas). Las omisiones de la vista previa las leen también el Tablero y el Detalle
       var PERIODOS_PRUEBA = [
@@ -312,14 +316,31 @@
       function ordenarPeriodos(lista) {
         return lista.filter(function(p) { return esPeriodo(p.periodo); }).map(function(p) {
           return { rid: Number(p.rid) || 0, periodo: String(p.periodo).trim(), fecha_inicio: String(p.fecha_inicio || '').trim(),
-            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), created_at: String(p.created_at || '').trim(), autor: p.autor || '' };
+            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), periodos_abandono: String(p.periodos_abandono || '').trim(),
+            created_at: String(p.created_at || '').trim(), autor: p.autor || '' };
         }).sort(function(a, b) { return a.rid - b.rid; });
+      }
+
+      // ENTERO DE 1 A 20, O null
+      function abandonoValido(v) {
+        var t = String(v === null || v === undefined ? '' : v).trim(), n = Number(t);
+        return t !== '' && Math.floor(n) === n && n >= 1 && n <= PERIODOS_ABANDONO_MAXIMO ? n : null;
+      }
+
+      // PERÍODOS SIN ACTIVIDAD PARA EL ABANDONO: EL DE LA ÚLTIMA ENTRADA QUE LO DEFINE (LA MISMA REGLA QUE LA PÁGINA TOOLS)
+      function periodosAbandonoDe(periodos) {
+        for (var i = periodos.length - 1; i >= 0; i--) {
+          var n = abandonoValido(periodos[i].periodos_abandono);
+          if (n !== null) return n;
+        }
+        return PERIODOS_ABANDONO_POR_DEFECTO;
       }
 
       function periodoDePrueba() {
         var periodos = ordenarPeriodos(PERIODOS_PRUEBA.concat(leerAlmacen(CLAVE_PREVIEW_PERIODOS, [])));
         var v = periodos[periodos.length - 1];
-        return { periodo: v.periodo, fecha_inicio: v.fecha_inicio, fecha_limite_encuesta: v.fecha_limite_encuesta, rid: v.rid, fuente: 'prueba', error: '', periodos: periodos };
+        return { periodo: v.periodo, fecha_inicio: v.fecha_inicio, fecha_limite_encuesta: v.fecha_limite_encuesta, rid: v.rid,
+          periodos_abandono: periodosAbandonoDe(periodos), fuente: 'prueba', error: '', periodos: periodos };
       }
 
       // ---------------------------------------------------------
@@ -666,6 +687,70 @@
       }
 
       // ---------------------------------------------------------
+      // RENDERIZADO: PARÁMETROS DE TRAYECTORIA (ABANDONO)
+      // ---------------------------------------------------------
+      function abandonoActual() {
+        return datos && datos.periodo && abandonoValido(datos.periodo.periodos_abandono) || PERIODOS_ABANDONO_POR_DEFECTO;
+      }
+
+      function htmlAbandono() {
+        var n = abandonoActual();
+        var ocupado = !!(cierre && !cierre.terminado);
+        var cuerpo = '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">Un estudiante cuenta como <b style="font-weight: 600 !important; color: #0b0e14 !important;">abandono</b> cuando pasan esta cantidad de períodos cerrados seguidos sin actividad: no cargó notas de 1.er año ni respondió la Encuesta Cuatrimestral. Si después vuelve a tener actividad, deja de contar como abandono. Lo usa el informe Trayectoria y egreso de Reportes.</p>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 16px 24px !important;">' +
+          dato('Períodos sin actividad para el abandono', n + (n === 1 ? ' período' : ' períodos'), n % 2 === 0 ? (n === 2 ? 'un año' : (n / 2) + ' años') : 'cuatrimestres seguidos') + '</div>' +
+          '<div style="display: flex !important; justify-content: flex-end !important; margin-top: 16px !important;">' +
+          boton('btn-abrir-abandono', 'Cambiar', 'secundario', null, !puedeCerrar() || ocupado) + '</div>';
+        return tarjeta('card-abandono-config', 'horario', 'Abandono de la carrera', '', cuerpo);
+      }
+
+      // CAMBIAR EL PARÁMETRO: UNA ENTRADA NUEVA DEL PERÍODO VIGENTE EN PERÍODOS, CON LAS MISMAS FECHAS (LA VIGENTE ES LA ÚLTIMA)
+      function abrirModalAbandono(disparador) {
+        if (!puedeCerrar() || (cierre && !cierre.terminado)) return;
+        modal = { tipo: 'abandono', disparador: disparador };
+        var p = datos.periodo, actual = abandonoActual();
+        $('caja-modal-config').innerHTML =
+          '<div style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 4px !important;">' +
+          '<h5 id="titulo-modal-config" style="margin: 0 !important; font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important;">Períodos sin actividad para el abandono</h5>' +
+          '<div id="btn-cerrar-modal-config" role="button" tabindex="0" aria-label="Cerrar" style="width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: #47536b !important; cursor: pointer !important; flex: 0 0 auto !important;">' + icono('cerrar', 20) + '</div></div>' +
+          '<div id="cuerpo-modal-config">' +
+          '<p style="margin: 8px 0 16px 0 !important; color: #47536b !important;">Se agrega una entrada a la base Períodos con el mismo período (' + escapar(p.periodo) + ') y sus mismas fechas, más el valor nuevo. Los informes lo toman la próxima vez que se abren; no cambia ningún dato guardado.</p>' +
+          '<label for="campo-abandono" style="display: block !important; font-size: 14px !important; font-weight: 500 !important; margin: 0 0 6px 0 !important;">Períodos cerrados seguidos sin actividad</label>' +
+          '<input type="number" id="campo-abandono" min="1" max="' + PERIODOS_ABANDONO_MAXIMO + '" step="1" value="' + actual + '" aria-required="true" aria-describedby="txt-ayuda-abandono" style="' + CAMPO + ' max-width: 160px !important;">' +
+          '<div id="txt-ayuda-abandono" style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">Un número entero de 1 a ' + PERIODOS_ABANDONO_MAXIMO + '. Con 4, un estudiante que no tuvo actividad en dos años seguidos cuenta como abandono.</div>' +
+          '<div id="txt-error-modal" role="alert" style="display: none; color: #910808 !important; font-size: 13px !important; margin-top: 12px !important;"></div>' +
+          '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important; flex-wrap: wrap !important;">' +
+          boton('btn-cancelar-modal', 'Cancelar', 'secundario') + boton('btn-guardar-abandono', 'Guardar', 'principal', 'verificado') + '</div></div>';
+        $('modal-config').style.setProperty('display', 'flex', 'important');
+        $('campo-abandono').focus();
+      }
+
+      function guardarAbandono() {
+        if (!modal || modal.tipo !== 'abandono' || modal.guardando) return;
+        var p = datos.periodo, valor = $('campo-abandono').value, n = abandonoValido(valor);
+        if (n === null) return mostrarError('Períodos cerrados seguidos sin actividad: "' + valor + '" debe ser un número entero de 1 a ' + PERIODOS_ABANDONO_MAXIMO + '.');
+        if (n === abandonoActual()) return mostrarError('Períodos cerrados seguidos sin actividad: ' + n + ' es el valor que ya está definido.');
+        var m = modal;
+        m.guardando = true;
+        var btn = $('btn-guardar-abandono');
+        btn.lastChild.textContent = 'Guardando…';
+        guardarPeriodo({ periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: p.fecha_limite_encuesta, periodos_abandono: n }).then(function(rid) {
+          m.guardando = false;
+          $('aviso-resultado-config').innerHTML = aviso('ok', '<b style="font-weight: 600 !important;">Abandono: ' + n + (n === 1 ? ' período' : ' períodos') + ' sin actividad.</b> Se agregó a la base Períodos (rid ' + escapar(rid) + ').');
+          mostrar($('aviso-resultado-config'), true);
+          cerrarModal();
+          leerYRenderizar().then(function() {
+            var b = $('btn-abrir-abandono');
+            if (b) b.focus();
+          });
+        }, function(e) {
+          m.guardando = false;
+          btn.lastChild.textContent = 'Guardar';
+          mostrarError('No se pudo guardar: ' + (e && e.message ? e.message : e));
+        });
+      }
+
+      // ---------------------------------------------------------
       // RENDERIZADO: CIERRE DEL PERÍODO
       // ---------------------------------------------------------
       function htmlKpi(titulo, valor, pie, tono) {
@@ -741,12 +826,13 @@
         var th = 'border: 0 !important; height: 44px !important; text-align: left !important; padding: 0 8px !important; font-size: 13px !important; font-weight: 500 !important; color: #47536b !important; background-color: #f5f6fa !important;';
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 8px !important; font-size: 13px !important; font-variant-numeric: tabular-nums !important;';
         var tabla = '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;"><table style="width: 100% !important; border-collapse: collapse !important; min-width: 520px !important; margin: 0 !important;">' +
-          '<thead><tr><th style="' + th + ' padding-left: 12px !important;">Período</th><th style="' + th + '">Inicio</th><th style="' + th + '">Fecha límite</th><th style="' + th + '">Plazo</th><th style="' + th + '">Cargado</th></tr></thead><tbody>' +
+          '<thead><tr><th style="' + th + ' padding-left: 12px !important;">Período</th><th style="' + th + '">Inicio</th><th style="' + th + '">Fecha límite</th><th style="' + th + '">Plazo</th><th style="' + th + '">Abandono</th><th style="' + th + '">Cargado</th></tr></thead><tbody>' +
           periodos.map(function(p, i) {
             var dias = esFecha(p.fecha_inicio) && esFecha(p.fecha_limite_encuesta) ? diasEntre(p.fecha_inicio, p.fecha_limite_encuesta) + ' días' : '—';
             return '<tr><td style="' + td + ' padding-left: 12px !important;"><span style="font-weight: 500 !important;">' + escapar(p.periodo) + '</span>' + (i === 0 ? ' ' + chipNeutro('Vigente') : '') + '</td>' +
               '<td style="' + td + '">' + (fechaVisible(p.fecha_inicio) || '—') + '</td><td style="' + td + '">' + (fechaVisible(p.fecha_limite_encuesta) || '—') + '</td>' +
-              '<td style="' + td + '">' + dias + '</td><td style="' + td + '">' + (fechaVisible(p.created_at) || '—') + (p.autor ? ' · ' + escapar(p.autor) : '') + '</td></tr>';
+              '<td style="' + td + '">' + dias + '</td><td style="' + td + '">' + (abandonoValido(p.periodos_abandono) ? abandonoValido(p.periodos_abandono) + ' períodos' : '—') + '</td>' +
+              '<td style="' + td + '">' + (fechaVisible(p.created_at) || '—') + (p.autor ? ' · ' + escapar(p.autor) : '') + '</td></tr>';
           }).join('') + '</tbody></table></div>';
         return tarjeta('card-historial-config', 'horario', 'Historial de períodos', '', tabla);
       }
@@ -757,7 +843,7 @@
             '<div style="display: flex !important; justify-content: flex-end !important; margin-top: 16px !important;">' + boton('btn-releer-config', 'Volver a leer las bases', 'secundario') + '</div>';
           return;
         }
-        $('contenido-config').innerHTML = htmlPeriodo() + htmlCierre() + htmlHistorial();
+        $('contenido-config').innerHTML = htmlPeriodo() + htmlAbandono() + htmlCierre() + htmlHistorial();
       }
 
       function leerYRenderizar() {
@@ -837,7 +923,8 @@
         $('modal-config').style.setProperty('display', 'none', 'important');
         var disparador = modal.disparador, tipo = modal.tipo;
         modal = null;
-        var nuevo = disparador && document.body.contains(disparador) ? disparador : $(tipo === 'limite' ? 'btn-abrir-limite' : 'btn-abrir-cierre') || $('btn-releer-config');
+        var nuevo = disparador && document.body.contains(disparador) ? disparador
+          : $(tipo === 'limite' ? 'btn-abrir-limite' : tipo === 'abandono' ? 'btn-abrir-abandono' : 'btn-abrir-cierre') || $('btn-releer-config');
         if (nuevo) nuevo.focus();
       }
 
@@ -925,7 +1012,9 @@
       }
 
       function guardarPeriodo(p) {
-        var entrada = { periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: p.fecha_limite_encuesta, created_at: ahoraIso() };
+        // Cada entrada repite el parámetro de abandono vigente, salvo que se esté cambiando
+        var abandono = abandonoValido(p.periodos_abandono) || abandonoActual();
+        var entrada = { periodo: p.periodo, fecha_inicio: p.fecha_inicio, fecha_limite_encuesta: p.fecha_limite_encuesta, periodos_abandono: String(abandono), created_at: ahoraIso() };
         if (usaPrueba) {
           return pausa(PAUSA_PREVIEW).then(function() {
             var agregados = leerAlmacen(CLAVE_PREVIEW_PERIODOS, []);
@@ -1066,6 +1155,7 @@
           if (enFondo || t.closest('#btn-cerrar-modal-config') || t.closest('#btn-cancelar-modal')) return cerrarModal();
           if (t.closest('#btn-confirmar-cierre')) return confirmarCierre();
           if (t.closest('#btn-guardar-limite')) return guardarLimite();
+          if (t.closest('#btn-guardar-abandono')) return guardarAbandono();
           return;
         }
         if (t.closest('#btn-falla-preview')) { fallaPreview = !fallaPreview; return marcarFallaPreview(); }
@@ -1075,6 +1165,8 @@
         if (abrir) return abrirModal(abrir);
         var limite = t.closest('#btn-abrir-limite');
         if (limite) return abrirModalLimite(limite);
+        var abandono = t.closest('#btn-abrir-abandono');
+        if (abandono) return abrirModalAbandono(abandono);
       });
 
       document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
@@ -1082,6 +1174,7 @@
       document.addEventListener('input', function(e) {
         if (e.target.id === 'campo-inicio-periodo' || e.target.id === 'campo-limite-periodo') actualizarPlazo();
         if (e.target.id === 'campo-limite-vigente') actualizarPlazoLimite();
+        if (e.target.id === 'campo-abandono') $('txt-error-modal').style.setProperty('display', 'none', 'important');
       });
 
       document.addEventListener('change', function(e) {
