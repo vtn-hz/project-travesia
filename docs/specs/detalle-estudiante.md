@@ -67,7 +67,12 @@ De lo más reciente a lo más viejo, con filtros *Todo*, *Encuestas*, *Notas de 
 
 ## Lectura en Moodle
 
-Como el tablero (Página Tools y `LeerBase`), más CargaParcialesPrimero (por columnas, `tr[data-tipo="entrada_parcial"]`) y Entrevistas. Esas dos solo completan la cronología: si no se pueden leer, el detalle sigue sin ellas.
+Con la Página Tools y `LeerBase`, **solo las entradas del estudiante** (desde el 2026-11-17): la búsqueda de cada base filtra en el servidor con `filter=1&search=<texto>` (sin `filter=1` Moodle la ignora; no queda guardada en la sesión).
+
+1. Estudiantes, filtrada por el id de usuario: de ahí sale el DNI.
+2. En paralelo: Criticidad y Respuestas por id; CargaParcialesPrimero (por columnas, `tr[data-tipo="entrada_parcial"]`) y Entrevistas por DNI; Encuestas entera (una entrada por versión). Las notas y las entrevistas solo completan la cronología: si no se pueden leer, el detalle sigue sin ellas.
+
+La búsqueda encuentra el texto en cualquier campo y puede traer de más; el detalle vuelve a filtrar por id o DNI exacto. Si la URL pide otro estudiante (`#usuario=`), se vuelve a leer. Medido en el campus: de unos 21 s (seis bases enteras, ~1.200 entradas) a unos 3 s.
 
 ## Pendientes
 
