@@ -53,7 +53,9 @@ function resumen() {
   const porDesaprobar = Object.entries(aplicado.entradas).filter(([, a]) => a.desaprobar && !a.desaprobada).length;
   const nuevasOmisiones = datos.criticidad.filter((e) => e.desaprobar && !aplicado.entradas[e.ref]).length;
   console.log(`Omisiones a desaprobar : ${nuevasOmisiones + porDesaprobar}`);
-  const sinEstado = datos.estudiantes.filter((e) => !(aplicado.entradas[e.ref] && aplicado.entradas[e.ref].estado_actual)).length;
+  // Solo cuentan los que tienen alguna entrada automática: sin ellas no hay estado que guardar
+  const conAutomaticas = new Set(datos.criticidad.filter((e) => e.campos.origen === 'automatica' && GRUPO_ESTADO[e.campos.fuente]).map((e) => e.campos.id_usuario));
+  const sinEstado = datos.estudiantes.filter((e) => conAutomaticas.has(e.campos.id_usuario) && !(aplicado.entradas[e.ref] && aplicado.entradas[e.ref].estado_actual)).length;
   console.log(`Estado actual (ADR-011): ${sinEstado} estudiantes sin completar (se completa al final, con todo Criticidad aplicado)`);
   console.log(`Total por crear        : ${total}${limite < Infinity ? ` (esta corrida: como mucho ${limite})` : ''}`);
   return total;
