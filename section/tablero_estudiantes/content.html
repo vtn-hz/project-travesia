@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Tablero de Criticidad" (cmid 60287) · 2026-11-18 -->
 <!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) · "VER DETALLE" ABRE detalle_estudiante -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: bases Estudiantes (lista de estudiantes), Criticidad (calculado y asignado, ADR-007) y Respuestas (qué encuesta es cada envío). Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
+<!-- DATOS: bases Estudiantes (lista de estudiantes) y Criticidad (calculado y asignado, ADR-007). No lee Respuestas: desde que se borró la Encuesta Inicial (ADR-008), toda entrada de Criticidad con fuente respuestas es de la Cuatrimestral. Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -151,7 +151,6 @@
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
-      var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
       var CMID_DETALLE = 60288; // @config paginas.detalle
@@ -188,9 +187,7 @@
       var TIPOS = {
         notas: 'Notas de parciales',
         cuatrimestral: 'Encuesta Cuatrimestral',
-        omision: 'Encuesta no respondida',
-        inicial: 'Encuesta Inicial',
-        encuesta: 'Encuesta'
+        omision: 'Encuesta no respondida'
       };
 
       // ---------------------------------------------------------
@@ -232,17 +229,6 @@
         { rid: 91006, id_usuario: '3751', dni: '99000004', nombre: 'Santiago', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-09-20T12:00:00-03:00' }
       ];
 
-      // Base Respuestas: solo importa qué encuesta es cada envío
-      var RESPUESTAS_PRUEBA = [
-        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '' },
-        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1' },
-        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2' },
-        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1' },
-        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '' },
-        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2' },
-        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2' }
-      ];
-
       // Base Criticidad: una entrada por evento (ADR-007)
       function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha, motivo) {
         return { rid: rid, id_usuario: id, dni: dni, periodo: periodo, origen: 'automatica', fuente: fuente, rid_fuente: ridFuente, indice: String(indice), semaforo: '', motivo: motivo || '', autor: '', created_at: fecha };
@@ -268,13 +254,11 @@
         // Nicolás: pasó a 2.º año en 2025-1; no respondió la Cuatrimestral 2026-2; tiene un estado asignado
         automatica(1031, '3773', '99000006', '2024-1', 'notas_1ro', '531', 58, '2024-06-20T18:00:00-03:00'),
         automatica(1032, '3773', '99000006', '2024-2', 'notas_1ro', '532', 47, '2024-11-15T18:00:00-03:00'),
-        automatica(1033, '3773', '99000006', '2024-1', 'respuestas', '5001', 100, '2024-04-02T11:00:00-03:00'),
         automatica(1034, '3773', '99000006', '2025-1', 'respuestas', '5002', 35, '2025-04-15T10:20:00-03:00'),
         automatica(1035, '3773', '99000006', '2025-2', 'respuestas', '5003', 45, '2025-09-10T15:00:00-03:00'),
         automatica(1036, '3773', '99000006', '2026-1', 'respuestas', '5004', 40, '2026-04-10T14:30:00-03:00'),
         manual(1037, '3773', '99000006', '2026-2', 'rojo', 'Entrevista: está por dejar dos materias por el trabajo.', 'Valentino Hernández Pascual', '2026-10-08T16:00:00-03:00'),
         // Nahuel: 2.º año en adelante; una omisión en 2026-1; recursa una materia de 1.er año; el tutor lo ve mejor que el calculado
-        automatica(1041, '3623', '99000003', '2022-1', 'respuestas', '5011', 0, '2022-04-20T16:40:00-03:00'),
         automatica(1042, '3623', '99000003', '2025-2', 'respuestas', '5012', 30, '2025-09-05T11:00:00-03:00'),
         automatica(1043, '3623', '99000003', '2026-1', 'omision', '', 60, '2026-07-31T23:59:00-03:00', 'No respondió la Encuesta Cuatrimestral 2026-1'),
         automatica(1044, '3623', '99000003', '2026-2', 'respuestas', '5013', 47, '2026-09-02T11:48:00-03:00'),
@@ -382,11 +366,12 @@
         return lista.slice().sort(function(a, b) { return tiempoDe(a) - tiempoDe(b) || (Number(a.rid) || 0) - (Number(b.rid) || 0); }).pop() || null;
       }
 
-      // TIPO DE UNA ENTRADA AUTOMÁTICA: notas, cuatrimestral, inicial, omision o encuesta (respuesta que no está en Respuestas)
-      function tipoDeEntrada(c, encuestas) {
+      // TIPO DE UNA ENTRADA AUTOMÁTICA: notas, cuatrimestral u omision. Desde que se borró la Encuesta Inicial (ADR-008, sin entradas en
+      // el campus), toda entrada con fuente respuestas es de la Cuatrimestral. Si se suma otra encuesta, que guarde otra fuente
+      function tipoDeEntrada(c) {
         if (c.fuente === 'notas_1ro' || c.fuente === 'materias') return 'notas';
         if (c.fuente === 'omision') return 'omision';
-        if (c.fuente === 'respuestas') return encuestas[String(c.rid_fuente)] || 'encuesta';
+        if (c.fuente === 'respuestas') return 'cuatrimestral';
         return null;
       }
 
@@ -399,11 +384,11 @@
         cuatrimestral: { titulo: 'Encuesta', tipos: ['cuatrimestral', 'omision'], sinDatos: 'Sin encuesta en ' }
       };
 
-      function fuenteDe(clave, entradas, encuestas, conAnterior) {
+      function fuenteDe(clave, entradas, conAnterior) {
         var delPeriodo = function(periodo) {
           return entradas.filter(function(c) {
             if (c.origen !== 'automatica' || String(c.periodo) !== periodo || numero(c.indice) === null) return false;
-            return FUENTES[clave].tipos.indexOf(tipoDeEntrada(c, encuestas)) !== -1;
+            return FUENTES[clave].tipos.indexOf(tipoDeEntrada(c)) !== -1;
           });
         };
         var ultima = masReciente(delPeriodo(PERIODO_ACTUAL)) || (conAnterior ? masReciente(delPeriodo(PERIODO_ANTERIOR)) : null);
@@ -412,18 +397,18 @@
             motivo: FUENTES[clave].sinDatos + PERIODO_ACTUAL + '.' };
         }
         var indice = numero(ultima.indice);
-        var tipo = tipoDeEntrada(ultima, encuestas);
+        var tipo = tipoDeEntrada(ultima);
         var anterior = String(ultima.periodo) !== PERIODO_ACTUAL;
         return { nivel: nivelDeIndice(indice), indice: indice, tipo: tipo, fecha: ultima.created_at, entrada: ultima,
           periodo: String(ultima.periodo), anterior: anterior,
           motivo: TIPOS[tipo] + (anterior ? ' (período ' + ultima.periodo + ')' : '') + ' del ' + fechaVisible(ultima.created_at) + ': índice ' + indice + (ultima.motivo ? ' (' + ultima.motivo + ')' : '') };
       }
 
-      function criticidadDe(tramo, entradas, encuestas) {
+      function criticidadDe(tramo, entradas) {
         var principal = tramo === 'primero' ? 'parciales' : 'cuatrimestral';
         var fuentes = {
-          parciales: fuenteDe('parciales', entradas, encuestas, principal === 'parciales'),
-          cuatrimestral: fuenteDe('cuatrimestral', entradas, encuestas, principal === 'cuatrimestral')
+          parciales: fuenteDe('parciales', entradas, principal === 'parciales'),
+          cuatrimestral: fuenteDe('cuatrimestral', entradas, principal === 'cuatrimestral')
         };
         var calculado = fuentes[principal];
         var ultimaManual = masReciente(entradas.filter(function(c) { return c.origen === 'manual'; }));
@@ -531,17 +516,16 @@
       // ---------------------------------------------------------
       // CARGA DE DATOS (BASES PROPIAS O DATOS DE PRUEBA)
       // ---------------------------------------------------------
-      var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_CRITICIDAD || !DATAID_RESPUESTAS;
+      var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_CRITICIDAD;
 
       function cargarDatos() {
         if (usaPrueba) {
           $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
-          if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes, Criticidad o Respuestas) en este script.';
+          if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes o Criticidad) en este script.';
           fijarPeriodo(periodoDePrueba());
           return Promise.resolve({
             estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview()),
-            respuestas: RESPUESTAS_PRUEBA
+            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview())
           });
         }
         return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
@@ -550,11 +534,10 @@
         }).then(function(Tools) {
           return Promise.all([
             leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA }),
-            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA }),
-            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS, porPagina: POR_PAGINA })
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA })
           ]);
         }).then(function(r) {
-          return { estudiantes: r[0], criticidad: r[1], respuestas: r[2] };
+          return { estudiantes: r[0], criticidad: r[1] };
         });
       }
 
@@ -572,8 +555,6 @@
 
       // UNA FILA POR ESTUDIANTE DE LA BASE ESTUDIANTES
       function procesar() {
-        var encuestas = {};
-        datos.respuestas.forEach(function(r) { encuestas[String(r.rid)] = r.codigo_encuesta; });
         var porUsuario = {};
         datos.criticidad.forEach(function(c) { (porUsuario[String(c.id_usuario)] = porUsuario[String(c.id_usuario)] || []).push(c); });
         // Si un estudiante tiene varias entradas en Estudiantes, vale la más nueva
@@ -587,12 +568,12 @@
         filas = ids.map(function(id) {
           var e = estudiantes[id] || null;
           var entradas = porUsuario[id] || [];
-          var tieneNotas = entradas.some(function(c) { return tipoDeEntrada(c, encuestas) === 'notas'; });
+          var tieneNotas = entradas.some(function(c) { return tipoDeEntrada(c) === 'notas'; });
           // Sin información personal no se sabe el tramo: con notas cargadas se toma 1.er año
           var tramo = e ? (e.es_primer_anio === 'si' ? 'primero' : 'superior') : (tieneNotas ? 'primero' : 'superior');
           var dni = e ? e.dni : (entradas[0] && entradas[0].dni) || '';
           var nombre = e ? (String(e.nombre || '') + ' ' + String(e.apellido || '')).trim() : '';
-          var crit = criticidadDe(tramo, entradas, encuestas);
+          var crit = criticidadDe(tramo, entradas);
           return {
             id: id, dni: dni, nombre: nombre || 'DNI ' + dni, conInfo: !!e, tramo: tramo,
             cohorte: e && e.anio_ingreso ? e.anio_ingreso + '-' + e.cuatrimestre_ingreso : '',
@@ -1003,7 +984,7 @@
       if (ES_VISTA_LOCAL) crearBarraPreview();
       aplicarRol(ROL_INICIAL);
       $('cuerpo-tabla-estudiantes').innerHTML =
-        '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes, Criticidad y Respuestas…</td></tr>';
+        '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes y Criticidad…</td></tr>';
       cargarDatos().then(function(d) {
         datos = d;
         $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
