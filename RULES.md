@@ -13,7 +13,7 @@ Estas reglas están por encima de todas las demás.
    - Lo que está en Moodle es una copia de lo que está en el repo, nunca al revés. Primero se cambia el repo y después se publica.
    - Cada archivo publicado indica en un comentario inicial **dónde vive en Moodle** (sección, actividad o campo, y su `id`).
    - Si algo se cambia directamente en Moodle, se trae al repo en el mismo momento.
-5. **Datos de prueba = integrantes de Zhakyz.** Toda información de prueba usa a los 6 integrantes del equipo (ver `docs/context/EQUIPO_ZHAKYZ.md`) con datos académicos ficticios. No se inventan personas y no se usan datos de estudiantes reales.
+5. **Datos de prueba = integrantes de Zhakyz.** Toda información de prueba usa a los 6 integrantes del equipo (ver `docs/context/EQUIPO_ZHAKYZ.md`) con datos académicos ficticios. No se inventan personas y no se usan datos de estudiantes reales. **Excepción:** el conjunto de demo del campus ([`data/prueba`](data/prueba/README.md)), 60 estudiantes ficticios con id de usuario 900001–900060, que se carga y se borra completo con sus scripts.
 6. **No se reutilizan bases de datos de otros equipos.** Nuestras actividades leen y escriben solo bases creadas en la sección Zhakyz.
 7. Toda automatización (por ejemplo, Playwright) bloquea por defecto cualquier petición que no sea `GET` y cualquier URL con `sesskey`. Solo se habilita la escritura puntual que se confirmó, limitada a la sección 15647.
 8. **Los datos del entorno y los ids de Moodle viven en [`moodle.config.json`](moodle.config.json)** (campus, curso, sección Zhakyz, subsecciones, páginas y bases). Si cambia un id, se cambia ahí y se corre `node .skills/publicar-seccion/sincronizar_config.js`; nunca se edita el número a mano en una sección.
