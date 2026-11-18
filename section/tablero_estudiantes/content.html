@@ -4,7 +4,7 @@
 <!-- DATOS: bases Estudiantes (lista de estudiantes y, desde el ADR-011, el estado actual: la última entrada de cada fuente) y Criticidad (con el estado actual, solo los estados asignados; sin él, todo: ADR-007). No lee Respuestas: desde que se borró la Encuesta Inicial (ADR-008), toda entrada de Criticidad con fuente respuestas es de la Cuatrimestral. Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
-  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
+  style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 1280px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
   <!-- SIN FILTROS DE MOODLE: <nolink> evita que el autoenlace convierta palabras en links a actividades de otros equipos -->
   <nolink>
 
@@ -70,8 +70,26 @@
       <span data-icono="descargar"></span>Exportar CSV</div>
   </div>
 
+  <!-- PAGINACIÓN -->
+  <div id="paginacion-tabla"
+    style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: flex-end !important; gap: 8px 24px !important; margin: 0 0 8px 0 !important; color: #47536b !important; font-size: 13px !important;">
+    <label style="display: inline-flex !important; align-items: center !important; gap: 8px !important; margin: 0 !important; font-weight: 400 !important; color: #47536b !important;">Filas por página
+      <select id="filtro-filas-pagina" aria-label="Filas por página"
+        style="height: 32px !important; padding: 0 8px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #ffffff !important; color: #0b0e14 !important; font-size: 13px !important;">
+        <option value="10">10</option>
+        <option value="25" selected>25</option>
+        <option value="50">50</option>
+      </select>
+    </label>
+    <span id="txt-total-filtrados" aria-live="polite" style="font-variant-numeric: tabular-nums !important;"></span>
+    <div style="display: inline-flex !important; gap: 4px !important;">
+      <div id="btn-pagina-anterior" data-pagina="-1" role="button" tabindex="0" aria-label="Página anterior"></div>
+      <div id="btn-pagina-siguiente" data-pagina="1" role="button" tabindex="0" aria-label="Página siguiente"></div>
+    </div>
+  </div>
+
   <!-- TABLA DE ESTUDIANTES -->
-  <div style="position: relative !important; overflow-x: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
+  <div id="scroll-tabla-estudiantes" style="position: relative !important; overflow: auto !important; max-height: 70vh !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;">
     <table id="tabla-estudiantes" tabindex="-1"
       style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important; min-width: 860px !important; margin: 0 !important;">
       <thead>
@@ -87,9 +105,6 @@
       <tbody id="cuerpo-tabla-estudiantes"></tbody>
     </table>
   </div>
-  <p id="txt-total-filtrados"
-    style="margin: 8px 0 0 0 !important; color: #47536b !important; font-size: 12px !important;"></p>
-
   <!-- PIE DE PÁGINA ZHAKYZ -->
   <div id="footer-zhakyz"
     style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 6px 16px !important; margin: 24px 0 0 0 !important; padding: 14px 0 0 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; font-size: 12px !important; color: #47536b !important; text-align: left !important;">
@@ -121,6 +136,7 @@
           '@keyframes zk-aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }' +
           '#tablero-estudiantes [role="button"]:focus-visible, #tablero-estudiantes input:focus-visible, #tablero-estudiantes select:focus-visible, #tablero-estudiantes textarea:focus-visible, #tablero-estudiantes tr[tabindex]:focus-visible, #tablero-estudiantes [data-kpi]:focus-visible { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }' +
           '#cuerpo-tabla-estudiantes tr[data-usuario]:hover { background-color: rgba(218, 222, 231, 0.2); }' +
+          '#tabla-estudiantes thead th { position: sticky; top: 0; z-index: 1; background-color: #ffffff !important; box-shadow: inset 0 -1px 0 rgba(194, 201, 214, 0.4); }' +
           '#tablero-estudiantes [data-kpi]:hover, #tablero-estudiantes [data-opcion-nivel]:hover { border-color: #c2c9d6 !important; }' +
           '#tablero-estudiantes [data-opcion-nivel]:focus-within { outline: 3px solid rgba(2, 107, 212, 0.5); outline-offset: 2px; }';
         document.head.appendChild(styleEl);
@@ -148,9 +164,9 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
 
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
-      var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
+      var DATAID_PERIODOS = 207; // @config bases.periodos.dataid
       // Detalle del estudiante: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_DETALLE_LOCAL = '../detalle_estudiante/content.html';
       var CMID_DETALLE = 60288; // @config paginas.detalle
@@ -161,8 +177,7 @@
       var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
       // Estados asignados en la vista previa (los comparte con el detalle)
       var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
-      // Espera máxima (milisegundos) de la Página Tools y de cada base
-      var ESPERA_TOOLS = 20000;
+      // Espera máxima (milisegundos) de cada base
       var ESPERA_BASE = 60000;
       // Entradas por pedido al leer cada base (LeerBase usa 500 por defecto). Moodle atiende los pedidos de una sesión de a uno,
       // así que una base de 577 entradas en dos pedidos tardaba unos 12 s y en uno solo, unos 8 s (medido en el campus el 2026-11-17)
@@ -329,9 +344,9 @@
         PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
       }
 
-      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
-      function leerPeriodo(Tools) {
-        return (typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null)).then(fijarPeriodo);
+      // EN MOODLE: EL PERÍODO VIGENTE DE LA BASE PERÍODOS (leerPeriodoVigente, del bloque COPIA DE TOOLS)
+      function leerPeriodo() {
+        return leerPeriodoVigente().then(fijarPeriodo);
       }
 
       function escribirAlmacen(clave, valor) {
@@ -419,31 +434,146 @@
       // ---------------------------------------------------------
       // ACCESO A DATOS EN MOODLE
       // ---------------------------------------------------------
-      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
-      function cargarTools() {
-        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
-        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
-        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
-        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
-          .then(function(r) {
-            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
-            return r.text();
-          })
-          .then(function(html) {
-            // La biblioteca es un script muerto (type="text/plain"): se lee su texto y se ejecuta en esta vista
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
-            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
-            var s = document.createElement('script');
-            s.setAttribute('data-base', url);
-            s.textContent = biblioteca.textContent;
-            document.head.appendChild(s);
-            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
-            return window.ZhakyzTools;
-          });
-        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
-        return window.ZhakyzToolsCarga;
+      // ---------------------------------------------------------
+      // COPIA DE TOOLS: INICIO (bloque idéntico en section/tablero_estudiantes y section/detalle_estudiante)
+      // ---------------------------------------------------------
+      // LeerBase y la regla de PeriodoVigente de section/utils/tools, copiadas para no esperar la carga de la Página Tools (0,4 a 2,4 s)
+      // antes de leer las bases. Si cambian en Tools, actualizar este bloque en las DOS secciones y correr
+      // `node .skills/publicar-seccion/verificar_copias_tools.js` (ver RULES.md, "Código copiado de Tools"). Necesita DATAID_PERIODOS.
+      var LEER_BASE_MAXIMO = 20000;
+      // El período vigente se guarda 12 horas (localStorage; no es un dato personal) y lo comparten el Tablero y el Detalle
+      var CLAVE_PERIODO_GUARDADO = 'zk-periodo-vigente';
+      var VIGENCIA_PERIODO = 12 * 60 * 60 * 1000;
+
+      // TEXTO DE UNA CELDA, CON LOS SALTOS DE LÍNEA DE LOS <br> Y DE LOS PÁRRAFOS
+      function textoCelda(el) {
+        var c = el.cloneNode(true);
+        c.querySelectorAll('br').forEach(function(br) { br.replaceWith('\n'); });
+        c.querySelectorAll('p, div').forEach(function(x) { x.append('\n'); });
+        return c.textContent.replace(/ +\n/g, '\n').trim();
       }
+
+      // rid DE UNA ENTRADA: data-rid, o el de un enlace de la entrada (Mostrar más, Editar o Borrar)
+      function ridDe(el) {
+        if (el.getAttribute('data-rid')) return el.getAttribute('data-rid');
+        var a = el.querySelector('a[href*="rid="], a[href*="delete="]');
+        var m = a ? (a.getAttribute('href') || '').match(/[?&](?:rid|delete)=(\d+)/) : null;
+        return m ? m[1] : null;
+      }
+
+      // ENTRADAS DE UNA PÁGINA DEL LISTADO: { formato, entradas: [{ rid, campos, alta }] }
+      function entradasDePagina(doc, o) {
+        var zona = doc.querySelector('#region-main') || doc.querySelector('[role="main"]') || doc.body;
+        var lista = function(nodos, leer) { return Array.prototype.map.call(nodos, leer); };
+        if (o.filas) {
+          return { formato: 'columnas', entradas: lista(zona.querySelectorAll(o.filas), function(f) {
+            var campos = {};
+            var celdas = f.querySelectorAll(':scope > td');
+            o.columnas.forEach(function(nombre, i) { if (nombre && celdas[i]) campos[nombre] = textoCelda(celdas[i]); });
+            return { rid: ridDe(f), campos: campos };
+          }) };
+        }
+        var propias = zona.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return { formato: 'propio', entradas: lista(propias, function(f) {
+            var campos = {};
+            f.querySelectorAll('[data-campo]').forEach(function(c) { campos[c.getAttribute('data-campo')] = textoCelda(c); });
+            var e = { rid: ridDe(f), campos: campos };
+            if (f.hasAttribute('data-alta')) e.alta = Number(f.getAttribute('data-alta')) || f.getAttribute('data-alta');
+            return e;
+          }) };
+        }
+        var defecto = zona.querySelectorAll('.defaulttemplate-listentry');
+        return { formato: defecto.length ? 'defecto' : null, entradas: lista(defecto, function(e) {
+          var campos = {};
+          e.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            if (fila.children.length >= 2) campos[fila.children[0].textContent.trim()] = textoCelda(fila.children[1]);
+          });
+          return { rid: ridDe(e), campos: campos };
+        }) };
+      }
+
+      // ÚLTIMA PÁGINA ENLAZADA EN LA BARRA DE PÁGINAS (null SI NO HAY BARRA)
+      function ultimaEnlazada(doc) {
+        var nums = [];
+        doc.querySelectorAll('.pagination a[href], .paging a[href]').forEach(function(a) {
+          var m = (a.getAttribute('href') || '').match(/[?&]page=(\d+)/);
+          if (m) nums.push(Number(m[1]));
+        });
+        return nums.length ? Math.max.apply(null, nums) : null;
+      }
+
+      // ERROR DE LA PÁGINA: SESIÓN VENCIDA O SIN PERMISO PARA VER LA BASE (null SI LA PÁGINA ES EL LISTADO)
+      function errorDePagina(r, doc) {
+        if (/\/login\/index\.php/.test(r.url || '') || doc.querySelector('form#login')) return 'La sesión de Moodle venció: hay que volver a entrar.';
+        var e = doc.querySelector('.errorbox .errormessage, .errormessage');
+        return e ? 'Moodle no muestra la base: ' + e.textContent.trim() : null;
+      }
+
+      // { dataid, porPagina, filas, columnas, filtro } → Promise de { entradas: [{ rid, campos, alta }], completa }.
+      // Como LeerBase con paralelo = 1: página por página, sin repetir entradas ni pasar de la última página de la barra
+      function leerBaseMoodle(o) {
+        if (!o.dataid) return Promise.reject(new Error('Falta el dataid de la base.'));
+        var porPagina = Math.max(1, Math.floor(o.porPagina || 500));
+        var tope = Math.ceil(LEER_BASE_MAXIMO / porPagina) + 1;
+        var resultado = { entradas: [], completa: true };
+        var vistos = {}, leidas = 0;
+        function pedir(n) {
+          var url = M.cfg.wwwroot + '/mod/data/view.php?d=' + o.dataid + '&perpage=' + porPagina + '&page=' + n;
+          return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió HTTP ' + r.status + ' en la página ' + (n + 1) + ' de la base.');
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var error = errorDePagina(r, doc);
+              if (error) throw new Error(error);
+              var p = entradasDePagina(doc, o);
+              p.ultima = ultimaEnlazada(doc);
+              return p;
+            });
+          });
+        }
+        function desde(n) {
+          return pedir(n).then(function(p) {
+            p.entradas.forEach(function(e) {
+              if (e.rid && vistos[e.rid]) return;
+              if (e.rid) vistos[e.rid] = true;
+              leidas++;
+              if (leidas <= LEER_BASE_MAXIMO && (!o.filtro || o.filtro(e))) resultado.entradas.push(e);
+            });
+            var hayMas = p.entradas.length === porPagina && (p.ultima === null || p.ultima > n);
+            if (!hayMas) return resultado;
+            if (leidas >= LEER_BASE_MAXIMO || n + 1 >= tope) { resultado.completa = false; return resultado; }
+            return desde(n + 1);
+          });
+        }
+        return desde(0);
+      }
+
+      // PERÍODO GUARDADO (null SI NO HAY O TIENE MÁS DE 12 HORAS)
+      function periodoGuardado() {
+        try {
+          var g = JSON.parse(window.localStorage.getItem(CLAVE_PERIODO_GUARDADO) || 'null');
+          return g && /^\d{4}-[12]$/.test(String(g.periodo)) && Date.now() - (Number(g.guardado_en) || 0) < VIGENCIA_PERIODO ? g : null;
+        } catch (e) { return null; }
+      }
+
+      // PERÍODO VIGENTE DE LA BASE PERÍODOS: la entrada válida de rid mayor (regla de PeriodoVigente). Lo guarda al leerlo.
+      // Si la lectura falla, devuelve el último guardado aunque tenga más de 12 horas, o null (el período por defecto)
+      function leerPeriodoVigente() {
+        return leerBaseMoodle({ dataid: DATAID_PERIODOS, porPagina: 500 }).then(function(r) {
+          var validos = r.entradas.filter(function(e) { return /^\d{4}-[12]$/.test(String(e.campos.periodo || '').trim()); })
+            .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+          if (!validos.length) throw new Error('La base Períodos no tiene ningún período con el formato AAAA-n.');
+          var p = { periodo: String(validos[validos.length - 1].campos.periodo).trim(), guardado_en: Date.now() };
+          try { window.localStorage.setItem(CLAVE_PERIODO_GUARDADO, JSON.stringify(p)); } catch (e) { /* sin almacenamiento */ }
+          return p;
+        }).catch(function() {
+          try { return JSON.parse(window.localStorage.getItem(CLAVE_PERIODO_GUARDADO) || 'null'); } catch (e) { return null; }
+        });
+      }
+      // ---------------------------------------------------------
+      // COPIA DE TOOLS: FIN
+      // ---------------------------------------------------------
 
       // ESPERA UNA PROMESA COMO MUCHO "ms": UNA BASE QUE NO RESPONDE NO DEJA LA PÁGINA CARGANDO PARA SIEMPRE
       function conLimite(promesa, ms, que) {
@@ -454,8 +584,8 @@
 
       // ENTRADAS DE UNA BASE (opciones de LeerBase), CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA.
       // Si LeerBase llegó a su tope, la lista queda marcada como incompleta
-      function leerBase(Tools, nombre, opciones) {
-        return conLimite(Tools.LeerBase(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+      function leerBase(nombre, opciones) {
+        return conLimite(leerBaseMoodle(opciones), ESPERA_BASE, 'La base ' + nombre).then(function(r) {
           var lista = r.entradas.map(function(e) {
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
@@ -560,39 +690,78 @@
         });
       }
 
+      // VISTA PREVIA CON MUCHOS ESTUDIANTES (?estudiantes=400 en la dirección, hasta 2000): ficticios, generados siempre igual,
+      // para probar la paginación y los filtros. Sin el parámetro, solo los 6 del equipo
+      function cantidadExtraPrueba() {
+        var m = window.location.search.match(/[?&]estudiantes=(\d+)/);
+        return m ? Math.min(2000, Math.max(0, Number(m[1]) - ESTUDIANTES_PRUEBA.length)) : 0;
+      }
+
+      function estudiantesGenerados(n) {
+        var NOMBRES = ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Facundo', 'Gabriela', 'Hernán', 'Inés', 'Joaquín', 'Julieta', 'Lautaro', 'Martina', 'Matías', 'Micaela', 'Nicolás', 'Paula', 'Rodrigo', 'Sofía', 'Tomás', 'Valeria', 'Agustín', 'Florencia', 'Ignacio', 'Lucía'];
+        var APELLIDOS = ['Acosta', 'Benítez', 'Castro', 'Domínguez', 'Fernández', 'Giménez', 'Herrera', 'Ibarra', 'Juárez', 'López', 'Medina', 'Núñez', 'Ortiz', 'Pereyra', 'Quiroga', 'Romero', 'Sosa', 'Torres', 'Vega', 'Aguirre', 'Molina', 'Rojas', 'Suárez', 'Ríos'];
+        var COHORTES = [['2026', '1'], ['2026', '1'], ['2025', '2'], ['2025', '1'], ['2024', '1'], ['2023', '2'], ['2022', '1']];
+        var semilla = 7;
+        function azar() { semilla = (semilla * 16807) % 2147483647; return semilla / 2147483647; }
+        function elegir(l) { return l[Math.floor(azar() * l.length)]; }
+        var estudiantes = [], criticidad = [];
+        for (var i = 0; i < n; i++) {
+          var id = String(80000 + i), dni = String(98000000 + i), c = elegir(COHORTES), primero = c[0] === '2026';
+          estudiantes.push({ rid: 92000 + i, id_usuario: id, dni: dni, nombre: elegir(NOMBRES), apellido: elegir(APELLIDOS) + ' ' + elegir(APELLIDOS),
+            email: 'estudiante' + i + '@ejemplo.edu.ar', es_primer_anio: primero ? 'si' : 'no', anio_ingreso: c[0], cuatrimestre_ingreso: c[1],
+            periodo_paso_superior: '', alta: c[0] + '-03-15T10:00:00-03:00' });
+          var dia = String(1 + Math.floor(azar() * 27)).padStart(2, '0');
+          if (azar() < 0.9) {
+            var fuente = primero ? 'notas_1ro' : (azar() < 0.15 ? 'omision' : 'respuestas');
+            criticidad.push(automatica(200000 + i * 3, id, dni, '2026-2', fuente, fuente === 'omision' ? '' : String(300000 + i), Math.floor(azar() * 101),
+              '2026-10-' + dia + 'T18:00:00-03:00', fuente === 'omision' ? 'No respondió la Encuesta Cuatrimestral 2026-2' : ''));
+          }
+          if (!primero && azar() < 0.2) criticidad.push(automatica(200001 + i * 3, id, dni, '2026-2', 'notas_1ro', String(310000 + i), Math.floor(azar() * 101), '2026-09-' + dia + 'T19:00:00-03:00'));
+          if (azar() < 0.08) criticidad.push(manual(200002 + i * 3, id, dni, '2026-2', elegir(['rojo', 'amarillo', 'verde']), 'Entrevista de seguimiento.', 'Luca Zuanetti', '2026-11-' + dia + 'T11:00:00-03:00'));
+        }
+        return { estudiantes: estudiantes, criticidad: criticidad };
+      }
+
       function datosDePrueba() {
-        var todas = CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview());
+        var extra = estudiantesGenerados(cantidadExtraPrueba());
+        var todas = CRITICIDAD_PRUEBA.concat(extra.criticidad, asignadosPreview(), cierrePreview());
         return {
-          estudiantes: conEstadoActual(ESTUDIANTES_PRUEBA, todas),
+          estudiantes: conEstadoActual(ESTUDIANTES_PRUEBA.concat(extra.estudiantes), todas),
           criticidad: todas.filter(function(c) { return c.origen === 'manual'; }),
           estadoActual: true
         };
       }
 
+      // ESTUDIANTES Y LOS ESTADOS ASIGNADOS SALEN A LA VEZ. Si la base no tiene los campos del estado actual, después se lee Criticidad entera
+      function leerBases() {
+        var leerEstudiantes = leerBase('Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA });
+        // Solo los estados asignados: la búsqueda filtra en el servidor (filter=1; sin eso Moodle la ignora) y LeerBase arma la
+        // dirección con "d=" + dataid, así que el filtro viaja en ese valor. "manual" puede aparecer en otro campo: se vuelve a filtrar
+        var leerManuales = leerBase('Criticidad', { dataid: String(DATAID_CRITICIDAD) + '&filter=1&search=manual', porPagina: POR_PAGINA,
+          filtro: function(e) { return String((e.campos || {}).origen || '').trim() === 'manual'; } });
+        return Promise.all([leerEstudiantes, leerManuales]).then(function(r) {
+          if (tieneEstadoActual(r[0])) return { estudiantes: r[0], criticidad: r[1], estadoActual: true };
+          return leerBase('Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA })
+            .then(function(c) { return { estudiantes: r[0], criticidad: c, estadoActual: false }; });
+        });
+      }
+
+      // DEVUELVE { datos, revisar }: revisar (si existe) relee el período en segundo plano y, si cambió, vuelve a leer las bases
       function cargarDatos() {
         if (usaPrueba) {
           $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
           if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes o Criticidad) en este script.';
           fijarPeriodo(periodoDePrueba());
-          return Promise.resolve(datosDePrueba());
+          return Promise.resolve({ datos: datosDePrueba() });
         }
-        var Tools;
-        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(T) {
-          Tools = T;
-          // El período va primero: el filtro de Criticidad lo usa mientras lee
-          return leerPeriodo(Tools);
-        }).then(function() {
-          return leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA });
-        }).then(function(estudiantes) {
-          if (tieneEstadoActual(estudiantes)) {
-            // Solo los estados asignados: la búsqueda filtra en el servidor (filter=1; sin eso Moodle la ignora) y LeerBase arma la
-            // dirección con "d=" + dataid, así que el filtro viaja en ese valor. "manual" puede aparecer en otro campo: se vuelve a filtrar
-            return leerBase(Tools, 'Criticidad', { dataid: String(DATAID_CRITICIDAD) + '&filter=1&search=manual', porPagina: POR_PAGINA,
-              filtro: function(e) { return String((e.campos || {}).origen || '').trim() === 'manual'; } })
-              .then(function(criticidad) { return { estudiantes: estudiantes, criticidad: criticidad, estadoActual: true }; });
-          }
-          return leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA })
-            .then(function(criticidad) { return { estudiantes: estudiantes, criticidad: criticidad, estadoActual: false }; });
+        // Con un período guardado no se espera a la base Períodos: se relee después de dibujar (revisar) y, si cambió, se leen otra vez las bases
+        var guardado = periodoGuardado();
+        if (guardado) fijarPeriodo(guardado);
+        var periodo = guardado ? Promise.resolve() : leerPeriodo();
+        return periodo.then(leerBases).then(function(d) {
+          return { datos: d, revisar: guardado ? function() {
+            return leerPeriodo().then(function() { return PERIODO_ACTUAL === String(guardado.periodo) ? null : leerBases(); });
+          } : null };
         });
       }
 
@@ -603,6 +772,9 @@
       var datos = null;
       var filas = [];
       var filtroKpi = '';
+      var pagina = 1;
+      var filasPorPagina = 25;
+      try { var guardadas = Number(localStorage.getItem('zk-tablero-filas-pagina')); if ([10, 25, 50].indexOf(guardadas) !== -1) filasPorPagina = guardadas; } catch (e) {}
       var incompletas = []; // bases que LeerBase no leyó enteras
       var modal = null; // { fila, disparador, guardando }
       var pulsadoEn = null; // dónde empezó el último clic: arrastrar desde la caja hasta el fondo no cierra el modal
@@ -734,7 +906,11 @@
 
       // TABLA
       function renderizarTabla() {
-        var lista = filasFiltradas();
+        var todas = filasFiltradas();
+        var totalPaginas = Math.max(1, Math.ceil(todas.length / filasPorPagina));
+        pagina = Math.min(Math.max(1, pagina), totalPaginas);
+        var desde = (pagina - 1) * filasPorPagina;
+        var lista = todas.slice(desde, desde + filasPorPagina);
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; height: 52px !important; padding: 8px !important; vertical-align: middle !important;';
         $('cuerpo-tabla-estudiantes').innerHTML = lista.length ? lista.map(function(f) {
           var asignado = f.asignado
@@ -750,8 +926,30 @@
             '<td style="' + td + ' text-align: right !important; padding-right: 16px !important;"><div style="display: inline-flex !important; align-items: center !important; gap: 12px !important;">' + botonAsignar(f) +
             '<span style="display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #026bd4 !important; font-weight: 500 !important; white-space: nowrap !important;">Ver detalle' + icono('chevron', 18) + '</span></div></td></tr>';
         }).join('') : '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">No hay estudiantes con esos filtros.</td></tr>';
-        $('txt-total-filtrados').textContent =
-          'Mostrando ' + lista.length + ' de ' + filas.length + ' estudiantes.';
+        $('txt-total-filtrados').textContent = todas.length
+          ? (desde + 1) + '–' + (desde + lista.length) + ' de ' + todas.length + (todas.length < filas.length ? ' (de ' + filas.length + ' estudiantes)' : ' estudiantes')
+          : '0 de ' + filas.length + ' estudiantes';
+        $('filtro-filas-pagina').value = String(filasPorPagina);
+        botonPagina('btn-pagina-anterior', pagina > 1, true);
+        botonPagina('btn-pagina-siguiente', pagina < totalPaginas, false);
+      }
+
+      // BOTÓN DE PAGINACIÓN: CHEVRON (GIRADO PARA "ANTERIOR"), DESHABILITADO EN LOS EXTREMOS
+      function botonPagina(id, habilitado, girado) {
+        var b = $(id);
+        b.setAttribute('aria-disabled', String(!habilitado));
+        b.setAttribute('tabindex', habilitado ? '0' : '-1');
+        b.setAttribute('style', 'width: 32px !important; height: 32px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; ' +
+          (habilitado ? 'cursor: pointer !important; color: #0b0e14 !important;' : 'cursor: default !important; color: #c2c9d6 !important;'));
+        b.innerHTML = '<span style="display: inline-flex !important;' + (girado ? ' transform: rotate(180deg) !important;' : '') + '">' + icono('chevron', 20) + '</span>';
+      }
+
+      function cambiarPagina(paso) {
+        pagina += paso;
+        renderizarTabla();
+        $('scroll-tabla-estudiantes').scrollTop = 0;
+        var b = $(paso < 0 ? 'btn-pagina-anterior' : 'btn-pagina-siguiente');
+        (b.getAttribute('aria-disabled') === 'true' ? $(paso < 0 ? 'btn-pagina-siguiente' : 'btn-pagina-anterior') : b).focus();
       }
 
       // OPCIONES DEL FILTRO DE COHORTE
@@ -964,6 +1162,7 @@
       function activarKpi(kpi) {
         var id = kpi.getAttribute('data-kpi');
         filtroKpi = filtroKpi === id ? '' : id;
+        pagina = 1;
         $('filtro-semaforo').value = '';
         renderizarTodo();
         // La grilla se vuelve a armar: el foco vuelve a la misma tarjeta
@@ -986,6 +1185,8 @@
         var kpi = t.closest('[data-kpi]');
         if (kpi) return activarKpi(kpi);
         if (t.closest('#btn-exportar-csv')) return exportarCsv();
+        var btnPagina = t.closest('[data-pagina]');
+        if (btnPagina) return btnPagina.getAttribute('aria-disabled') === 'true' ? undefined : cambiarPagina(Number(btnPagina.getAttribute('data-pagina')));
         var asignar = t.closest('[data-asignar]');
         if (asignar) return abrirModal(asignar.getAttribute('data-asignar'), asignar);
         var fila = t.closest('#cuerpo-tabla-estudiantes tr[data-usuario]');
@@ -995,13 +1196,19 @@
       document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });
 
       document.addEventListener('input', function(e) {
-        if (e.target.id === 'filtro-busqueda') renderizarTabla();
+        if (e.target.id === 'filtro-busqueda') { pagina = 1; renderizarTabla(); }
         if (e.target.id === 'campo-motivo-asignado') ocultarError();
       });
 
       document.addEventListener('change', function(e) {
-        if (e.target.id === 'filtro-semaforo') { filtroKpi = ''; renderizarTodo(); }
-        if (e.target.id === 'filtro-tramo' || e.target.id === 'filtro-cohorte') renderizarTabla();
+        if (e.target.id === 'filtro-semaforo') { filtroKpi = ''; pagina = 1; renderizarTodo(); }
+        if (e.target.id === 'filtro-tramo' || e.target.id === 'filtro-cohorte') { pagina = 1; renderizarTabla(); }
+        if (e.target.id === 'filtro-filas-pagina') {
+          filasPorPagina = Number(e.target.value) || 25;
+          try { localStorage.setItem('zk-tablero-filas-pagina', String(filasPorPagina)); } catch (err) {}
+          pagina = 1;
+          renderizarTabla();
+        }
         if (e.target.name === 'nivel-asignado') {
           ocultarError();
           var opciones = document.querySelectorAll('#modal-asignar-tablero [data-opcion-nivel]');
@@ -1041,17 +1248,25 @@
       aplicarRol(ROL_INICIAL);
       $('cuerpo-tabla-estudiantes').innerHTML =
         '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes y Criticidad…</td></tr>';
-      cargarDatos().then(function(d) {
+      function aplicarDatos(d) {
         datos = d;
         $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
         procesar();
         renderizarCohortes();
         renderizarTodo();
+      }
+
+      $('cuerpo-tabla-estudiantes').innerHTML =
+        '<tr><td colspan="6" style="border: 0 !important; padding: 32px !important; text-align: center !important; color: #47536b !important;">Cargando las bases de Estudiantes y Criticidad…</td></tr>';
+      cargarDatos().then(function(r) {
+        aplicarDatos(r.datos);
         if (incompletas.length) {
           $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
-            ': la base tiene más entradas que las que lee la Página Tools, así que algunos estados pueden estar desactualizados.';
+            ': la base tiene más entradas que las que lee el Tablero, así que algunos estados pueden estar desactualizados.';
           $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
         }
+        // Período guardado: se confirma en segundo plano; si cambió (cierre de período), se vuelve a leer todo
+        if (r.revisar) r.revisar().then(function(nuevos) { if (nuevos) aplicarDatos(nuevos); }).catch(function() {});
       }).catch(function(e) {
         $('cuerpo-tabla-estudiantes').innerHTML =
           '<tr><td colspan="6" style="border: 0 !important; padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</td></tr>';
