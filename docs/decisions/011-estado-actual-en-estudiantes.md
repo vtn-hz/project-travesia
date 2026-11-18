@@ -1,6 +1,6 @@
 # ADR-011: Estado actual de criticidad en la base Estudiantes
 
-- **Estado:** propuesta, en análisis (2026-11-17). Rama `feat/estado-actual-criticidad`. Nada desarrollado ni publicado
+- **Estado:** aceptada (2026-11-18): opción A, con los campos `*_rid`. **Desarrollada en la rama `feat/estado-actual-criticidad`, sin publicar** (Tools v10, Tablero, Configuración del Sistema, definición y plantilla de Estudiantes, `agregar_campos.js`)
 - **Fecha:** 2026-11-17
 - **Pedido:** Valentino Hernández Pascual: el Tablero de Criticidad tarda mucho en cargar; ¿es viable "una vista que sea la conjunción entre la última criticidad que muestra la tabla y los datos del estudiante", y aceleraría el proceso?
 - **Refs:** [ADR-005](005-modelo-de-bases-moodle.md) (carga de datos en el navegador), [ADR-007](007-encuestas-respuestas-y-criticidad.md) (base Criticidad), [ADR-009](009-cierre-de-periodo-y-omision.md) (omisión), [ADR-010](010-criticidad-por-fuente.md) (parciales y encuesta por separado), [spec del tablero](../specs/tablero-estudiantes.md)
@@ -70,8 +70,31 @@ El Detalle del estudiante ya se resolvió con la búsqueda por estudiante (de ~2
 5. Datos de prueba: completar el resumen (generador o recálculo).
 6. Medir antes y después en el campus, como con el Detalle.
 
-## Pendiente de decidir
+## Desarrollo (2026-11-18)
 
-- Si se acepta A, o B, o seguir como está.
-- Si el estado asignado también se resume (más rápido, pero con el riesgo de escrituras que se pisan).
-- Cuándo publicar la Tools nueva respecto de la v9.
+| Parte | Qué hace |
+|---|---|
+| Base Estudiantes | 9 campos de texto al final ([`BASE_ESTUDIANTES.json`](../../data/moodle/BASE_ESTUDIANTES.json)); en la plantilla de lista van ocultos (`d-none`) |
+| [`agregar_campos.js`](../../.skills/publicar-seccion/agregar_campos.js) | Agrega al final de una base con entradas los campos nuevos de su definición; nunca borra ni edita campos |
+| Tools v10 | `registrarCriticidad` guarda el rid de la entrada y llama a `ActualizarEstadoActual`, que edita solo esos campos de la entrada del estudiante si la nueva es la más reciente. Queda pendiente antes de intentarlo y se reintenta con las demás pendientes. `RecalcularEstadoActual` rehace todos. Si la base no tiene los campos, no hacen nada |
+| Tablero | Con los campos en la base, lee Estudiantes y solo los estados asignados de Criticidad (`filter=1&search=manual`); sin ellos, como antes |
+| Configuración del Sistema | Actualiza el estado actual con cada omisión del cierre y suma la tarjeta *Estado actual del Tablero* (Revisar y Actualizar) |
+
+**Pruebas (local):**
+- Tools contra un Moodle de mentira (listas, formulario de edición con "Campo obligatorio" y redirección): actualiza solo los campos del estado y conserva los demás; una entrada más vieja o una manual no cambian nada; Recalcular simula sin escribir, aplica y después no encuentra diferencias; sin los campos en la base no hace nada y avisa; y el camino completo de una nota (`CriticidadNotas` → Criticidad → estado actual) no deja nada pendiente. 12 de 12.
+- Tablero con los 60 estudiantes de prueba: las mismas 60 filas y los mismos totales leyendo el estado actual que leyendo todo Criticidad.
+- `agregar_campos.js` simulado contra el campus: Estudiantes tiene 9 campos y se agregarían los 9 nuevos al final.
+
+## Cómo se publica (cada paso simulado y con confirmación)
+
+1. **Tools v10.** Incluye la v9 del equipo (`TrayectoriaEstudiantes`, que lee un campo nuevo de Períodos): coordinarlo antes. Sin los campos en Estudiantes, la v10 no cambia nada visible.
+2. **Campos en Estudiantes** con `agregar_campos.js` y la plantilla de lista con `subir_plantillas.js --clave estudiantes`. Desde acá, cada nota y encuesta nueva actualiza el estado actual.
+3. **Configuración del Sistema** y, desde su tarjeta, **Revisar y Actualizar** el estado actual de todos (incluye los datos de prueba).
+4. **Tablero**, que pasa a leer el estado actual. Medir antes y después en el campus.
+
+Publicar el Tablero antes del paso 3 lo dejaría con todos *Sin calcular*.
+
+## Decisiones
+
+- **Opción A**, con los campos `*_rid` (pedido del equipo).
+- **El estado asignado no se resume:** se sigue leyendo de Criticidad, filtrado.
