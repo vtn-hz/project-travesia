@@ -126,16 +126,19 @@
       // ---------------------------------------------------------
       // CATÁLOGO DE INDICADORES
       // ---------------------------------------------------------
-      // Estados: en_uso (se calcula en Moodle) · disponible (los datos ya existen, falta la vista) · analisis (definido, con una decisión abierta)
+      // Estados: en_uso (se calcula en Moodle) · en_reportes (se calcula al abrir un informe de Reportes) · disponible (los datos ya existen,
+      // falta la vista) · analisis (definido, con una decisión abierta)
       //          (los indicadores muy difíciles de implementar en Moodle quedan fuera: ver INDICADORES_DIFICILES_MOODLE.md)
       var ESTADOS = {
         en_uso: { texto: 'En uso', punto: '#026bd4', fondo: '#f0f7ff', borde: '#cce4ff', color: '#0a4a8f' },
+        en_reportes: { texto: 'En Reportes', punto: '#6250d6', fondo: '#f4f2fd', borde: '#d9d3f7', color: '#3d2f99' },
         disponible: { texto: 'Datos disponibles', punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' },
         analisis: { texto: 'En análisis', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
       };
 
       var BLOQUES = [
         { id: 'trayectoria', titulo: 'Seguimiento de trayectoria', ayuda: 'Alerta y monitoreo continuo: detectar el riesgo antes de que se convierta en abandono.' },
+        { id: 'terminalidad', titulo: 'Abandono y egreso', ayuda: 'Cuántos siguen, cuántos abandonan y cuántos terminan, por cohorte. Definiciones acordadas con el DII el 2026-11-17: ingresantes = estudiantes con información personal; abandono = períodos cerrados seguidos sin notas ni Encuesta Cuatrimestral (4, se cambia en Configuración del Sistema); egreso = declarar los 235,5 créditos del plan.' },
         { id: 'cuellos', titulo: 'Cuellos de botella', ayuda: 'Por qué ocurre el abandono o el rezago: qué materias y qué momentos concentran el riesgo.' },
         { id: 'criticidad', titulo: 'Criticidad individual', ayuda: 'Índice de 0 a 100 de cada estudiante y su semáforo. Es el que alimenta el Tablero de Criticidad.' }
       ];
@@ -143,7 +146,7 @@
       var INDICADORES = [
         // Seguimiento de trayectoria
         { bloque: 'trayectoria', nombre: 'Avance curricular acumulado', estado: 'disponible',
-          formula: 'avance = créditos aprobados ÷ 223 × 100   (Plan 2024; por estudiante y promedio por cohorte)',
+          formula: 'avance = créditos aprobados ÷ 235,5 × 100   (Plan 2024: 52 materias y la PPS; por estudiante y promedio por cohorte)',
           datos: 'Créditos y materias aprobadas del cuadro de créditos de las encuestas (base Respuestas). Mejor predictor individual: debajo del 38,97 % al 6.º cuatrimestre el riesgo es crítico.',
           fuente: 'García Lambert et al. (2014)' },
         { bloque: 'trayectoria', nombre: 'Índice de ritmo', estado: 'analisis',
@@ -154,6 +157,31 @@
           formula: 'T = cuatrimestres desde el ingreso · A = cuatrimestres completos de carga aprobada\ndiferencia = mín(T, 10) − A · pendientes anteriores y antigüedad de la deuda',
           datos: 'Materias aprobadas por código (cuadro de créditos) e ingreso. Es un modelo del equipo, descriptivo, todavía sin aplicar.',
           fuente: 'Modelo Ubicación y atraso (equipo)' },
+        // Abandono y egreso (TrayectoriaEstudiantes de Tools, informe Trayectoria y egreso de Reportes)
+        { bloque: 'terminalidad', nombre: 'Retención de 1.er año', estado: 'en_reportes',
+          formula: 'retención = estudiantes de la cohorte que no abandonaron un año después del ingreso ÷ ingresantes de la cohorte × 100',
+          datos: 'Ingresantes de la base Estudiantes; actividad de cada período en CargaParcialesPrimero y Respuestas. Es provisoria hasta que pasan los períodos de abandono desde ese año.',
+          fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
+        { bloque: 'terminalidad', nombre: 'Desgranamiento (permanencia por cohorte)', estado: 'en_reportes',
+          formula: 'permanencia(k) = estudiantes de la cohorte que siguen (activos o egresados) en el cuatrimestre k desde el ingreso ÷ ingresantes × 100',
+          datos: 'Los mismos que la retención. Las cohortes que ingresaron antes del primer período del sistema solo cuentan a quienes seguían en ese momento.',
+          fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
+        { bloque: 'terminalidad', nombre: 'Supervivencia académica', estado: 'en_reportes',
+          formula: 'S(k) = Π (1 − abandonos en k ÷ en riesgo en k)   (Kaplan-Meier con entrada tardía; k = cuatrimestres desde el ingreso)\nriesgo de abandono en k = abandonos ÷ en riesgo',
+          datos: 'Cada estudiante está en riesgo desde su primer período observado hasta que abandona (evento), egresa o termina el último período cerrado.',
+          fuente: 'Requerimientos v1.1 · Kaplan y Meier (1958)' },
+        { bloque: 'terminalidad', nombre: 'Tasa de egreso y duración de la carrera', estado: 'en_reportes',
+          formula: 'tasa de egreso = egresados de la cohorte ÷ ingresantes × 100 · duración = cuatrimestres desde el ingreso hasta el egreso (10 teóricos)',
+          datos: 'Egreso: la primera Encuesta Cuatrimestral con 235,5 créditos declarados (la encuesta final es obligatoria para el título). Egreso y titulación son lo mismo: el PFG está dentro de los créditos.',
+          fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
+        { bloque: 'terminalidad', nombre: 'Permanencia terminal', estado: 'en_reportes',
+          formula: 'activo, con el 90 % de los créditos o más (212 de 235,5) y más de 10 cuatrimestres desde el ingreso',
+          datos: 'Créditos declarados en la última Encuesta Cuatrimestral. El umbral del 90 % es provisorio.',
+          fuente: 'Requerimientos v1.1' },
+        { bloque: 'terminalidad', nombre: 'Tiempo en el Proyecto Final', estado: 'analisis',
+          formula: 'tiempo = cuatrimestres desde que declara el PFG en desarrollo hasta el egreso',
+          datos: 'Se puede aproximar con la pregunta del PFG de la Cuatrimestral; falta acordar desde qué respuesta se cuenta.',
+          fuente: 'Requerimientos v1.1' },
         // Cuellos de botella
         { bloque: 'cuellos', nombre: 'Materias críticas por correlativas', estado: 'disponible',
           formula: 'S(m) = Σ w(d) sobre las materias d que traba m · w = 2 si d es del cuatrimestre actual o anterior; si no, 1 ÷ distancia\nm es crítica si S(m) ≥ 1',
@@ -178,6 +206,7 @@
       var PESTANAS = [
         { id: 'resumen', titulo: 'Resumen', icono: 'tablero' },
         { id: 'trayectoria', titulo: 'Trayectoria', icono: 'indicadores' },
+        { id: 'terminalidad', titulo: 'Abandono y egreso', icono: 'estudiantes' },
         { id: 'cuellos', titulo: 'Cuellos de botella', icono: 'plan' },
         { id: 'criticidad', titulo: 'Criticidad individual', icono: 'estudiantes' },
         { id: 'revision', titulo: 'En revisión', icono: 'alerta' }
@@ -367,6 +396,7 @@
           'Documento de indicadores de trayectoria y terminalidad · requerimiento de almacenamiento de cohorte');
         var leyenda = tarjeta('Estados', '', tabla(['Estado', 'Qué significa'], [
           [chipEstado('en_uso'), 'Se calcula hoy en Moodle y se guarda en la base Criticidad.'],
+          [chipEstado('en_reportes'), 'Se calcula al abrir el informe Trayectoria y egreso de Reportes, con los datos de ese momento.'],
           [chipEstado('disponible'), 'Los datos ya se guardan en Moodle; falta la vista que lo calcule.'],
           [chipEstado('analisis'), 'Está definido, pero tiene una decisión abierta del equipo.'],
         ]));
@@ -678,6 +708,7 @@
         var vistas = {
           resumen: vistaResumen,
           trayectoria: function() { return vistaBloque('trayectoria'); },
+          terminalidad: function() { return vistaBloque('terminalidad'); },
           cuellos: function() { return vistaBloque('cuellos'); },
           criticidad: vistaCriticidad,
           revision: vistaRevision
