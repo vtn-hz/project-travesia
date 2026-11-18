@@ -4,277 +4,332 @@
   "EST-001": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24265
+   "rid": 24265,
+   "estado_actual": true
   },
   "EST-002": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24266
+   "rid": 24266,
+   "estado_actual": true
   },
   "EST-004": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24267
+   "rid": 24267,
+   "estado_actual": true
   },
   "EST-005": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24268
+   "rid": 24268,
+   "estado_actual": true
   },
   "EST-003": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24269
+   "rid": 24269,
+   "estado_actual": true
   },
   "EST-006": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24270
+   "rid": 24270,
+   "estado_actual": true
   },
   "EST-008": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24271
+   "rid": 24271,
+   "estado_actual": true
   },
   "EST-009": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24273
+   "rid": 24273,
+   "estado_actual": true
   },
   "EST-007": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24272
+   "rid": 24272,
+   "estado_actual": true
   },
   "EST-010": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24274
+   "rid": 24274,
+   "estado_actual": true
   },
   "EST-012": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24276
+   "rid": 24276,
+   "estado_actual": true
   },
   "EST-011": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24275
+   "rid": 24275,
+   "estado_actual": true
   },
   "EST-013": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24277
+   "rid": 24277,
+   "estado_actual": true
   },
   "EST-015": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24279
+   "rid": 24279,
+   "estado_actual": true
   },
   "EST-014": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24278
+   "rid": 24278,
+   "estado_actual": true
   },
   "EST-016": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24280
+   "rid": 24280,
+   "estado_actual": true
   },
   "EST-018": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24282
+   "rid": 24282,
+   "estado_actual": true
   },
   "EST-017": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24281
+   "rid": 24281,
+   "estado_actual": true
   },
   "EST-021": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24285
+   "rid": 24285,
+   "estado_actual": true
   },
   "EST-020": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24284
+   "rid": 24284,
+   "estado_actual": true
   },
   "EST-019": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24283
+   "rid": 24283,
+   "estado_actual": true
   },
   "EST-023": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24287
+   "rid": 24287,
+   "estado_actual": true
   },
   "EST-022": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24286
+   "rid": 24286,
+   "estado_actual": true
   },
   "EST-024": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24288
+   "rid": 24288,
+   "estado_actual": true
   },
   "EST-025": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24289
+   "rid": 24289,
+   "estado_actual": true
   },
   "EST-026": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24290
+   "rid": 24290,
+   "estado_actual": true
   },
   "EST-027": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24291
+   "rid": 24291,
+   "estado_actual": true
   },
   "EST-028": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24292
+   "rid": 24292,
+   "estado_actual": true
   },
   "EST-030": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24294
+   "rid": 24294,
+   "estado_actual": true
   },
   "EST-029": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24293
+   "rid": 24293,
+   "estado_actual": true
   },
   "EST-031": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24295
+   "rid": 24295,
+   "estado_actual": true
   },
   "EST-032": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24296
+   "rid": 24296,
+   "estado_actual": true
   },
   "EST-033": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24297
+   "rid": 24297,
+   "estado_actual": true
   },
   "EST-035": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24299
+   "rid": 24299,
+   "estado_actual": true
   },
   "EST-034": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24298
+   "rid": 24298,
+   "estado_actual": true
   },
   "EST-037": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24301
+   "rid": 24301,
+   "estado_actual": true
   },
   "EST-038": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24302
+   "rid": 24302,
+   "estado_actual": true
   },
   "EST-036": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24300
+   "rid": 24300,
+   "estado_actual": true
   },
   "EST-039": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24303
+   "rid": 24303,
+   "estado_actual": true
   },
   "EST-041": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24305
+   "rid": 24305,
+   "estado_actual": true
   },
   "EST-040": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24304
+   "rid": 24304,
+   "estado_actual": true
   },
   "EST-043": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24307
+   "rid": 24307,
+   "estado_actual": true
   },
   "EST-042": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24306
+   "rid": 24306,
+   "estado_actual": true
   },
   "EST-044": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24308
+   "rid": 24308,
+   "estado_actual": true
   },
   "EST-045": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24309
+   "rid": 24309,
+   "estado_actual": true
   },
   "EST-046": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24310
+   "rid": 24310,
+   "estado_actual": true
   },
   "EST-047": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24311
+   "rid": 24311,
+   "estado_actual": true
   },
   "EST-048": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24312
+   "rid": 24312,
+   "estado_actual": true
   },
   "EST-049": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24313
+   "rid": 24313,
+   "estado_actual": true
   },
   "EST-050": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24314
+   "rid": 24314,
+   "estado_actual": true
   },
   "EST-052": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24316
+   "rid": 24316,
+   "estado_actual": true
   },
   "EST-051": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24315
+   "rid": 24315,
+   "estado_actual": true
   },
   "EST-054": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24318
+   "rid": 24318,
+   "estado_actual": true
   },
   "EST-053": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24317
+   "rid": 24317,
+   "estado_actual": true
   },
   "EST-055": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24319
+   "rid": 24319,
+   "estado_actual": true
   },
   "EST-056": {
    "base": "estudiantes",
@@ -284,12 +339,14 @@
   "EST-057": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24321
+   "rid": 24321,
+   "estado_actual": true
   },
   "EST-058": {
    "base": "estudiantes",
    "dataid": 206,
-   "rid": 24322
+   "rid": 24322,
+   "estado_actual": true
   },
   "EST-060": {
    "base": "estudiantes",
@@ -5839,5 +5896,5 @@
    "rid": 25413
   }
  },
- "actualizado": "2026-11-18T01:49:53.669Z"
+ "actualizado": "2026-11-18T15:53:29.360Z"
 }
