@@ -1,6 +1,6 @@
 # ADR-010: Criticidad por fuente, sin índice total combinado
 
-- **Estado:** aceptada (2026-11-17). **Publicado el 2026-11-17:** el Tablero de Criticidad (60287). **En local, sin publicar:** Tools v8, el Detalle del estudiante y la Página Configuración del Sistema
+- **Estado:** aceptada (2026-11-17). **Publicados el 2026-11-17:** el Tablero de Criticidad (60287) y Tools v8 (59941). **En local, sin publicar:** el Detalle del estudiante y la Página Configuración del Sistema
 - **Fecha:** 2026-11-17
 - **Pedido:** Valentino Hernández Pascual: "la encuesta cuatrimestral ahora no llega más nunca a 100 de criticidad en la tabla de criticidad". Eligió la opción B: mostrar en la tabla la criticidad de los parciales y la de la Cuatrimestral por separado
 - **Refs:** [ADR-007](007-encuestas-respuestas-y-criticidad.md) (`indice_total`), [ADR-008](008-encuesta-inicial-y-datos-personales.md) (parciales de 1.er año también desde 2.º año), [ADR-009](009-cierre-de-periodo-y-omision.md) (período anterior), [spec del tablero](../specs/tablero-estudiantes.md), [spec del detalle](../specs/detalle-estudiante.md)
