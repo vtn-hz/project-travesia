@@ -4,7 +4,7 @@
 
 - **Archivo:** `section/indicadores_cohorte/content.html`
 - **Acceso:** botón "Ver indicadores" de la tarjeta "Indicadores de Cohorte" del [menú inicial](../../section/menu_inicial/content.html)
-- **Estado:** versión provisoria, **publicada** el 2026-11-02 como Página "Indicadores de Cohorte" (cmid 60283) en la subsección Hub
+- **Estado:** versión provisoria, **publicada** el 2026-11-02 como Página "Indicadores de Cohorte" (cmid 60283) en la subsección Hub; republicada el 2026-11-18 con la pestaña *Abandono y egreso*
 - **Requerimientos:** Seguimiento de Trayectoria, Cuellos de Botella e Inteligencia de Negocio (semáforos), más la configuración de indicadores por el equipo gestor
 - **Última actualización:** 2026-11-02
 

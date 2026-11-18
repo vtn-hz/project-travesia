@@ -43,7 +43,7 @@
     "utils_tools": 59941,
     "indicadores_cohorte": 60283,
     "configuracion": 60294,
-    "reportes": null
+    "reportes": 60918
   },
   "encuestas": {
     "inicial": {
@@ -129,10 +129,11 @@
       "creada": "2026-11-03"
     },
     "informes": {
-      "cmid": null,
-      "dataid": null,
+      "cmid": 60917,
+      "dataid": 252,
       "definicion": "data/moodle/BASE_INFORMES.json",
-      "subseccion": "Database"
+      "subseccion": "Database",
+      "creada": "2026-11-18"
     }
   }
 }

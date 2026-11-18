@@ -2,7 +2,7 @@
 
 - **Qué calcula:** el estado de cada estudiante en cada período (activo, abandono o egresado) y, por cohorte, la retención de 1.er año, la permanencia por cuatrimestre (desgranamiento), la tasa de egreso, la duración de la carrera y la permanencia terminal, más la supervivencia académica de todas las cohortes juntas.
 - **Dónde corre:** `TrayectoriaEstudiantes` de la Página Tools (versión 9). La usa el informe **Trayectoria y egreso** de [Reportes](../../specs/reportes.md). No guarda nada: se calcula cada vez que se abre el informe, hasta el período elegido.
-- **Estado:** local, sin publicar (2026-11-17).
+- **Estado:** publicado el 2026-11-18 (Tools, Configuración del Sistema, Indicadores de Cohorte y Reportes; campo `periodos_abandono` en Períodos).
 - **Origen:** reunión con el DII del 2026-11-17. Hasta entonces estos indicadores estaban en [Indicadores no implementados](../INDICADORES_NO_IMPLEMENTADOS.md), porque no había datos de ingresantes, abandono ni egreso.
 
 ## Definiciones (acordadas con el DII)
