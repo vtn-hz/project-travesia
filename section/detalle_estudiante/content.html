@@ -47,7 +47,7 @@
   <div id="modal-respuestas-detalle" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-respuestas"
     style="display: none; position: fixed !important; inset: 0 !important; z-index: 10000 !important; background-color: rgba(5, 7, 10, 0.5) !important; align-items: center !important; justify-content: center !important; padding: 16px !important; box-sizing: border-box !important;">
     <div id="caja-modal-respuestas"
-      style="width: 100% !important; max-width: 560px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
+      style="width: 100% !important; max-width: 720px !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(10, 13, 18, 0.07), 0 8px 16px -5px rgba(20, 23, 31, 0.07) !important; padding: 20px !important; box-sizing: border-box !important; text-align: left !important;">
     </div>
   </div>
 
@@ -99,6 +99,17 @@
       var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
       var DATAID_ENCUESTAS = 198; // @config bases.encuestas.dataid
       var DATAID_PERIODOS = 207; // @config bases.periodos.dataid
+      var DATAID_MATERIAS = 152; // @config bases.materias.dataid
+      // En la vista previa local, el plan sale del CSV del repo (con un servidor local); con file://, de MATERIAS_PRUEBA
+      var CSV_PLANES_LOCAL = '../../data/plan_estudios/PLANES_CARGA.csv';
+      // Créditos de cada plan que no son materias. COPIA de OTROS_CREDITOS de Widgets (section/utils/widgets): si cambia allá, cambiar acá
+      var OTROS_CREDITOS = {
+        '2024': [{ codigo: 'PPS', nombre: 'Práctica Profesional Supervisada', creditos: 12.5 }],
+        '2003': [
+          { codigo: 'PPS', nombre: 'Práctica Profesional Supervisada', creditos: 0 },
+          { codigo: 'OPTATIVAS', nombre: 'Optativas', creditos: 16 }
+        ]
+      };
       // Tablero de Criticidad: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_TABLERO_LOCAL = '../tablero_estudiantes/content.html';
       var CMID_TABLERO = 60287; // @config paginas.tablero
@@ -200,14 +211,26 @@
         { rid: 91006, id_usuario: '3751', dni: '99000004', nombre: 'Santiago', apellido: 'Yanosky', email: 'santiago.yanosky@ejemplo.edu.ar', es_primer_anio: 'si', anio_ingreso: '2026', cuatrimestre_ingreso: '1', periodo_paso_superior: '', alta: '2026-09-20T12:00:00-03:00' }
       ];
 
+      // Parte del plan 2024 para la vista previa con file:// (con un servidor local se lee el CSV entero del repo)
+      var MATERIAS_PRUEBA = [
+        { plan: '2024', codigo: 'INGM101', nombre: 'Análisis Matemático I', cuatrimestre: '1', creditos: '6' },
+        { plan: '2024', codigo: 'INGM105', nombre: 'Álgebra I- B', cuatrimestre: '1', creditos: '4' },
+        { plan: '2024', codigo: 'ING1103', nombre: 'Fundamentos de Química', cuatrimestre: '1', creditos: '4' },
+        { plan: '2024', codigo: 'INGM102', nombre: 'Análisis Matemático II', cuatrimestre: '2', creditos: '5' },
+        { plan: '2024', codigo: 'INGM106', nombre: 'Álgebra II', cuatrimestre: '2', creditos: '5' },
+        { plan: '2024', codigo: 'INGF101', nombre: 'Física A', cuatrimestre: '2', creditos: '6' },
+        { plan: '2024', codigo: 'ING6101', nombre: 'Fundamentos de la Programación', cuatrimestre: '2', creditos: '4' },
+        { plan: '2024', codigo: 'INGM108', nombre: 'Probabilidad y Estadística', cuatrimestre: '3', creditos: '4' },
+        { plan: '2024', codigo: 'INGM103', nombre: 'Análisis Matemático III', cuatrimestre: '3', creditos: '6' }
+      ];
       var RESPUESTAS_PRUEBA = [
-        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103"]}]}, {"item_id": 8257, "respuestas": [2024]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
-        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1', created_at: '2025-04-15T10:20:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [48]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [1]}]' },
-        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-10T15:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [62]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' },
-        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [70]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' },
-        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103"]}]}, {"item_id": 8257, "respuestas": [2022]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
-        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [120]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [3]}, {"item_id": 8265, "respuestas": [2]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [1]}]' },
-        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [136]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["ING101", "ING102", "ING103", "ING104", "ING105"]}]}, {"item_id": 8264, "respuestas": [4]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "ING201", "primera_vez": true, "dificultad": 3}, {"materia": "ING202", "primera_vez": false, "dificultad": 4}]}, {"item_id": 8271, "respuestas": [2]}]' }
+        { rid: 5001, id_usuario: '3773', codigo_encuesta: 'inicial', periodo: '', created_at: '2024-04-02T11:00:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103"]}]}, {"item_id": 8257, "respuestas": [2024]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
+        { rid: 5002, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-1', created_at: '2025-04-15T10:20:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [48]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103", "INGM102", "INGF101", "PPS"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "INGM106", "primera_vez": false, "dificultad": 4}, {"materia": "ING6101", "primera_vez": true, "dificultad": 2}, {"materia": "INGM108", "primera_vez": true, "dificultad": 5}, {"materia": "XX999", "primera_vez": null, "dificultad": null}]}, {"item_id": 8271, "respuestas": [1]}]' },
+        { rid: 5003, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-10T15:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [62]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103", "INGM102", "INGF101", "PPS"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "INGM106", "primera_vez": false, "dificultad": 4}, {"materia": "ING6101", "primera_vez": true, "dificultad": 2}, {"materia": "INGM108", "primera_vez": true, "dificultad": 5}, {"materia": "XX999", "primera_vez": null, "dificultad": null}]}, {"item_id": 8271, "respuestas": [2]}]' },
+        { rid: 5004, id_usuario: '3773', codigo_encuesta: 'cuatrimestral', periodo: '2026-1', created_at: '2026-04-10T14:30:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [70]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103", "INGM102", "INGF101", "PPS"]}]}, {"item_id": 8264, "respuestas": [2]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "INGM106", "primera_vez": false, "dificultad": 4}, {"materia": "ING6101", "primera_vez": true, "dificultad": 2}, {"materia": "INGM108", "primera_vez": true, "dificultad": 5}, {"materia": "XX999", "primera_vez": null, "dificultad": null}]}, {"item_id": 8271, "respuestas": [2]}]' },
+        { rid: 5011, id_usuario: '3623', codigo_encuesta: 'inicial', periodo: '', created_at: '2022-04-20T16:40:00-03:00', version: '2', json_respuesta: '[{"item_id": 8253, "respuestas": [40]}, {"item_id": 8774, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103"]}]}, {"item_id": 8257, "respuestas": [2022]}, {"item_id": 8258, "respuestas": [1]}, {"item_id": 8259, "respuestas": [2]}]' },
+        { rid: 5012, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2025-2', created_at: '2025-09-05T11:00:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [120]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103", "INGM102", "INGF101", "PPS"]}]}, {"item_id": 8264, "respuestas": [3]}, {"item_id": 8265, "respuestas": [2]}, {"item_id": 8768, "respuestas": [{"materia": "INGM106", "primera_vez": false, "dificultad": 4}, {"materia": "ING6101", "primera_vez": true, "dificultad": 2}, {"materia": "INGM108", "primera_vez": true, "dificultad": 5}, {"materia": "XX999", "primera_vez": null, "dificultad": null}]}, {"item_id": 8271, "respuestas": [1]}]' },
+        { rid: 5013, id_usuario: '3623', codigo_encuesta: 'cuatrimestral', periodo: '2026-2', created_at: '2026-09-02T11:48:00-03:00', version: '3', json_respuesta: '[{"item_id": 8262, "respuestas": [136]}, {"item_id": 8775, "respuestas": [{"plan": "2024", "materias": ["INGM101", "INGM105", "ING1103", "INGM102", "INGF101", "PPS"]}]}, {"item_id": 8264, "respuestas": [4]}, {"item_id": 8265, "respuestas": [1]}, {"item_id": 8266, "respuestas": [3]}, {"item_id": 8768, "respuestas": [{"materia": "INGM106", "primera_vez": false, "dificultad": 4}, {"materia": "ING6101", "primera_vez": true, "dificultad": 2}, {"materia": "INGM108", "primera_vez": true, "dificultad": 5}, {"materia": "XX999", "primera_vez": null, "dificultad": null}]}, {"item_id": 8271, "respuestas": [2]}]' }
       ];
 
       function automatica(rid, id, dni, periodo, fuente, ridFuente, indice, fecha, motivo) {
@@ -1099,6 +1122,200 @@
         return respuestas.map(function(v) { return v && typeof v === 'object' ? JSON.stringify(v) : String(v); }).join(' · ');
       }
 
+      // ---------------------------------------------------------
+      // PLAN DE ESTUDIOS: NOMBRES, AÑO Y CRÉDITOS DE CADA CÓDIGO (BASE MATERIAS)
+      // ---------------------------------------------------------
+      // Se lee después de dibujar la página, en segundo plano: no suma tiempo a la carga. Si el modal de respuestas se abre antes,
+      // muestra los códigos con "Cargando nombres…" y se vuelve a dibujar al terminar. Un código que no está en la base se muestra tal cual
+      var plan = { estado: 'sin_leer', porPlan: {} }; // estado: sin_leer, cargando, listo o error. porPlan: { '<plan>': { '<codigo>': materia } }
+
+      // CSV SIMPLE CON COMILLAS (EL DEL REPO): [{ columna: valor }]
+      function parsearCsv(texto) {
+        var filas = [], fila = [], campo = '', comillas = false;
+        for (var i = 0; i < texto.length; i++) {
+          var c = texto[i];
+          if (comillas) {
+            if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; } else if (c === '"') comillas = false; else campo += c;
+          } else if (c === '"') comillas = true;
+          else if (c === ',') { fila.push(campo); campo = ''; }
+          else if (c === '\n' || c === '\r') { if (c === '\r' && texto[i + 1] === '\n') i++; fila.push(campo); filas.push(fila); fila = []; campo = ''; }
+          else campo += c;
+        }
+        if (campo || fila.length) { fila.push(campo); filas.push(fila); }
+        var encabezado = (filas.shift() || []).map(function(h) { return h.trim(); });
+        return filas.filter(function(f) { return f.join('').trim(); }).map(function(f) {
+          var o = {};
+          encabezado.forEach(function(h, j) { o[h] = (f[j] || '').trim(); });
+          return o;
+        });
+      }
+
+      // LA ENTRADA MÁS NUEVA DE CADA plan + codigo, SIN LAS DADAS DE BAJA (MISMA REGLA QUE Widgets)
+      function indexarPlan(lista) {
+        var porPlan = {};
+        lista.forEach(function(m, i) {
+          var p = String(m.plan || '').trim(), c = String(m.codigo || '').trim();
+          if (!p || !c) return;
+          var orden = Number(m.rid) || i;
+          var previa = (porPlan[p] = porPlan[p] || {})[c];
+          if (!previa || orden >= previa.orden) porPlan[p][c] = { orden: orden, m: m };
+        });
+        var r = {};
+        Object.keys(porPlan).forEach(function(p) {
+          r[p] = {};
+          Object.keys(porPlan[p]).forEach(function(c) {
+            var m = porPlan[p][c].m;
+            if (String(m.estado || '').trim() === 'baja') return;
+            var cuat = parseInt(m.cuatrimestre, 10);
+            r[p][c] = { codigo: c, nombre: String(m.nombre || c).trim(), anio: cuat > 0 ? Math.ceil(cuat / 2) : null, creditos: numero(m.creditos) || 0 };
+          });
+        });
+        return r;
+      }
+
+      function cargarPlan() {
+        if (plan.estado !== 'sin_leer') return;
+        plan.estado = 'cargando';
+        var lectura = usaPrueba && window.location.protocol === 'file:' ? Promise.resolve(MATERIAS_PRUEBA)
+          : usaPrueba ? fetch(new URL(CSV_PLANES_LOCAL, window.location.href).href).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+              .then(parsearCsv).catch(function() { return MATERIAS_PRUEBA; })
+          : leerBase('Materias', { dataid: DATAID_MATERIAS, porPagina: 500 }, ESPERA_OPCIONAL);
+        lectura.then(function(lista) {
+          plan.porPlan = indexarPlan(lista);
+          plan.estado = 'listo';
+        }, function() { plan.estado = 'error'; }).then(function() {
+          if (modalRespuestas && modalRespuestas.rid) abrirRespuestas(modalRespuestas.rid, modalRespuestas.disparador);
+        });
+      }
+
+      // MATERIA DE UN CÓDIGO: PRIMERO EN SU PLAN Y, SI NO, EN CUALQUIERA (LOS CÓDIGOS DE 2024 Y 2003 NO SE REPITEN)
+      function materiaDe(codigo, planEnvio) {
+        var c = String(codigo || '').trim();
+        if (planEnvio && plan.porPlan[planEnvio] && plan.porPlan[planEnvio][c]) return plan.porPlan[planEnvio][c];
+        var otros = Object.keys(plan.porPlan).filter(function(p) { return plan.porPlan[p][c]; });
+        return otros.length ? plan.porPlan[otros[0]][c] : null;
+      }
+
+      function ordinalAnio(a) {
+        return a + (a === 1 || a === 3 ? '.er' : '.º') + ' año';
+      }
+
+      function formatoCreditos(n) {
+        return (Math.round(n * 10) / 10).toString().replace('.', ',');
+      }
+
+      function avisoPlan() {
+        if (plan.estado === 'listo') return '';
+        var texto = plan.estado === 'error' ? 'No se pudo leer la base Materias: se muestran los códigos.' : 'Cargando los nombres de las materias…';
+        return '<div style="font-size: 13px !important; color: #566481 !important; margin: 0 0 8px 0 !important;">' + texto + '</div>';
+      }
+
+      function barra(valor, maximo, color, ancho) {
+        var pct = maximo > 0 ? Math.max(0, Math.min(100, valor / maximo * 100)) : 0;
+        return '<span aria-hidden="true" style="display: inline-block !important; width: ' + (ancho || 80) + 'px !important; height: 8px !important; border-radius: 4px !important; background-color: #ebeef4 !important; overflow: hidden !important; vertical-align: middle !important;">' +
+          '<span style="display: block !important; width: ' + pct + '% !important; height: 100% !important; background-color: ' + color + ' !important;"></span></span>';
+      }
+
+      // 1A: MATERIAS CURSADAS, DE LA MÁS DIFÍCIL A LA MÁS FÁCIL (EMPATE: PRIMERO LAS RECURSADAS)
+      function htmlCursadas(respuestas, planEnvio) {
+        var lista = (respuestas || []).filter(function(m) { return m && typeof m === 'object'; });
+        if (!lista.length) return escapar(textoRespuesta(null, respuestas));
+        lista = lista.slice().sort(function(a, b) {
+          return ((b.dificultad || 0) - (a.dificultad || 0)) || ((a.primera_vez === false ? 0 : 1) - (b.primera_vez === false ? 0 : 1));
+        });
+        var recursadas = lista.filter(function(m) { return m.primera_vez === false; }).length;
+        var conDificultad = lista.filter(function(m) { return typeof m.dificultad === 'number'; });
+        var media = conDificultad.length ? conDificultad.reduce(function(a, m) { return a + m.dificultad; }, 0) / conDificultad.length : null;
+        var th = 'text-align: left !important; font-size: 12px !important; font-weight: 500 !important; color: #566481 !important; padding: 6px 8px !important; border-bottom: 1px solid #dadee7 !important;';
+        var td = 'padding: 8px !important; border-bottom: 1px solid rgba(194, 201, 214, 0.4) !important; vertical-align: middle !important;';
+        var filas = lista.map(function(m) {
+          var info = materiaDe(m.materia, planEnvio);
+          var sub = [escapar(m.materia)];
+          if (info && info.anio) sub.push(ordinalAnio(info.anio));
+          if (info) sub.push(formatoCreditos(info.creditos) + ' CG');
+          else if (plan.estado === 'listo') sub.push('no está en el plan');
+          var chip = m.primera_vez === false ? ['Recursa', NIVELES.rojo] : m.primera_vez === true ? ['1.ª vez', NIVELES.sin_datos] : ['Sin responder', NIVELES.sin_datos];
+          var d = typeof m.dificultad === 'number' ? m.dificultad : null;
+          var nivel = d === null ? NIVELES.sin_datos : d >= 4 ? NIVELES.rojo : d === 3 ? NIVELES.amarillo : NIVELES.verde;
+          var etiqueta = d === null ? 'Sin responder' : d >= 4 ? 'Alta' : d === 3 ? 'Media' : 'Baja';
+          return '<tr>' +
+            '<td style="' + td + ' min-width: 150px !important;"><div style="font-weight: 500 !important; color: #0b0e14 !important;">' + escapar(info ? info.nombre : m.materia) + '</div>' +
+            '<div style="font-size: 12px !important; color: #566481 !important;">' + sub.join(' · ') + '</div></td>' +
+            '<td style="' + td + ' white-space: nowrap !important;"><span style="display: inline-block !important; padding: 2px 8px !important; border-radius: 999px !important; font-size: 12px !important; font-weight: 500 !important; background-color: ' + chip[1].fondo + ' !important; color: ' + chip[1].color + ' !important; border: 1px solid ' + chip[1].borde + ' !important;">' + chip[0] + '</span></td>' +
+            '<td style="' + td + ' white-space: nowrap !important;">' + barra(d || 0, 5, nivel.punto, 48) +
+            ' <span style="font-size: 13px !important; color: ' + nivel.color + ' !important; margin-left: 6px !important;">' + (d === null ? '' : d + ' · ') + etiqueta + '</span></td></tr>';
+        }).join('');
+        var resumen = lista.length + (lista.length === 1 ? ' materia' : ' materias') + ' · ' + recursadas + (recursadas === 1 ? ' recursada' : ' recursadas') +
+          (media === null ? '' : ' · dificultad media ' + formatoCreditos(media));
+        return avisoPlan() +
+          '<div style="font-size: 13px !important; color: #47536b !important; margin: 0 0 6px 0 !important;">' + resumen + '</div>' +
+          '<div style="overflow-x: auto !important;"><table style="width: 100% !important; border-collapse: collapse !important; font-size: 14px !important;">' +
+          '<thead><tr><th style="' + th + '">Materia</th><th style="' + th + '">Cursada</th><th style="' + th + '">Dificultad (1 a 5)</th></tr></thead>' +
+          '<tbody>' + filas + '</tbody></table></div>';
+      }
+
+      // 2A: CRÉDITOS APROBADOS POR AÑO DEL PLAN, CON LAS MATERIAS QUE LOS SUMAN (SIN LAS PENDIENTES)
+      function htmlCreditos(respuestas, declarados) {
+        var sel = (respuestas || [])[0];
+        if (!sel || typeof sel !== 'object' || !Array.isArray(sel.materias)) return escapar(textoRespuesta(null, respuestas));
+        var p = String(sel.plan || '').trim();
+        var delPlan = plan.porPlan[p] || {};
+        var otros = OTROS_CREDITOS[p] || [];
+        var porAnio = {}, sinAnio = [], marcadosOtros = [], suma = 0;
+        sel.materias.forEach(function(codigo) {
+          var c = String(codigo).trim();
+          var otro = otros.filter(function(o) { return o.codigo === c; })[0];
+          if (otro) { marcadosOtros.push(otro); suma += otro.creditos; return; }
+          var m = delPlan[c] || materiaDe(c, p);
+          if (m) suma += m.creditos;
+          if (m && m.anio) (porAnio[m.anio] = porAnio[m.anio] || []).push(m);
+          else sinAnio.push(m || { codigo: c, nombre: c, creditos: null });
+        });
+        var listo = plan.estado === 'listo';
+        var totalAnio = {}, totalPlan = otros.reduce(function(a, o) { return a + o.creditos; }, 0);
+        Object.keys(delPlan).forEach(function(c) {
+          var m = delPlan[c];
+          totalPlan += m.creditos;
+          if (m.anio) totalAnio[m.anio] = (totalAnio[m.anio] || 0) + m.creditos;
+        });
+        var item = function(m) {
+          return '<li style="display: flex !important; justify-content: space-between !important; gap: 12px !important; padding: 3px 0 !important;">' +
+            '<span><span aria-hidden="true" style="color: #1f7a1f !important; margin-right: 6px !important;">✓</span>' + escapar(m.nombre) +
+            (m.nombre !== m.codigo ? ' <span style="font-size: 12px !important; color: #566481 !important;">' + escapar(m.codigo) + '</span>' : '') + '</span>' +
+            '<span style="white-space: nowrap !important; color: #47536b !important;">' + (m.creditos === null ? '' : formatoCreditos(m.creditos) + ' CG') + '</span></li>';
+        };
+        var anios = Object.keys(porAnio).map(Number).sort(function(a, b) { return a - b; });
+        var bloques = anios.map(function(a) {
+          var aprobados = porAnio[a].reduce(function(x, m) { return x + m.creditos; }, 0);
+          var total = totalAnio[a] || 0;
+          var completo = total > 0 && aprobados >= total;
+          return '<details open style="border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 6px 0 !important;">' +
+            '<summary style="cursor: pointer !important; display: flex !important; align-items: center !important; gap: 10px !important; flex-wrap: wrap !important; list-style: revert !important;">' +
+            '<b style="font-weight: 600 !important; min-width: 64px !important;">' + ordinalAnio(a) + '</b>' + barra(aprobados, total, completo ? NIVELES.verde.punto : '#026bd4', 120) +
+            '<span style="font-size: 13px !important; color: #47536b !important;">' + formatoCreditos(aprobados) + (total ? '/' + formatoCreditos(total) : '') + ' CG · ' +
+            porAnio[a].length + (porAnio[a].length === 1 ? ' materia' : ' materias') + (completo ? ' · completo' : '') + '</span></summary>' +
+            '<ul style="list-style: none !important; margin: 6px 0 0 0 !important; padding: 0 0 0 4px !important; font-size: 14px !important;">' + porAnio[a].map(item).join('') + '</ul></details>';
+        }).join('');
+        if (sinAnio.length) {
+          bloques += '<details style="border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 6px 0 !important;"><summary style="cursor: pointer !important;"><b style="font-weight: 600 !important;">' +
+            (listo ? 'Fuera del plan' : 'Materias') + '</b> <span style="font-size: 13px !important; color: #47536b !important;">' + sinAnio.length + ' códigos</span></summary>' +
+            '<ul style="list-style: none !important; margin: 6px 0 0 0 !important; padding: 0 0 0 4px !important; font-size: 14px !important;">' + sinAnio.map(item).join('') + '</ul></details>';
+        }
+        if (marcadosOtros.length) {
+          bloques += '<div style="border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 8px 0 0 0 !important; font-size: 14px !important;"><b style="font-weight: 600 !important;">Otros</b> ' +
+            marcadosOtros.map(function(o) { return '<span aria-hidden="true" style="color: #1f7a1f !important;">✓</span> ' + escapar(o.nombre) + (o.creditos ? ' (' + formatoCreditos(o.creditos) + ' CG)' : ''); }).join(' · ') + '</div>';
+        }
+        var cabecera = '<div style="display: flex !important; justify-content: space-between !important; align-items: baseline !important; gap: 12px !important; flex-wrap: wrap !important; margin: 0 0 6px 0 !important;">' +
+          '<span style="font-size: 13px !important; color: #47536b !important;">Plan ' + escapar(p || '—') + ' · ' + sel.materias.length + ' marcadas</span>' +
+          (listo ? '<b style="font-weight: 600 !important;">' + formatoCreditos(suma) + ' de ' + formatoCreditos(totalPlan) + ' CG (' + Math.round(totalPlan ? suma / totalPlan * 100 : 0) + ' %)</b>' : '') + '</div>' +
+          (listo ? '<div style="margin: 0 0 8px 0 !important;">' + barra(suma, totalPlan, '#026bd4', 640).replace('width: 640px', 'width: 100%') + '</div>' : '');
+        var diferencia = listo && typeof declarados === 'number' && Math.abs(declarados - suma) >= 0.5
+          ? '<div style="font-size: 13px !important; padding: 6px 10px !important; margin: 0 0 8px 0 !important; border-radius: 8px !important; background-color: ' + NIVELES.amarillo.fondo + ' !important; color: ' + NIVELES.amarillo.color + ' !important; border: 1px solid ' + NIVELES.amarillo.borde + ' !important;">' +
+            'Declaró ' + formatoCreditos(declarados) + ' CG; las materias marcadas suman ' + formatoCreditos(suma) + ' CG.</div>'
+          : '';
+        return avisoPlan() + cabecera + diferencia + bloques;
+      }
+
       // PARES PREGUNTA / RESPUESTA DE UN ENVÍO, EN EL ORDEN DE LA ENCUESTA
       function paresDeEnvio(r) {
         var preguntas = preguntasDe(r.codigo_encuesta, r.version);
@@ -1108,19 +1325,30 @@
         preguntas.forEach(function(p, k) { orden[String(p.item_id)] = k; });
         var lista = json(r.json_respuesta, []);
         if (!Array.isArray(lista)) return [];
+        // Plan del envío (del cuadro de créditos) y créditos declarados (la pregunta numérica que completa el cuadro)
+        var planEnvio = '', declarados = null;
+        lista.forEach(function(x) {
+          var p = porId[String(x.item_id)];
+          if (p && p.formato === 'seleccion_creditos' && x.respuestas && x.respuestas[0] && x.respuestas[0].plan) planEnvio = String(x.respuestas[0].plan);
+          if (p && p.tipo === 'numeric' && /cr[eé]ditos/i.test(p.pregunta || '') && x.respuestas && typeof x.respuestas[0] === 'number') declarados = x.respuestas[0];
+        });
         return lista.slice().sort(function(a, b) {
           var oa = orden[String(a.item_id)], ob = orden[String(b.item_id)];
           return (oa === undefined ? 1e6 : oa) - (ob === undefined ? 1e6 : ob);
         }).map(function(x) {
           var p = porId[String(x.item_id)];
-          return { pregunta: p ? p.pregunta : 'Pregunta ' + x.item_id + ' (no está en la versión ' + r.version + ')', respuesta: textoRespuesta(p, x.respuestas) };
+          var pregunta = p ? p.pregunta : 'Pregunta ' + x.item_id + ' (no está en la versión ' + r.version + ')';
+          if (p && p.formato === 'selector_materias') return { pregunta: pregunta, html: htmlCursadas(x.respuestas, planEnvio) };
+          if (p && p.formato === 'seleccion_creditos') return { pregunta: 'Créditos aprobados (materias del cuadro de créditos)', html: htmlCreditos(x.respuestas, declarados) };
+          return { pregunta: pregunta, respuesta: textoRespuesta(p, x.respuestas) };
         });
       }
 
       function abrirRespuestas(rid, disparador) {
         var r = respuestaPorRid(rid);
         if (!r) return;
-        modalRespuestas = { disparador: disparador };
+        modalRespuestas = { rid: rid, disparador: disparador };
+        cargarPlan();
         var pares = paresDeEnvio(r);
         var titulo = (TIPOS[r.codigo_encuesta] || 'Encuesta') + (r.periodo ? ' ' + r.periodo : '');
         var fecha = fechaDeTiempo(tiempoDe(r));
@@ -1133,7 +1361,7 @@
             ? '<dl style="margin: 0 !important; padding: 0 !important;">' + pares.map(function(x) {
                 return '<div style="padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
                   '<dt style="font-size: 13px !important; color: #47536b !important; margin: 0 0 2px 0 !important; font-weight: 400 !important;">' + escapar(x.pregunta) + '</dt>' +
-                  '<dd style="margin: 0 !important; font-weight: 500 !important; color: #0b0e14 !important; overflow-wrap: anywhere !important;">' + escapar(x.respuesta) + '</dd></div>';
+                  '<dd style="margin: 0 !important; font-weight: 500 !important; color: #0b0e14 !important; overflow-wrap: anywhere !important;">' + (x.html !== undefined ? x.html : escapar(x.respuesta)) + '</dd></div>';
               }).join('') + '</dl>'
             : '<div style="color: #47536b !important;">' + ((datos.encuestas || []).length ? 'Este envío no tiene respuestas guardadas.' : 'No se pudo leer la base Encuestas: faltan los textos de las preguntas.') + '</div>');
         $('modal-respuestas-detalle').style.setProperty('display', 'flex', 'important');
@@ -1486,6 +1714,7 @@
             $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
           }
           mostrarUsuario();
+          cargarPlan(); // en segundo plano: los nombres de las materias del modal de respuestas
         }).catch(function(e) {
           if (datosDe !== u) return;
           $('contenido-detalle').innerHTML = '<div style="padding: 24px !important; color: #910808 !important;">No se pudieron leer las bases: ' + escapar(e.message) + '</div>';

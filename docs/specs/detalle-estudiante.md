@@ -88,3 +88,13 @@ La búsqueda encuentra el texto en cualquier campo y puede traer de más; el det
 ## Lectura sin Tools (2026-11-18)
 
 El Detalle no carga la Página Tools: lee las bases con el bloque `COPIA DE TOOLS`, idéntico al del Tablero (ver RULES.md, «Código copiado de Tools»). Si hay un período guardado de menos de 12 horas (`zk-periodo-vigente`, lo deja el Tablero), no lee la base Períodos.
+
+## Materias y créditos en las respuestas (2026-11-18, en local)
+
+El modal de una encuesta ("Ver detalle") muestra los nombres de las materias en lugar de los códigos, con los datos de la base **Materias** (`bases.materias`, d=152): la entrada más nueva de cada `plan + codigo`, sin las dadas de baja (misma regla que Widgets). El año sale del cuatrimestre del plan (1 y 2 → 1.er año…).
+
+- **Lectura:** después de dibujar la página, en segundo plano (unos 1,5 a 2 s en el campus), así que la carga del Detalle no cambia. Si el modal se abre antes, muestra los códigos con "Cargando los nombres de las materias…" y se vuelve a dibujar al terminar. Si la base no se lee, se ven los códigos.
+- **Materias cursadas** (selector de materias): una tabla ordenada de la más difícil a la menos difícil (empate: primero las recursadas) con el nombre, el código, el año y los créditos, un chip *Recursa* / *1.ª vez* y la dificultad de 1 a 5 con el color del semáforo (1-2 baja, 3 media, 4-5 alta). Arriba, cuántas materias, cuántas recursadas y la dificultad media. Un código que no está en el plan se muestra tal cual.
+- **Créditos aprobados** (cuadro de créditos): el total aprobado sobre el total del plan con una barra, y por cada año con materias aprobadas, su barra (aprobados sobre el total del año) y la lista de esas materias con sus créditos. **No se listan las pendientes.** La PPS y las optativas del plan 2003 van en "Otros" (copia de `OTROS_CREDITOS` de Widgets). Si los créditos declarados no coinciden con la suma de lo marcado, un aviso lo dice.
+- El plan de las materias cursadas es el del cuadro de créditos del mismo envío; los códigos de los planes 2024 y 2003 no se repiten, así que sin plan se busca en los dos.
+- **Vista previa:** con un servidor local lee `data/plan_estudios/PLANES_CARGA.csv`; con `file://`, una parte del plan 2024 (`MATERIAS_PRUEBA`), así que el total del plan sale más chico.
