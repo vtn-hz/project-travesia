@@ -1,0 +1,910 @@
+{
+ "generado_con": "data/prueba/generar.js",
+ "semilla": 20261124,
+ "fecha_de_referencia": "2026-11-17T12:00",
+ "aplicar": "ver data/prueba/README.md",
+ "base": "estudiantes",
+ "descripcion": "Información personal de los 60 estudiantes ficticios (una entrada por estudiante).",
+ "entradas": [
+  {
+   "ref": "EST-001",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900001",
+    "dni": "45335684",
+    "nombre": "MILAGROS ANTONELLA",
+    "apellido": "IBÁÑEZ",
+    "email": "milagros.ibanez88@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-002",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900002",
+    "dni": "45770963",
+    "nombre": "AGUSTÍN",
+    "apellido": "JUÁREZ",
+    "email": "agustin.juarez94@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-003",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900003",
+    "dni": "46005590",
+    "nombre": "BRENDA",
+    "apellido": "CORREA",
+    "email": "brenda.correa42@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-004",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900004",
+    "dni": "45790611",
+    "nombre": "EMILIA",
+    "apellido": "ETCHEGARAY ROMANO",
+    "email": "emilia.etchegaray57@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-005",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900005",
+    "dni": "45968971",
+    "nombre": "ABRIL MORENA",
+    "apellido": "CARRIZO BENÍTEZ",
+    "email": "abril.carrizo74@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-006",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900006",
+    "dni": "47073349",
+    "nombre": "GUADALUPE",
+    "apellido": "ROSSI",
+    "email": "guadalupe.rossi29@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2024",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-007",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900007",
+    "dni": "47036898",
+    "nombre": "CRISTIAN",
+    "apellido": "ETCHEGARAY",
+    "email": "cristian.etchegaray98@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2024",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-008",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900008",
+    "dni": "46683315",
+    "nombre": "ALDANA",
+    "apellido": "MORENO",
+    "email": "aldana.moreno89@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2024",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": "2025-1"
+   }
+  },
+  {
+   "ref": "EST-009",
+   "perfil": "al_dia",
+   "campos": {
+    "id_usuario": "900009",
+    "dni": "44600885",
+    "nombre": "MORENA",
+    "apellido": "VILLALBA",
+    "email": "morena.villalba90@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-010",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900010",
+    "dni": "42877269",
+    "nombre": "BELÉN",
+    "apellido": "VERA",
+    "email": "belen.vera80@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2018",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-011",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900011",
+    "dni": "42624756",
+    "nombre": "JOAQUÍN GASTÓN",
+    "apellido": "SUÁREZ",
+    "email": "joaquin.suarez6@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2019",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-012",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900012",
+    "dni": "43305862",
+    "nombre": "LUCAS",
+    "apellido": "MORALES FERREYRA",
+    "email": "lucas.morales65@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2019",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-013",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900013",
+    "dni": "44376496",
+    "nombre": "MATEO",
+    "apellido": "BARRIOS",
+    "email": "mateo.barrios27@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2020",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-014",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900014",
+    "dni": "43172616",
+    "nombre": "MILAGROS",
+    "apellido": "LEDESMA",
+    "email": "milagros.ledesma42@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2020",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-015",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900015",
+    "dni": "42483449",
+    "nombre": "MICAELA",
+    "apellido": "SILVA",
+    "email": "micaela.silva53@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-016",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900016",
+    "dni": "44588812",
+    "nombre": "JOAQUÍN",
+    "apellido": "OJEDA",
+    "email": "joaquin.ojeda2@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-017",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900017",
+    "dni": "42822373",
+    "nombre": "MORENA",
+    "apellido": "FIGUEROA",
+    "email": "morena.figueroa86@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-018",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900018",
+    "dni": "45448058",
+    "nombre": "ALEJO",
+    "apellido": "PERALTA VERA",
+    "email": "alejo.peralta32@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-019",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900019",
+    "dni": "45788716",
+    "nombre": "JULIETA",
+    "apellido": "SALINAS JUÁREZ",
+    "email": "julieta.salinas97@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-020",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900020",
+    "dni": "46438221",
+    "nombre": "SOFÍA",
+    "apellido": "MALDONADO",
+    "email": "sofia.maldonado8@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": "2025-1"
+   }
+  },
+  {
+   "ref": "EST-021",
+   "perfil": "trabaja",
+   "campos": {
+    "id_usuario": "900021",
+    "dni": "46191389",
+    "nombre": "LAUTARO",
+    "apellido": "TOLEDO",
+    "email": "lautaro.toledo78@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-022",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900022",
+    "dni": "41834440",
+    "nombre": "ANTONELLA CELESTE",
+    "apellido": "DOMÍNGUEZ",
+    "email": "antonella.dominguez93@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2019",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-023",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900023",
+    "dni": "44325407",
+    "nombre": "BENJAMÍN",
+    "apellido": "CORONEL",
+    "email": "benjamin.coronel17@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2020",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-024",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900024",
+    "dni": "45189598",
+    "nombre": "RAMIRO",
+    "apellido": "CARRIZO",
+    "email": "ramiro.carrizo2@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-025",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900025",
+    "dni": "45841377",
+    "nombre": "FEDERICO",
+    "apellido": "RUIZ RIVERO",
+    "email": "federico.ruiz49@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-026",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900026",
+    "dni": "45638204",
+    "nombre": "MICAELA",
+    "apellido": "CORONEL",
+    "email": "micaela.coronel85@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-027",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900027",
+    "dni": "46235598",
+    "nombre": "MAXIMILIANO",
+    "apellido": "ESPÓSITO",
+    "email": "maximiliano.esposito10@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-028",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900028",
+    "dni": "44832216",
+    "nombre": "LUCÍA",
+    "apellido": "VERA",
+    "email": "lucia.vera87@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-029",
+   "perfil": "riesgo",
+   "campos": {
+    "id_usuario": "900029",
+    "dni": "46142534",
+    "nombre": "BENJAMÍN",
+    "apellido": "PÉREZ",
+    "email": "benjamin.perez81@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2024",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-030",
+   "perfil": "abandono",
+   "campos": {
+    "id_usuario": "900030",
+    "dni": "40822119",
+    "nombre": "LARA",
+    "apellido": "DÍAZ",
+    "email": "lara.diaz79@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2019",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-031",
+   "perfil": "abandono",
+   "campos": {
+    "id_usuario": "900031",
+    "dni": "44215252",
+    "nombre": "PAULA",
+    "apellido": "CABRERA",
+    "email": "paula.cabrera77@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2020",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-032",
+   "perfil": "abandono",
+   "campos": {
+    "id_usuario": "900032",
+    "dni": "45192770",
+    "nombre": "ANTONELLA",
+    "apellido": "CASTRO",
+    "email": "antonella.castro22@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-033",
+   "perfil": "abandono",
+   "campos": {
+    "id_usuario": "900033",
+    "dni": "45503998",
+    "nombre": "ABRIL",
+    "apellido": "ROSSI",
+    "email": "abril.rossi70@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-034",
+   "perfil": "inactivo",
+   "campos": {
+    "id_usuario": "900034",
+    "dni": "43877901",
+    "nombre": "ALEJO RAMIRO",
+    "apellido": "BENÍTEZ",
+    "email": "alejo.benitez73@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2020",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-035",
+   "perfil": "inactivo",
+   "campos": {
+    "id_usuario": "900035",
+    "dni": "45117975",
+    "nombre": "EZEQUIEL EMILIANO",
+    "apellido": "LUNA",
+    "email": "ezequiel.luna72@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-036",
+   "perfil": "nunca_responde",
+   "campos": {
+    "id_usuario": "900036",
+    "dni": "45233243",
+    "nombre": "EMILIA",
+    "apellido": "RODRÍGUEZ",
+    "email": "emilia.rodriguez65@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2021",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-037",
+   "perfil": "nunca_responde",
+   "campos": {
+    "id_usuario": "900037",
+    "dni": "45618570",
+    "nombre": "GENARO",
+    "apellido": "ROJAS",
+    "email": "genaro.rojas36@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2022",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-038",
+   "perfil": "nunca_responde",
+   "campos": {
+    "id_usuario": "900038",
+    "dni": "46166678",
+    "nombre": "ANTONELLA SOFÍA",
+    "apellido": "JUÁREZ",
+    "email": "antonella.juarez62@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2023",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-039",
+   "perfil": "paso_reciente",
+   "campos": {
+    "id_usuario": "900039",
+    "dni": "47566873",
+    "nombre": "MILAGROS",
+    "apellido": "ARIAS",
+    "email": "milagros.arias66@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": "2026-2"
+   }
+  },
+  {
+   "ref": "EST-040",
+   "perfil": "paso_reciente",
+   "campos": {
+    "id_usuario": "900040",
+    "dni": "47477202",
+    "nombre": "AILÉN",
+    "apellido": "BENÍTEZ",
+    "email": "ailen.benitez24@ejemplo.edu.ar",
+    "es_primer_anio": "no",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": "2026-1"
+   }
+  },
+  {
+   "ref": "EST-041",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900041",
+    "dni": "48707744",
+    "nombre": "FLORENCIA",
+    "apellido": "PÉREZ",
+    "email": "florencia.perez41@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-042",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900042",
+    "dni": "47584903",
+    "nombre": "XIMENA",
+    "apellido": "RAMÍREZ",
+    "email": "ximena.ramirez84@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-043",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900043",
+    "dni": "46632659",
+    "nombre": "CAROLINA",
+    "apellido": "ECHEVERRÍA",
+    "email": "carolina.echeverria80@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-044",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900044",
+    "dni": "47477576",
+    "nombre": "BELÉN PAULA",
+    "apellido": "PAREDES",
+    "email": "belen.paredes8@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-045",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900045",
+    "dni": "48262610",
+    "nombre": "MATEO",
+    "apellido": "GONZÁLEZ",
+    "email": "mateo.gonzalez33@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-046",
+   "perfil": "buen_inicio",
+   "campos": {
+    "id_usuario": "900046",
+    "dni": "46992479",
+    "nombre": "BENJAMÍN",
+    "apellido": "DOMÍNGUEZ",
+    "email": "benjamin.dominguez77@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-047",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900047",
+    "dni": "47899609",
+    "nombre": "JUAN",
+    "apellido": "FIGUEROA",
+    "email": "juan.figueroa37@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-048",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900048",
+    "dni": "48388126",
+    "nombre": "PABLO",
+    "apellido": "CÁCERES",
+    "email": "pablo.caceres22@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-049",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900049",
+    "dni": "48328592",
+    "nombre": "TOMÁS BAUTISTA",
+    "apellido": "MUÑOZ",
+    "email": "tomas.munoz14@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-050",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900050",
+    "dni": "48652436",
+    "nombre": "DELFINA CAMILA",
+    "apellido": "RODRÍGUEZ",
+    "email": "delfina.rodriguez18@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-051",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900051",
+    "dni": "46771421",
+    "nombre": "ROCÍO",
+    "apellido": "LOMBARDI",
+    "email": "rocio.lombardi20@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-052",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900052",
+    "dni": "48351761",
+    "nombre": "LEANDRO ALEJO",
+    "apellido": "DÍAZ",
+    "email": "leandro.diaz56@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-053",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900053",
+    "dni": "47998959",
+    "nombre": "MICAELA",
+    "apellido": "MARINO",
+    "email": "micaela.marino36@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-054",
+   "perfil": "irregular",
+   "campos": {
+    "id_usuario": "900054",
+    "dni": "47566885",
+    "nombre": "GENARO",
+    "apellido": "CÓRDOBA",
+    "email": "genaro.cordoba4@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2025",
+    "cuatrimestre_ingreso": "2",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-055",
+   "perfil": "en_riesgo",
+   "campos": {
+    "id_usuario": "900055",
+    "dni": "48493200",
+    "nombre": "CAMILA",
+    "apellido": "NÚÑEZ",
+    "email": "camila.nunez86@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-056",
+   "perfil": "en_riesgo",
+   "campos": {
+    "id_usuario": "900056",
+    "dni": "48301301",
+    "nombre": "MELINA PAULA",
+    "apellido": "JUÁREZ CORREA",
+    "email": "melina.juarez55@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-057",
+   "perfil": "en_riesgo",
+   "campos": {
+    "id_usuario": "900057",
+    "dni": "48233597",
+    "nombre": "FACUNDO",
+    "apellido": "CORONEL",
+    "email": "facundo.coronel48@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-058",
+   "perfil": "en_riesgo",
+   "campos": {
+    "id_usuario": "900058",
+    "dni": "45887766",
+    "nombre": "MORENA BRENDA",
+    "apellido": "VÁZQUEZ BIANCHI",
+    "email": "morena.vazquez15@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-059",
+   "perfil": "sin_notas",
+   "campos": {
+    "id_usuario": "900059",
+    "dni": "47980430",
+    "nombre": "EMILIANO",
+    "apellido": "RAMÍREZ",
+    "email": "emiliano.ramirez19@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  },
+  {
+   "ref": "EST-060",
+   "perfil": "sin_notas",
+   "campos": {
+    "id_usuario": "900060",
+    "dni": "48191830",
+    "nombre": "VICTORIA",
+    "apellido": "ARAMBURU",
+    "email": "victoria.aramburu30@ejemplo.edu.ar",
+    "es_primer_anio": "si",
+    "anio_ingreso": "2026",
+    "cuatrimestre_ingreso": "1",
+    "periodo_paso_superior": ""
+   }
+  }
+ ]
+}

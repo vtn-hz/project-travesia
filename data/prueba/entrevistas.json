@@ -1,0 +1,610 @@
+{
+ "generado_con": "data/prueba/generar.js",
+ "semilla": 20261124,
+ "fecha_de_referencia": "2026-11-17T12:00",
+ "aplicar": "ver data/prueba/README.md",
+ "base": "entrevistas",
+ "descripcion": "Entrevistas con tutores y asesores pares ficticios (id 900901 a 900906), en distintos estados al 2026-11-17. Las contraofertas van en propuestas_json; no se usa RespuestasEntrevistas, porque la página solo acepta las respuestas que carga la cuenta de cada parte.",
+ "entradas": [
+  {
+   "ref": "ENT-001",
+   "campos": {
+    "dni": "44325407",
+    "id_usuario_estudiante": "900023",
+    "nombre_estudiante": "BENJAMÍN CORONEL",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-05-05T12:23",
+    "fecha_programada": "2026-05-13T11:30",
+    "fecha_realizada": "2026-05-13T11:30",
+    "resultado": "Recursa porque se superponían los horarios con el trabajo. Ya lo resolvió y va bien.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-05-13T11:30\",\"creada\":\"2026-05-05T12:23\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-002",
+   "campos": {
+    "dni": "42624756",
+    "id_usuario_estudiante": "900011",
+    "nombre_estudiante": "JOAQUÍN GASTÓN SUÁREZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-17T09:14",
+    "fecha_programada": "2026-04-22T15:00",
+    "fecha_realizada": "2026-04-22T15:00",
+    "resultado": "Se olvidó de responder. Cursa tres materias y no reporta dificultades.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-20T09:00\",\"creada\":\"2026-04-17T09:14\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-04-22T15:00\",\"creada\":\"2026-04-17T12:27\",\"mensaje\":\"Ese día curso hasta tarde. ¿Puede ser otro día?\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-003",
+   "campos": {
+    "dni": "45788716",
+    "id_usuario_estudiante": "900019",
+    "nombre_estudiante": "JULIETA SALINAS JUÁREZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-04-19T14:05",
+    "fecha_programada": "2026-04-22T09:00",
+    "fecha_realizada": "2026-04-22T09:00",
+    "resultado": "Recursa dos materias del ciclo básico. Se acuerda priorizarlas y bajar la carga.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-22T09:00\",\"creada\":\"2026-04-19T14:05\",\"mensaje\":\"\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"beca\",\"descripcion\":\"Averiguar si puede acceder a una beca de ayuda económica.\",\"fecha_compromiso\":\"2026-05-13\",\"estado\":\"pendiente\"}]"
+   }
+  },
+  {
+   "ref": "ENT-004",
+   "campos": {
+    "dni": "42822373",
+    "id_usuario_estudiante": "900017",
+    "nombre_estudiante": "MORENA FIGUEROA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900904",
+    "nombre_acompanante": "Gustavo Lescano",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-21T14:25",
+    "fecha_programada": "2026-04-29T11:30",
+    "fecha_realizada": "2026-04-29T11:30",
+    "resultado": "Está trabajando jornada completa y no encuentra tiempo para cursar. Se evalúa una cursada reducida.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-29T11:30\",\"creada\":\"2026-04-21T14:25\",\"mensaje\":\"\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"psicopedagogia\",\"descripcion\":\"Derivación al gabinete psicopedagógico por técnicas de estudio.\",\"fecha_compromiso\":\"2026-05-09\",\"estado\":\"pendiente\"},{\"tipo_derivacion\":\"asesor_par\",\"descripcion\":\"Encuentros semanales con un asesor par para preparar los parciales.\",\"fecha_compromiso\":\"2026-05-19\",\"estado\":\"cumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-005",
+   "campos": {
+    "dni": "43877901",
+    "id_usuario_estudiante": "900034",
+    "nombre_estudiante": "ALEJO RAMIRO BENÍTEZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-04-14T16:46",
+    "fecha_programada": "2026-04-23T17:30",
+    "fecha_realizada": "2026-04-23T17:30",
+    "resultado": "Respondió la encuesta pensando en el año anterior; en realidad va al día.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-23T17:30\",\"creada\":\"2026-04-14T16:46\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-006",
+   "campos": {
+    "dni": "41834440",
+    "id_usuario_estudiante": "900022",
+    "nombre_estudiante": "ANTONELLA CELESTE DOMÍNGUEZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-22T14:26",
+    "fecha_programada": "2026-04-30T15:30",
+    "fecha_realizada": "2026-04-30T15:30",
+    "resultado": "Dejó de cursar por problemas familiares. Piensa retomar el próximo cuatrimestre.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-27T14:00\",\"creada\":\"2026-04-22T14:26\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-04-30T15:30\",\"creada\":\"2026-04-23T01:34\",\"mensaje\":\"Ese día curso hasta tarde. ¿Puede ser otro día?\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"asesor_par\",\"descripcion\":\"Encuentros semanales con un asesor par para preparar los parciales.\",\"fecha_compromiso\":\"2026-05-10\",\"estado\":\"incumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-007",
+   "campos": {
+    "dni": "44588812",
+    "id_usuario_estudiante": "900016",
+    "nombre_estudiante": "JOAQUÍN OJEDA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-04-26T10:03",
+    "fecha_programada": "2026-04-29T10:00",
+    "fecha_realizada": "2026-04-29T10:00",
+    "resultado": "Consiguió un trabajo de medio tiempo y reorganizó la cursada. Sin riesgo por ahora.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-29T10:00\",\"creada\":\"2026-04-26T10:03\",\"mensaje\":\"\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"reduccion_cursada\",\"descripcion\":\"Armar un plan de cursada compatible con el trabajo.\",\"fecha_compromiso\":\"2026-05-26\",\"estado\":\"cumplida\"},{\"tipo_derivacion\":\"beca\",\"descripcion\":\"Averiguar si puede acceder a una beca de ayuda económica.\",\"fecha_compromiso\":\"2026-05-17\",\"estado\":\"incumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-008",
+   "campos": {
+    "dni": "45841377",
+    "id_usuario_estudiante": "900025",
+    "nombre_estudiante": "FEDERICO RUIZ RIVERO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900904",
+    "nombre_acompanante": "Gustavo Lescano",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-08T15:09",
+    "fecha_programada": "2026-04-20T16:30",
+    "fecha_realizada": "2026-04-20T16:30",
+    "resultado": "No había visto el aviso de la encuesta. La respondió durante la entrevista y cursa con normalidad.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-16T15:30\",\"creada\":\"2026-04-08T15:09\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-04-20T16:30\",\"creada\":\"2026-04-09T18:53\",\"mensaje\":\"Tengo parcial esa semana. ¿Podemos pasarla?\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"beca\",\"descripcion\":\"Averiguar si puede acceder a una beca de ayuda económica.\",\"fecha_compromiso\":\"2026-05-06\",\"estado\":\"cumplida\"},{\"tipo_derivacion\":\"otra\",\"descripcion\":\"Consultar con la cátedra las fechas de recuperatorio.\",\"fecha_compromiso\":\"2026-05-17\",\"estado\":\"cumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-009",
+   "campos": {
+    "dni": "40822119",
+    "id_usuario_estudiante": "900030",
+    "nombre_estudiante": "LARA DÍAZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "no_asistio",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-16T14:21",
+    "fecha_programada": "2026-04-20T10:30",
+    "fecha_realizada": "",
+    "resultado": "No se presentó ni avisó.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-20T10:30\",\"creada\":\"2026-04-16T14:21\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-010",
+   "campos": {
+    "dni": "44215252",
+    "id_usuario_estudiante": "900031",
+    "nombre_estudiante": "PAULA CABRERA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "no_asistio",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-13T16:29",
+    "fecha_programada": "2026-04-23T15:30",
+    "fecha_realizada": "",
+    "resultado": "No se presentó ni avisó.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-22T17:30\",\"creada\":\"2026-04-13T16:29\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-04-23T15:30\",\"creada\":\"2026-04-14T15:10\",\"mensaje\":\"Trabajo a esa hora. ¿Puede ser más tarde?\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-011",
+   "campos": {
+    "dni": "45192770",
+    "id_usuario_estudiante": "900032",
+    "nombre_estudiante": "ANTONELLA CASTRO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "cancelada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2025-2.",
+    "fecha_solicitud": "2026-04-23T11:35",
+    "fecha_programada": "",
+    "fecha_realizada": "",
+    "resultado": "El estudiante resolvió la consulta por correo con el departamento.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-04-28T10:30\",\"creada\":\"2026-04-23T11:35\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-04-30T09:00\",\"creada\":\"2026-04-24T18:47\",\"mensaje\":\"Ese día curso hasta tarde. ¿Puede ser otro día?\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-012",
+   "campos": {
+    "dni": "46438221",
+    "id_usuario_estudiante": "900020",
+    "nombre_estudiante": "SOFÍA MALDONADO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-09-24T13:11",
+    "fecha_programada": "2026-10-02T14:00",
+    "fecha_realizada": "2026-10-02T14:00",
+    "resultado": "Está desmotivado con la carrera. Se lo deriva a orientación vocacional.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-10-02T14:00\",\"creada\":\"2026-09-24T13:11\",\"mensaje\":\"\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"psicopedagogia\",\"descripcion\":\"Derivación al gabinete psicopedagógico por técnicas de estudio.\",\"fecha_compromiso\":\"2026-10-26\",\"estado\":\"cumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-013",
+   "campos": {
+    "dni": "42483449",
+    "id_usuario_estudiante": "900015",
+    "nombre_estudiante": "MICAELA SILVA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-09-14T10:00",
+    "fecha_programada": "2026-09-22T09:00",
+    "fecha_realizada": "2026-09-22T09:00",
+    "resultado": "Recursa dos materias del ciclo básico. Se acuerda priorizarlas y bajar la carga.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-09-22T09:00\",\"creada\":\"2026-09-14T10:00\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-014",
+   "campos": {
+    "dni": "45189598",
+    "id_usuario_estudiante": "900024",
+    "nombre_estudiante": "RAMIRO CARRIZO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900904",
+    "nombre_acompanante": "Gustavo Lescano",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2026-1.",
+    "fecha_solicitud": "2026-09-04T13:41",
+    "fecha_programada": "2026-09-14T15:00",
+    "fecha_realizada": "2026-09-14T15:00",
+    "resultado": "Está trabajando jornada completa y no encuentra tiempo para cursar. Se evalúa una cursada reducida.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-09-10T18:30\",\"creada\":\"2026-09-04T13:41\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-09-14T15:00\",\"creada\":\"2026-09-04T22:44\",\"mensaje\":\"Tengo parcial esa semana. ¿Podemos pasarla?\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"psicopedagogia\",\"descripcion\":\"Derivación al gabinete psicopedagógico por técnicas de estudio.\",\"fecha_compromiso\":\"2026-09-26\",\"estado\":\"cumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-015",
+   "campos": {
+    "dni": "45117975",
+    "id_usuario_estudiante": "900035",
+    "nombre_estudiante": "EZEQUIEL EMILIANO LUNA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Riesgo alto en la Encuesta Cuatrimestral: no cursó materias el cuatrimestre anterior.",
+    "fecha_solicitud": "2026-10-23T14:21",
+    "fecha_programada": "2026-10-30T11:00",
+    "fecha_realizada": "2026-10-30T11:00",
+    "resultado": "No cursó el cuatrimestre pasado por razones económicas. Se lo orienta sobre las becas de la universidad.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-10-30T11:00\",\"creada\":\"2026-10-23T14:21\",\"mensaje\":\"\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"reduccion_cursada\",\"descripcion\":\"Armar un plan de cursada compatible con el trabajo.\",\"fecha_compromiso\":\"2026-11-28\",\"estado\":\"pendiente\"},{\"tipo_derivacion\":\"asesor_par\",\"descripcion\":\"Encuentros semanales con un asesor par para preparar los parciales.\",\"fecha_compromiso\":\"2026-11-11\",\"estado\":\"pendiente\"}]"
+   }
+  },
+  {
+   "ref": "ENT-016",
+   "campos": {
+    "dni": "46235598",
+    "id_usuario_estudiante": "900027",
+    "nombre_estudiante": "MAXIMILIANO ESPÓSITO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "realizada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2026-1.",
+    "fecha_solicitud": "2026-09-02T14:55",
+    "fecha_programada": "2026-09-15T10:00",
+    "fecha_realizada": "2026-09-15T10:00",
+    "resultado": "Se olvidó de responder. Cursa tres materias y no reporta dificultades.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-09-11T10:00\",\"creada\":\"2026-09-02T14:55\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-09-15T10:00\",\"creada\":\"2026-09-02T22:35\",\"mensaje\":\"Tengo parcial esa semana. ¿Podemos pasarla?\"}]",
+    "acciones_json": "[{\"tipo_derivacion\":\"psicopedagogia\",\"descripcion\":\"Derivación al gabinete psicopedagógico por técnicas de estudio.\",\"fecha_compromiso\":\"2026-09-28\",\"estado\":\"cumplida\"},{\"tipo_derivacion\":\"otra\",\"descripcion\":\"Consultar con la cátedra las fechas de recuperatorio.\",\"fecha_compromiso\":\"2026-10-02\",\"estado\":\"cumplida\"}]"
+   }
+  },
+  {
+   "ref": "ENT-017",
+   "campos": {
+    "dni": "44215252",
+    "id_usuario_estudiante": "900031",
+    "nombre_estudiante": "PAULA CABRERA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "no_asistio",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2026-1.",
+    "fecha_solicitud": "2026-09-12T17:33",
+    "fecha_programada": "2026-09-17T17:00",
+    "fecha_realizada": "",
+    "resultado": "No se presentó ni avisó.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-09-17T17:00\",\"creada\":\"2026-09-12T17:33\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-018",
+   "campos": {
+    "dni": "45192770",
+    "id_usuario_estudiante": "900032",
+    "nombre_estudiante": "ANTONELLA CASTRO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900904",
+    "nombre_acompanante": "Gustavo Lescano",
+    "originada_por": "tutor",
+    "estado": "rechazada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2026-1.",
+    "fecha_solicitud": "2026-09-01T09:00",
+    "fecha_programada": "",
+    "fecha_realizada": "",
+    "resultado": "El estudiante prefiere no tener la entrevista por ahora.",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-09-04T11:00\",\"creada\":\"2026-09-01T09:00\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-019",
+   "campos": {
+    "dni": "45448058",
+    "id_usuario_estudiante": "900018",
+    "nombre_estudiante": "ALEJO PERALTA VERA",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-11-11T15:39",
+    "fecha_programada": "2026-11-23T17:30",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-23T17:30\",\"creada\":\"2026-11-11T15:39\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-020",
+   "campos": {
+    "dni": "45503998",
+    "id_usuario_estudiante": "900033",
+    "nombre_estudiante": "ABRIL ROSSI",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Alerta por omisión: no respondió la Encuesta Cuatrimestral 2026-1.",
+    "fecha_solicitud": "2026-11-16T16:16",
+    "fecha_programada": "2026-12-02T15:00",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-12-02T15:00\",\"creada\":\"2026-11-16T16:16\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-021",
+   "campos": {
+    "dni": "43877901",
+    "id_usuario_estudiante": "900034",
+    "nombre_estudiante": "ALEJO RAMIRO BENÍTEZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-11-13T09:23",
+    "fecha_programada": "2026-12-04T09:30",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-12-04T09:30\",\"creada\":\"2026-11-13T09:23\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-022",
+   "campos": {
+    "dni": "46191389",
+    "id_usuario_estudiante": "900021",
+    "nombre_estudiante": "LAUTARO TOLEDO",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900904",
+    "nombre_acompanante": "Gustavo Lescano",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-11-13T11:06",
+    "fecha_programada": "2026-11-23T18:00",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-23T18:00\",\"creada\":\"2026-11-13T11:06\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-023",
+   "campos": {
+    "dni": "45788716",
+    "id_usuario_estudiante": "900019",
+    "nombre_estudiante": "JULIETA SALINAS JUÁREZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-10-27T14:41",
+    "fecha_programada": "2026-11-12T18:00",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-12T18:00\",\"creada\":\"2026-10-27T14:41\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-024",
+   "campos": {
+    "dni": "46142534",
+    "id_usuario_estudiante": "900029",
+    "nombre_estudiante": "BENJAMÍN PÉREZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900902",
+    "nombre_acompanante": "Hernán Bustamante",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Riesgo en la Encuesta Cuatrimestral: recursa dos o más materias.",
+    "fecha_solicitud": "2026-10-27T10:31",
+    "fecha_programada": "2026-11-12T15:00",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-11T18:30\",\"creada\":\"2026-10-27T10:31\",\"mensaje\":\"\"},{\"por\":\"estudiante\",\"fecha\":\"2026-11-12T15:00\",\"creada\":\"2026-10-28T07:55\",\"mensaje\":\"Tengo parcial esa semana. ¿Podemos pasarla?\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-025",
+   "campos": {
+    "dni": "45335684",
+    "id_usuario_estudiante": "900001",
+    "nombre_estudiante": "MILAGROS ANTONELLA IBÁÑEZ",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900903",
+    "nombre_acompanante": "Silvina Arregui",
+    "originada_por": "tutor",
+    "estado": "solicitada",
+    "motivo": "Trabaja y se declara demorado en el avance de la carrera.",
+    "fecha_solicitud": "2026-11-12T17:49",
+    "fecha_programada": "",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-19T17:00\",\"creada\":\"2026-11-12T17:49\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-026",
+   "campos": {
+    "dni": "44325407",
+    "id_usuario_estudiante": "900023",
+    "nombre_estudiante": "BENJAMÍN CORONEL",
+    "tipo_acompanante": "tutor",
+    "id_usuario_acompanante": "900901",
+    "nombre_acompanante": "Mariela Ocampo",
+    "originada_por": "tutor",
+    "estado": "programada",
+    "motivo": "Seguimiento de las acciones acordadas el 13/05.",
+    "fecha_solicitud": "2026-11-10T18:12",
+    "fecha_programada": "2026-11-23T13:30",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"acompanante\",\"fecha\":\"2026-11-23T13:30\",\"creada\":\"2026-11-10T18:12\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-027",
+   "campos": {
+    "dni": "45887766",
+    "id_usuario_estudiante": "900058",
+    "nombre_estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "tipo_acompanante": "asesor_par",
+    "id_usuario_acompanante": "900905",
+    "nombre_acompanante": "Rocío Albornoz",
+    "originada_por": "estudiante",
+    "estado": "realizada",
+    "motivo": "Necesito ayuda con Álgebra I- B antes del próximo parcial.",
+    "fecha_solicitud": "2026-10-16T22:31",
+    "fecha_programada": "2026-10-21T10:30",
+    "fecha_realizada": "2026-10-21T10:30",
+    "resultado": "Le cuesta la materia: se lo deriva a las clases de consulta y a un asesor par.",
+    "propuestas_json": "[{\"por\":\"estudiante\",\"fecha\":\"2026-10-21T10:30\",\"creada\":\"2026-10-16T22:31\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-028",
+   "campos": {
+    "dni": "47998959",
+    "id_usuario_estudiante": "900053",
+    "nombre_estudiante": "MICAELA MARINO",
+    "tipo_acompanante": "asesor_par",
+    "id_usuario_acompanante": "900906",
+    "nombre_acompanante": "Franco Saravia",
+    "originada_por": "estudiante",
+    "estado": "solicitada",
+    "motivo": "Necesito ayuda con Fundamentos de Química antes del próximo parcial.",
+    "fecha_solicitud": "2026-11-16T13:51",
+    "fecha_programada": "",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"estudiante\",\"fecha\":\"2026-11-26T11:30\",\"creada\":\"2026-11-16T13:51\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-029",
+   "campos": {
+    "dni": "48388126",
+    "id_usuario_estudiante": "900048",
+    "nombre_estudiante": "PABLO CÁCERES",
+    "tipo_acompanante": "asesor_par",
+    "id_usuario_acompanante": "900905",
+    "nombre_acompanante": "Rocío Albornoz",
+    "originada_por": "estudiante",
+    "estado": "programada",
+    "motivo": "Necesito ayuda con Análisis Matemático I antes del próximo parcial.",
+    "fecha_solicitud": "2026-11-09T19:52",
+    "fecha_programada": "2026-11-26T09:30",
+    "fecha_realizada": "",
+    "resultado": "",
+    "propuestas_json": "[{\"por\":\"estudiante\",\"fecha\":\"2026-11-23T10:30\",\"creada\":\"2026-11-09T19:52\",\"mensaje\":\"\"},{\"por\":\"acompanante\",\"fecha\":\"2026-11-26T09:30\",\"creada\":\"2026-11-10T05:14\",\"mensaje\":\"Ese horario lo tengo ocupado, te propongo este.\"}]",
+    "acciones_json": "[]"
+   }
+  },
+  {
+   "ref": "ENT-030",
+   "campos": {
+    "dni": "46992479",
+    "id_usuario_estudiante": "900046",
+    "nombre_estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "tipo_acompanante": "asesor_par",
+    "id_usuario_acompanante": "900906",
+    "nombre_acompanante": "Franco Saravia",
+    "originada_por": "estudiante",
+    "estado": "cancelada",
+    "motivo": "Necesito ayuda con Física A antes del próximo parcial.",
+    "fecha_solicitud": "2026-11-09T19:29",
+    "fecha_programada": "",
+    "fecha_realizada": "",
+    "resultado": "Se canceló por un paro docente; se vuelve a pedir más adelante.",
+    "propuestas_json": "[{\"por\":\"estudiante\",\"fecha\":\"2026-11-16T11:30\",\"creada\":\"2026-11-09T19:29\",\"mensaje\":\"\"}]",
+    "acciones_json": "[]"
+   }
+  }
+ ]
+}
