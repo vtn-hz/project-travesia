@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 9;
+      var VERSION = 10;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -73,6 +73,7 @@
       var DATAID_PARCIALES_PRIMERO = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_MATERIAS_PRIMERO = 118; // @config bases.carga_materias_primero.dataid
       var DATAID_PERIODOS = 207; // @config bases.periodos.dataid
+      var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var SECCION_ZHAKYZ = 15647; // @config seccion.id
       var CMID_VISTA_ESTUDIANTE = 60264; // @config paginas.vista_estudiante
       var SEGUNDOS_VOLVER = 5; // después de enviar la encuesta, segundos hasta volver a Mi Trayectoria
@@ -80,6 +81,7 @@
       var CLAVE_SESION = 'zk-copia-encuesta-'; // + cmid: páginas respondidas en esta pestaña (sessionStorage)
       var CLAVE_PENDIENTES = 'zk-respuestas-pendientes'; // copias que no se pudieron guardar (localStorage)
       var CLAVE_PENDIENTES_CRITICIDAD = 'zk-criticidad-pendientes'; // entradas de Criticidad que no se pudieron guardar (localStorage)
+      var CLAVE_PENDIENTES_ESTADO = 'zk-estado-pendientes'; // estado actual de Estudiantes sin actualizar (ADR-011, localStorage)
       var CLAVE_PERIODO = 'zk-periodo-vigente'; // último período leído de la base Períodos (localStorage): se usa si la base no responde
       var CLAVE_PREVIEW_PERIODOS = 'zk-preview-periodos'; // vista previa local: períodos que agregó la Página Configuración del Sistema
       var ESPERA_PERIODO = 4000; // milisegundos que se espera la base Períodos al enviar una encuesta o guardar una nota
@@ -633,7 +635,8 @@
       // BASE CRITICIDAD EN MOODLE: { leer(idUsuario), guardar(entrada) }
       var baseCriticidadMoodle = {
         leer: function(idUsuario) { return entradasPropias(DATAID_CRITICIDAD, idUsuario); },
-        guardar: function(entrada) { return guardarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_CRITICIDAD, entrada); }
+        guardar: function(entrada) { return guardarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_CRITICIDAD, entrada); },
+        actualizarEstado: function(entrada) { return ActualizarEstadoActual(entrada); }
       };
 
       // ENTRADAS DE CRITICIDAD PENDIENTES (localStorage): SE REINTENTAN SIN DUPLICAR (MISMA fuente, rid_fuente Y created_at)
@@ -645,7 +648,7 @@
 
       function reintentarCriticidadPendiente() {
         var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, []);
-        if (!pendientes.length) return Promise.resolve();
+        if (!pendientes.length) return reintentarEstadoPendiente().catch(function() {});
         var quedan = [];
         return pendientes.reduce(function(p, e) {
           return p.then(function() {
@@ -659,7 +662,7 @@
           });
         }, Promise.resolve()).then(function() {
           escribirAlmacen(window.localStorage, CLAVE_PENDIENTES_CRITICIDAD, quedan.length ? quedan : null);
-        });
+        }).then(function() { return reintentarEstadoPendiente().catch(function() {}); });
       }
 
       // COPIAS PENDIENTES: { registro, indice }. SE REINTENTAN AL VOLVER A ABRIR LA ENCUESTA, SIN DUPLICAR (MISMO created_at)
@@ -1330,7 +1333,178 @@
           if (opciones && opciones.yaEsta && propias.some(opciones.yaEsta)) return null;
           entrada.indice_total = indiceTotal(entrada);
           entrada.semaforo = semaforoDe(entrada.indice_total);
-          return base.guardar(entrada).then(function() { return entrada; });
+          return base.guardar(entrada).then(function(rid) {
+            if (rid) entrada.rid = rid;
+            // Estado actual en Estudiantes (ADR-011): queda pendiente antes de intentarlo, por si la página se cierra a mitad
+            if (!base.actualizarEstado || !entrada.rid) return entrada;
+            agregarEstadoPendiente(entrada);
+            return base.actualizarEstado(entrada).then(function() { quitarEstadoPendiente(entrada); }, function() { /* queda pendiente */ })
+              .then(function() { return entrada; });
+          });
+        });
+      }
+
+      // =========================================================
+      // HERRAMIENTAS ActualizarEstadoActual Y RecalcularEstadoActual: EL ESTADO ACTUAL EN LA BASE ESTUDIANTES (ADR-011)
+      // =========================================================
+      // Junto a los datos de cada estudiante se guarda la última entrada automática de Criticidad de cada fuente, así el Tablero lee
+      // una entrada por estudiante en lugar de todo Criticidad. Parciales: notas_1ro y materias. Encuesta: respuestas y omision.
+      // Lo actualizan el navegador del estudiante al enviar la Cuatrimestral o guardar una nota (su propia entrada) y la Configuración
+      // del Sistema al registrar una omisión. RecalcularEstadoActual lo rehace para todos desde Criticidad (ADM).
+      // Si la base Estudiantes todavía no tiene los campos, no hace nada: Tools se puede publicar antes que los campos.
+      var GRUPO_ESTADO = { notas_1ro: 'parciales', materias: 'parciales', respuestas: 'encuesta', omision: 'encuesta' };
+      var CAMPOS_ESTADO = {
+        parciales: ['parciales_indice', 'parciales_periodo', 'parciales_fecha', 'parciales_rid'],
+        encuesta: ['encuesta_indice', 'encuesta_periodo', 'encuesta_fecha', 'encuesta_fuente', 'encuesta_rid']
+      };
+
+      function momentoDeEntrada(c) {
+        var t = Date.parse(c && c.created_at);
+        return isFinite(t) ? t : 0;
+      }
+
+      // ResumenEstadoActual(entradas) → { parciales, encuesta }: la última entrada automática de cada fuente (o null),
+      // por created_at y, si empatan, por rid. Las entradas son las de Criticidad de un estudiante (campos en texto o número)
+      function ResumenEstadoActual(entradas) {
+        var r = { parciales: null, encuesta: null };
+        (entradas || []).forEach(function(c) {
+          var g = GRUPO_ESTADO[String(c.fuente || '').trim()];
+          if (!g || String(c.origen || '').trim() !== 'automatica' || numeroMoodle(c.indice) === null) return;
+          var a = r[g];
+          var t = momentoDeEntrada(c), ta = a ? momentoDeEntrada(a) : -1;
+          if (!a || t > ta || (t === ta && (Number(c.rid) || 0) > (Number(a.rid) || 0))) r[g] = c;
+        });
+        return r;
+      }
+
+      // VALORES DE LOS CAMPOS DE UN GRUPO PARA UNA ENTRADA DE CRITICIDAD (VACÍOS SI NO HAY)
+      function camposEstado(grupo, c) {
+        var v = {};
+        v[grupo + '_indice'] = c ? String(numeroMoodle(c.indice)) : '';
+        v[grupo + '_periodo'] = c ? String(c.periodo || '').trim() : '';
+        v[grupo + '_fecha'] = c ? String(c.created_at || '').trim() : '';
+        if (grupo === 'encuesta') v.encuesta_fuente = c ? String(c.fuente || '').trim() : '';
+        v[grupo + '_rid'] = c && c.rid ? String(c.rid) : '';
+        return v;
+      }
+
+      // EDITAR UNA ENTRADA (rid) CAMBIANDO SOLO ALGUNOS CAMPOS: el formulario de edición trae los valores guardados y se cambian solo
+      // los indicados. Si a la base le falta uno de esos campos, el error lleva sinCampos (el estado actual todavía no está en Moodle)
+      function editarEntradaMoodle(dataid, rid, valores) {
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + dataid + '&rid=' + rid, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de edición de la entrada ' + rid + ' (d=' + dataid + ').');
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              // Moodle agrega "Campo obligatorio" a la etiqueta de los obligatorios
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[l.textContent.replace(/\s+/g, ' ').trim().toLowerCase().replace(/\s*campo obligatorio$/, '')] = ctrl.name;
+            });
+            var fd = new FormData(form);
+            Object.keys(valores).forEach(function(k) {
+              if (!porCampo[k]) { var err = new Error('Falta el campo "' + k + '" en la base (d=' + dataid + ').'); err.sinCampos = true; throw err; }
+              fd.set(porCampo[k], valores[k] === null || valores[k] === undefined ? '' : String(valores[k]));
+            });
+            fd.set('d', String(dataid));
+            fd.set('rid', String(rid));
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
+            if (/[?&]rid=\d+/.test(r.url || '')) return true;
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la edición de la entrada ' + rid + '.');
+            });
+          });
+      }
+
+      // ActualizarEstadoActual(entrada, { estudiante }) → Promise de true si actualizó. entrada: la de Criticidad recién guardada (con
+      // rid). estudiante: su entrada de Estudiantes con rid y campos; sin él, se lee la propia (el estudiante solo ve la suya).
+      // No cambia nada si la entrada no es automática, si el estudiante no tiene información personal, si ya tiene una más nueva o si la
+      // base todavía no tiene los campos
+      function ActualizarEstadoActual(entrada, opciones) {
+        var o = opciones || {};
+        var g = entrada ? GRUPO_ESTADO[String(entrada.fuente || '').trim()] : null;
+        if (!g || String(entrada.origen || '').trim() !== 'automatica' || !entrada.rid || !DATAID_ESTUDIANTES) return Promise.resolve(false);
+        var leer = o.estudiante ? Promise.resolve(o.estudiante) : entradasPropias(DATAID_ESTUDIANTES, entrada.id_usuario).then(function(l) {
+          return l.sort(function(a, b) { return (a.rid || 0) - (b.rid || 0); }).pop() || null;
+        });
+        return leer.then(function(e) {
+          if (!e || !e.rid) return false;
+          var campos = e.campos || e;
+          if (momentoDeEntrada({ created_at: campos[g + '_fecha'] }) > momentoDeEntrada(entrada)) return false; // ya tiene una más nueva
+          return editarEntradaMoodle(DATAID_ESTUDIANTES, e.rid, camposEstado(g, entrada)).then(function() { return true; });
+        }).catch(function(err) {
+          if (err && err.sinCampos) return false;
+          throw err;
+        });
+      }
+
+      // ESTADO PENDIENTE (localStorage): SE ANOTA ANTES DE INTENTAR Y SE QUITA AL TERMINAR; LO QUE QUEDA SE REINTENTA DESPUÉS
+      function claveEstado(e) { return [e.fuente, e.rid].join(':'); }
+      function agregarEstadoPendiente(e) {
+        var p = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_ESTADO, []).filter(function(x) { return claveEstado(x) !== claveEstado(e); });
+        p.push({ id_usuario: e.id_usuario, periodo: e.periodo, origen: e.origen, fuente: e.fuente, indice: e.indice, created_at: e.created_at, rid: e.rid });
+        escribirAlmacen(window.localStorage, CLAVE_PENDIENTES_ESTADO, p);
+      }
+      function quitarEstadoPendiente(e) {
+        var p = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_ESTADO, []).filter(function(x) { return claveEstado(x) !== claveEstado(e); });
+        escribirAlmacen(window.localStorage, CLAVE_PENDIENTES_ESTADO, p.length ? p : null);
+      }
+      function reintentarEstadoPendiente() {
+        var pendientes = leerAlmacen(window.localStorage, CLAVE_PENDIENTES_ESTADO, []);
+        return pendientes.reduce(function(p, e) {
+          return p.then(function() { return ActualizarEstadoActual(e).then(function() { quitarEstadoPendiente(e); }, function() { /* sigue pendiente */ }); });
+        }, Promise.resolve());
+      }
+
+      // RecalcularEstadoActual({ simular, alAvanzar }) → Promise de { estudiantes, cambios: [{ rid, id_usuario, nombre, antes, despues }],
+      // aplicados, errores }. Lee Estudiantes y Criticidad enteras (ADM: ve también las desaprobadas) y deja en cada estudiante la
+      // última entrada de cada fuente. Con simular solo informa qué cambiaría. alAvanzar(hechos, total) informa el progreso
+      function RecalcularEstadoActual(opciones) {
+        var o = opciones || {};
+        var leer = function(dataid) {
+          return LeerBase({ dataid: dataid, porPagina: 1000 }).then(function(r) {
+            if (r.completa === false) throw new Error('La base d=' + dataid + ' tiene más entradas que las que lee LeerBase: no se recalcula con datos incompletos.');
+            return r.entradas.map(function(e) {
+              var c = { rid: Number(e.rid) || null };
+              Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
+              return c;
+            });
+          });
+        };
+        return Promise.all([leer(DATAID_ESTUDIANTES), leer(DATAID_CRITICIDAD)]).then(function(r) {
+          if (r[0].length && !('encuesta_fecha' in r[0][0])) throw new Error('La base Estudiantes todavía no tiene los campos del estado actual (ADR-011).');
+          var porUsuario = {};
+          r[1].forEach(function(c) { (porUsuario[c.id_usuario] = porUsuario[c.id_usuario] || []).push(c); });
+          // Si un estudiante tiene varias entradas en Estudiantes, vale la de rid mayor (como en el Tablero)
+          var estudiantes = {};
+          r[0].forEach(function(e) { if (e.id_usuario && (!estudiantes[e.id_usuario] || e.rid > estudiantes[e.id_usuario].rid)) estudiantes[e.id_usuario] = e; });
+          var cambios = [];
+          Object.keys(estudiantes).forEach(function(id) {
+            var e = estudiantes[id];
+            var res = ResumenEstadoActual(porUsuario[id]);
+            var despues = {}, antes = {};
+            ['parciales', 'encuesta'].forEach(function(g) { Object.assign(despues, camposEstado(g, res[g])); });
+            var distinto = Object.keys(despues).filter(function(k) { antes[k] = e[k] || ''; return antes[k] !== despues[k]; });
+            if (distinto.length) cambios.push({ rid: e.rid, id_usuario: id, nombre: (String(e.nombre || '') + ' ' + String(e.apellido || '')).trim(), antes: antes, despues: despues });
+          });
+          var resultado = { estudiantes: Object.keys(estudiantes).length, cambios: cambios, aplicados: 0, errores: [] };
+          if (o.simular || !cambios.length) return resultado;
+          return cambios.reduce(function(p, c, k) {
+            return p.then(function() {
+              return editarEntradaMoodle(DATAID_ESTUDIANTES, c.rid, c.despues).then(function() { resultado.aplicados++; }, function(err) {
+                resultado.errores.push({ rid: c.rid, nombre: c.nombre, error: err && err.message ? err.message : String(err) });
+              }).then(function() { if (o.alAvanzar) { try { o.alAvanzar(k + 1, cambios.length); } catch (e) { /* el aviso no corta */ } } });
+            });
+          }, Promise.resolve()).then(function() { return resultado; });
         });
       }
 
@@ -2029,7 +2203,10 @@
         RespuestasMoodle: RespuestasMoodle,
         NormalizarMateria: normalizarMateria,
         PeriodoDeNota: periodoDeNota,
-        TrayectoriaEstudiantes: TrayectoriaEstudiantes
+        TrayectoriaEstudiantes: TrayectoriaEstudiantes,
+        ResumenEstadoActual: ResumenEstadoActual,
+        ActualizarEstadoActual: ActualizarEstadoActual,
+        RecalcularEstadoActual: RecalcularEstadoActual
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
       try { document.dispatchEvent(new CustomEvent('zk-tools', { detail: window.ZhakyzTools })); } catch (e) { /* sin CustomEvent: la vista usa window.ZhakyzTools */ }
@@ -2108,6 +2285,21 @@
           descripcion: 'Estado de cada estudiante en cada período (activo, abandono o egresado) e indicadores por cohorte: ingresantes, retención de 1.er año, permanencia por cuatrimestre (desgranamiento), tasa de egreso, duración y permanencia terminal, más la supervivencia académica. Abandono: N períodos cerrados seguidos sin notas ni Cuatrimestral (N de la base Períodos). Egreso: declarar todos los créditos del plan (235,5). No lee ni guarda nada.',
           uso: 'Reportes (informe Trayectoria y egreso)',
           carga: 'Tools.TrayectoriaEstudiantes({ periodos, estudiantes: [{ id, cohorte }], actividad: [{ id, periodo }], creditos: [{ id, periodo, creditos }] }, { periodosAbandono }) → { estudiantes, cohortes, supervivencia, opciones }'
+        },
+        ResumenEstadoActual: {
+          descripcion: 'Devuelve la última entrada automática de Criticidad de cada fuente de un estudiante (parciales: notas_1ro y materias; encuesta: respuestas y omision), que es lo que guarda el estado actual de la base Estudiantes (ADR-011). No lee ni guarda nada.',
+          uso: 'RecalcularEstadoActual y el Tablero de Criticidad',
+          carga: 'Tools.ResumenEstadoActual(entradas) → { parciales, encuesta }'
+        },
+        ActualizarEstadoActual: {
+          descripcion: 'Guarda en la entrada de Estudiantes de un estudiante la entrada de Criticidad recién agregada, si es la más nueva de su fuente (ADR-011). Lo hacen solas la copia de la Cuatrimestral y la carga de notas; la Configuración del Sistema lo usa con las omisiones. Si falla queda pendiente y se reintenta; si la base todavía no tiene los campos, no hace nada.',
+          uso: 'CopiaRespuestas, CriticidadNotas y Configuración del Sistema',
+          carga: 'Tools.ActualizarEstadoActual(entrada, { estudiante }) → Promise de true si actualizó'
+        },
+        RecalcularEstadoActual: {
+          descripcion: 'Rehace el estado actual de todos los estudiantes desde Criticidad (ADR-011): deja en cada entrada de Estudiantes la última entrada de cada fuente. Con simular solo informa qué cambiaría. Necesita leer Estudiantes y Criticidad enteras (ADM).',
+          uso: 'Configuración del Sistema (botón Recalcular el estado actual)',
+          carga: 'Tools.RecalcularEstadoActual({ simular, alAvanzar }) → Promise de { estudiantes, cambios, aplicados, errores }'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',
