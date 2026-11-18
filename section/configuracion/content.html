@@ -2,7 +2,7 @@
 <!-- SECCIÓN: CONFIGURACIÓN DEL SISTEMA (ROL ADM) · PERÍODO VIGENTE Y CIERRE DEL PERÍODO (ADR-009) -->
 <!-- VA EN: subsección oculta "Configuración" de Zhakyz → Página "Configuración del Sistema" (cmid en moodle.config.json → paginas.configuracion). La abre la tarjeta "Configuración del Sistema" del Hub. Oculta mientras Moodle no detecte roles -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle (show_entries.php, para no dar una omisión a quien respondió y no tiene la copia). ESCRIBE, solo al confirmar: al cerrar, una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada) y el período nuevo en Períodos; al definir o cambiar la fecha límite de la encuesta, una entrada del mismo período en Períodos (docs/specs/configuracion.md) -->
+<!-- DATOS: lee Períodos (vigente e historial), Estudiantes (2.º año en adelante), Respuestas (Encuesta Cuatrimestral del período), Criticidad (entradas del período) y las respuestas de la Encuesta Cuatrimestral en Moodle (show_entries.php, para no dar una omisión a quien respondió y no tiene la copia). ESCRIBE, solo al confirmar: al cerrar, una entrada de omisión en Criticidad por estudiante sin respuesta (desaprobada), su estado actual en Estudiantes (ADR-011) y el período nuevo en Períodos; al recalcular el estado actual, las entradas de Estudiantes que no coinciden con Criticidad; al definir o cambiar la fecha límite de la encuesta, una entrada del mismo período en Períodos (docs/specs/configuracion.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="configuracion-sistema"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -818,6 +818,62 @@
       }
 
       // ---------------------------------------------------------
+      // RENDERIZADO: ESTADO ACTUAL DEL TABLERO (ADR-011)
+      // ---------------------------------------------------------
+      // Revisar compara el estado actual de cada estudiante (base Estudiantes) con Criticidad, sin escribir; Actualizar corrige los
+      // que no coinciden. Lo hace RecalcularEstadoActual de Tools (versión 10)
+      var recalculo = null; // { fase: 'revisando' | 'listo' | 'aplicando' | 'terminado', resultado, hechos, total, error }
+
+      function htmlEstadoActual() {
+        var explicacion = '<p style="margin: 0 0 16px 0 !important; color: #47536b !important;">El Tablero de Criticidad lee, de la base Estudiantes, la última entrada de cada fuente (parciales y encuesta) de cada estudiante, en lugar de leer toda la base Criticidad. Se mantiene sola al cargar notas, responder la encuesta y cerrar el período. Si quedó algo sin actualizar, acá se revisa y se corrige desde Criticidad.</p>';
+        var Tools = window.ZhakyzTools;
+        var cuerpo, acciones = '';
+        if (usaPrueba) {
+          cuerpo = aviso('info', 'Se revisa y se corrige en el campus: en la vista previa no hay bases que comparar.');
+        } else if (!Tools || typeof Tools.RecalcularEstadoActual !== 'function') {
+          cuerpo = aviso('alerta', 'Hace falta la versión 10 de la Página Tools para revisar el estado actual.');
+        } else if (!recalculo) {
+          cuerpo = '';
+          acciones = boton('btn-revisar-estado', 'Revisar', 'secundario', 'ver');
+        } else if (recalculo.fase === 'revisando') {
+          cuerpo = '<div aria-live="polite" style="color: #47536b !important;">Leyendo Estudiantes y Criticidad…</div>';
+        } else if (recalculo.error) {
+          cuerpo = aviso('error', '<b style="font-weight: 600 !important;">No se pudo revisar.</b> ' + escapar(recalculo.error));
+          acciones = boton('btn-revisar-estado', 'Volver a revisar', 'secundario', 'ver');
+        } else {
+          var res = recalculo.resultado, n = res.cambios.length;
+          if (recalculo.fase === 'aplicando') {
+            cuerpo = '<div aria-live="polite" style="font-weight: 500 !important;">Actualizando ' + recalculo.hechos + ' de ' + recalculo.total + '…</div>';
+          } else if (recalculo.fase === 'terminado') {
+            cuerpo = aviso(res.errores.length ? 'alerta' : 'ok', '<b style="font-weight: 600 !important;">Se actualizaron ' + res.aplicados + ' de ' + n + ' estudiantes.</b>' +
+              (res.errores.length ? ' No se pudieron actualizar: ' + res.errores.map(function(x) { return escapar(x.nombre || 'rid ' + x.rid) + ' (' + escapar(x.error) + ')'; }).join(', ') + '.' : ''));
+            acciones = boton('btn-revisar-estado', 'Volver a revisar', 'secundario', 'ver');
+          } else {
+            cuerpo = n ? aviso('alerta', '<b style="font-weight: 600 !important;">' + n + ' de ' + res.estudiantes + ' estudiantes no coinciden con Criticidad.</b> ' +
+              escapar(res.cambios.slice(0, 8).map(function(c) { return c.nombre || 'id ' + c.id_usuario; }).join(', ')) + (n > 8 ? ' y ' + (n - 8) + ' más.' : '.'))
+              : aviso('ok', '<b style="font-weight: 600 !important;">El estado actual de los ' + res.estudiantes + ' estudiantes coincide con Criticidad.</b>');
+            acciones = boton('btn-revisar-estado', 'Volver a revisar', 'secundario', 'ver') + (n ? boton('btn-aplicar-estado', 'Actualizar ' + n + (n === 1 ? ' estudiante' : ' estudiantes'), 'principal', 'verificado') : '');
+          }
+        }
+        if (acciones) acciones = '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important; gap: 8px !important; margin-top: 16px !important;">' + acciones + '</div>';
+        return tarjeta('card-estado-config', 'estudiantes', 'Estado actual del Tablero', '', explicacion + cuerpo + acciones);
+      }
+
+      function revisarEstado(aplicar) {
+        var Tools = window.ZhakyzTools;
+        recalculo = { fase: aplicar ? 'aplicando' : 'revisando', resultado: recalculo && recalculo.resultado, hechos: 0, total: aplicar && recalculo ? recalculo.resultado.cambios.length : 0, error: '' };
+        $('card-estado-config').outerHTML = htmlEstadoActual();
+        Tools.RecalcularEstadoActual({ simular: !aplicar, alAvanzar: function(h, t) { recalculo.hechos = h; recalculo.total = t; $('card-estado-config').outerHTML = htmlEstadoActual(); } })
+          .then(function(res) { recalculo = { fase: aplicar ? 'terminado' : 'listo', resultado: res, error: '' }; },
+            function(e) { recalculo = { fase: 'listo', error: String(e && e.message ? e.message : e) }; })
+          .then(function() {
+            $('card-estado-config').outerHTML = htmlEstadoActual();
+            var b = $('btn-aplicar-estado') || $('btn-revisar-estado');
+            if (b) b.focus();
+          });
+      }
+
+      // ---------------------------------------------------------
       // RENDERIZADO: HISTORIAL DE PERÍODOS
       // ---------------------------------------------------------
       function htmlHistorial() {
@@ -843,7 +899,7 @@
             '<div style="display: flex !important; justify-content: flex-end !important; margin-top: 16px !important;">' + boton('btn-releer-config', 'Volver a leer las bases', 'secundario') + '</div>';
           return;
         }
-        $('contenido-config').innerHTML = htmlPeriodo() + htmlAbandono() + htmlCierre() + htmlHistorial();
+        $('contenido-config').innerHTML = htmlPeriodo() + htmlAbandono() + htmlCierre() + htmlEstadoActual() + htmlHistorial();
       }
 
       function leerYRenderizar() {
@@ -1007,8 +1063,23 @@
           });
         }
         return conLimite(agregarEntradaMoodle(DATAID_CRITICIDAD, CAMPOS_OMISION, o), ESPERA_ESCRITURA, 'La entrada de Criticidad').then(function(rid) {
-          return desaprobarMoodle(rid).then(function(ok) { return { rid: rid, desaprobada: ok }; });
+          return desaprobarMoodle(rid).then(function(ok) {
+            return actualizarEstadoDeOmision(o, rid).then(function(estado) { return { rid: rid, desaprobada: ok, estado: estado }; });
+          });
         });
+      }
+
+      // ESTADO ACTUAL EN ESTUDIANTES (ADR-011): la omisión pasa a ser la última encuesta del estudiante. Si falla no frena el cierre:
+      // se informa y se corrige con "Recalcular el estado actual". Con una Tools anterior a la 10 no hace nada
+      function actualizarEstadoDeOmision(o, rid) {
+        var Tools = window.ZhakyzTools;
+        if (!Tools || typeof Tools.ActualizarEstadoActual !== 'function') return Promise.resolve('sin_tools');
+        var estudiante = (datos.estudiantes || []).filter(function(e) { return String(e.id_usuario) === String(o.id_usuario); })
+          .sort(function(a, b) { return (a.rid || 0) - (b.rid || 0); }).pop() || null;
+        if (!estudiante) return Promise.resolve('sin_estudiante');
+        var entrada = Object.assign({}, o, { rid: rid });
+        return conLimite(Tools.ActualizarEstadoActual(entrada, { estudiante: estudiante }), ESPERA_ESCRITURA, 'El estado actual')
+          .then(function(cambio) { return cambio ? 'ok' : 'sin_cambio'; }, function() { return 'error'; });
       }
 
       function guardarPeriodo(p) {
@@ -1062,7 +1133,7 @@
               o.created_at = ahoraIso();
               return guardarOmision(o, k).then(function(r) {
                 var fila = plan.filas.filter(function(x) { return Number(x.id) === Number(o.id_usuario); })[0];
-                cierre.creadas.push({ rid: r.rid, nombre: fila ? fila.nombre : 'DNI ' + o.dni, desaprobada: r.desaprobada });
+                cierre.creadas.push({ rid: r.rid, nombre: fila ? fila.nombre : 'DNI ' + o.dni, desaprobada: r.desaprobada, estado: r.estado });
                 cierre.hechas++;
                 renderizarProgreso();
               }, function(e) {
@@ -1100,6 +1171,11 @@
         if (sinDesaprobar.length) {
           html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">Moodle no confirmó la desaprobación de ' + sinDesaprobar.length + (sinDesaprobar.length === 1 ? ' entrada' : ' entradas') + '</b> (rid ' +
             sinDesaprobar.map(function(x) { return x.rid; }).join(', ') + '). Revisarlas en la base Criticidad y, si siguen aprobadas, desaprobarlas desde la base: aprobadas, las ve cualquiera que pueda abrirla.') + '</div>';
+        }
+        var sinEstado = c.creadas.filter(function(x) { return x.estado === 'error'; });
+        if (sinEstado.length) {
+          html += '<div style="margin-top: 8px !important;">' + aviso('alerta', '<b style="font-weight: 600 !important;">No se actualizó el estado actual de ' + sinEstado.length + (sinEstado.length === 1 ? ' estudiante' : ' estudiantes') +
+            '</b> (omisiones rid ' + sinEstado.map(function(x) { return x.rid; }).join(', ') + '): el Tablero puede mostrar su encuesta anterior. Corregirlo con <b style="font-weight: 600 !important;">Recalcular el estado actual</b>.') + '</div>';
         }
         $('aviso-resultado-config').innerHTML = html;
         mostrar($('aviso-resultado-config'), true);
@@ -1167,6 +1243,8 @@
         if (limite) return abrirModalLimite(limite);
         var abandono = t.closest('#btn-abrir-abandono');
         if (abandono) return abrirModalAbandono(abandono);
+        if (t.closest('#btn-revisar-estado')) return revisarEstado(false);
+        if (t.closest('#btn-aplicar-estado')) return revisarEstado(true);
       });
 
       document.addEventListener('mousedown', function(e) { pulsadoEn = e.target; });

@@ -39,6 +39,7 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
    - La sección pasa la verificación de [`crear-seccion`](../crear-seccion/SKILL.md) (sin errores, sin emojis, roles probados).
    - Los cambios están commiteados, o al menos guardados.
    - Los CMID de bases que use la sección apuntan a bases **de Zhakyz** (nunca de otros equipos). Si todavía son `null`, la sección muestra datos de prueba: avisar al usuario.
+   - Si la sección tiene el bloque `COPIA DE TOOLS` (Tablero y Detalle), `node .skills/publicar-seccion/verificar_copias_tools.js` pasa: las 2 copias son idénticas (RULES.md, "Código copiado de Tools").
 2. **Simular** (no escribe nada):
    ```bash
    MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
@@ -118,6 +119,10 @@ Moodle ordena los campos por orden de creación y no permite reordenarlos ni cam
 2. Correr `recrear_campos.js --definicion …`, primero simulando y después con `--confirmar`. Los ids de la base los toma de `moodle.config.json` → `bases.<clave>`.
 
 El script borra todos los campos y los crea de nuevo en el orden del JSON. **Solo funciona si la base está vacía y está dentro de Zhakyz**: si tiene entradas, se niega, porque se perderían datos.
+
+### Agregar campos a una base con entradas (`agregar_campos.js`)
+
+Para sumar campos al final de una base que ya tiene entradas: agregarlos al final del JSON y correr `agregar_campos.js --definicion …` (simula; agrega con `--confirmar`). Nunca borra ni edita campos: si los campos actuales no son, en orden, el comienzo de la definición, se niega. Las entradas existentes quedan con los campos nuevos vacíos. Después, subir la plantilla de lista con `subir_plantillas.js` si cambió.
 
 ## Mover o renombrar actividades sin desvincularlas
 

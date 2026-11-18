@@ -13,7 +13,7 @@ Estas reglas están por encima de todas las demás.
    - Lo que está en Moodle es una copia de lo que está en el repo, nunca al revés. Primero se cambia el repo y después se publica.
    - Cada archivo publicado indica en un comentario inicial **dónde vive en Moodle** (sección, actividad o campo, y su `id`).
    - Si algo se cambia directamente en Moodle, se trae al repo en el mismo momento.
-5. **Datos de prueba = integrantes de Zhakyz.** Toda información de prueba usa a los 6 integrantes del equipo (ver `docs/context/EQUIPO_ZHAKYZ.md`) con datos académicos ficticios. No se inventan personas y no se usan datos de estudiantes reales. **Excepción:** el conjunto de demo del campus ([`data/prueba`](data/prueba/README.md)), 60 estudiantes ficticios con id de usuario 900001–900060, que se carga y se borra completo con sus scripts.
+5. **Datos de prueba = integrantes de Zhakyz.** Toda información de prueba usa a los 6 integrantes del equipo (ver `docs/context/EQUIPO_ZHAKYZ.md`) con datos académicos ficticios. No se inventan personas y no se usan datos de estudiantes reales. **Excepción:** el conjunto de demo del campus ([`data/prueba`](data/prueba/README.md)), 60 estudiantes ficticios con id de usuario 900001–900060, que se carga y se borra completo con sus scripts. **Otra excepción:** las vistas previas locales con datos generados en el navegador, que nunca se cargan en el campus: el Tablero con `?estudiantes=N` (estudiantes ficticios, para probar la paginación) y el Detalle con `?historial=largo` (unas 40 entradas ficticias más para Nicolás, para probar el scroll).
 6. **No se reutilizan bases de datos de otros equipos.** Nuestras actividades leen y escriben solo bases creadas en la sección Zhakyz.
 7. Toda automatización (por ejemplo, Playwright) bloquea por defecto cualquier petición que no sea `GET` y cualquier URL con `sesskey`. Solo se habilita la escritura puntual que se confirmó, limitada a la sección 15647.
 8. **Los datos del entorno y los ids de Moodle viven en [`moodle.config.json`](moodle.config.json)** (campus, curso, sección Zhakyz, subsecciones, páginas y bases). Si cambia un id, se cambia ahí y se corre `node .skills/publicar-seccion/sincronizar_config.js`; nunca se edita el número a mano en una sección.
@@ -158,6 +158,13 @@ Referencia ya adaptada: `section/plan_estudios/content.html`. El resto de las se
 - **Escritura a Moodle:** `POST` a `/mod/data/edit.php` con `FormData` (sesskey, field_{ID}, rid=0 para nuevo).
 - **Lectura de Moodle:** `GET` a `/mod/data/view.php`, parseo con `DOMParser`, detección de registros existentes vía selectores de links de edición/perfil.
 - **Loader overlay:** se muestra al cargar, se oculta con `ocultarCargando()` al finalizar las verificaciones iniciales.
+- **Código copiado de Tools.** Lo normal es usar las herramientas de la Página Tools (`section/utils/tools`), no copiarlas. Se copia solo cuando cargar Tools (0,4 a 2,4 s) frena una pantalla que tiene que ser rápida. Hoy hay **un solo bloque copiado, idéntico en las 2 secciones** que lo usan, entre las marcas `// COPIA DE TOOLS: INICIO` y `// COPIA DE TOOLS: FIN`:
+
+  | Bloque | Secciones | Copia de (Tools) |
+  |---|---|---|
+  | `leerBaseMoodle` (con `entradasDePagina`, `ridDe`, `textoCelda`, `ultimaEnlazada` y `errorDePagina`), `leerPeriodoVigente` y `periodoGuardado` (período guardado 12 h en `localStorage`, clave `zk-periodo-vigente`) | [`section/tablero_estudiantes`](section/tablero_estudiantes/content.html) y [`section/detalle_estudiante`](section/detalle_estudiante/content.html) | `LeerBase` y sus funciones, y la regla de `PeriodoVigente` (la entrada válida de rid mayor de Períodos) |
+
+  **Al cambiar en Tools cualquiera de esas funciones, hay que actualizar el bloque en las 2 secciones, en el mismo commit.** El bloque se edita en una y se copia igual a la otra, y antes de commitear o publicar se corre `node .skills/publicar-seccion/verificar_copias_tools.js`, que falla si las 2 copias no son idénticas. Una sección nueva que necesite el bloque lo copia entero y se suma a esta tabla y a `SECCIONES` del script. Si una copia ya no hace falta, se borra y se vuelve a usar Tools.
 
 ## Componentes UI reutilizables
 

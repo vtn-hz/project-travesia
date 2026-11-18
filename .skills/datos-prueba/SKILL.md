@@ -38,6 +38,7 @@ MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) node .skills/da
 - Desaprueba las 46 omisiones, como el cierre real (ADR-009). Las que Moodle no confirme quedan marcadas y se reintentan en la próxima corrida.
 - Son ~1.150 altas: con el campus lento, entre 40 y 90 minutos. **Si se corta, volver a correr retoma** (nada se duplica: lo creado ya está en `aplicado.json`).
 - Después: commitear `aplicado.json`, anotar en `DEPLOY.md` y revisar en el campus el Tablero, el Detalle, los Indicadores y Reportes.
+- **Estado actual (ADR-011):** las entradas se crean con el formulario de cada base, así que no actualizan el estado actual de Estudiantes. Si la base ya tiene esos campos, después de aplicar hay que usar **Revisar y Actualizar** en la tarjeta *Estado actual del Tablero* de la Configuración del Sistema; si no, el Tablero muestra a los estudiantes de prueba sin calcular.
 
 ### Borrar
 

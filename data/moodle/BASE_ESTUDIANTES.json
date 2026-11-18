@@ -1,7 +1,7 @@
 {
   "clave": "estudiantes",
   "nombre": "Estudiantes",
-  "descripcion": "Información personal de cada estudiante: una entrada por estudiante, que él mismo carga y edita en la Página Información personal (section/informacion_personal, SCRUM-24). Es la foto vigente, no un historial: editarla modifica la misma entrada y no genera entradas en Respuestas ni en Criticidad. La primera vez el formulario se precarga con la cuenta de Moodle; desde que se guarda, el sistema usa los datos de esta base. Sin entrada, Mi Trayectoria (section/vista_estudiante) deshabilita todas las secciones. Para el equipo es la lista de estudiantes (tramo, cohorte y envíos pendientes).",
+  "descripcion": "Información personal de cada estudiante: una entrada por estudiante, que él mismo carga y edita en la Página Información personal (section/informacion_personal, SCRUM-24). Es la foto vigente, no un historial: editarla modifica la misma entrada y no genera entradas en Respuestas ni en Criticidad. La primera vez el formulario se precarga con la cuenta de Moodle; desde que se guarda, el sistema usa los datos de esta base. Sin entrada, Mi Trayectoria (section/vista_estudiante) deshabilita todas las secciones. Para el equipo es la lista de estudiantes (tramo, cohorte y envíos pendientes). Desde el ADR-011 guarda además el estado actual de criticidad del estudiante (la última entrada automática de cada fuente), que lee el Tablero de Criticidad en lugar de toda la base Criticidad.",
   "subseccion": "Database",
   "origen": "Propuesta del 2026-11-02 (docs/specs/vista-estudiante.md → Base Estudiantes). Reemplaza la base 4 del modelo simplificado con los datos que usa la vista. Creada en Moodle el 2026-11-02 (cmid 60262, d=206).",
   "estado": "publicada",
@@ -74,6 +74,60 @@
       "tipo": "text",
       "requerido": false,
       "descripcion": "Período (AAAA-n) en que es_primer_anio pasó de si a no: cuándo pasó a 2.º año. Lo completa la Página; vacío si ya ingresó al sistema en 2.º año o más"
+    },
+    {
+      "nombre": "parciales_indice",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual (ADR-011): índice de 0 a 100 de la última entrada automática de notas (notas_1ro o materias) en Criticidad. Lo actualizan Tools al guardar una nota y el recálculo de la Configuración del Sistema; vacío si no tiene"
+    },
+    {
+      "nombre": "parciales_periodo",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: período (AAAA-n) de esa entrada"
+    },
+    {
+      "nombre": "parciales_fecha",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: created_at de esa entrada (ISO 8601); una entrada más vieja no la reemplaza"
+    },
+    {
+      "nombre": "parciales_rid",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: rid de esa entrada en Criticidad"
+    },
+    {
+      "nombre": "encuesta_indice",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual (ADR-011): índice de la última Encuesta Cuatrimestral u omisión en Criticidad. Lo actualizan Tools al enviar la encuesta, la Configuración del Sistema al registrar una omisión y el recálculo"
+    },
+    {
+      "nombre": "encuesta_periodo",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: período (AAAA-n) de esa entrada"
+    },
+    {
+      "nombre": "encuesta_fecha",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: created_at de esa entrada (ISO 8601)"
+    },
+    {
+      "nombre": "encuesta_fuente",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: respuestas (respondió) u omision (no respondió al cerrar el período)"
+    },
+    {
+      "nombre": "encuesta_rid",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Estado actual: rid de esa entrada en Criticidad"
     }
   ],
   "no_se_guarda": {

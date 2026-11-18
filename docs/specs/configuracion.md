@@ -62,6 +62,12 @@ Solo figuran los estudiantes con entrada en la base Estudiantes (si hay varias, 
 
 Después de crearla, `view.php?d=<Criticidad>&disapprove=<rid>&sesskey=…` la desaprueba: así solo la ve el equipo. Cuenta como desaprobada solo si Moodle muestra el aviso de éxito; si no, el resultado del cierre la lista para revisarla en la base.
 
+**Estado actual ([ADR-011](../decisions/011-estado-actual-en-estudiantes.md), en desarrollo):** con Tools v10, cada omisión pasa también a ser la última encuesta del estudiante en la base Estudiantes (`ActualizarEstadoActual`). Si eso falla, el cierre sigue y el resultado avisa; se corrige con *Recalcular el estado actual*.
+
+## Estado actual del Tablero
+
+Tarjeta *Estado actual del Tablero* ([ADR-011](../decisions/011-estado-actual-en-estudiantes.md)): **Revisar** compara el estado actual de cada estudiante (base Estudiantes) con Criticidad, sin escribir, y dice cuántos no coinciden; **Actualizar N estudiantes** los corrige, de a uno, con el progreso a la vista. Lo hace `RecalcularEstadoActual` de Tools v10 (sin ella, la tarjeta lo avisa). En la vista previa local no hay bases que comparar: la tarjeta lo explica.
+
 ## El período en las demás vistas
 
 | Vista | Qué cambia |
