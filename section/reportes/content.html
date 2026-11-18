@@ -97,6 +97,9 @@
       // CargaParcialesPrimero usa la plantilla del equipo (sin data-campo): filas y nombre de cada celda, en orden
       var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
       var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
+      // CargaMateriasPrimero también (como la lee CriticidadNotas de Tools): sin filas ni columnas, LeerBase no encuentra ninguna entrada
+      var FILAS_MATERIAS_PRIMERO = 'tr[data-tipo="entrada_materia"]';
+      var COLUMNAS_MATERIAS_PRIMERO = ['Materia', 'esCritica', 'Umbral'];
       // Esperas máximas: una base que no responde no deja la página cargando para siempre
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
@@ -1508,7 +1511,7 @@
         materiasPrimero: {
           nombre: 'CargaMateriasPrimero',
           prueba: MATERIAS_PRIMERO_PRUEBA.map(function(m) { return { Materia: m.materia, esCritica: m.critica ? 'Sí' : 'No', Umbral: m.umbral === null ? '' : String(m.umbral) }; }),
-          leer: function() { return leerBase('CargaMateriasPrimero', { dataid: DATAID_MATERIAS_PRIMERO }); },
+          leer: function() { return leerBase('CargaMateriasPrimero', { dataid: DATAID_MATERIAS_PRIMERO, filas: FILAS_MATERIAS_PRIMERO, columnas: COLUMNAS_MATERIAS_PRIMERO }); },
           guardar: function(lista) {
             MATERIAS_PRIMERO = vigentes(lista, function(m) { return Tools.NormalizarMateria(m.Materia); }).map(function(m) {
               var umbral = numero(m.Umbral);
