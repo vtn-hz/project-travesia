@@ -1033,7 +1033,10 @@
         var registro = { informe: estado.informe, periodo: estado.periodo, cohorte: estado.cohorte, tramo: estado.tramo, titulo: ultimo ? ultimo.titulo : '', conclusiones: texto, created_at: ahoraIso() };
         boton.disabled = true;
         boton.lastChild.textContent = 'Guardando…';
-        var guardado = enMoodle ? conLimite(agregarEntradaMoodle(DATAID_INFORMES, CAMPOS_INFORME, registro), ESPERA_BASE, 'La base Informes')
+        // El campo conclusiones es un área de texto de Moodle, que solo acepta formato HTML: se manda escapado y con <br> en cada salto
+        // de línea (LeerBase los vuelve a convertir en saltos al leer)
+        var paraMoodle = Object.assign({}, registro, { conclusiones: escapar(texto).replace(/\r?\n/g, '<br>') });
+        var guardado = enMoodle ? conLimite(agregarEntradaMoodle(DATAID_INFORMES, CAMPOS_INFORME, paraMoodle), ESPERA_BASE, 'La base Informes')
           : new Promise(function(r) { setTimeout(function() { r(null); }, 300); }).then(function() {
             var agregados = leerAlmacenInformes();
             var rid = CONCLUSIONES.concat(agregados).reduce(function(m, c) { return Math.max(m, Number(c.rid) || 0); }, 900) + 1;
