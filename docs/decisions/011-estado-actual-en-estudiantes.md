@@ -36,7 +36,7 @@ El Detalle del estudiante ya se resolvió con la búsqueda por estudiante (de ~2
 
 ## Cómo funcionaría (A)
 
-**Campos nuevos en Estudiantes** (texto): `parciales_indice`, `parciales_periodo`, `parciales_fecha`, `parciales_rid` y `encuesta_indice`, `encuesta_periodo`, `encuesta_fecha`, `encuesta_fuente` (`respuestas` u `omision`), `encuesta_rid`. Son la **última entrada automática de cada fuente**; `*_rid` apunta a esa entrada de Criticidad (el "por qué", como `rid_fuente`).
+**Campos nuevos en Estudiantes** (texto): `parciales_indice`, `parciales_periodo`, `parciales_fecha`, `parciales_rid` y `encuesta_indice`, `encuesta_periodo`, `encuesta_fecha`, `encuesta_fuente` (`respuestas` u `omision`), `encuesta_rid`. Son la **entrada automática más nueva de cada fuente**: la del **período más nuevo** (`AAAA-C`) y, dentro de él, la última cargada (`created_at`; si empatan, el rid mayor). Así una nota cargada tarde de un período anterior no pisa la del período vigente (Tools v11). `*_rid` apunta a esa entrada de Criticidad (el "por qué", como `rid_fuente`).
 
 **El estado asignado no va en el resumen:** lo escribe un tutor sobre la entrada de otro, y dos escrituras sobre la misma entrada se pisan (Moodle guarda el formulario entero). Se sigue leyendo de Criticidad, filtrando por `manual`: son pocas y crecen solo con las asignaciones.
 

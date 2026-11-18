@@ -24,7 +24,7 @@ if (!(limite > 0) || !(paralelo > 0)) c.salir('--limite y --paralelo tienen que 
 const datos = c.cargarDatos();
 const aplicado = c.cargarAplicado();
 
-// ESTADO ACTUAL (ADR-011): MISMA REGLA QUE RecalcularEstadoActual DE TOOLS (la automática más nueva de cada fuente; empate, rid mayor)
+// ESTADO ACTUAL (ADR-011): MISMA REGLA QUE RecalcularEstadoActual DE TOOLS (la automática más nueva de cada fuente: período más nuevo, después created_at; empate, rid mayor)
 const GRUPO_ESTADO = { notas_1ro: 'parciales', materias: 'parciales', respuestas: 'encuesta', omision: 'encuesta' };
 function estadosPendientes() {
   const porUsuario = {};
@@ -32,9 +32,9 @@ function estadosPendientes() {
     const x = e.campos, g = GRUPO_ESTADO[x.fuente], a = aplicado.entradas[e.ref];
     if (!g || x.origen !== 'automatica' || !a) continue;
     const u = (porUsuario[x.id_usuario] = porUsuario[x.id_usuario] || {});
-    const t = Date.parse(x.created_at) || 0, prev = u[g];
-    if (!prev || t > prev.t || (t === prev.t && a.rid > prev.entrada.rid)) {
-      u[g] = { t, entrada: { rid: a.rid, id_usuario: x.id_usuario, origen: 'automatica', fuente: x.fuente, indice: x.indice, periodo: x.periodo, created_at: x.created_at } };
+    const t = Date.parse(x.created_at) || 0, p = String(x.periodo || ''), prev = u[g];
+    if (!prev || p > prev.p || (p === prev.p && (t > prev.t || (t === prev.t && a.rid > prev.entrada.rid)))) {
+      u[g] = { t, p, entrada: { rid: a.rid, id_usuario: x.id_usuario, origen: 'automatica', fuente: x.fuente, indice: x.indice, periodo: x.periodo, created_at: x.created_at } };
     }
   }
   return datos.estudiantes.filter((e) => aplicado.entradas[e.ref] && !aplicado.entradas[e.ref].estado_actual && porUsuario[e.campos.id_usuario])

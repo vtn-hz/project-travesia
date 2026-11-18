@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 10;
+      var VERSION = 11;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1363,16 +1363,25 @@
         return isFinite(t) ? t : 0;
       }
 
-      // ResumenEstadoActual(entradas) → { parciales, encuesta }: la última entrada automática de cada fuente (o null),
-      // por created_at y, si empatan, por rid. Las entradas son las de Criticidad de un estudiante (campos en texto o número)
+      // ORDEN DEL ESTADO ACTUAL: primero el período más nuevo (AAAA-C), después created_at y, si empatan, el rid. Así una nota cargada
+      // tarde de un período anterior no pisa la del período vigente. > 0 si a es más nueva que b
+      function compararEstado(a, b) {
+        var pa = String(a && a.periodo || '').trim(), pb = String(b && b.periodo || '').trim();
+        if (pa !== pb) return pa > pb ? 1 : -1;
+        var t = momentoDeEntrada(a) - momentoDeEntrada(b);
+        if (t) return t;
+        return (Number(a && a.rid) || 0) - (Number(b && b.rid) || 0);
+      }
+
+      // ResumenEstadoActual(entradas) → { parciales, encuesta }: la entrada automática más nueva de cada fuente (o null),
+      // por período, después por created_at y, si empatan, por rid. Las entradas son las de Criticidad de un estudiante (campos en texto o número)
       function ResumenEstadoActual(entradas) {
         var r = { parciales: null, encuesta: null };
         (entradas || []).forEach(function(c) {
           var g = GRUPO_ESTADO[String(c.fuente || '').trim()];
           if (!g || String(c.origen || '').trim() !== 'automatica' || numeroMoodle(c.indice) === null) return;
           var a = r[g];
-          var t = momentoDeEntrada(c), ta = a ? momentoDeEntrada(a) : -1;
-          if (!a || t > ta || (t === ta && (Number(c.rid) || 0) > (Number(a.rid) || 0))) r[g] = c;
+          if (!a || compararEstado(c, a) > 0) r[g] = c;
         });
         return r;
       }
@@ -1439,7 +1448,8 @@
         return leer.then(function(e) {
           if (!e || !e.rid) return false;
           var campos = e.campos || e;
-          if (momentoDeEntrada({ created_at: campos[g + '_fecha'] }) > momentoDeEntrada(entrada)) return false; // ya tiene una más nueva
+          var guardada = { periodo: campos[g + '_periodo'], created_at: campos[g + '_fecha'], rid: campos[g + '_rid'] };
+          if (String(campos[g + '_indice'] || '').trim() !== '' && compararEstado(guardada, entrada) > 0) return false; // ya tiene una más nueva
           return editarEntradaMoodle(DATAID_ESTUDIANTES, e.rid, camposEstado(g, entrada)).then(function() { return true; });
         }).catch(function(err) {
           if (err && err.sinCampos) return false;
@@ -2291,12 +2301,12 @@
           carga: 'Tools.TrayectoriaEstudiantes({ periodos, estudiantes: [{ id, cohorte }], actividad: [{ id, periodo }], creditos: [{ id, periodo, creditos }] }, { periodosAbandono }) → { estudiantes, cohortes, supervivencia, opciones }'
         },
         ResumenEstadoActual: {
-          descripcion: 'Devuelve la última entrada automática de Criticidad de cada fuente de un estudiante (parciales: notas_1ro y materias; encuesta: respuestas y omision), que es lo que guarda el estado actual de la base Estudiantes (ADR-011). No lee ni guarda nada.',
+          descripcion: 'Devuelve la entrada automática más nueva de Criticidad de cada fuente de un estudiante (la del período más nuevo y, dentro de él, la última cargada) (parciales: notas_1ro y materias; encuesta: respuestas y omision), que es lo que guarda el estado actual de la base Estudiantes (ADR-011). No lee ni guarda nada.',
           uso: 'RecalcularEstadoActual y el Tablero de Criticidad',
           carga: 'Tools.ResumenEstadoActual(entradas) → { parciales, encuesta }'
         },
         ActualizarEstadoActual: {
-          descripcion: 'Guarda en la entrada de Estudiantes de un estudiante la entrada de Criticidad recién agregada, si es la más nueva de su fuente (ADR-011). Lo hacen solas la copia de la Cuatrimestral y la carga de notas; la Configuración del Sistema lo usa con las omisiones. Si falla queda pendiente y se reintenta; si la base todavía no tiene los campos, no hace nada.',
+          descripcion: 'Guarda en la entrada de Estudiantes de un estudiante la entrada de Criticidad recién agregada, si es la más nueva de su fuente: período más nuevo y, dentro de él, la última cargada (ADR-011). Lo hacen solas la copia de la Cuatrimestral y la carga de notas; la Configuración del Sistema lo usa con las omisiones. Si falla queda pendiente y se reintenta; si la base todavía no tiene los campos, no hace nada.',
           uso: 'CopiaRespuestas, CriticidadNotas y Configuración del Sistema',
           carga: 'Tools.ActualizarEstadoActual(entrada, { estudiante }) → Promise de true si actualizó'
         },

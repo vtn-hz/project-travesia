@@ -671,7 +671,7 @@
         return lista;
       }
 
-      // VISTA PREVIA: EL ESTADO ACTUAL QUE GUARDARÍA RecalcularEstadoActual DE TOOLS (LA ÚLTIMA ENTRADA AUTOMÁTICA DE CADA FUENTE)
+      // VISTA PREVIA: EL ESTADO ACTUAL QUE GUARDARÍA RecalcularEstadoActual DE TOOLS (LA AUTOMÁTICA MÁS NUEVA DE CADA FUENTE: PERÍODO, FECHA Y RID)
       function conEstadoActual(estudiantes, criticidad) {
         return estudiantes.map(function(e) {
           var ultimas = {};
@@ -679,7 +679,8 @@
             var g = GRUPO_ESTADO[c.fuente];
             if (!g || c.origen !== 'automatica' || String(c.id_usuario) !== String(e.id_usuario) || numero(c.indice) === null) return;
             var a = ultimas[g];
-            if (!a || tiempoDe(c) > tiempoDe(a) || (tiempoDe(c) === tiempoDe(a) && (Number(c.rid) || 0) > (Number(a.rid) || 0))) ultimas[g] = c;
+            var pc = String(c.periodo || ''), pa = a ? String(a.periodo || '') : '';
+            if (!a || pc > pa || (pc === pa && (tiempoDe(c) > tiempoDe(a) || (tiempoDe(c) === tiempoDe(a) && (Number(c.rid) || 0) > (Number(a.rid) || 0))))) ultimas[g] = c;
           });
           var p = ultimas.parciales, q = ultimas.encuesta;
           return Object.assign({}, e, {
