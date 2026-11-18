@@ -1,6 +1,6 @@
 # Datos de prueba del campus
 
-Conjunto de **60 estudiantes ficticios** para que el sistema se vea en uso: encuestas desde 2021, notas de 1.er año de 2026, criticidad, estados asignados y entrevistas. Lo arma [`generar.js`](generar.js) y se carga en las bases de Zhakyz. **Estado: generado en local, sin aplicar en Moodle** (los scripts de aplicar y borrar son el paso siguiente).
+Conjunto de **60 estudiantes ficticios** para que el sistema se vea en uso: encuestas desde 2021, notas de 1.er año de 2026, criticidad, estados asignados y entrevistas. Lo arma [`generar.js`](generar.js) y se carga en las bases de Zhakyz. **Estado: generado en local, sin aplicar en Moodle.** Se aplica y se borra con la skill [`datos-prueba`](../../.skills/datos-prueba/SKILL.md).
 
 ```bash
 node data/prueba/generar.js                         # escribe los JSON e imprime el control de coherencia
@@ -41,7 +41,9 @@ En 2026-2 el Tablero quedaría así (estado vigente): 12 en riesgo alto, 17 en r
 
 Los DNI están entre 40.000.000 y 50.000.000, acordes a la edad de cada cohorte, como pidió el equipo. Pueden coincidir con el de una persona real (no con los ya cargados en el campus, que se descartan): por eso el borrado no se apoya solo en el DNI.
 
-## Aplicar y borrar (pendiente)
+## Aplicar y borrar
+
+Con la skill [`datos-prueba`](../../.skills/datos-prueba/SKILL.md) (`.skills/datos-prueba/aplicar.js` y `remover.js`). Al 2026-11-17 se probaron solo sus simulaciones contra el campus: la revisión de campos (los JSON coinciden con los formularios de las 5 bases) y la lectura del borrado (encuentra 0 entradas de prueba y no marca ninguna real).
 
 1. **Aplicar** (`aplicar.js`, por defecto simula): crea las entradas en orden (Estudiantes, Respuestas y CargaParcialesPrimero, Criticidad con `rid_fuente` resuelto, Entrevistas), desaprueba las omisiones y anota cada rid en `aplicado.json` a medida que avanza, así se puede retomar. Son ~1.150 entradas: con el campus lento, entre 40 y 90 minutos.
 2. **Borrar** (`remover.js`, por defecto simula): junta los rid de `aplicado.json` y, de respaldo, las entradas con las marcas de arriba; borra en orden inverso, nunca una entrada sin marca, y vuelve a leer las bases para confirmar que no quedó nada.
