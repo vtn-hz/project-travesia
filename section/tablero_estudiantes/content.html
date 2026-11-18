@@ -165,6 +165,9 @@
       // Espera máxima (milisegundos) de la Página Tools y de cada base
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
+      // Entradas por pedido al leer cada base (LeerBase usa 500 por defecto). Moodle atiende los pedidos de una sesión de a uno,
+      // así que una base de 577 entradas en dos pedidos tardaba unos 12 s y en uno solo, unos 8 s (medido en el campus el 2026-11-17)
+      var POR_PAGINA = 1000;
 
       var ROLES = {
         ADM: { nombre: 'Administrador', puedeAsignar: true },
@@ -546,9 +549,9 @@
           return leerPeriodo(Tools).then(function() { return Tools; });
         }).then(function(Tools) {
           return Promise.all([
-            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES }),
-            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad }),
-            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS })
+            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA }),
+            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA }),
+            leerBase(Tools, 'Respuestas', { dataid: DATAID_RESPUESTAS, porPagina: POR_PAGINA })
           ]);
         }).then(function(r) {
           return { estudiantes: r[0], criticidad: r[1], respuestas: r[2] };
