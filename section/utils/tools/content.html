@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 8;
+      var VERSION = 9;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1584,7 +1584,8 @@
       // =========================================================
       // HERRAMIENTA PeriodoVigente: PERÍODO VIGENTE DE LA BASE PERÍODOS (ADR-009)
       // =========================================================
-      // PeriodoVigente() → Promise de { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }.
+      // PeriodoVigente() → Promise de { periodo, fecha_inicio, fecha_limite_encuesta, periodos_abandono, rid, anterior, fuente, error, periodos }.
+      //   periodos_abandono: el de la última entrada que lo define (entero de 1 a 20) o PERIODOS_ABANDONO_POR_DEFECTO.
       //   La vigente es la entrada de rid mayor (la última que se cargó). Nunca se rechaza: si la base no existe o no se puede leer,
       //   devuelve el último período leído en este navegador (fuente 'guardado') o PERIODO_POR_DEFECTO (fuente 'defecto'), con el error.
       //   En la vista previa local lee los períodos de prueba más los que agregó la Página Configuración del Sistema (fuente 'prueba').
@@ -1595,8 +1596,20 @@
         { rid: 2, periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '', created_at: '2026-08-18T09:00:00-03:00' }
       ];
       var periodoCarga = null;
+      // Períodos seguidos sin actividad para considerar que un estudiante abandonó (TrayectoriaEstudiantes). Lo define el equipo en
+      // la Página Configuración del Sistema (campo periodos_abandono de la base Períodos); vale el de la última entrada que lo tiene
+      var PERIODOS_ABANDONO_POR_DEFECTO = 4;
 
       function esPeriodo(p) { return /^\d{4}-[12]$/.test(String(p || '').trim()); }
+
+      // PERÍODOS SIN ACTIVIDAD PARA EL ABANDONO: EL DE LA ÚLTIMA ENTRADA QUE TIENE UN ENTERO DE 1 A 20
+      function periodosAbandonoDe(periodos) {
+        for (var i = periodos.length - 1; i >= 0; i--) {
+          var n = Number(String(periodos[i].periodos_abandono || '').trim());
+          if (String(periodos[i].periodos_abandono || '').trim() !== '' && Math.floor(n) === n && n >= 1 && n <= 20) return n;
+        }
+        return PERIODOS_ABANDONO_POR_DEFECTO;
+      }
 
       // 2026-2 → 2026-1; 2027-1 → 2026-2
       function periodoAnterior(p) {
@@ -1608,7 +1621,8 @@
       function ordenarPeriodos(lista) {
         return lista.filter(function(p) { return esPeriodo(p.periodo); }).map(function(p) {
           return { rid: Number(p.rid) || 0, periodo: String(p.periodo).trim(), fecha_inicio: String(p.fecha_inicio || '').trim(),
-            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), created_at: String(p.created_at || '').trim() };
+            fecha_limite_encuesta: String(p.fecha_limite_encuesta || '').trim(), periodos_abandono: String(p.periodos_abandono || '').trim(),
+            created_at: String(p.created_at || '').trim() };
         }).sort(function(a, b) { return a.rid - b.rid; });
       }
 
@@ -1631,7 +1645,7 @@
           var v = periodos[periodos.length - 1];
           if (!local) escribirAlmacen(window.localStorage, CLAVE_PERIODO, v);
           return { periodo: v.periodo, fecha_inicio: v.fecha_inicio, fecha_limite_encuesta: v.fecha_limite_encuesta, rid: v.rid,
-            fuente: local ? 'prueba' : 'base', error: '', periodos: periodos };
+            periodos_abandono: periodosAbandonoDe(periodos), fuente: local ? 'prueba' : 'base', error: '', periodos: periodos };
         }).catch(function(e) {
           var guardado = leerAlmacen(window.localStorage, CLAVE_PERIODO, null);
           var hayGuardado = !!guardado && esPeriodo(guardado.periodo);
@@ -1639,7 +1653,7 @@
           // Si falló la lectura, la próxima llamada vuelve a intentarla
           if (periodoCarga === carga) periodoCarga = null;
           return { periodo: v.periodo, fecha_inicio: v.fecha_inicio || '', fecha_limite_encuesta: v.fecha_limite_encuesta || '', rid: v.rid || null,
-            fuente: hayGuardado ? 'guardado' : 'defecto', error: e && e.message ? e.message : String(e), periodos: [] };
+            periodos_abandono: periodosAbandonoDe(hayGuardado ? [v] : []), fuente: hayGuardado ? 'guardado' : 'defecto', error: e && e.message ? e.message : String(e), periodos: [] };
         }).then(function(r) {
           r.anterior = periodoAnterior(r.periodo);
           PERIODO_ACTUAL = r.periodo;
@@ -1853,6 +1867,152 @@
         return pagina(0);
       }
 
+      // =========================================================
+      // HERRAMIENTA TrayectoriaEstudiantes: ESTADO DE CADA ESTUDIANTE EN CADA PERÍODO E INDICADORES POR COHORTE
+      // =========================================================
+      // TrayectoriaEstudiantes(datos, opciones) → { estudiantes, cohortes, supervivencia, opciones }. No lee ni guarda nada
+      // (docs/models/trayectoria/MODELO_ABANDONO_Y_EGRESO.md). Definiciones acordadas con el DII (2026-11-17):
+      //   - ingresantes de una cohorte: los estudiantes con información personal (base Estudiantes) de esa cohorte;
+      //   - actividad en un período: cargó una nota de 1.er año o respondió la Encuesta Cuatrimestral en ese período;
+      //   - abandono: N períodos cerrados seguidos sin actividad (N = periodos_abandono de la base Períodos). Desde el primero de esos
+      //     períodos el estudiante cuenta como abandono; si vuelve a tener actividad, deja de serlo (reincorporado);
+      //   - egreso: declarar en la Cuatrimestral todos los créditos del plan (235,5 en el Plan 2024: 52 materias, incluido el
+      //     Proyecto de Ingeniería Industrial IV, y la PPS). Egreso y titulación son lo mismo, porque el PFG está en los créditos.
+      // Solo se observan los períodos del sistema (la base Períodos) desde el ingreso: lo anterior no tiene datos. El vigente no está
+      // cerrado: su falta de actividad no cuenta para el abandono.
+      // datos = { periodos: ['2026-1', '2026-2', …] (los del sistema, hasta el período de corte), estudiantes: [{ id, cohorte }],
+      //           actividad: [{ id, periodo }], creditos: [{ id, periodo, creditos }] }
+      // opciones = { periodosAbandono (por defecto el de la base Períodos o 4), creditosEgreso (235,5), duracionTeorica (10 cuatrimestres),
+      //              terminal (0,9: parte de los créditos desde la que un estudiante que no egresa es de permanencia terminal) }
+      var CREDITOS_EGRESO = 235.5;
+
+      function indicePeriodo(p) { var x = String(p).split('-'); return Number(x[0]) * 2 + Number(x[1]) - 1; }
+      function periodoDeIndice(i) { return Math.floor(i / 2) + '-' + (i % 2 + 1); }
+
+      function TrayectoriaEstudiantes(datos, opciones) {
+        var o = opciones || {};
+        var N = Math.max(1, Math.floor(Number(o.periodosAbandono) || PERIODOS_ABANDONO_POR_DEFECTO));
+        var egresoCreditos = Number(o.creditosEgreso) || CREDITOS_EGRESO;
+        var teorica = Number(o.duracionTeorica) || 10;
+        var terminal = Number(o.terminal) || 0.9;
+        var sistema = (datos.periodos || []).filter(esPeriodo).map(function(p) { return String(p).trim(); })
+          .filter(function(p, i, a) { return a.indexOf(p) === i; }).sort(function(a, b) { return indicePeriodo(a) - indicePeriodo(b); });
+        var corte = sistema.length ? sistema[sistema.length - 1] : null;
+        var activos = {}, creditos = {};
+        (datos.actividad || []).forEach(function(a) {
+          if (!esPeriodo(a.periodo)) return;
+          (activos[a.id] = activos[a.id] || {})[String(a.periodo).trim()] = true;
+        });
+        (datos.creditos || []).forEach(function(c) {
+          var v = Number(c.creditos);
+          if (!esPeriodo(c.periodo) || !isFinite(v)) return;
+          (creditos[c.id] = creditos[c.id] || []).push({ periodo: String(c.periodo).trim(), creditos: v });
+        });
+
+        // Las cohortes que ingresan después del período de corte todavía no son ingresantes
+        var lista = (datos.estudiantes || []).filter(function(e) {
+          return esPeriodo(e.cohorte) && (!corte || indicePeriodo(String(e.cohorte).trim()) <= indicePeriodo(corte));
+        }).map(function(e) {
+          var cohorte = String(e.cohorte).trim(), ingreso = indicePeriodo(cohorte);
+          // Períodos observados: los del sistema desde el ingreso hasta el corte
+          var observados = sistema.filter(function(p) { return indicePeriodo(p) >= ingreso; });
+          var act = activos[e.id] || {};
+          var cred = (creditos[e.id] || []).filter(function(c) { return indicePeriodo(c.periodo) <= (corte ? indicePeriodo(corte) : 0); })
+            .sort(function(a, b) { return indicePeriodo(a.periodo) - indicePeriodo(b.periodo); });
+          var egreso = null;
+          cred.some(function(c) { if (c.creditos >= egresoCreditos) { egreso = c.periodo; return true; } return false; });
+          var ultimosCreditos = cred.length ? cred[cred.length - 1].creditos : null;
+          // Períodos cerrados sin actividad al final (antes del corte, que es el vigente)
+          var cerrados = observados.filter(function(p) { return p !== corte; });
+          var racha = [];
+          for (var i = cerrados.length - 1; i >= 0 && !act[cerrados[i]]; i--) racha.unshift(cerrados[i]);
+          if (corte && act[corte]) racha = [];
+          var abandono = !egreso && racha.length >= N ? racha[0] : null;
+          // Reincorporado: tuvo N períodos cerrados seguidos sin actividad y después volvió
+          var seguidos = 0, reincorporado = false;
+          cerrados.forEach(function(p) {
+            if (act[p]) { if (seguidos >= N) reincorporado = true; seguidos = 0; } else seguidos++;
+          });
+          if (corte && act[corte] && seguidos >= N) reincorporado = true;
+          var estado = egreso ? 'egresado' : abandono ? 'abandono' : 'activo';
+          var porPeriodo = {};
+          observados.forEach(function(p) {
+            porPeriodo[p] = egreso && indicePeriodo(p) >= indicePeriodo(egreso) ? 'egresado'
+              : abandono && indicePeriodo(p) >= indicePeriodo(abandono) ? 'abandono' : 'activo';
+          });
+          var cuatrimestres = corte ? indicePeriodo(egreso || corte) - ingreso + 1 : null;
+          return {
+            id: e.id, cohorte: cohorte, estado: estado, egreso: egreso, abandono: abandono, reincorporado: reincorporado,
+            desde: observados.length ? observados[0] : null, observados: observados, porPeriodo: porPeriodo,
+            sinActividad: racha.length, creditos: ultimosCreditos, cuatrimestres: cuatrimestres,
+            duracion: egreso ? indicePeriodo(egreso) - ingreso + 1 : null,
+            terminal: estado === 'activo' && ultimosCreditos !== null && ultimosCreditos >= terminal * egresoCreditos && cuatrimestres > teorica
+          };
+        });
+
+        // POR COHORTE: INGRESANTES, ESTADOS, RETENCIÓN DE 1.ER AÑO, EGRESO, DURACIÓN Y PERMANENCIA (DESGRANAMIENTO)
+        var porCohorte = {};
+        lista.forEach(function(x) { (porCohorte[x.cohorte] = porCohorte[x.cohorte] || []).push(x); });
+        var cohortes = Object.keys(porCohorte).sort(function(a, b) { return indicePeriodo(a) - indicePeriodo(b); }).map(function(c) {
+          var xs = porCohorte[c], n = xs.length, ingreso = indicePeriodo(c);
+          var cuenta = function(est) { return xs.filter(function(x) { return x.estado === est; }).length; };
+          // Retención de 1.er año: siguen (activos o egresados) un año después del ingreso. Se puede calcular si ese período está
+          // en el sistema; queda confirmada cuando pasaron N períodos cerrados desde ahí (antes, un abandono todavía no se ve)
+          var alAnio = periodoDeIndice(ingreso + 2), retencion = null;
+          if (sistema.indexOf(alAnio) >= 0 && sistema.indexOf(c) >= 0) {
+            var siguen = xs.filter(function(x) { return x.porPeriodo[alAnio] !== 'abandono'; }).length;
+            var cerradosDesde = sistema.filter(function(p) { return p !== corte && indicePeriodo(p) >= ingreso + 2; }).length;
+            retencion = { periodo: alAnio, siguen: siguen, porcentaje: n ? siguen / n * 100 : null, confirmada: cerradosDesde >= N };
+          }
+          // Permanencia por período desde el ingreso (k = 0 es el cuatrimestre de ingreso): % que no abandonó
+          var permanencia = [];
+          sistema.forEach(function(p) {
+            var k = indicePeriodo(p) - ingreso;
+            if (k < 0) return;
+            var siguen2 = xs.filter(function(x) { return x.porPeriodo[p] && x.porPeriodo[p] !== 'abandono'; }).length;
+            permanencia.push({ k: k, periodo: p, siguen: siguen2, porcentaje: n ? siguen2 / n * 100 : null });
+          });
+          var egresados = xs.filter(function(x) { return x.estado === 'egresado'; });
+          return {
+            cohorte: c, ingresantes: n, activos: cuenta('activo'), abandonos: cuenta('abandono'), egresados: egresados.length,
+            tasaEgreso: n ? egresados.length / n * 100 : null,
+            duracionPromedio: egresados.length ? egresados.reduce(function(s, x) { return s + x.duracion; }, 0) / egresados.length : null,
+            terminal: xs.filter(function(x) { return x.terminal; }).length,
+            reincorporados: xs.filter(function(x) { return x.reincorporado; }).length,
+            // La cohorte entró antes del primer período del sistema: solo están quienes seguían cuando empezó (datos parciales)
+            parcial: !!sistema.length && ingreso < indicePeriodo(sistema[0]),
+            retencion: retencion, permanencia: permanencia
+          };
+        });
+
+        // SUPERVIVENCIA ACADÉMICA (KAPLAN-MEIER CON ENTRADA TARDÍA): k = CUATRIMESTRES DESDE EL INGRESO. Cada estudiante está en
+        // riesgo desde su primer período observado hasta su abandono (evento), su egreso o el último período cerrado (censura)
+        var maxK = 0, filas = [];
+        lista.forEach(function(x) {
+          if (!x.observados.length) return;
+          var ingreso = indicePeriodo(x.cohorte);
+          var entrada = indicePeriodo(x.desde) - ingreso;
+          var ultimoCerrado = x.observados.filter(function(p) { return p !== corte; });
+          var salida, evento = false;
+          if (x.abandono) { salida = indicePeriodo(x.abandono) - ingreso; evento = true; }
+          else if (x.egreso) salida = indicePeriodo(x.egreso) - ingreso;
+          else if (ultimoCerrado.length) salida = indicePeriodo(ultimoCerrado[ultimoCerrado.length - 1]) - ingreso;
+          else return;
+          if (salida < entrada) return;
+          maxK = Math.max(maxK, salida);
+          filas.push({ entrada: entrada, salida: salida, evento: evento });
+        });
+        var supervivencia = [], s = 1;
+        for (var k = 0; k <= maxK; k++) {
+          var enRiesgo = filas.filter(function(f) { return f.entrada <= k && f.salida >= k; }).length;
+          var eventos = filas.filter(function(f) { return f.evento && f.salida === k; }).length;
+          if (enRiesgo) s = s * (1 - eventos / enRiesgo);
+          supervivencia.push({ k: k, enRiesgo: enRiesgo, abandonos: eventos, riesgo: enRiesgo ? eventos / enRiesgo * 100 : null, supervivencia: s * 100 });
+        }
+        return { estudiantes: lista, cohortes: cohortes, supervivencia: supervivencia,
+          opciones: { periodosAbandono: N, creditosEgreso: egresoCreditos, duracionTeorica: teorica, terminal: terminal, corte: corte, periodos: sistema } };
+      }
+
       // ---------------------------------------------------------
       // EXPORTACIÓN
       // ---------------------------------------------------------
@@ -1868,7 +2028,8 @@
         DefinicionEncuesta: DefinicionEncuesta,
         RespuestasMoodle: RespuestasMoodle,
         NormalizarMateria: normalizarMateria,
-        PeriodoDeNota: periodoDeNota
+        PeriodoDeNota: periodoDeNota,
+        TrayectoriaEstudiantes: TrayectoriaEstudiantes
       };
       // Aviso para las vistas que usan las herramientas desde su código (cargador de tools con TOOL = null)
       try { document.dispatchEvent(new CustomEvent('zk-tools', { detail: window.ZhakyzTools })); } catch (e) { /* sin CustomEvent: la vista usa window.ZhakyzTools */ }
@@ -1916,7 +2077,7 @@
         PeriodoVigente: {
           descripcion: 'Devuelve el período vigente de la base Períodos (la última entrada), con su fecha de inicio y la fecha límite de la Encuesta Cuatrimestral (ADR-009). Nunca falla: si la base no se puede leer, usa el último período leído en ese navegador o el período por defecto, y lo informa en error. CopiaRespuestas y CriticidadNotas guardan con este período.',
           uso: 'CopiaRespuestas, CriticidadNotas, Mi Trayectoria, Información personal, Tablero de Criticidad, Detalle del estudiante y Configuración del Sistema',
-          carga: 'Tools.PeriodoVigente() → { periodo, fecha_inicio, fecha_limite_encuesta, rid, anterior, fuente, error, periodos }'
+          carga: 'Tools.PeriodoVigente() → { periodo, fecha_inicio, fecha_limite_encuesta, periodos_abandono, rid, anterior, fuente, error, periodos }'
         },
         CriticidadEstudiante: {
           descripcion: 'Devuelve la criticidad de cada fuente (parciales y Encuesta Cuatrimestral, por separado), el estado calculado, el asignado y el vigente de un estudiante en un período, con la regla del Tablero de Criticidad: el calculado es la fuente de su año de la carrera (parciales en 1.er año, Cuatrimestral u omisión desde 2.º) y, sin entradas en el período, la última del anterior. El asignado es la última entrada manual, salvo sin_asignar. No lee ni guarda nada.',
@@ -1942,6 +2103,11 @@
           descripcion: 'Período (AAAA-C) de una nota de 1.er año: el campo Periodo de CargaParcialesPrimero. Las notas guardadas antes del cambio tienen la fecha del parcial (AAAA-MM-DD): enero a julio es AAAA-1 y agosto a diciembre, AAAA-2.',
           uso: 'CriticidadNotas y Reportes',
           carga: 'Tools.PeriodoDeNota(valor) → AAAA-C, o null si no se entiende'
+        },
+        TrayectoriaEstudiantes: {
+          descripcion: 'Estado de cada estudiante en cada período (activo, abandono o egresado) e indicadores por cohorte: ingresantes, retención de 1.er año, permanencia por cuatrimestre (desgranamiento), tasa de egreso, duración y permanencia terminal, más la supervivencia académica. Abandono: N períodos cerrados seguidos sin notas ni Cuatrimestral (N de la base Períodos). Egreso: declarar todos los créditos del plan (235,5). No lee ni guarda nada.',
+          uso: 'Reportes (informe Trayectoria y egreso)',
+          carga: 'Tools.TrayectoriaEstudiantes({ periodos, estudiantes: [{ id, cohorte }], actividad: [{ id, periodo }], creditos: [{ id, periodo, creditos }] }, { periodosAbandono }) → { estudiantes, cohortes, supervivencia, opciones }'
         },
         LeerBase: {
           descripcion: 'Lee todas las entradas de una base de datos de Moodle, página por página, y las devuelve juntas. Reconoce las plantillas con data-campo, la de Moodle por defecto y las de filas con una celda por campo.',

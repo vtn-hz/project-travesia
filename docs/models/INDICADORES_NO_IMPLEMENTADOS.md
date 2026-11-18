@@ -1,5 +1,7 @@
 # Indicadores no implementados
 
+> **Actualización del 2026-11-17:** en la reunión con el DII se acordaron definiciones con los datos que ya tiene el sistema (ingresantes = estudiantes con información personal; abandono = períodos sin actividad; egreso = 235,5 créditos declarados). Con eso, la retención de 1.er año, el desgranamiento, la supervivencia académica, la tasa de egreso, el egreso frente a la titulación (son lo mismo) y la duración se calculan en el informe **Trayectoria y egreso** de Reportes ([modelo](trayectoria/MODELO_ABANDONO_Y_EGRESO.md)). Este documento queda como registro de por qué no se podían calcular antes. Sigue sin implementar el tiempo en el Proyecto Final.
+
 Indicadores del [documento de trayectoria y terminalidad](../context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md) y de los requerimientos v1.1 que quedan **fuera de la sección [Indicadores de Cohorte](../../section/indicadores_cohorte/content.html)** ([spec](../specs/indicadores-cohorte.md)) porque, con las limitaciones actuales, son difíciles o muy difíciles de calcular en el campus. Revisado el 2026-11-02.
 
 ## Limitaciones de las que parten
