@@ -119,6 +119,10 @@ Moodle ordena los campos por orden de creación y no permite reordenarlos ni cam
 
 El script borra todos los campos y los crea de nuevo en el orden del JSON. **Solo funciona si la base está vacía y está dentro de Zhakyz**: si tiene entradas, se niega, porque se perderían datos.
 
+### Agregar campos a una base con entradas (`agregar_campos.js`)
+
+Para sumar campos al final de una base que ya tiene entradas: agregarlos al final del JSON y correr `agregar_campos.js --definicion …` (simula; agrega con `--confirmar`). Nunca borra ni edita campos: si los campos actuales no son, en orden, el comienzo de la definición, se niega. Las entradas existentes quedan con los campos nuevos vacíos. Después, subir la plantilla de lista con `subir_plantillas.js` si cambió.
+
 ## Mover o renombrar actividades sin desvincularlas
 
 Mover (`mover_actividades.js --subseccion "<nombre>" --cmids <id,id>`) y renombrar (`renombrar_actividades.js --renombrar "<cmid>=<nombre>,…"`) conservan el cmid y el dataid, la configuración, los permisos, las plantillas y las entradas: lo que usa ids (Tools, páginas, plantillas JS) sigue funcionando. Los dos simulan por defecto y escriben con `--confirmar`. Nunca borrar y recrear una actividad para "moverla": cambian los ids.
