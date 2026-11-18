@@ -92,13 +92,13 @@
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CURSO = 1732; // @config curso
-      var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
       var DATAID_CRITICIDAD = 199; // @config bases.criticidad.dataid
       var DATAID_RESPUESTAS = 166; // @config bases.respuestas.dataid
       var DATAID_PARCIALES = 117; // @config bases.carga_parciales_primero.dataid
       var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
       var DATAID_ENCUESTAS = 198; // @config bases.encuestas.dataid
+      var DATAID_PERIODOS = 207; // @config bases.periodos.dataid
       // Tablero de Criticidad: archivo local o, en Moodle, la Página publicada (null hasta publicarla)
       var URL_TABLERO_LOCAL = '../tablero_estudiantes/content.html';
       var CMID_TABLERO = 60287; // @config paginas.tablero
@@ -115,8 +115,7 @@
       var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
       var CAMPOS_MANUAL = ['id_usuario', 'dni', 'periodo', 'origen', 'fuente', 'rid_fuente', 'indice', 'semaforo', 'motivo', 'created_at'];
       var CLAVE_PREVIEW = 'zk-preview-criticidad-manual';
-      // Espera máxima (milisegundos) de la Página Tools, de cada base y de las bases que solo completan la cronología
-      var ESPERA_TOOLS = 20000;
+      // Espera máxima (milisegundos) de cada base y de las bases que solo completan la cronología
       var ESPERA_BASE = 60000;
       var ESPERA_OPCIONAL = 20000;
       // Entradas por pedido al leer cada base (LeerBase usa 500 por defecto)
@@ -244,6 +243,30 @@
         manual(1045, '3623', '99000003', '2026-2', 'verde', 'Entrevista: cursa al día y no reporta dificultades.', 'Luca Zuanetti', '2026-10-12T11:00:00-03:00')
       ];
 
+      // VISTA PREVIA CON MUCHO HISTORIAL (?historial=largo en la dirección): suma a Nicolás (3773) unas 40 entradas ficticias de 2024-1 a
+      // 2026-2, generadas siempre igual, para probar el scroll de Trayectoria y del Historial. Sin el parámetro, solo los datos de prueba
+      function historialLargoPrueba() {
+        if (!/[?&]historial=largo\b/.test(window.location.search)) return [];
+        var semilla = 11;
+        function azar() { semilla = (semilla * 16807) % 2147483647; return semilla / 2147483647; }
+        var AUTORES = ['Luca Zuanetti', 'Valentino Hernández Pascual', 'Santiago Yanosky'];
+        var MOTIVOS = ['Entrevista: reorganizó los horarios de estudio.', 'Entrevista: está por dejar una materia por el trabajo.', 'Seguimiento: aprobó los recuperatorios.',
+          'Seguimiento: no se presentó a la tutoría.', 'Entrevista: pidió ayuda con Análisis Matemático I.'];
+        var lista = [], rid = 7000;
+        ['2024-1', '2024-2', '2025-1', '2025-2', '2026-1', '2026-2'].forEach(function(periodo) {
+          var anio = periodo.slice(0, 4), mes = periodo.slice(5) === '1' ? 4 : 9;
+          for (var k = 0; k < 5; k++) {
+            var fecha = anio + '-' + String(mes + Math.floor(k / 2)).padStart(2, '0') + '-' + String(3 + k * 5).padStart(2, '0') + 'T18:00:00-03:00';
+            lista.push(automatica(rid++, '3773', '99000006', periodo, k === 4 ? 'materias' : 'notas_1ro', '', Math.floor(azar() * 101), fecha,
+              k === 4 ? 'Recálculo: cambió el umbral de una materia' : ''));
+          }
+          if (periodo !== '2026-2' && azar() < 0.5) lista.push(automatica(rid++, '3773', '99000006', periodo, 'omision', '', 60, anio + '-' + (mes === 4 ? '07' : '12') + '-20T23:59:00-03:00', 'No respondió la Encuesta Cuatrimestral ' + periodo));
+          lista.push(manual(rid++, '3773', '99000006', periodo, ['rojo', 'amarillo', 'verde', 'sin_asignar'][Math.floor(azar() * 4)], MOTIVOS[Math.floor(azar() * MOTIVOS.length)],
+            AUTORES[Math.floor(azar() * AUTORES.length)], anio + '-' + String(mes + 2).padStart(2, '0') + '-05T11:00:00-03:00'));
+        });
+        return lista;
+      }
+
       // Base CargaParcialesPrimero (las notas que dispararon cada entrada de Criticidad)
       // Base Encuestas: definiciones de las versiones vigentes (texto de cada pregunta y de cada opción), de data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json
       var ENCUESTAS_PRUEBA = [
@@ -352,9 +375,9 @@
         PERIODO_ANTERIOR = periodoAnterior(PERIODO_ACTUAL);
       }
 
-      // EN MOODLE: PeriodoVigente DE LA PÁGINA TOOLS (DESDE LA VERSIÓN 6; CON UNA ANTERIOR, EL PERÍODO POR DEFECTO)
-      function leerPeriodo(Tools) {
-        return (typeof Tools.PeriodoVigente === 'function' ? Tools.PeriodoVigente() : Promise.resolve(null)).then(fijarPeriodo);
+      // EN MOODLE: EL PERÍODO VIGENTE DE LA BASE PERÍODOS (leerPeriodoVigente, del bloque COPIA DE TOOLS)
+      function leerPeriodo() {
+        return leerPeriodoVigente().then(fijarPeriodo);
       }
 
       function escribirAlmacen(clave, valor) {
@@ -435,30 +458,146 @@
       // ---------------------------------------------------------
       // ACCESO A DATOS EN MOODLE
       // ---------------------------------------------------------
-      // BIBLIOTECA DE TOOLS (COMO EL CARGADOR DE TOOLS CON TOOL = null: UNA SOLA LECTURA POR PÁGINA)
-      function cargarTools() {
-        if (window.ZhakyzTools) return Promise.resolve(window.ZhakyzTools);
-        if (window.ZhakyzToolsCarga) return window.ZhakyzToolsCarga;
-        var url = M.cfg.wwwroot + '/mod/page/view.php?id=' + CMID_TOOLS;
-        window.ZhakyzToolsCarga = fetch(url, { credentials: 'same-origin' })
-          .then(function(r) {
-            if (!r.ok) throw new Error('La Página Tools respondió HTTP ' + r.status + '.');
-            return r.text();
-          })
-          .then(function(html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var biblioteca = doc.querySelector('script[type="text/plain"][data-zk-biblioteca="tools"]');
-            if (!biblioteca) throw new Error('La Página Tools no contiene la biblioteca.');
-            var s = document.createElement('script');
-            s.setAttribute('data-base', url);
-            s.textContent = biblioteca.textContent;
-            document.head.appendChild(s);
-            if (!window.ZhakyzTools || typeof window.ZhakyzTools.LeerBase !== 'function') throw new Error('La biblioteca de Tools no se pudo ejecutar.');
-            return window.ZhakyzTools;
-          });
-        window.ZhakyzToolsCarga.catch(function() { window.ZhakyzToolsCarga = null; });
-        return window.ZhakyzToolsCarga;
+      // ---------------------------------------------------------
+      // COPIA DE TOOLS: INICIO (bloque idéntico en section/tablero_estudiantes y section/detalle_estudiante)
+      // ---------------------------------------------------------
+      // LeerBase y la regla de PeriodoVigente de section/utils/tools, copiadas para no esperar la carga de la Página Tools (0,4 a 2,4 s)
+      // antes de leer las bases. Si cambian en Tools, actualizar este bloque en las DOS secciones y correr
+      // `node .skills/publicar-seccion/verificar_copias_tools.js` (ver RULES.md, "Código copiado de Tools"). Necesita DATAID_PERIODOS.
+      var LEER_BASE_MAXIMO = 20000;
+      // El período vigente se guarda 12 horas (localStorage; no es un dato personal) y lo comparten el Tablero y el Detalle
+      var CLAVE_PERIODO_GUARDADO = 'zk-periodo-vigente';
+      var VIGENCIA_PERIODO = 12 * 60 * 60 * 1000;
+
+      // TEXTO DE UNA CELDA, CON LOS SALTOS DE LÍNEA DE LOS <br> Y DE LOS PÁRRAFOS
+      function textoCelda(el) {
+        var c = el.cloneNode(true);
+        c.querySelectorAll('br').forEach(function(br) { br.replaceWith('\n'); });
+        c.querySelectorAll('p, div').forEach(function(x) { x.append('\n'); });
+        return c.textContent.replace(/ +\n/g, '\n').trim();
       }
+
+      // rid DE UNA ENTRADA: data-rid, o el de un enlace de la entrada (Mostrar más, Editar o Borrar)
+      function ridDe(el) {
+        if (el.getAttribute('data-rid')) return el.getAttribute('data-rid');
+        var a = el.querySelector('a[href*="rid="], a[href*="delete="]');
+        var m = a ? (a.getAttribute('href') || '').match(/[?&](?:rid|delete)=(\d+)/) : null;
+        return m ? m[1] : null;
+      }
+
+      // ENTRADAS DE UNA PÁGINA DEL LISTADO: { formato, entradas: [{ rid, campos, alta }] }
+      function entradasDePagina(doc, o) {
+        var zona = doc.querySelector('#region-main') || doc.querySelector('[role="main"]') || doc.body;
+        var lista = function(nodos, leer) { return Array.prototype.map.call(nodos, leer); };
+        if (o.filas) {
+          return { formato: 'columnas', entradas: lista(zona.querySelectorAll(o.filas), function(f) {
+            var campos = {};
+            var celdas = f.querySelectorAll(':scope > td');
+            o.columnas.forEach(function(nombre, i) { if (nombre && celdas[i]) campos[nombre] = textoCelda(celdas[i]); });
+            return { rid: ridDe(f), campos: campos };
+          }) };
+        }
+        var propias = zona.querySelectorAll('.zk-registro');
+        if (propias.length) {
+          return { formato: 'propio', entradas: lista(propias, function(f) {
+            var campos = {};
+            f.querySelectorAll('[data-campo]').forEach(function(c) { campos[c.getAttribute('data-campo')] = textoCelda(c); });
+            var e = { rid: ridDe(f), campos: campos };
+            if (f.hasAttribute('data-alta')) e.alta = Number(f.getAttribute('data-alta')) || f.getAttribute('data-alta');
+            return e;
+          }) };
+        }
+        var defecto = zona.querySelectorAll('.defaulttemplate-listentry');
+        return { formato: defecto.length ? 'defecto' : null, entradas: lista(defecto, function(e) {
+          var campos = {};
+          e.querySelectorAll('.defaulttemplate-list-body .row').forEach(function(fila) {
+            if (fila.children.length >= 2) campos[fila.children[0].textContent.trim()] = textoCelda(fila.children[1]);
+          });
+          return { rid: ridDe(e), campos: campos };
+        }) };
+      }
+
+      // ÚLTIMA PÁGINA ENLAZADA EN LA BARRA DE PÁGINAS (null SI NO HAY BARRA)
+      function ultimaEnlazada(doc) {
+        var nums = [];
+        doc.querySelectorAll('.pagination a[href], .paging a[href]').forEach(function(a) {
+          var m = (a.getAttribute('href') || '').match(/[?&]page=(\d+)/);
+          if (m) nums.push(Number(m[1]));
+        });
+        return nums.length ? Math.max.apply(null, nums) : null;
+      }
+
+      // ERROR DE LA PÁGINA: SESIÓN VENCIDA O SIN PERMISO PARA VER LA BASE (null SI LA PÁGINA ES EL LISTADO)
+      function errorDePagina(r, doc) {
+        if (/\/login\/index\.php/.test(r.url || '') || doc.querySelector('form#login')) return 'La sesión de Moodle venció: hay que volver a entrar.';
+        var e = doc.querySelector('.errorbox .errormessage, .errormessage');
+        return e ? 'Moodle no muestra la base: ' + e.textContent.trim() : null;
+      }
+
+      // { dataid, porPagina, filas, columnas, filtro } → Promise de { entradas: [{ rid, campos, alta }], completa }.
+      // Como LeerBase con paralelo = 1: página por página, sin repetir entradas ni pasar de la última página de la barra
+      function leerBaseMoodle(o) {
+        if (!o.dataid) return Promise.reject(new Error('Falta el dataid de la base.'));
+        var porPagina = Math.max(1, Math.floor(o.porPagina || 500));
+        var tope = Math.ceil(LEER_BASE_MAXIMO / porPagina) + 1;
+        var resultado = { entradas: [], completa: true };
+        var vistos = {}, leidas = 0;
+        function pedir(n) {
+          var url = M.cfg.wwwroot + '/mod/data/view.php?d=' + o.dataid + '&perpage=' + porPagina + '&page=' + n;
+          return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió HTTP ' + r.status + ' en la página ' + (n + 1) + ' de la base.');
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var error = errorDePagina(r, doc);
+              if (error) throw new Error(error);
+              var p = entradasDePagina(doc, o);
+              p.ultima = ultimaEnlazada(doc);
+              return p;
+            });
+          });
+        }
+        function desde(n) {
+          return pedir(n).then(function(p) {
+            p.entradas.forEach(function(e) {
+              if (e.rid && vistos[e.rid]) return;
+              if (e.rid) vistos[e.rid] = true;
+              leidas++;
+              if (leidas <= LEER_BASE_MAXIMO && (!o.filtro || o.filtro(e))) resultado.entradas.push(e);
+            });
+            var hayMas = p.entradas.length === porPagina && (p.ultima === null || p.ultima > n);
+            if (!hayMas) return resultado;
+            if (leidas >= LEER_BASE_MAXIMO || n + 1 >= tope) { resultado.completa = false; return resultado; }
+            return desde(n + 1);
+          });
+        }
+        return desde(0);
+      }
+
+      // PERÍODO GUARDADO (null SI NO HAY O TIENE MÁS DE 12 HORAS)
+      function periodoGuardado() {
+        try {
+          var g = JSON.parse(window.localStorage.getItem(CLAVE_PERIODO_GUARDADO) || 'null');
+          return g && /^\d{4}-[12]$/.test(String(g.periodo)) && Date.now() - (Number(g.guardado_en) || 0) < VIGENCIA_PERIODO ? g : null;
+        } catch (e) { return null; }
+      }
+
+      // PERÍODO VIGENTE DE LA BASE PERÍODOS: la entrada válida de rid mayor (regla de PeriodoVigente). Lo guarda al leerlo.
+      // Si la lectura falla, devuelve el último guardado aunque tenga más de 12 horas, o null (el período por defecto)
+      function leerPeriodoVigente() {
+        return leerBaseMoodle({ dataid: DATAID_PERIODOS, porPagina: 500 }).then(function(r) {
+          var validos = r.entradas.filter(function(e) { return /^\d{4}-[12]$/.test(String(e.campos.periodo || '').trim()); })
+            .sort(function(a, b) { return (Number(a.rid) || 0) - (Number(b.rid) || 0); });
+          if (!validos.length) throw new Error('La base Períodos no tiene ningún período con el formato AAAA-n.');
+          var p = { periodo: String(validos[validos.length - 1].campos.periodo).trim(), guardado_en: Date.now() };
+          try { window.localStorage.setItem(CLAVE_PERIODO_GUARDADO, JSON.stringify(p)); } catch (e) { /* sin almacenamiento */ }
+          return p;
+        }).catch(function() {
+          try { return JSON.parse(window.localStorage.getItem(CLAVE_PERIODO_GUARDADO) || 'null'); } catch (e) { return null; }
+        });
+      }
+      // ---------------------------------------------------------
+      // COPIA DE TOOLS: FIN
+      // ---------------------------------------------------------
 
       // ESPERA UNA PROMESA COMO MUCHO "ms": UNA BASE QUE NO RESPONDE NO DEJA LA PÁGINA CARGANDO PARA SIEMPRE
       function conLimite(promesa, ms, que) {
@@ -469,8 +608,8 @@
 
       // ENTRADAS DE UNA BASE (opciones de LeerBase) CON SUS CAMPOS COMO TEXTO, EL rid Y LA FECHA DE ALTA.
       // Si LeerBase llegó a su tope, la lista queda marcada como incompleta
-      function leerBase(Tools, nombre, opciones, espera) {
-        return conLimite(Tools.LeerBase(opciones), espera || ESPERA_BASE, 'La base ' + nombre).then(function(r) {
+      function leerBase(nombre, opciones, espera) {
+        return conLimite(leerBaseMoodle(opciones), espera || ESPERA_BASE, 'La base ' + nombre).then(function(r) {
           var lista = r.entradas.map(function(e) {
             var c = {};
             Object.keys(e.campos).forEach(function(k) { c[k] = String(e.campos[k]).trim(); });
@@ -554,7 +693,7 @@
 
       // SOLO LAS ENTRADAS DE UN ESTUDIANTE: la búsqueda de la base filtra en el servidor (con filter=1; sin eso Moodle la ignora y no
       // queda guardada en la sesión). Busca el texto en cualquier campo, así que puede traer de más: armarEstudiante vuelve a filtrar por
-      // id o DNI exacto. LeerBase arma la dirección con "d=" + dataid, así que el filtro viaja en ese valor (sirve con Tools v8 y v9).
+      // id o DNI exacto. leerBaseMoodle arma la dirección con "d=" + dataid, así que el filtro viaja en ese valor.
       // Medido en el campus el 2026-11-17: Criticidad bajó de 577 entradas en 7 a 14 s a 7 entradas en 0,8 s
       function soloDe(dataid, texto) {
         return String(dataid) + '&filter=1&search=' + encodeURIComponent(texto);
@@ -567,7 +706,7 @@
           fijarPeriodo(periodoDePrueba());
           return Promise.resolve({
             estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview()),
+            criticidad: CRITICIDAD_PRUEBA.concat(historialLargoPrueba(), asignadosPreview(), cierrePreview()),
             respuestas: RESPUESTAS_PRUEBA,
             parciales: PARCIALES_PRUEBA,
             entrevistas: ENTREVISTAS_PRUEBA,
@@ -576,13 +715,12 @@
         }
         var vacio = { estudiantes: [], criticidad: [], respuestas: [], parciales: [], entrevistas: [], encuestas: [] };
         if (!idUsuario) return Promise.resolve(vacio);
-        var Tools;
-        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(T) {
-          Tools = T;
-          return leerPeriodo(Tools);
-        }).then(function() {
+        // Con un período guardado (lo deja el Tablero) no se espera a la base Períodos: se lee junto con lo demás
+        var guardado = periodoGuardado();
+        if (guardado) fijarPeriodo(guardado);
+        return (guardado ? Promise.resolve() : leerPeriodo()).then(function() {
           // Primero su información personal: de ahí sale el DNI, que identifica sus notas y sus entrevistas
-          return leerBase(Tools, 'Estudiantes', { dataid: soloDe(DATAID_ESTUDIANTES, idUsuario), porPagina: POR_PAGINA });
+          return leerBase('Estudiantes', { dataid: soloDe(DATAID_ESTUDIANTES, idUsuario), porPagina: POR_PAGINA });
         }).then(function(estudiantes) {
           var info = estudiantes.filter(function(e) { return String(e.id_usuario) === String(idUsuario); })[0];
           if (!info) return Object.assign({}, vacio, { estudiantes: estudiantes }); // sin información personal no se muestra
@@ -590,12 +728,12 @@
           // Las notas y las entrevistas solo completan la cronología: si no se leen (o tardan), el detalle sigue sin ellas
           var opcional = function(p) { return p.catch(function() { return []; }); };
           return Promise.all([
-            leerBase(Tools, 'Criticidad', { dataid: soloDe(DATAID_CRITICIDAD, idUsuario), porPagina: POR_PAGINA }),
-            leerBase(Tools, 'Respuestas', { dataid: soloDe(DATAID_RESPUESTAS, idUsuario), porPagina: POR_PAGINA }),
-            DATAID_PARCIALES && dni ? opcional(leerBase(Tools, 'CargaParcialesPrimero', { dataid: soloDe(DATAID_PARCIALES, dni), filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES, porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
-            DATAID_ENTREVISTAS ? opcional(leerBase(Tools, 'Entrevistas', { dataid: soloDe(DATAID_ENTREVISTAS, dni || idUsuario), porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
+            leerBase('Criticidad', { dataid: soloDe(DATAID_CRITICIDAD, idUsuario), porPagina: POR_PAGINA }),
+            leerBase('Respuestas', { dataid: soloDe(DATAID_RESPUESTAS, idUsuario), porPagina: POR_PAGINA }),
+            DATAID_PARCIALES && dni ? opcional(leerBase('CargaParcialesPrimero', { dataid: soloDe(DATAID_PARCIALES, dni), filas: FILAS_PARCIALES, columnas: COLUMNAS_PARCIALES, porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
+            DATAID_ENTREVISTAS ? opcional(leerBase('Entrevistas', { dataid: soloDe(DATAID_ENTREVISTAS, dni || idUsuario), porPagina: POR_PAGINA }, ESPERA_OPCIONAL)) : [],
             // Textos de las preguntas para el detalle de cada encuesta (una entrada por versión: se lee entera)
-            DATAID_ENCUESTAS ? opcional(leerBase(Tools, 'Encuestas', { dataid: DATAID_ENCUESTAS }, ESPERA_OPCIONAL)) : []
+            DATAID_ENCUESTAS ? opcional(leerBase('Encuestas', { dataid: DATAID_ENCUESTAS }, ESPERA_OPCIONAL)) : []
           ]).then(function(r) {
             return { estudiantes: estudiantes, criticidad: r[0], respuestas: r[1], parciales: r[2], entrevistas: r[3], encuestas: r[4] };
           });
@@ -904,14 +1042,14 @@
           var verDetalle = i.respuesta && respuestaPorRid(i.respuesta)
             ? '<div data-ver-respuesta="' + escapar(i.respuesta) + '" role="button" tabindex="0" style="display: inline-flex !important; align-items: center !important; gap: 4px !important; margin-top: 4px !important; color: #026bd4 !important; font-size: 13px !important; font-weight: 500 !important; cursor: pointer !important;">' + icono('ver', 16) + 'Ver detalle</div>'
             : '';
-          return '<div data-item-cronologia="' + i.grupo + '"' + (i.ref ? ' data-ref="' + escapar(i.ref) + '"' : '') + ' style="display: flex !important; gap: 12px !important; padding: 10px 8px !important; margin: 0 -8px !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 6px !important; transition: background-color 0.2s ease, box-shadow 0.2s ease !important;">' +
+          return '<div data-item-cronologia="' + i.grupo + '"' + (i.ref ? ' data-ref="' + escapar(i.ref) + '"' : '') + ' style="display: flex !important; gap: 12px !important; padding: 10px 8px !important; margin: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 6px !important; transition: background-color 0.2s ease, box-shadow 0.2s ease !important;">' +
             '<span style="width: 32px !important; height: 32px !important; border-radius: 8px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 auto !important;">' + icono(ACTIVIDADES[i.grupo].icono, 18) + '</span>' +
             '<div style="flex: 1 1 auto !important; min-width: 0 !important;">' +
             '<div style="display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px 8px !important;"><span style="font-weight: 500 !important;">' + escapar(i.titulo) + '</span>' + i.extra.join('') + '</div>' +
             (i.texto ? '<div style="overflow-wrap: anywhere !important;">' + escapar(i.texto) + '</div>' : '') + verDetalle + '</div>' +
             '<div style="flex: 0 0 auto !important; font-size: 12px !important; color: #47536b !important; font-variant-numeric: tabular-nums !important;">' + (i.t ? fechaDeTiempo(i.t) : '—') + '</div></div>';
         }).join('');
-        return filtros + (lista || '<div style="color: #47536b !important;">Sin actividades de este tipo.</div>');
+        return filtros + '<div style="max-height: 420px !important; overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior: contain !important; min-width: 0 !important;">' + (lista || '<div style="color: #47536b !important;">Sin actividades de este tipo.</div>') + '</div>';
       }
 
 
@@ -1069,9 +1207,9 @@
         });
         cambios.sort(function(a, b) { return b.t - a.t; });
         if (!cambios.length) return '<div style="color: #47536b !important;">Sin cambios de estado.</div>';
-        var th = 'border: 0 !important; height: 44px !important; text-align: left !important; padding: 0 8px !important; font-size: 13px !important; font-weight: 500 !important; color: #47536b !important; background-color: #f5f6fa !important;';
+        var th = 'border: 0 !important; height: 44px !important; text-align: left !important; padding: 0 8px !important; font-size: 13px !important; font-weight: 500 !important; color: #47536b !important; background-color: #f5f6fa !important; position: sticky !important; top: 0 !important; z-index: 1 !important;';
         var td = 'border: 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 8px !important; vertical-align: top !important;';
-        return '<div style="overflow-x: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;"><table style="width: 100% !important; border-collapse: collapse !important; min-width: 560px !important; margin: 0 !important; font-size: 13px !important;">' +
+        return '<div style="overflow: auto !important; max-height: 420px !important; overscroll-behavior: contain !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;"><table style="width: 100% !important; border-collapse: collapse !important; min-width: 560px !important; margin: 0 !important; font-size: 13px !important;">' +
           '<thead><tr><th style="' + th + ' padding-left: 12px !important;">Fecha</th><th style="' + th + '">Origen</th><th style="' + th + '">Cambio</th><th style="' + th + '">Quién y por qué</th></tr></thead><tbody>' +
           cambios.map(function(c) {
             var cambio = c.quitado ? '<span style="font-weight: 500 !important;">Quitado</span>' :
@@ -1133,7 +1271,7 @@
         }
         cont.innerHTML =
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 16px !important; align-items: flex-start !important;">' +
-          '<div style="flex: 1 1 240px !important; max-width: 300px !important; min-width: 0 !important;">' + columnaPerfil() + '</div>' +
+          '<div style="flex: 1 1 240px !important; max-width: 300px !important; min-width: 0 !important; position: sticky !important; top: 72px !important; align-self: flex-start !important;">' + columnaPerfil() + '</div>' +
           '<div style="flex: 999 1 420px !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; gap: 16px !important;">' +
           resumen() +
           tarjeta('Evolución de la criticidad <span style="font-weight: 400 !important; color: #47536b !important;">(0 sin riesgo · 100 máximo riesgo)</span>', '<div id="contenedor-grafico"></div>') +
@@ -1344,7 +1482,7 @@
           datos = d;
           if (incompletas.length) {
             $('txt-aviso-detalle').innerHTML = '<b style="font-weight: 600 !important;">Lectura incompleta.</b> ' + escapar(incompletas.join(', ')) +
-              ': la base tiene más entradas que las que lee la Página Tools, así que puede faltar parte de la trayectoria.';
+              ': la base tiene más entradas que las que lee el Detalle, así que puede faltar parte de la trayectoria.';
             $('aviso-datos-detalle').style.setProperty('display', 'flex', 'important');
           }
           mostrarUsuario();

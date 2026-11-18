@@ -78,3 +78,13 @@ La búsqueda encuentra el texto en cualquier campo y puede traer de más; el det
 
 - Detectar el rol en Moodle (por grupos) y no aceptar asignaciones manuales de fuera del equipo: ver los [pendientes del tablero](tablero-estudiantes.md#pendientes).
 - Los mismos pendientes de privacidad y de la omisión que el [tablero](tablero-estudiantes.md#pendientes).
+
+## Scroll (2026-11-18)
+
+- La columna del perfil (foto, datos y estado vigente) queda fija al bajar (`position: sticky`, 72 px debajo de la barra de Moodle).
+- Trayectoria y el Historial de cambios de estado tienen scroll propio (hasta 420 px); los filtros de Trayectoria y el encabezado del Historial quedan fijos.
+- Vista previa con mucho historial: `content.html?historial=largo#usuario=3773`.
+
+## Lectura sin Tools (2026-11-18)
+
+El Detalle no carga la Página Tools: lee las bases con el bloque `COPIA DE TOOLS`, idéntico al del Tablero (ver RULES.md, «Código copiado de Tools»). Si hay un período guardado de menos de 12 horas (`zk-periodo-vigente`, lo deja el Tablero), no lee la base Períodos.
