@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Tablero de Criticidad" (cmid 60287) · 2026-11-18 -->
 <!-- SECCIÓN: TABLERO DE CRITICIDAD (ROLES ADM, GES, TUT) · "VER DETALLE" ABRE detalle_estudiante -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- DATOS: bases Estudiantes (lista de estudiantes) y Criticidad (calculado y asignado, ADR-007). No lee Respuestas: desde que se borró la Encuesta Inicial (ADR-008), toda entrada de Criticidad con fuente respuestas es de la Cuatrimestral. Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
+<!-- DATOS: bases Estudiantes (lista de estudiantes y, desde el ADR-011, el estado actual: la última entrada de cada fuente) y Criticidad (con el estado actual, solo los estados asignados; sin él, todo: ADR-007). No lee Respuestas: desde que se borró la Encuesta Inicial (ADR-008), toda entrada de Criticidad con fuente respuestas es de la Cuatrimestral. Muestra por separado la criticidad de los parciales y la de la Encuesta Cuatrimestral (ADR-010); el calculado es la del año de la carrera: parciales en 1.er año, Cuatrimestral desde 2.º año (docs/specs/tablero-estudiantes.md) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="tablero-estudiantes"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 960px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -518,26 +518,81 @@
       // ---------------------------------------------------------
       var usaPrueba = ES_VISTA_LOCAL || !window.M || !DATAID_ESTUDIANTES || !DATAID_CRITICIDAD;
 
+      // ESTADO ACTUAL (ADR-011): la base Estudiantes guarda, junto a los datos de cada estudiante, la última entrada automática de cada
+      // fuente (parciales y encuesta). Con esos campos el Tablero no lee todo Criticidad: arma esas dos entradas desde Estudiantes y de
+      // Criticidad lee solo los estados asignados, filtrados en el servidor. Sin esos campos en la base, lee Criticidad como antes
+      var GRUPO_ESTADO = { notas_1ro: 'parciales', materias: 'parciales', respuestas: 'encuesta', omision: 'encuesta' };
+
+      function tieneEstadoActual(estudiantes) {
+        return estudiantes.some(function(e) { return 'encuesta_fecha' in e; });
+      }
+
+      // ENTRADAS AUTOMÁTICAS QUE REPRESENTA EL ESTADO ACTUAL DE UN ESTUDIANTE (LAS MISMAS REGLAS DE criticidadDe SE APLICAN SOBRE ELLAS)
+      function entradasDeEstado(e) {
+        var lista = [];
+        if (String(e.parciales_indice || '').trim() !== '') {
+          lista.push({ id_usuario: e.id_usuario, dni: e.dni, origen: 'automatica', fuente: 'notas_1ro', periodo: e.parciales_periodo,
+            indice: e.parciales_indice, created_at: e.parciales_fecha, rid: Number(e.parciales_rid) || null, motivo: '' });
+        }
+        if (String(e.encuesta_indice || '').trim() !== '') {
+          lista.push({ id_usuario: e.id_usuario, dni: e.dni, origen: 'automatica', fuente: e.encuesta_fuente === 'omision' ? 'omision' : 'respuestas',
+            periodo: e.encuesta_periodo, indice: e.encuesta_indice, created_at: e.encuesta_fecha, rid: Number(e.encuesta_rid) || null, motivo: '' });
+        }
+        return lista;
+      }
+
+      // VISTA PREVIA: EL ESTADO ACTUAL QUE GUARDARÍA RecalcularEstadoActual DE TOOLS (LA ÚLTIMA ENTRADA AUTOMÁTICA DE CADA FUENTE)
+      function conEstadoActual(estudiantes, criticidad) {
+        return estudiantes.map(function(e) {
+          var ultimas = {};
+          criticidad.forEach(function(c) {
+            var g = GRUPO_ESTADO[c.fuente];
+            if (!g || c.origen !== 'automatica' || String(c.id_usuario) !== String(e.id_usuario) || numero(c.indice) === null) return;
+            var a = ultimas[g];
+            if (!a || tiempoDe(c) > tiempoDe(a) || (tiempoDe(c) === tiempoDe(a) && (Number(c.rid) || 0) > (Number(a.rid) || 0))) ultimas[g] = c;
+          });
+          var p = ultimas.parciales, q = ultimas.encuesta;
+          return Object.assign({}, e, {
+            parciales_indice: p ? String(numero(p.indice)) : '', parciales_periodo: p ? p.periodo : '', parciales_fecha: p ? p.created_at : '', parciales_rid: p ? String(p.rid) : '',
+            encuesta_indice: q ? String(numero(q.indice)) : '', encuesta_periodo: q ? q.periodo : '', encuesta_fecha: q ? q.created_at : '',
+            encuesta_fuente: q ? q.fuente : '', encuesta_rid: q ? String(q.rid) : ''
+          });
+        });
+      }
+
+      function datosDePrueba() {
+        var todas = CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview());
+        return {
+          estudiantes: conEstadoActual(ESTUDIANTES_PRUEBA, todas),
+          criticidad: todas.filter(function(c) { return c.origen === 'manual'; }),
+          estadoActual: true
+        };
+      }
+
       function cargarDatos() {
         if (usaPrueba) {
           $('aviso-datos-ejemplo').style.setProperty('display', 'flex', 'important');
           if (!ES_VISTA_LOCAL) $('txt-aviso-datos').innerHTML = '<b style="font-weight: 600 !important;">Datos de prueba.</b> Falta configurar alguna de las bases (Estudiantes o Criticidad) en este script.';
           fijarPeriodo(periodoDePrueba());
-          return Promise.resolve({
-            estudiantes: ESTUDIANTES_PRUEBA,
-            criticidad: CRITICIDAD_PRUEBA.concat(asignadosPreview(), cierrePreview())
-          });
+          return Promise.resolve(datosDePrueba());
         }
-        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(Tools) {
+        var Tools;
+        return conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(T) {
+          Tools = T;
           // El período va primero: el filtro de Criticidad lo usa mientras lee
-          return leerPeriodo(Tools).then(function() { return Tools; });
-        }).then(function(Tools) {
-          return Promise.all([
-            leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA }),
-            leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA })
-          ]);
-        }).then(function(r) {
-          return { estudiantes: r[0], criticidad: r[1] };
+          return leerPeriodo(Tools);
+        }).then(function() {
+          return leerBase(Tools, 'Estudiantes', { dataid: DATAID_ESTUDIANTES, porPagina: POR_PAGINA });
+        }).then(function(estudiantes) {
+          if (tieneEstadoActual(estudiantes)) {
+            // Solo los estados asignados: la búsqueda filtra en el servidor (filter=1; sin eso Moodle la ignora) y LeerBase arma la
+            // dirección con "d=" + dataid, así que el filtro viaja en ese valor. "manual" puede aparecer en otro campo: se vuelve a filtrar
+            return leerBase(Tools, 'Criticidad', { dataid: String(DATAID_CRITICIDAD) + '&filter=1&search=manual', porPagina: POR_PAGINA,
+              filtro: function(e) { return String((e.campos || {}).origen || '').trim() === 'manual'; } })
+              .then(function(criticidad) { return { estudiantes: estudiantes, criticidad: criticidad, estadoActual: true }; });
+          }
+          return leerBase(Tools, 'Criticidad', { dataid: DATAID_CRITICIDAD, filtro: entradaUtilCriticidad, porPagina: POR_PAGINA })
+            .then(function(criticidad) { return { estudiantes: estudiantes, criticidad: criticidad, estadoActual: false }; });
         });
       }
 
@@ -567,7 +622,8 @@
         var ids = Object.keys(estudiantes);
         filas = ids.map(function(id) {
           var e = estudiantes[id] || null;
-          var entradas = porUsuario[id] || [];
+          // Con el estado actual, las entradas automáticas salen de Estudiantes y de Criticidad solo llegan las manuales
+          var entradas = (porUsuario[id] || []).concat(datos.estadoActual && e ? entradasDeEstado(e) : []);
           var tieneNotas = entradas.some(function(c) { return tipoDeEntrada(c) === 'notas'; });
           // Sin información personal no se sabe el tramo: con notas cargadas se toma 1.er año
           var tramo = e ? (e.es_primer_anio === 'si' ? 'primero' : 'superior') : (tieneNotas ? 'primero' : 'superior');
@@ -897,7 +953,7 @@
         escribirAlmacen(CLAVE_PREVIEW_PERIODOS, null);
         fijarPeriodo(periodoDePrueba());
         $('txt-periodo-tablero').textContent = PERIODO_ACTUAL;
-        datos.criticidad = CRITICIDAD_PRUEBA.slice();
+        datos = datosDePrueba();
         procesar();
         renderizarTodo();
       }
