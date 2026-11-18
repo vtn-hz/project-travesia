@@ -1,0 +1,5843 @@
+{
+ "descripcion": "Entradas de data/prueba creadas en Moodle: ref → { base, rid }. Lo escribe aplicar.js y lo vacía remover.js.",
+ "entradas": {
+  "EST-001": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24265
+  },
+  "EST-002": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24266
+  },
+  "EST-004": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24267
+  },
+  "EST-005": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24268
+  },
+  "EST-003": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24269
+  },
+  "EST-006": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24270
+  },
+  "EST-008": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24271
+  },
+  "EST-009": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24273
+  },
+  "EST-007": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24272
+  },
+  "EST-010": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24274
+  },
+  "EST-012": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24276
+  },
+  "EST-011": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24275
+  },
+  "EST-013": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24277
+  },
+  "EST-015": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24279
+  },
+  "EST-014": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24278
+  },
+  "EST-016": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24280
+  },
+  "EST-018": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24282
+  },
+  "EST-017": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24281
+  },
+  "EST-021": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24285
+  },
+  "EST-020": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24284
+  },
+  "EST-019": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24283
+  },
+  "EST-023": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24287
+  },
+  "EST-022": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24286
+  },
+  "EST-024": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24288
+  },
+  "EST-025": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24289
+  },
+  "EST-026": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24290
+  },
+  "EST-027": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24291
+  },
+  "EST-028": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24292
+  },
+  "EST-030": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24294
+  },
+  "EST-029": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24293
+  },
+  "EST-031": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24295
+  },
+  "EST-032": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24296
+  },
+  "EST-033": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24297
+  },
+  "EST-035": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24299
+  },
+  "EST-034": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24298
+  },
+  "EST-037": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24301
+  },
+  "EST-038": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24302
+  },
+  "EST-036": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24300
+  },
+  "EST-039": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24303
+  },
+  "EST-041": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24305
+  },
+  "EST-040": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24304
+  },
+  "EST-043": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24307
+  },
+  "EST-042": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24306
+  },
+  "EST-044": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24308
+  },
+  "EST-045": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24309
+  },
+  "EST-046": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24310
+  },
+  "EST-047": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24311
+  },
+  "EST-048": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24312
+  },
+  "EST-049": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24313
+  },
+  "EST-050": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24314
+  },
+  "EST-052": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24316
+  },
+  "EST-051": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24315
+  },
+  "EST-054": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24318
+  },
+  "EST-053": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24317
+  },
+  "EST-055": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24319
+  },
+  "EST-056": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24320
+  },
+  "EST-057": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24321
+  },
+  "EST-058": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24322
+  },
+  "EST-060": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24324
+  },
+  "EST-059": {
+   "base": "estudiantes",
+   "dataid": 206,
+   "rid": 24323
+  },
+  "RES-0001": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24325
+  },
+  "RES-0004": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24326
+  },
+  "RES-0002": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24327
+  },
+  "RES-0003": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24328
+  },
+  "RES-0007": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24331
+  },
+  "RES-0006": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24330
+  },
+  "RES-0005": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24329
+  },
+  "RES-0009": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24333
+  },
+  "RES-0008": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24332
+  },
+  "RES-0011": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24335
+  },
+  "RES-0010": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24334
+  },
+  "RES-0012": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24336
+  },
+  "RES-0013": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24337
+  },
+  "RES-0015": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24339
+  },
+  "RES-0014": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24338
+  },
+  "RES-0016": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24340
+  },
+  "RES-0017": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24341
+  },
+  "RES-0018": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24342
+  },
+  "RES-0019": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24343
+  },
+  "RES-0020": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24344
+  },
+  "RES-0022": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24346
+  },
+  "RES-0021": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24345
+  },
+  "RES-0023": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24347
+  },
+  "RES-0024": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24348
+  },
+  "RES-0025": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24349
+  },
+  "RES-0026": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24350
+  },
+  "RES-0027": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24351
+  },
+  "RES-0029": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24353
+  },
+  "RES-0030": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24354
+  },
+  "RES-0032": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24356
+  },
+  "RES-0031": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24355
+  },
+  "RES-0028": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24352
+  },
+  "RES-0034": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24358
+  },
+  "RES-0033": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24357
+  },
+  "RES-0035": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24359
+  },
+  "RES-0037": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24361
+  },
+  "RES-0038": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24362
+  },
+  "RES-0036": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24360
+  },
+  "RES-0041": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24365
+  },
+  "RES-0039": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24363
+  },
+  "RES-0040": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24364
+  },
+  "RES-0042": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24366
+  },
+  "RES-0044": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24368
+  },
+  "RES-0043": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24367
+  },
+  "RES-0045": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24369
+  },
+  "RES-0047": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24371
+  },
+  "RES-0046": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24370
+  },
+  "RES-0048": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24372
+  },
+  "RES-0049": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24373
+  },
+  "RES-0050": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24374
+  },
+  "RES-0051": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24375
+  },
+  "RES-0053": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24377
+  },
+  "RES-0052": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24376
+  },
+  "RES-0054": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24378
+  },
+  "RES-0056": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24380
+  },
+  "RES-0055": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24379
+  },
+  "RES-0057": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24381
+  },
+  "RES-0058": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24382
+  },
+  "RES-0059": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24383
+  },
+  "RES-0060": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24384
+  },
+  "RES-0061": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24385
+  },
+  "RES-0062": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24386
+  },
+  "RES-0064": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24388
+  },
+  "RES-0063": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24387
+  },
+  "RES-0065": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24389
+  },
+  "RES-0067": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24391
+  },
+  "RES-0066": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24390
+  },
+  "RES-0068": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24392
+  },
+  "RES-0069": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24393
+  },
+  "RES-0070": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24394
+  },
+  "RES-0071": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24395
+  },
+  "RES-0072": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24396
+  },
+  "RES-0073": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24397
+  },
+  "RES-0074": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24398
+  },
+  "RES-0075": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24399
+  },
+  "RES-0076": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24400
+  },
+  "RES-0077": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24401
+  },
+  "RES-0079": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24403
+  },
+  "RES-0078": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24402
+  },
+  "RES-0080": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24404
+  },
+  "RES-0081": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24405
+  },
+  "RES-0082": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24406
+  },
+  "RES-0083": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24407
+  },
+  "RES-0085": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24409
+  },
+  "RES-0084": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24408
+  },
+  "RES-0087": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24411
+  },
+  "RES-0086": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24410
+  },
+  "RES-0088": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24412
+  },
+  "RES-0089": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24413
+  },
+  "RES-0090": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24414
+  },
+  "RES-0091": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24415
+  },
+  "RES-0092": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24416
+  },
+  "RES-0094": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24418
+  },
+  "RES-0093": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24417
+  },
+  "RES-0095": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24419
+  },
+  "RES-0096": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24420
+  },
+  "RES-0098": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24422
+  },
+  "RES-0097": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24421
+  },
+  "RES-0099": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24423
+  },
+  "RES-0100": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24424
+  },
+  "RES-0101": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24425
+  },
+  "RES-0102": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24426
+  },
+  "RES-0103": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24427
+  },
+  "RES-0105": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24429
+  },
+  "RES-0104": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24428
+  },
+  "RES-0106": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24430
+  },
+  "RES-0108": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24432
+  },
+  "RES-0107": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24431
+  },
+  "RES-0109": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24433
+  },
+  "RES-0111": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24435
+  },
+  "RES-0112": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24436
+  },
+  "RES-0110": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24434
+  },
+  "RES-0113": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24437
+  },
+  "RES-0114": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24438
+  },
+  "RES-0115": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24439
+  },
+  "RES-0116": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24440
+  },
+  "RES-0117": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24441
+  },
+  "RES-0118": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24442
+  },
+  "RES-0119": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24443
+  },
+  "RES-0120": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24444
+  },
+  "RES-0122": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24446
+  },
+  "RES-0121": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24445
+  },
+  "RES-0123": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24447
+  },
+  "RES-0124": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24448
+  },
+  "RES-0126": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24450
+  },
+  "RES-0125": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24449
+  },
+  "RES-0127": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24451
+  },
+  "RES-0128": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24452
+  },
+  "RES-0129": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24453
+  },
+  "RES-0130": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24454
+  },
+  "RES-0131": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24455
+  },
+  "RES-0132": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24456
+  },
+  "RES-0133": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24457
+  },
+  "RES-0134": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24458
+  },
+  "RES-0135": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24459
+  },
+  "RES-0137": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24461
+  },
+  "RES-0136": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24460
+  },
+  "RES-0138": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24462
+  },
+  "RES-0139": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24463
+  },
+  "RES-0140": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24464
+  },
+  "RES-0141": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24465
+  },
+  "RES-0142": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24466
+  },
+  "RES-0144": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24468
+  },
+  "RES-0143": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24467
+  },
+  "RES-0145": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24469
+  },
+  "RES-0146": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24470
+  },
+  "RES-0147": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24471
+  },
+  "RES-0148": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24472
+  },
+  "RES-0150": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24474
+  },
+  "RES-0149": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24473
+  },
+  "RES-0151": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24475
+  },
+  "RES-0153": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24477
+  },
+  "RES-0152": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24476
+  },
+  "RES-0154": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24478
+  },
+  "RES-0155": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24479
+  },
+  "RES-0157": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24481
+  },
+  "RES-0158": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24482
+  },
+  "RES-0156": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24480
+  },
+  "RES-0159": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24483
+  },
+  "RES-0161": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24485
+  },
+  "RES-0160": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24484
+  },
+  "RES-0162": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24486
+  },
+  "RES-0163": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24487
+  },
+  "RES-0164": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24488
+  },
+  "RES-0165": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24489
+  },
+  "RES-0166": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24490
+  },
+  "RES-0167": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24491
+  },
+  "RES-0169": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24493
+  },
+  "RES-0168": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24492
+  },
+  "RES-0170": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24494
+  },
+  "RES-0171": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24495
+  },
+  "RES-0172": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24496
+  },
+  "RES-0173": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24497
+  },
+  "RES-0175": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24499
+  },
+  "RES-0174": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24498
+  },
+  "RES-0176": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24500
+  },
+  "RES-0177": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24501
+  },
+  "RES-0178": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24502
+  },
+  "RES-0179": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24503
+  },
+  "RES-0180": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24504
+  },
+  "RES-0181": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24505
+  },
+  "RES-0182": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24506
+  },
+  "RES-0183": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24507
+  },
+  "RES-0184": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24508
+  },
+  "RES-0185": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24509
+  },
+  "RES-0186": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24510
+  },
+  "RES-0187": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24511
+  },
+  "RES-0188": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24512
+  },
+  "RES-0189": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24513
+  },
+  "RES-0191": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24515
+  },
+  "RES-0192": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24516
+  },
+  "RES-0190": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24514
+  },
+  "RES-0193": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24517
+  },
+  "RES-0194": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24518
+  },
+  "RES-0195": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24519
+  },
+  "RES-0196": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24520
+  },
+  "RES-0197": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24521
+  },
+  "RES-0198": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24522
+  },
+  "RES-0199": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24523
+  },
+  "RES-0200": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24524
+  },
+  "RES-0202": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24526
+  },
+  "RES-0201": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24525
+  },
+  "RES-0203": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24527
+  },
+  "RES-0204": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24528
+  },
+  "RES-0205": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24529
+  },
+  "RES-0206": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24530
+  },
+  "RES-0207": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24531
+  },
+  "RES-0208": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24532
+  },
+  "RES-0209": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24533
+  },
+  "RES-0210": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24534
+  },
+  "RES-0211": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24535
+  },
+  "RES-0212": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24536
+  },
+  "RES-0213": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24537
+  },
+  "RES-0214": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24538
+  },
+  "RES-0216": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24540
+  },
+  "RES-0217": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24541
+  },
+  "RES-0215": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24539
+  },
+  "RES-0218": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24542
+  },
+  "RES-0219": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24543
+  },
+  "RES-0220": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24544
+  },
+  "RES-0221": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24545
+  },
+  "RES-0222": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24546
+  },
+  "RES-0223": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24547
+  },
+  "RES-0224": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24548
+  },
+  "RES-0225": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24549
+  },
+  "RES-0226": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24550
+  },
+  "RES-0227": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24551
+  },
+  "RES-0228": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24552
+  },
+  "RES-0229": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24553
+  },
+  "RES-0231": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24555
+  },
+  "RES-0230": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24554
+  },
+  "RES-0232": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24556
+  },
+  "RES-0233": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24557
+  },
+  "RES-0234": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24558
+  },
+  "RES-0235": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24559
+  },
+  "RES-0236": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24560
+  },
+  "RES-0238": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24562
+  },
+  "RES-0237": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24561
+  },
+  "RES-0239": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24563
+  },
+  "RES-0240": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24564
+  },
+  "RES-0241": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24565
+  },
+  "RES-0242": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24566
+  },
+  "RES-0244": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24568
+  },
+  "RES-0243": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24567
+  },
+  "RES-0245": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24569
+  },
+  "RES-0247": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24571
+  },
+  "RES-0246": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24570
+  },
+  "RES-0248": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24572
+  },
+  "RES-0249": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24573
+  },
+  "RES-0250": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24574
+  },
+  "RES-0251": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24575
+  },
+  "RES-0252": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24576
+  },
+  "RES-0253": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24577
+  },
+  "RES-0254": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24578
+  },
+  "RES-0255": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24579
+  },
+  "RES-0256": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24580
+  },
+  "RES-0257": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24581
+  },
+  "RES-0258": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24582
+  },
+  "RES-0259": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24583
+  },
+  "RES-0260": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24584
+  },
+  "RES-0261": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24585
+  },
+  "RES-0262": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24586
+  },
+  "RES-0263": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24587
+  },
+  "RES-0265": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24589
+  },
+  "RES-0264": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24588
+  },
+  "RES-0266": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24590
+  },
+  "RES-0267": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24591
+  },
+  "RES-0268": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24592
+  },
+  "RES-0269": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24593
+  },
+  "RES-0270": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24594
+  },
+  "RES-0271": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24595
+  },
+  "RES-0272": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24596
+  },
+  "RES-0274": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24598
+  },
+  "RES-0273": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24597
+  },
+  "RES-0275": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24599
+  },
+  "RES-0277": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24601
+  },
+  "RES-0276": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24600
+  },
+  "RES-0278": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24602
+  },
+  "RES-0279": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24603
+  },
+  "RES-0280": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24604
+  },
+  "RES-0281": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24605
+  },
+  "RES-0282": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24606
+  },
+  "RES-0283": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24607
+  },
+  "RES-0284": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24608
+  },
+  "RES-0285": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24609
+  },
+  "RES-0288": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24612
+  },
+  "RES-0286": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24610
+  },
+  "RES-0287": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24611
+  },
+  "RES-0290": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24614
+  },
+  "RES-0289": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24613
+  },
+  "RES-0291": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24615
+  },
+  "RES-0292": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24616
+  },
+  "RES-0293": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24617
+  },
+  "RES-0294": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24618
+  },
+  "RES-0296": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24620
+  },
+  "RES-0297": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24621
+  },
+  "RES-0295": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24619
+  },
+  "RES-0298": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24622
+  },
+  "RES-0299": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24623
+  },
+  "RES-0300": {
+   "base": "respuestas",
+   "dataid": 166,
+   "rid": 24624
+  },
+  "PAR-0003": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24625
+  },
+  "PAR-0001": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24626
+  },
+  "PAR-0004": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24628
+  },
+  "PAR-0002": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24627
+  },
+  "PAR-0005": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24629
+  },
+  "PAR-0006": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24630
+  },
+  "PAR-0007": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24631
+  },
+  "PAR-0008": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24632
+  },
+  "PAR-0009": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24633
+  },
+  "PAR-0011": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24635
+  },
+  "PAR-0010": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24634
+  },
+  "PAR-0012": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24636
+  },
+  "PAR-0013": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24637
+  },
+  "PAR-0015": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24639
+  },
+  "PAR-0016": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24640
+  },
+  "PAR-0017": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24641
+  },
+  "PAR-0018": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24642
+  },
+  "PAR-0014": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24638
+  },
+  "PAR-0019": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24643
+  },
+  "PAR-0020": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24644
+  },
+  "PAR-0021": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24645
+  },
+  "PAR-0022": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24646
+  },
+  "PAR-0023": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24647
+  },
+  "PAR-0024": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24648
+  },
+  "PAR-0025": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24649
+  },
+  "PAR-0026": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24650
+  },
+  "PAR-0028": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24652
+  },
+  "PAR-0027": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24651
+  },
+  "PAR-0029": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24653
+  },
+  "PAR-0030": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24654
+  },
+  "PAR-0031": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24655
+  },
+  "PAR-0032": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24656
+  },
+  "PAR-0033": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24657
+  },
+  "PAR-0034": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24658
+  },
+  "PAR-0036": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24660
+  },
+  "PAR-0035": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24659
+  },
+  "PAR-0037": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24661
+  },
+  "PAR-0039": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24663
+  },
+  "PAR-0038": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24662
+  },
+  "PAR-0040": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24664
+  },
+  "PAR-0042": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24665
+  },
+  "PAR-0041": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24666
+  },
+  "PAR-0043": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24667
+  },
+  "PAR-0044": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24668
+  },
+  "PAR-0046": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24670
+  },
+  "PAR-0045": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24669
+  },
+  "PAR-0048": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24672
+  },
+  "PAR-0047": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24671
+  },
+  "PAR-0049": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24673
+  },
+  "PAR-0051": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24675
+  },
+  "PAR-0050": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24674
+  },
+  "PAR-0053": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24677
+  },
+  "PAR-0052": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24676
+  },
+  "PAR-0054": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24678
+  },
+  "PAR-0055": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24679
+  },
+  "PAR-0056": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24680
+  },
+  "PAR-0057": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24681
+  },
+  "PAR-0058": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24682
+  },
+  "PAR-0059": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24683
+  },
+  "PAR-0060": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24684
+  },
+  "PAR-0061": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24685
+  },
+  "PAR-0062": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24686
+  },
+  "PAR-0063": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24687
+  },
+  "PAR-0064": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24688
+  },
+  "PAR-0065": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24689
+  },
+  "PAR-0066": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24690
+  },
+  "PAR-0067": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24691
+  },
+  "PAR-0069": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24693
+  },
+  "PAR-0070": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24694
+  },
+  "PAR-0068": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24692
+  },
+  "PAR-0071": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24695
+  },
+  "PAR-0072": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24696
+  },
+  "PAR-0073": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24697
+  },
+  "PAR-0074": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24698
+  },
+  "PAR-0075": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24699
+  },
+  "PAR-0076": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24700
+  },
+  "PAR-0077": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24701
+  },
+  "PAR-0078": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24702
+  },
+  "PAR-0080": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24704
+  },
+  "PAR-0079": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24703
+  },
+  "PAR-0081": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24705
+  },
+  "PAR-0082": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24706
+  },
+  "PAR-0083": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24707
+  },
+  "PAR-0084": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24708
+  },
+  "PAR-0086": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24710
+  },
+  "PAR-0085": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24709
+  },
+  "PAR-0087": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24711
+  },
+  "PAR-0088": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24712
+  },
+  "PAR-0089": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24713
+  },
+  "PAR-0090": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24714
+  },
+  "PAR-0091": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24715
+  },
+  "PAR-0092": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24716
+  },
+  "PAR-0093": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24717
+  },
+  "PAR-0095": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24719
+  },
+  "PAR-0094": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24718
+  },
+  "PAR-0097": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24721
+  },
+  "PAR-0096": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24720
+  },
+  "PAR-0098": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24722
+  },
+  "PAR-0099": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24723
+  },
+  "PAR-0100": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24724
+  },
+  "PAR-0101": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24725
+  },
+  "PAR-0102": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24726
+  },
+  "PAR-0104": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24728
+  },
+  "PAR-0103": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24727
+  },
+  "PAR-0105": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24729
+  },
+  "PAR-0106": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24730
+  },
+  "PAR-0107": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24731
+  },
+  "PAR-0109": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24733
+  },
+  "PAR-0110": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24734
+  },
+  "PAR-0108": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24732
+  },
+  "PAR-0112": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24736
+  },
+  "PAR-0111": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24735
+  },
+  "PAR-0113": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24737
+  },
+  "PAR-0114": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24738
+  },
+  "PAR-0115": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24739
+  },
+  "PAR-0117": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24741
+  },
+  "PAR-0116": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24740
+  },
+  "PAR-0118": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24742
+  },
+  "PAR-0119": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24743
+  },
+  "PAR-0120": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24744
+  },
+  "PAR-0121": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24745
+  },
+  "PAR-0122": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24746
+  },
+  "PAR-0123": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24747
+  },
+  "PAR-0124": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24748
+  },
+  "PAR-0125": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24749
+  },
+  "PAR-0126": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24750
+  },
+  "PAR-0127": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24751
+  },
+  "PAR-0128": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24752
+  },
+  "PAR-0129": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24753
+  },
+  "PAR-0130": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24754
+  },
+  "PAR-0133": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24757
+  },
+  "PAR-0131": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24755
+  },
+  "PAR-0134": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24758
+  },
+  "PAR-0132": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24756
+  },
+  "PAR-0135": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24759
+  },
+  "PAR-0138": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24762
+  },
+  "PAR-0137": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24761
+  },
+  "PAR-0136": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24760
+  },
+  "PAR-0139": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24763
+  },
+  "PAR-0140": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24764
+  },
+  "PAR-0141": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24765
+  },
+  "PAR-0142": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24766
+  },
+  "PAR-0143": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24767
+  },
+  "PAR-0145": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24769
+  },
+  "PAR-0144": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24768
+  },
+  "PAR-0146": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24770
+  },
+  "PAR-0148": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24772
+  },
+  "PAR-0147": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24771
+  },
+  "PAR-0149": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24773
+  },
+  "PAR-0150": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24774
+  },
+  "PAR-0151": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24775
+  },
+  "PAR-0152": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24776
+  },
+  "PAR-0153": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24777
+  },
+  "PAR-0154": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24778
+  },
+  "PAR-0155": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24779
+  },
+  "PAR-0156": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24780
+  },
+  "PAR-0157": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24781
+  },
+  "PAR-0160": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24784
+  },
+  "PAR-0159": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24783
+  },
+  "PAR-0158": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24782
+  },
+  "PAR-0161": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24785
+  },
+  "PAR-0163": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24787
+  },
+  "PAR-0162": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24786
+  },
+  "PAR-0164": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24788
+  },
+  "PAR-0165": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24789
+  },
+  "PAR-0166": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24790
+  },
+  "PAR-0167": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24791
+  },
+  "PAR-0168": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24792
+  },
+  "PAR-0169": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24793
+  },
+  "PAR-0170": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24794
+  },
+  "PAR-0171": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24795
+  },
+  "PAR-0172": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24796
+  },
+  "PAR-0173": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24797
+  },
+  "PAR-0174": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24798
+  },
+  "PAR-0175": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24799
+  },
+  "PAR-0176": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24800
+  },
+  "PAR-0177": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24801
+  },
+  "PAR-0178": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24802
+  },
+  "PAR-0180": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24804
+  },
+  "PAR-0181": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24805
+  },
+  "PAR-0179": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24803
+  },
+  "PAR-0182": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24806
+  },
+  "PAR-0184": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24808
+  },
+  "PAR-0186": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24810
+  },
+  "PAR-0183": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24807
+  },
+  "PAR-0185": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24809
+  },
+  "PAR-0187": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24811
+  },
+  "PAR-0188": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24812
+  },
+  "PAR-0189": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24813
+  },
+  "PAR-0190": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24814
+  },
+  "PAR-0191": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24815
+  },
+  "PAR-0192": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24816
+  },
+  "PAR-0193": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24817
+  },
+  "PAR-0195": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24819
+  },
+  "PAR-0194": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24818
+  },
+  "PAR-0196": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24820
+  },
+  "PAR-0198": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24822
+  },
+  "PAR-0197": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24821
+  },
+  "PAR-0199": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24823
+  },
+  "PAR-0200": {
+   "base": "carga_parciales_primero",
+   "dataid": 117,
+   "rid": 24824
+  },
+  "CRI-0003": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24825
+  },
+  "CRI-0002": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24826
+  },
+  "CRI-0004": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24827
+  },
+  "CRI-0006": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24829,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0005": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24828
+  },
+  "CRI-0007": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24830,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0001": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24831
+  },
+  "CRI-0008": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24832
+  },
+  "CRI-0009": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24833
+  },
+  "CRI-0010": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24834
+  },
+  "CRI-0011": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24835
+  },
+  "CRI-0012": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24836
+  },
+  "CRI-0015": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24839
+  },
+  "CRI-0014": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24838
+  },
+  "CRI-0013": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24837
+  },
+  "CRI-0016": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24840
+  },
+  "CRI-0018": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24842
+  },
+  "CRI-0019": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24843
+  },
+  "CRI-0020": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24844
+  },
+  "CRI-0017": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24841
+  },
+  "CRI-0021": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24845
+  },
+  "CRI-0023": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24847
+  },
+  "CRI-0022": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24846
+  },
+  "CRI-0024": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24848,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0026": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24850
+  },
+  "CRI-0025": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24849,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0027": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24851
+  },
+  "CRI-0028": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24852
+  },
+  "CRI-0030": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24854
+  },
+  "CRI-0029": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24853
+  },
+  "CRI-0031": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24855
+  },
+  "CRI-0033": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24857
+  },
+  "CRI-0034": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24858
+  },
+  "CRI-0032": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24856
+  },
+  "CRI-0035": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24859
+  },
+  "CRI-0036": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24860
+  },
+  "CRI-0037": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24861
+  },
+  "CRI-0039": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24863
+  },
+  "CRI-0038": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24862
+  },
+  "CRI-0040": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24864
+  },
+  "CRI-0041": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24865
+  },
+  "CRI-0042": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24866
+  },
+  "CRI-0044": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24868
+  },
+  "CRI-0043": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24867
+  },
+  "CRI-0045": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24869,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0047": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24871
+  },
+  "CRI-0046": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24870,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0049": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24873
+  },
+  "CRI-0048": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24872
+  },
+  "CRI-0050": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24874
+  },
+  "CRI-0051": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24875
+  },
+  "CRI-0052": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24876
+  },
+  "CRI-0053": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24877
+  },
+  "CRI-0055": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24879
+  },
+  "CRI-0054": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24878
+  },
+  "CRI-0057": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24881
+  },
+  "CRI-0056": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24880
+  },
+  "CRI-0058": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24882
+  },
+  "CRI-0059": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24883
+  },
+  "CRI-0060": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24884
+  },
+  "CRI-0061": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24885
+  },
+  "CRI-0063": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24887
+  },
+  "CRI-0062": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24886
+  },
+  "CRI-0065": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24889
+  },
+  "CRI-0064": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24888
+  },
+  "CRI-0068": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24892,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0067": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24891,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0066": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24890
+  },
+  "CRI-0069": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24893,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0070": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24894
+  },
+  "CRI-0072": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24896
+  },
+  "CRI-0073": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24897
+  },
+  "CRI-0071": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24895
+  },
+  "CRI-0075": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24899
+  },
+  "CRI-0074": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24898
+  },
+  "CRI-0076": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24900
+  },
+  "CRI-0078": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24902
+  },
+  "CRI-0077": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24901
+  },
+  "CRI-0079": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24903
+  },
+  "CRI-0080": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24904
+  },
+  "CRI-0081": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24905
+  },
+  "CRI-0082": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24906
+  },
+  "CRI-0083": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24907
+  },
+  "CRI-0084": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24908
+  },
+  "CRI-0085": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24909
+  },
+  "CRI-0086": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24910
+  },
+  "CRI-0087": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24911
+  },
+  "CRI-0088": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24912
+  },
+  "CRI-0089": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24913
+  },
+  "CRI-0090": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24914
+  },
+  "CRI-0091": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24915
+  },
+  "CRI-0092": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24916
+  },
+  "CRI-0093": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24917
+  },
+  "CRI-0094": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24918,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0095": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24919,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0096": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24920
+  },
+  "CRI-0098": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24922
+  },
+  "CRI-0097": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24921
+  },
+  "CRI-0100": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24924
+  },
+  "CRI-0099": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24923
+  },
+  "CRI-0101": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24925
+  },
+  "CRI-0102": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24926
+  },
+  "CRI-0103": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24927
+  },
+  "CRI-0104": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24928
+  },
+  "CRI-0106": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24930
+  },
+  "CRI-0107": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24931
+  },
+  "CRI-0105": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24929
+  },
+  "CRI-0108": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24932
+  },
+  "CRI-0109": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24933
+  },
+  "CRI-0110": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24934
+  },
+  "CRI-0111": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24935
+  },
+  "CRI-0112": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24936
+  },
+  "CRI-0113": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24937
+  },
+  "CRI-0114": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24938
+  },
+  "CRI-0115": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24939
+  },
+  "CRI-0117": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24941
+  },
+  "CRI-0118": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24942
+  },
+  "CRI-0116": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24940
+  },
+  "CRI-0119": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24943
+  },
+  "CRI-0120": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24944
+  },
+  "CRI-0121": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24945
+  },
+  "CRI-0122": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24946
+  },
+  "CRI-0123": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24947
+  },
+  "CRI-0124": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24948
+  },
+  "CRI-0125": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24949
+  },
+  "CRI-0126": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24950
+  },
+  "CRI-0128": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24952
+  },
+  "CRI-0127": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24951
+  },
+  "CRI-0129": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24953
+  },
+  "CRI-0130": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24954
+  },
+  "CRI-0132": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24956
+  },
+  "CRI-0131": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24955
+  },
+  "CRI-0134": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24958,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0133": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24957,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0135": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24959,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0136": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24960
+  },
+  "CRI-0137": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24961
+  },
+  "CRI-0138": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24962
+  },
+  "CRI-0140": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24963
+  },
+  "CRI-0139": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24964
+  },
+  "CRI-0141": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24965
+  },
+  "CRI-0142": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24966
+  },
+  "CRI-0144": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24968
+  },
+  "CRI-0146": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24970
+  },
+  "CRI-0143": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24967
+  },
+  "CRI-0145": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24969
+  },
+  "CRI-0147": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24971
+  },
+  "CRI-0150": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24974
+  },
+  "CRI-0149": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24973
+  },
+  "CRI-0148": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24972
+  },
+  "CRI-0151": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24975
+  },
+  "CRI-0153": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24977
+  },
+  "CRI-0152": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24976
+  },
+  "CRI-0154": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24978
+  },
+  "CRI-0155": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24979
+  },
+  "CRI-0156": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24980
+  },
+  "CRI-0158": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24982
+  },
+  "CRI-0157": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24981
+  },
+  "CRI-0159": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24983
+  },
+  "CRI-0160": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24984
+  },
+  "CRI-0161": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24985
+  },
+  "CRI-0163": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24987
+  },
+  "CRI-0162": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24986
+  },
+  "CRI-0164": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24988
+  },
+  "CRI-0167": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24991
+  },
+  "CRI-0166": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24990
+  },
+  "CRI-0165": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24989
+  },
+  "CRI-0168": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24992
+  },
+  "CRI-0169": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24993
+  },
+  "CRI-0170": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24994
+  },
+  "CRI-0172": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24996
+  },
+  "CRI-0171": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24995
+  },
+  "CRI-0173": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24997
+  },
+  "CRI-0175": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24999
+  },
+  "CRI-0174": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 24998
+  },
+  "CRI-0176": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25000
+  },
+  "CRI-0178": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25002,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0179": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25003,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0177": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25001,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0180": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25004,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0182": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25006
+  },
+  "CRI-0181": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25005,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0183": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25007
+  },
+  "CRI-0185": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25009
+  },
+  "CRI-0184": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25008
+  },
+  "CRI-0186": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25010
+  },
+  "CRI-0187": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25011
+  },
+  "CRI-0188": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25012
+  },
+  "CRI-0189": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25013
+  },
+  "CRI-0190": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25014
+  },
+  "CRI-0191": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25015
+  },
+  "CRI-0192": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25016
+  },
+  "CRI-0194": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25018
+  },
+  "CRI-0193": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25017
+  },
+  "CRI-0195": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25019
+  },
+  "CRI-0196": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25020
+  },
+  "CRI-0197": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25021
+  },
+  "CRI-0198": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25022
+  },
+  "CRI-0199": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25023
+  },
+  "CRI-0201": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25025
+  },
+  "CRI-0200": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25024
+  },
+  "CRI-0202": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25026
+  },
+  "CRI-0203": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25027
+  },
+  "CRI-0204": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25028
+  },
+  "CRI-0205": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25029
+  },
+  "CRI-0206": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25030
+  },
+  "CRI-0207": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25031
+  },
+  "CRI-0208": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25032
+  },
+  "CRI-0210": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25034
+  },
+  "CRI-0209": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25033
+  },
+  "CRI-0211": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25035
+  },
+  "CRI-0212": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25036
+  },
+  "CRI-0213": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25037
+  },
+  "CRI-0214": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25038
+  },
+  "CRI-0215": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25039
+  },
+  "CRI-0216": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25040,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0217": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25041,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0218": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25042,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0220": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25044,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0219": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25043,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0221": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25045,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0222": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25046,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0223": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25047
+  },
+  "CRI-0225": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25049
+  },
+  "CRI-0224": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25048
+  },
+  "CRI-0226": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25050
+  },
+  "CRI-0228": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25052
+  },
+  "CRI-0227": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25051
+  },
+  "CRI-0229": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25053
+  },
+  "CRI-0231": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25055
+  },
+  "CRI-0232": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25056
+  },
+  "CRI-0230": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25054
+  },
+  "CRI-0233": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25057
+  },
+  "CRI-0235": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25059
+  },
+  "CRI-0234": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25058
+  },
+  "CRI-0236": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25060
+  },
+  "CRI-0237": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25061
+  },
+  "CRI-0238": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25062
+  },
+  "CRI-0239": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25063
+  },
+  "CRI-0240": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25064
+  },
+  "CRI-0241": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25065
+  },
+  "CRI-0242": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25066
+  },
+  "CRI-0244": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25068
+  },
+  "CRI-0243": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25067
+  },
+  "CRI-0245": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25069
+  },
+  "CRI-0246": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25070
+  },
+  "CRI-0247": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25071
+  },
+  "CRI-0248": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25072
+  },
+  "CRI-0249": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25073
+  },
+  "CRI-0251": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25075
+  },
+  "CRI-0250": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25074
+  },
+  "CRI-0252": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25076
+  },
+  "CRI-0253": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25077
+  },
+  "CRI-0256": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25080,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0255": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25079
+  },
+  "CRI-0254": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25078
+  },
+  "CRI-0257": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25081,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0258": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25082,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0260": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25084,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0259": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25083,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0262": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25086,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0261": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25085,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0263": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25087,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0265": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25089,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0264": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25088,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0266": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25090
+  },
+  "CRI-0267": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25091
+  },
+  "CRI-0269": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25093
+  },
+  "CRI-0268": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25092
+  },
+  "CRI-0270": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25094
+  },
+  "CRI-0271": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25095
+  },
+  "CRI-0273": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25097
+  },
+  "CRI-0274": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25098
+  },
+  "CRI-0272": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25096
+  },
+  "CRI-0276": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25100
+  },
+  "CRI-0277": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25101
+  },
+  "CRI-0275": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25099
+  },
+  "CRI-0278": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25102
+  },
+  "CRI-0280": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25104
+  },
+  "CRI-0279": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25103
+  },
+  "CRI-0281": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25105
+  },
+  "CRI-0282": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25106
+  },
+  "CRI-0285": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25109
+  },
+  "CRI-0283": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25107
+  },
+  "CRI-0286": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25110
+  },
+  "CRI-0284": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25108
+  },
+  "CRI-0287": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25111
+  },
+  "CRI-0288": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25113
+  },
+  "CRI-0289": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25112
+  },
+  "CRI-0290": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25114
+  },
+  "CRI-0291": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25115
+  },
+  "CRI-0293": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25117
+  },
+  "CRI-0292": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25116
+  },
+  "CRI-0294": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25118
+  },
+  "CRI-0295": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25119
+  },
+  "CRI-0296": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25120
+  },
+  "CRI-0297": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25121
+  },
+  "CRI-0298": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25122
+  },
+  "CRI-0300": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25124
+  },
+  "CRI-0299": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25123
+  },
+  "CRI-0301": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25125
+  },
+  "CRI-0302": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25126
+  },
+  "CRI-0303": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25127
+  },
+  "CRI-0304": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25128
+  },
+  "CRI-0305": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25129
+  },
+  "CRI-0307": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25131
+  },
+  "CRI-0306": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25130
+  },
+  "CRI-0308": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25132
+  },
+  "CRI-0309": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25133
+  },
+  "CRI-0310": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25134
+  },
+  "CRI-0311": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25135
+  },
+  "CRI-0312": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25136
+  },
+  "CRI-0313": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25137
+  },
+  "CRI-0314": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25138
+  },
+  "CRI-0316": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25140
+  },
+  "CRI-0315": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25139
+  },
+  "CRI-0317": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25141
+  },
+  "CRI-0319": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25143
+  },
+  "CRI-0318": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25142
+  },
+  "CRI-0320": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25144
+  },
+  "CRI-0321": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25145
+  },
+  "CRI-0322": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25146
+  },
+  "CRI-0323": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25147
+  },
+  "CRI-0326": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25150
+  },
+  "CRI-0324": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25148
+  },
+  "CRI-0325": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25149
+  },
+  "CRI-0327": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25151
+  },
+  "CRI-0328": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25152
+  },
+  "CRI-0330": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25154
+  },
+  "CRI-0331": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25155
+  },
+  "CRI-0329": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25153
+  },
+  "CRI-0332": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25156
+  },
+  "CRI-0334": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25158
+  },
+  "CRI-0333": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25157
+  },
+  "CRI-0335": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25159
+  },
+  "CRI-0336": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25160
+  },
+  "CRI-0337": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25161
+  },
+  "CRI-0338": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25162
+  },
+  "CRI-0339": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25163
+  },
+  "CRI-0340": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25164
+  },
+  "CRI-0341": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25165
+  },
+  "CRI-0343": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25167
+  },
+  "CRI-0342": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25166
+  },
+  "CRI-0345": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25169
+  },
+  "CRI-0346": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25170
+  },
+  "CRI-0344": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25168
+  },
+  "CRI-0347": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25171
+  },
+  "CRI-0348": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25172
+  },
+  "CRI-0350": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25174
+  },
+  "CRI-0351": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25175
+  },
+  "CRI-0349": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25173
+  },
+  "CRI-0353": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25177
+  },
+  "CRI-0352": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25176
+  },
+  "CRI-0354": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25178
+  },
+  "CRI-0355": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25179
+  },
+  "CRI-0356": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25180
+  },
+  "CRI-0357": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25181
+  },
+  "CRI-0358": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25182
+  },
+  "CRI-0359": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25183
+  },
+  "CRI-0360": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25184
+  },
+  "CRI-0361": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25185
+  },
+  "CRI-0362": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25186
+  },
+  "CRI-0363": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25187
+  },
+  "CRI-0364": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25188
+  },
+  "CRI-0365": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25189
+  },
+  "CRI-0366": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25190
+  },
+  "CRI-0367": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25191
+  },
+  "CRI-0368": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25192
+  },
+  "CRI-0369": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25193
+  },
+  "CRI-0370": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25194
+  },
+  "CRI-0371": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25195
+  },
+  "CRI-0373": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25197
+  },
+  "CRI-0372": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25196
+  },
+  "CRI-0374": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25198
+  },
+  "CRI-0375": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25199
+  },
+  "CRI-0377": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25201
+  },
+  "CRI-0376": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25200
+  },
+  "CRI-0378": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25202
+  },
+  "CRI-0379": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25203
+  },
+  "CRI-0381": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25205
+  },
+  "CRI-0383": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25207
+  },
+  "CRI-0380": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25204
+  },
+  "CRI-0382": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25206
+  },
+  "CRI-0384": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25208
+  },
+  "CRI-0385": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25209
+  },
+  "CRI-0386": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25210
+  },
+  "CRI-0387": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25211
+  },
+  "CRI-0388": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25212
+  },
+  "CRI-0389": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25213
+  },
+  "CRI-0390": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25214
+  },
+  "CRI-0391": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25215
+  },
+  "CRI-0393": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25217
+  },
+  "CRI-0394": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25218
+  },
+  "CRI-0392": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25216
+  },
+  "CRI-0395": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25219
+  },
+  "CRI-0397": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25221
+  },
+  "CRI-0396": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25220
+  },
+  "CRI-0398": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25222
+  },
+  "CRI-0399": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25223
+  },
+  "CRI-0400": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25224
+  },
+  "CRI-0401": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25225
+  },
+  "CRI-0402": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25226
+  },
+  "CRI-0403": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25227
+  },
+  "CRI-0404": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25228
+  },
+  "CRI-0405": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25229
+  },
+  "CRI-0406": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25230
+  },
+  "CRI-0407": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25231
+  },
+  "CRI-0408": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25232
+  },
+  "CRI-0409": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25233
+  },
+  "CRI-0410": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25234
+  },
+  "CRI-0411": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25235
+  },
+  "CRI-0413": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25237
+  },
+  "CRI-0412": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25236
+  },
+  "CRI-0415": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25239
+  },
+  "CRI-0414": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25238
+  },
+  "CRI-0417": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25241
+  },
+  "CRI-0416": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25240
+  },
+  "CRI-0418": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25242
+  },
+  "CRI-0419": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25243
+  },
+  "CRI-0420": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25244
+  },
+  "CRI-0421": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25245
+  },
+  "CRI-0422": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25246
+  },
+  "CRI-0424": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25248
+  },
+  "CRI-0423": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25247
+  },
+  "CRI-0425": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25249
+  },
+  "CRI-0426": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25250
+  },
+  "CRI-0428": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25252
+  },
+  "CRI-0427": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25251
+  },
+  "CRI-0430": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25254
+  },
+  "CRI-0431": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25255
+  },
+  "CRI-0429": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25253
+  },
+  "CRI-0432": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25256
+  },
+  "CRI-0434": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25258,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0433": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25257,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0435": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25259,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0436": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25260,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0437": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25261,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0438": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25262,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0439": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25263,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0440": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25264,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0441": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25265,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0442": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25266,
+   "desaprobar": true,
+   "desaprobada": true
+  },
+  "CRI-0443": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25267
+  },
+  "CRI-0445": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25269
+  },
+  "CRI-0444": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25268
+  },
+  "CRI-0447": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25271
+  },
+  "CRI-0446": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25270
+  },
+  "CRI-0448": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25272
+  },
+  "CRI-0449": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25273
+  },
+  "CRI-0451": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25275
+  },
+  "CRI-0450": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25274
+  },
+  "CRI-0452": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25276
+  },
+  "CRI-0454": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25278
+  },
+  "CRI-0455": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25279
+  },
+  "CRI-0453": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25277
+  },
+  "CRI-0456": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25280
+  },
+  "CRI-0457": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25281
+  },
+  "CRI-0458": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25282
+  },
+  "CRI-0459": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25283
+  },
+  "CRI-0460": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25284
+  },
+  "CRI-0462": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25286
+  },
+  "CRI-0461": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25285
+  },
+  "CRI-0463": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25287
+  },
+  "CRI-0464": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25288
+  },
+  "CRI-0465": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25289
+  },
+  "CRI-0466": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25290
+  },
+  "CRI-0467": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25291
+  },
+  "CRI-0468": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25292
+  },
+  "CRI-0470": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25294
+  },
+  "CRI-0469": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25293
+  },
+  "CRI-0471": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25295
+  },
+  "CRI-0472": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25296
+  },
+  "CRI-0473": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25297
+  },
+  "CRI-0475": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25299
+  },
+  "CRI-0474": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25298
+  },
+  "CRI-0476": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25300
+  },
+  "CRI-0478": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25302
+  },
+  "CRI-0477": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25301
+  },
+  "CRI-0480": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25303
+  },
+  "CRI-0479": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25304
+  },
+  "CRI-0481": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25305
+  },
+  "CRI-0482": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25306
+  },
+  "CRI-0483": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25307
+  },
+  "CRI-0484": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25308
+  },
+  "CRI-0485": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25309
+  },
+  "CRI-0486": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25310
+  },
+  "CRI-0487": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25311
+  },
+  "CRI-0488": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25312
+  },
+  "CRI-0489": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25313
+  },
+  "CRI-0490": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25314
+  },
+  "CRI-0491": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25315
+  },
+  "CRI-0492": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25316
+  },
+  "CRI-0493": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25317
+  },
+  "CRI-0494": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25318
+  },
+  "CRI-0496": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25320
+  },
+  "CRI-0495": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25319
+  },
+  "CRI-0497": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25321
+  },
+  "CRI-0498": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25322
+  },
+  "CRI-0499": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25323
+  },
+  "CRI-0502": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25326
+  },
+  "CRI-0501": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25325
+  },
+  "CRI-0500": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25324
+  },
+  "CRI-0503": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25327
+  },
+  "CRI-0504": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25328
+  },
+  "CRI-0506": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25330
+  },
+  "CRI-0505": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25329
+  },
+  "CRI-0507": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25331
+  },
+  "CRI-0509": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25332
+  },
+  "CRI-0511": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25335
+  },
+  "CRI-0510": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25334
+  },
+  "CRI-0508": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25333
+  },
+  "CRI-0512": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25336
+  },
+  "CRI-0513": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25337
+  },
+  "CRI-0514": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25338
+  },
+  "CRI-0515": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25339
+  },
+  "CRI-0516": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25340
+  },
+  "CRI-0517": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25341
+  },
+  "CRI-0518": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25342
+  },
+  "CRI-0519": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25343
+  },
+  "CRI-0520": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25344
+  },
+  "CRI-0521": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25345
+  },
+  "CRI-0523": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25347
+  },
+  "CRI-0524": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25348
+  },
+  "CRI-0522": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25346
+  },
+  "CRI-0525": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25349
+  },
+  "CRI-0526": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25350
+  },
+  "CRI-0527": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25351
+  },
+  "CRI-0528": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25352
+  },
+  "CRI-0529": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25353
+  },
+  "CRI-0530": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25354
+  },
+  "CRI-0531": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25355
+  },
+  "CRI-0532": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25356
+  },
+  "CRI-0533": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25357
+  },
+  "CRI-0534": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25358
+  },
+  "CRI-0535": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25359
+  },
+  "CRI-0536": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25360
+  },
+  "CRI-0537": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25361
+  },
+  "CRI-0538": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25362
+  },
+  "CRI-0539": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25363
+  },
+  "CRI-0540": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25364
+  },
+  "CRI-0541": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25365
+  },
+  "CRI-0542": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25366
+  },
+  "CRI-0543": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25367
+  },
+  "CRI-0544": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25368
+  },
+  "CRI-0545": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25369
+  },
+  "CRI-0546": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25370
+  },
+  "CRI-0547": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25371
+  },
+  "CRI-0548": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25372
+  },
+  "CRI-0549": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25373
+  },
+  "CRI-0550": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25374
+  },
+  "CRI-0551": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25375
+  },
+  "CRI-0552": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25376
+  },
+  "CRI-0554": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25378
+  },
+  "CRI-0553": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25377
+  },
+  "CRI-0555": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25379
+  },
+  "CRI-0556": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25380
+  },
+  "CRI-0558": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25382
+  },
+  "CRI-0557": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25381
+  },
+  "CRI-0559": {
+   "base": "criticidad",
+   "dataid": 199,
+   "rid": 25383
+  },
+  "ENT-002": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25385
+  },
+  "ENT-003": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25384
+  },
+  "ENT-001": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25386
+  },
+  "ENT-004": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25387
+  },
+  "ENT-005": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25388
+  },
+  "ENT-006": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25389
+  },
+  "ENT-007": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25390
+  },
+  "ENT-009": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25392
+  },
+  "ENT-008": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25391
+  },
+  "ENT-011": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25394
+  },
+  "ENT-010": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25393
+  },
+  "ENT-012": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25395
+  },
+  "ENT-013": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25396
+  },
+  "ENT-015": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25398
+  },
+  "ENT-016": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25399
+  },
+  "ENT-014": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25397
+  },
+  "ENT-018": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25401
+  },
+  "ENT-019": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25402
+  },
+  "ENT-020": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25403
+  },
+  "ENT-021": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25404
+  },
+  "ENT-017": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25400
+  },
+  "ENT-022": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25405
+  },
+  "ENT-023": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25406
+  },
+  "ENT-024": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25407
+  },
+  "ENT-025": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25408
+  },
+  "ENT-026": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25409
+  },
+  "ENT-027": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25410
+  },
+  "ENT-028": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25411
+  },
+  "ENT-029": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25412
+  },
+  "ENT-030": {
+   "base": "entrevistas",
+   "dataid": 202,
+   "rid": 25413
+  }
+ },
+ "actualizado": "2026-11-18T01:49:53.669Z"
+}

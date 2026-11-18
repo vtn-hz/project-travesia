@@ -1,6 +1,6 @@
 # Datos de prueba del campus
 
-Conjunto de **60 estudiantes ficticios** para que el sistema se vea en uso: encuestas desde 2021, notas de 1.er año de 2026, criticidad, estados asignados y entrevistas. Lo arma [`generar.js`](generar.js) y se carga en las bases de Zhakyz. **Estado: generado en local, sin aplicar en Moodle.** Se aplica y se borra con la skill [`datos-prueba`](../../.skills/datos-prueba/SKILL.md).
+Conjunto de **60 estudiantes ficticios** para que el sistema se vea en uso: encuestas desde 2021, notas de 1.er año de 2026, criticidad, estados asignados y entrevistas. Lo arma [`generar.js`](generar.js) y se carga en las bases de Zhakyz. **Estado: aplicado en el campus el 2026-11-17** (1.149 entradas; los rid están en [`aplicado.json`](aplicado.json)). Se aplica y se borra con la skill [`datos-prueba`](../../.skills/datos-prueba/SKILL.md).
 
 ```bash
 node data/prueba/generar.js                         # escribe los JSON e imprime el control de coherencia
