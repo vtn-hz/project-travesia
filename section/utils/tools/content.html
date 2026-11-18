@@ -1758,6 +1758,8 @@
       // =========================================================
       // HERRAMIENTA PeriodoVigente: PERÍODO VIGENTE DE LA BASE PERÍODOS (ADR-009)
       // =========================================================
+      // La regla (la entrada válida de rid mayor) está COPIADA en el Tablero de Criticidad y en el Detalle del estudiante
+      // (bloque COPIA DE TOOLS, ver RULES.md): si cambia, actualizar el bloque en las 2 secciones.
       // PeriodoVigente() → Promise de { periodo, fecha_inicio, fecha_limite_encuesta, periodos_abandono, rid, anterior, fuente, error, periodos }.
       //   periodos_abandono: el de la última entrada que lo define (entero de 1 a 20) o PERIODOS_ABANDONO_POR_DEFECTO.
       //   La vigente es la entrada de rid mayor (la última que se cargó). Nunca se rechaza: si la base no existe o no se puede leer,
@@ -1839,6 +1841,8 @@
 
       // ---------------------------------------------------------
       // FUNCIÓN: LeerBase({ dataid | cmid, porPagina, paralelo, maximo, filas, columnas, filtro, alAvanzar })
+      //   COPIADA en el Tablero de Criticidad y en el Detalle del estudiante (bloque COPIA DE TOOLS, ver RULES.md): si se cambia esta
+      //   función o las que usa, actualizar el bloque en las 2 secciones y correr node .skills/publicar-seccion/verificar_copias_tools.js.
       //   → Promise de { entradas: [{ rid, campos }], formato, paginas, completa }
       // ---------------------------------------------------------
       function LeerBase(opciones) {

@@ -39,6 +39,7 @@ Si el archivo ya está publicado, su comentario `PUBLICADO EN MOODLE` (o la tabl
    - La sección pasa la verificación de [`crear-seccion`](../crear-seccion/SKILL.md) (sin errores, sin emojis, roles probados).
    - Los cambios están commiteados, o al menos guardados.
    - Los CMID de bases que use la sección apuntan a bases **de Zhakyz** (nunca de otros equipos). Si todavía son `null`, la sección muestra datos de prueba: avisar al usuario.
+   - Si la sección tiene el bloque `COPIA DE TOOLS` (Tablero y Detalle), `node .skills/publicar-seccion/verificar_copias_tools.js` pasa: las 2 copias son idénticas (RULES.md, "Código copiado de Tools").
 2. **Simular** (no escribe nada):
    ```bash
    MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
