@@ -1,0 +1,2810 @@
+{
+ "generado_con": "data/prueba/generar.js",
+ "semilla": 20261124,
+ "fecha_de_referencia": "2026-11-17T12:00",
+ "aplicar": "ver data/prueba/README.md",
+ "base": "carga_parciales_primero",
+ "descripcion": "Notas de parciales de 1.er año de 2026 (incluye recursantes de 2.º año en adelante).",
+ "entradas": [
+  {
+   "ref": "PAR-0001",
+   "cargada": "2026-04-13T18:51:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0002",
+   "cargada": "2026-04-14T16:07:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0003",
+   "cargada": "2026-04-14T19:36:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0004",
+   "cargada": "2026-04-15T09:31:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0005",
+   "cargada": "2026-04-15T09:44:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "9.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0006",
+   "cargada": "2026-04-16T16:39:00-03:00",
+   "campos": {
+    "DNI": "46005590",
+    "Estudiante": "BRENDA CORREA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0007",
+   "cargada": "2026-04-17T09:59:00-03:00",
+   "campos": {
+    "DNI": "45788716",
+    "Estudiante": "JULIETA SALINAS JUÁREZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0008",
+   "cargada": "2026-04-17T11:22:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0009",
+   "cargada": "2026-04-17T11:43:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0010",
+   "cargada": "2026-04-19T18:35:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0011",
+   "cargada": "2026-04-20T16:04:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0012",
+   "cargada": "2026-04-20T20:25:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0013",
+   "cargada": "2026-04-20T23:37:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0014",
+   "cargada": "2026-04-21T12:55:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0015",
+   "cargada": "2026-04-21T19:45:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0016",
+   "cargada": "2026-04-21T20:07:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0017",
+   "cargada": "2026-04-22T10:13:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "2.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0018",
+   "cargada": "2026-04-22T16:36:00-03:00",
+   "campos": {
+    "DNI": "47566873",
+    "Estudiante": "MILAGROS ARIAS",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0019",
+   "cargada": "2026-04-23T12:10:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0020",
+   "cargada": "2026-04-23T13:56:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0021",
+   "cargada": "2026-04-23T19:41:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0022",
+   "cargada": "2026-04-23T23:52:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "9.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0023",
+   "cargada": "2026-04-24T18:23:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0024",
+   "cargada": "2026-04-26T10:38:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0025",
+   "cargada": "2026-04-27T10:14:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0026",
+   "cargada": "2026-04-27T11:42:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "9.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0027",
+   "cargada": "2026-04-27T14:25:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0028",
+   "cargada": "2026-04-27T14:50:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0029",
+   "cargada": "2026-04-27T19:43:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0030",
+   "cargada": "2026-04-27T20:46:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0031",
+   "cargada": "2026-04-27T20:53:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0032",
+   "cargada": "2026-04-29T09:18:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0033",
+   "cargada": "2026-04-29T10:54:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0034",
+   "cargada": "2026-04-29T19:19:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0035",
+   "cargada": "2026-04-29T19:50:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0036",
+   "cargada": "2026-04-29T21:55:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0037",
+   "cargada": "2026-05-02T19:32:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0038",
+   "cargada": "2026-05-02T20:40:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0039",
+   "cargada": "2026-05-02T20:41:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0040",
+   "cargada": "2026-05-03T15:28:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0041",
+   "cargada": "2026-05-03T23:05:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0042",
+   "cargada": "2026-05-04T20:01:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0043",
+   "cargada": "2026-05-05T09:01:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0044",
+   "cargada": "2026-05-05T11:52:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0045",
+   "cargada": "2026-05-05T13:37:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0046",
+   "cargada": "2026-05-05T18:44:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0047",
+   "cargada": "2026-05-06T15:03:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "3.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0048",
+   "cargada": "2026-05-06T15:59:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0049",
+   "cargada": "2026-05-06T19:26:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0050",
+   "cargada": "2026-05-07T14:04:00-03:00",
+   "campos": {
+    "DNI": "45841377",
+    "Estudiante": "FEDERICO RUIZ RIVERO",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0051",
+   "cargada": "2026-05-07T21:08:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0052",
+   "cargada": "2026-05-08T11:42:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0053",
+   "cargada": "2026-06-08T18:19:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0054",
+   "cargada": "2026-06-09T23:48:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0055",
+   "cargada": "2026-06-10T14:56:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0056",
+   "cargada": "2026-06-10T23:46:00-03:00",
+   "campos": {
+    "DNI": "47566873",
+    "Estudiante": "MILAGROS ARIAS",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0057",
+   "cargada": "2026-06-11T20:25:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0058",
+   "cargada": "2026-06-12T11:45:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0059",
+   "cargada": "2026-06-13T13:42:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "2",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0060",
+   "cargada": "2026-06-13T15:26:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0061",
+   "cargada": "2026-06-13T20:08:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "1",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0062",
+   "cargada": "2026-06-14T11:20:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0063",
+   "cargada": "2026-06-14T12:11:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0064",
+   "cargada": "2026-06-14T13:29:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0065",
+   "cargada": "2026-06-14T19:13:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0066",
+   "cargada": "2026-06-14T22:40:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "2.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0067",
+   "cargada": "2026-06-15T17:33:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0068",
+   "cargada": "2026-06-15T19:54:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0069",
+   "cargada": "2026-06-16T11:03:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0070",
+   "cargada": "2026-06-16T11:07:00-03:00",
+   "campos": {
+    "DNI": "46005590",
+    "Estudiante": "BRENDA CORREA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0071",
+   "cargada": "2026-06-16T15:59:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0072",
+   "cargada": "2026-06-16T20:09:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0073",
+   "cargada": "2026-06-16T22:17:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0074",
+   "cargada": "2026-06-17T12:54:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0075",
+   "cargada": "2026-06-17T21:12:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0076",
+   "cargada": "2026-06-18T23:02:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0077",
+   "cargada": "2026-06-19T10:18:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0078",
+   "cargada": "2026-06-19T17:07:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "3.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0079",
+   "cargada": "2026-06-20T14:11:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0080",
+   "cargada": "2026-06-20T21:33:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0081",
+   "cargada": "2026-06-21T16:39:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0082",
+   "cargada": "2026-06-21T19:56:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0083",
+   "cargada": "2026-06-22T17:26:00-03:00",
+   "campos": {
+    "DNI": "45788716",
+    "Estudiante": "JULIETA SALINAS JUÁREZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0084",
+   "cargada": "2026-06-22T20:25:00-03:00",
+   "campos": {
+    "DNI": "46683315",
+    "Estudiante": "ALDANA MORENO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "1.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0085",
+   "cargada": "2026-06-22T22:04:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0086",
+   "cargada": "2026-06-24T11:16:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0087",
+   "cargada": "2026-06-24T11:38:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0088",
+   "cargada": "2026-06-24T19:40:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0089",
+   "cargada": "2026-06-25T14:00:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0090",
+   "cargada": "2026-06-25T18:26:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0091",
+   "cargada": "2026-06-26T10:17:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0092",
+   "cargada": "2026-06-27T13:04:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0093",
+   "cargada": "2026-06-27T14:41:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "1",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0094",
+   "cargada": "2026-06-27T19:06:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0095",
+   "cargada": "2026-06-28T12:05:00-03:00",
+   "campos": {
+    "DNI": "45841377",
+    "Estudiante": "FEDERICO RUIZ RIVERO",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0096",
+   "cargada": "2026-06-28T12:22:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0097",
+   "cargada": "2026-06-28T18:25:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0098",
+   "cargada": "2026-06-28T20:22:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0099",
+   "cargada": "2026-06-28T23:23:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0100",
+   "cargada": "2026-06-29T19:31:00-03:00",
+   "campos": {
+    "DNI": "48707744",
+    "Estudiante": "FLORENCIA PÉREZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0101",
+   "cargada": "2026-06-30T10:22:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0102",
+   "cargada": "2026-07-02T17:37:00-03:00",
+   "campos": {
+    "DNI": "48328592",
+    "Estudiante": "TOMÁS BAUTISTA MUÑOZ",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0103",
+   "cargada": "2026-07-02T18:46:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "3.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0104",
+   "cargada": "2026-07-02T21:18:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0105",
+   "cargada": "2026-07-05T11:34:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0106",
+   "cargada": "2026-07-05T22:33:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0107",
+   "cargada": "2026-07-06T09:10:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Física A",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0108",
+   "cargada": "2026-07-06T11:11:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0109",
+   "cargada": "2026-07-06T11:27:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0110",
+   "cargada": "2026-07-06T12:31:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0111",
+   "cargada": "2026-07-06T12:58:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0112",
+   "cargada": "2026-07-06T15:33:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0113",
+   "cargada": "2026-07-06T17:48:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "1.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0114",
+   "cargada": "2026-07-07T22:11:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0115",
+   "cargada": "2026-07-08T16:49:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0116",
+   "cargada": "2026-07-09T13:54:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0117",
+   "cargada": "2026-07-09T17:05:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0118",
+   "cargada": "2026-07-09T17:52:00-03:00",
+   "campos": {
+    "DNI": "47584903",
+    "Estudiante": "XIMENA RAMÍREZ",
+    "Materia": "Física A",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0119",
+   "cargada": "2026-07-09T21:36:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0120",
+   "cargada": "2026-07-10T15:30:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0121",
+   "cargada": "2026-07-10T17:23:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0122",
+   "cargada": "2026-07-10T22:46:00-03:00",
+   "campos": {
+    "DNI": "45788716",
+    "Estudiante": "JULIETA SALINAS JUÁREZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0123",
+   "cargada": "2026-07-13T15:31:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0124",
+   "cargada": "2026-07-14T09:47:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0125",
+   "cargada": "2026-07-14T22:23:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "2",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0126",
+   "cargada": "2026-07-16T18:27:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-1",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 2"
+   }
+  },
+  {
+   "ref": "PAR-0127",
+   "cargada": "2026-09-22T10:27:00-03:00",
+   "campos": {
+    "DNI": "46683315",
+    "Estudiante": "ALDANA MORENO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "2",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0128",
+   "cargada": "2026-09-22T12:15:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0129",
+   "cargada": "2026-09-22T12:38:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0130",
+   "cargada": "2026-09-22T12:40:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0131",
+   "cargada": "2026-09-22T16:42:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0132",
+   "cargada": "2026-09-23T13:23:00-03:00",
+   "campos": {
+    "DNI": "48351761",
+    "Estudiante": "LEANDRO ALEJO DÍAZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0133",
+   "cargada": "2026-09-23T16:55:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0134",
+   "cargada": "2026-09-24T15:19:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0135",
+   "cargada": "2026-09-25T11:54:00-03:00",
+   "campos": {
+    "DNI": "48351761",
+    "Estudiante": "LEANDRO ALEJO DÍAZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0136",
+   "cargada": "2026-09-25T16:15:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0137",
+   "cargada": "2026-09-26T17:04:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "2",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0138",
+   "cargada": "2026-09-27T17:08:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0139",
+   "cargada": "2026-09-28T09:27:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0140",
+   "cargada": "2026-09-28T10:18:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0141",
+   "cargada": "2026-09-29T14:45:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0142",
+   "cargada": "2026-09-29T16:53:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0143",
+   "cargada": "2026-09-29T21:49:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0144",
+   "cargada": "2026-09-30T17:40:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0145",
+   "cargada": "2026-09-30T22:38:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0146",
+   "cargada": "2026-10-01T15:07:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0147",
+   "cargada": "2026-10-02T21:43:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0148",
+   "cargada": "2026-10-03T18:44:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0149",
+   "cargada": "2026-10-03T19:43:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0150",
+   "cargada": "2026-10-03T20:33:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0151",
+   "cargada": "2026-10-03T22:31:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0152",
+   "cargada": "2026-10-05T13:59:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0153",
+   "cargada": "2026-10-05T20:43:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0154",
+   "cargada": "2026-10-05T23:03:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0155",
+   "cargada": "2026-10-06T21:38:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0156",
+   "cargada": "2026-10-07T12:17:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0157",
+   "cargada": "2026-10-07T16:30:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Física A",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0158",
+   "cargada": "2026-10-08T10:23:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "1",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0159",
+   "cargada": "2026-10-08T19:10:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0160",
+   "cargada": "2026-10-08T21:12:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0161",
+   "cargada": "2026-10-09T17:03:00-03:00",
+   "campos": {
+    "DNI": "46005590",
+    "Estudiante": "BRENDA CORREA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 1",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0162",
+   "cargada": "2026-10-19T13:29:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0163",
+   "cargada": "2026-10-19T16:45:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "9",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0164",
+   "cargada": "2026-10-21T13:39:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0165",
+   "cargada": "2026-10-21T18:34:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0166",
+   "cargada": "2026-10-21T20:52:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0167",
+   "cargada": "2026-10-23T13:00:00-03:00",
+   "campos": {
+    "DNI": "46683315",
+    "Estudiante": "ALDANA MORENO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0168",
+   "cargada": "2026-10-23T18:00:00-03:00",
+   "campos": {
+    "DNI": "47899609",
+    "Estudiante": "JUAN FIGUEROA",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0169",
+   "cargada": "2026-10-26T17:47:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "2.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0170",
+   "cargada": "2026-10-26T21:17:00-03:00",
+   "campos": {
+    "DNI": "46005590",
+    "Estudiante": "BRENDA CORREA",
+    "Materia": "Álgebra II",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "2.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0171",
+   "cargada": "2026-10-29T21:22:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Recuperatorio",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": "Parcial 1"
+   }
+  },
+  {
+   "ref": "PAR-0172",
+   "cargada": "2026-11-02T10:25:00-03:00",
+   "campos": {
+    "DNI": "48351761",
+    "Estudiante": "LEANDRO ALEJO DÍAZ",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0173",
+   "cargada": "2026-11-02T13:19:00-03:00",
+   "campos": {
+    "DNI": "46683315",
+    "Estudiante": "ALDANA MORENO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0174",
+   "cargada": "2026-11-02T13:49:00-03:00",
+   "campos": {
+    "DNI": "47566885",
+    "Estudiante": "GENARO CÓRDOBA",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0175",
+   "cargada": "2026-11-02T17:11:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0176",
+   "cargada": "2026-11-02T21:03:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0177",
+   "cargada": "2026-11-03T22:29:00-03:00",
+   "campos": {
+    "DNI": "48351761",
+    "Estudiante": "LEANDRO ALEJO DÍAZ",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0178",
+   "cargada": "2026-11-04T17:31:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "4.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0179",
+   "cargada": "2026-11-04T23:09:00-03:00",
+   "campos": {
+    "DNI": "48652436",
+    "Estudiante": "DELFINA CAMILA RODRÍGUEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "10",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0180",
+   "cargada": "2026-11-05T16:18:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "1",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0181",
+   "cargada": "2026-11-06T10:19:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "6.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0182",
+   "cargada": "2026-11-06T17:22:00-03:00",
+   "campos": {
+    "DNI": "48351761",
+    "Estudiante": "LEANDRO ALEJO DÍAZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0183",
+   "cargada": "2026-11-06T19:04:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0184",
+   "cargada": "2026-11-06T23:25:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "4",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0185",
+   "cargada": "2026-11-07T09:01:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0186",
+   "cargada": "2026-11-07T22:23:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "3",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0187",
+   "cargada": "2026-11-08T17:26:00-03:00",
+   "campos": {
+    "DNI": "48388126",
+    "Estudiante": "PABLO CÁCERES",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0188",
+   "cargada": "2026-11-09T17:17:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0189",
+   "cargada": "2026-11-09T23:04:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "5.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0190",
+   "cargada": "2026-11-10T16:12:00-03:00",
+   "campos": {
+    "DNI": "48493200",
+    "Estudiante": "CAMILA NÚÑEZ",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "2.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0191",
+   "cargada": "2026-11-11T10:23:00-03:00",
+   "campos": {
+    "DNI": "46771421",
+    "Estudiante": "ROCÍO LOMBARDI",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0192",
+   "cargada": "2026-11-11T19:00:00-03:00",
+   "campos": {
+    "DNI": "46005590",
+    "Estudiante": "BRENDA CORREA",
+    "Materia": "Álgebra II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0193",
+   "cargada": "2026-11-12T10:35:00-03:00",
+   "campos": {
+    "DNI": "46632659",
+    "Estudiante": "CAROLINA ECHEVERRÍA",
+    "Materia": "Fundamentos de Química",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "6",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0194",
+   "cargada": "2026-11-12T12:45:00-03:00",
+   "campos": {
+    "DNI": "45448058",
+    "Estudiante": "ALEJO PERALTA VERA",
+    "Materia": "Análisis Matemático I",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0195",
+   "cargada": "2026-11-13T15:59:00-03:00",
+   "campos": {
+    "DNI": "47477576",
+    "Estudiante": "BELÉN PAULA PAREDES",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8.5",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0196",
+   "cargada": "2026-11-13T17:53:00-03:00",
+   "campos": {
+    "DNI": "45887766",
+    "Estudiante": "MORENA BRENDA VÁZQUEZ BIANCHI",
+    "Materia": "Álgebra I- B",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "0",
+    "Estado": "Ausente",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0197",
+   "cargada": "2026-11-13T18:10:00-03:00",
+   "campos": {
+    "DNI": "47998959",
+    "Estudiante": "MICAELA MARINO",
+    "Materia": "Física A",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "8",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0198",
+   "cargada": "2026-11-13T22:59:00-03:00",
+   "campos": {
+    "DNI": "46992479",
+    "Estudiante": "BENJAMÍN DOMÍNGUEZ",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0199",
+   "cargada": "2026-11-14T11:16:00-03:00",
+   "campos": {
+    "DNI": "48233597",
+    "Estudiante": "FACUNDO CORONEL",
+    "Materia": "Análisis Matemático II",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "3.5",
+    "Estado": "Desaprobado",
+    "Recupera_a": ""
+   }
+  },
+  {
+   "ref": "PAR-0200",
+   "cargada": "2026-11-14T14:10:00-03:00",
+   "campos": {
+    "DNI": "48262610",
+    "Estudiante": "MATEO GONZÁLEZ",
+    "Materia": "Fundamentos de la Programación",
+    "Instancia": "Parcial 2",
+    "Periodo": "2026-2",
+    "Nota": "7",
+    "Estado": "Aprobado",
+    "Recupera_a": ""
+   }
+  }
+ ]
+}
