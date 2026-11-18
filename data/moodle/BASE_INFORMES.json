@@ -1,0 +1,61 @@
+{
+  "clave": "informes",
+  "nombre": "Informes",
+  "descripcion": "Conclusiones que escriben los docentes sobre cada informe de Reportes: una entrada por guardado. Solo se agregan entradas: las vigentes de un informe, un período y unos filtros son las de rid mayor, y las anteriores quedan como historial. La escribe y la lee la Página Reportes.",
+  "subseccion": "Database",
+  "origen": "Pedido del DII en la reunión del 2026-11-17: los informes tienen que poder llevar conclusiones del profesor. Definida en local el 2026-11-17, sin crear en Moodle.",
+  "estado": "local",
+  "configuracion": {
+    "Requiere aprobación": "No: solo escribe el equipo.",
+    "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva, así queda el historial.",
+    "Número máximo de entradas": "0 (sin límite).",
+    "Permitir comentarios": "No.",
+    "Disponibilidad": "Oculta para los estudiantes: las conclusiones pueden nombrar estudiantes. La leen y la escriben solo los docentes (ADM, GES y TUT) desde la Página Reportes.",
+    "Quién escribe": "Los docentes, desde la Página Reportes."
+  },
+  "plantillas": "data/moodle/plantillas/informes/ (lista con .zk-registro, data-rid y una celda data-campo por campo, para que la lea LeerBase; el autor sale de ##user##). La de alta es la de Moodle: la Página ubica cada campo por su etiqueta.",
+  "campos": [
+    {
+      "nombre": "informe",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Informe de Reportes: criticidad, respuesta, resultados, primero, entrevistas, avance o trayectoria"
+    },
+    {
+      "nombre": "periodo",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Período del informe (AAAA-n)"
+    },
+    {
+      "nombre": "cohorte",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Filtro de cohorte del informe: AAAA-n o todas"
+    },
+    {
+      "nombre": "tramo",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Filtro de año de la carrera: todos, primero o superior"
+    },
+    {
+      "nombre": "titulo",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Título del informe al guardar (por ejemplo, Trayectoria y egreso 2026-2), para leer la base a mano"
+    },
+    {
+      "nombre": "conclusiones",
+      "tipo": "textarea",
+      "requerido": true,
+      "descripcion": "Conclusiones del docente. Van también en el PDF del informe"
+    },
+    {
+      "nombre": "created_at",
+      "tipo": "text",
+      "requerido": true,
+      "descripcion": "Fecha y hora del guardado (ISO 8601 con zona)"
+    }
+  ]
+}

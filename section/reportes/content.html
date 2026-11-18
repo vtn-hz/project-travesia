@@ -72,7 +72,9 @@
         TUT: { nombre: 'Tutor / Entrevistador' }
       };
       var CORTES = { amarillo: 40, rojo: 70 };
-      var CREDITOS_PLAN = 223;
+      // Créditos del Plan 2024: 52 materias (223, incluido el Proyecto de Ingeniería Industrial IV, que es el PFG) más la PPS (12,5).
+      // Quien declara todos en la Encuesta Cuatrimestral terminó la carrera (TrayectoriaEstudiantes de Tools)
+      var CREDITOS_PLAN = 235.5;
       // Ids de Moodle. Las líneas "// @config" se copian de moodle.config.json con sincronizar_config.js: no editarlas a mano
       var CMID_TOOLS = 59941; // @config paginas.utils_tools
       var DATAID_ESTUDIANTES = 206; // @config bases.estudiantes.dataid
@@ -84,9 +86,13 @@
       var DATAID_MATERIAS = 152; // @config bases.materias.dataid
       var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
+      var DATAID_INFORMES = null; // @config bases.informes.dataid
+      // Campos de la base Informes (conclusiones del docente), en el formulario de alta se ubican por su etiqueta
+      var CAMPOS_INFORME = ['informe', 'periodo', 'cohorte', 'tramo', 'titulo', 'conclusiones', 'created_at'];
+      var CLAVE_PREVIEW_INFORMES = 'zk-preview-informes'; // conclusiones guardadas en la vista previa local
       // En la vista previa local, la Página Tools del repo (con Live Server: el navegador no deja leerla abriendo el archivo directo)
       var RUTA_LOCAL_TOOLS = '../utils/tools/content.html';
-      var VERSION_TOOLS = 7; // CriticidadEstudiante, DefinicionEncuesta, RespuestasMoodle y NormalizarMateria
+      var VERSION_TOOLS = 9; // CriticidadEstudiante, DefinicionEncuesta, RespuestasMoodle, NormalizarMateria (v7) y TrayectoriaEstudiantes (v9)
       // CargaParcialesPrimero usa la plantilla del equipo (sin data-campo): filas y nombre de cada celda, en orden
       var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
       var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
@@ -102,8 +108,12 @@
       // DATOS DE PRUEBA: INTEGRANTES DE ZHAKYZ (DATOS FICTICIOS)
       // ---------------------------------------------------------
       var PERIODOS_PRUEBA = [
-        { periodo: '2026-1', fecha_inicio: '2026-03-16', fecha_limite_encuesta: '2026-07-31' },
-        { periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '' }
+        { rid: 1, periodo: '2024-1', fecha_inicio: '2024-03-18', fecha_limite_encuesta: '2024-07-31', periodos_abandono: '4' },
+        { rid: 2, periodo: '2024-2', fecha_inicio: '2024-08-20', fecha_limite_encuesta: '2024-12-13', periodos_abandono: '4' },
+        { rid: 3, periodo: '2025-1', fecha_inicio: '2025-03-17', fecha_limite_encuesta: '2025-07-31', periodos_abandono: '4' },
+        { rid: 4, periodo: '2025-2', fecha_inicio: '2025-08-19', fecha_limite_encuesta: '2025-12-12', periodos_abandono: '4' },
+        { rid: 5, periodo: '2026-1', fecha_inicio: '2026-03-16', fecha_limite_encuesta: '2026-07-31', periodos_abandono: '4' },
+        { rid: 6, periodo: '2026-2', fecha_inicio: '2026-08-18', fecha_limite_encuesta: '', periodos_abandono: '4' }
       ];
       // Base Estudiantes
       var ESTUDIANTES_PRUEBA = [
@@ -130,6 +140,14 @@
       ];
       // Base Respuestas: json_respuesta con el formato del ADR-007 ({ item_id, respuestas }); la versión dice qué definición de la base Encuestas leer
       var RESPUESTAS_PRUEBA = [
+        // Historial para el informe Trayectoria y egreso: Nahuel responde desde 2025-1; Luca responde en 2025-2 y 2026-2 (sin abandono:
+        // como mucho suma 3 períodos seguidos sin actividad); Valentino responde desde 2025-1 y egresa en 2026-2; Gian Luca nunca responde
+        { rid: 401, id_usuario: 3623, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2025-1', created_at: '2025-05-02', json_respuesta: [{ item_id: 8262, respuestas: [42] }] },
+        { rid: 402, id_usuario: 3623, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2025-2', created_at: '2025-10-01', json_respuesta: [{ item_id: 8262, respuestas: [63] }] },
+        { rid: 403, id_usuario: 3770, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2025-2', created_at: '2025-09-28', json_respuesta: [{ item_id: 8262, respuestas: [85] }] },
+        { rid: 404, id_usuario: 2048, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2025-1', created_at: '2025-04-30', json_respuesta: [{ item_id: 8262, respuestas: [196] }] },
+        { rid: 405, id_usuario: 2048, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2025-2', created_at: '2025-10-03', json_respuesta: [{ item_id: 8262, respuestas: [213] }] },
+        { rid: 406, id_usuario: 2048, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2026-1', created_at: '2026-04-29', json_respuesta: [{ item_id: 8262, respuestas: [225.5] }] },
         { rid: 501, id_usuario: 3770, codigo_encuesta: 'inicial', version: 3, periodo: '2026-2', created_at: '2026-10-06', json_respuesta: [] },
         { rid: 502, id_usuario: 3623, codigo_encuesta: 'cuatrimestral', version: 3, periodo: '2026-1', created_at: '2026-07-10', json_respuesta: [
           { item_id: 8262, respuestas: [81] }, { item_id: 8264, respuestas: [1] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [3] },
@@ -144,7 +162,7 @@
           { item_id: 8768, respuestas: [{ materia: 'ING8301', primera_vez: true, dificultad: 2 }, { materia: 'ING8201', primera_vez: true, dificultad: 3 }, { materia: 'ING2219', primera_vez: true, dificultad: 2 }, { materia: 'ING8308', primera_vez: true, dificultad: 1 }] },
           { item_id: 8271, respuestas: [1] }] },
         { rid: 505, id_usuario: 2048, codigo_encuesta: 'cuatrimestral', version: 4, periodo: '2026-2', created_at: '2026-10-09', json_respuesta: [
-          { item_id: 8262, respuestas: [140] }, { item_id: 8264, respuestas: [2] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [2] },
+          { item_id: 8262, respuestas: [235.5] }, { item_id: 8264, respuestas: [5] }, { item_id: 8265, respuestas: [1] }, { item_id: 8266, respuestas: [2] },
           { item_id: 8768, respuestas: [{ materia: 'ING2221', primera_vez: false, dificultad: 5 }] },
           { item_id: 8271, respuestas: [3] }] }
       ];
@@ -166,6 +184,7 @@
         { materia: 'Fundamentos de Química', critica: false, umbral: null }
       ];
       var PARCIALES_PRUEBA = [
+        { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 1', periodo: '2026-1', nota: 3, estado: 'Desaprobado' },
         { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 1', periodo: '2026-2', nota: 6, estado: 'Aprobado' },
         { id_usuario: 3773, materia: 'Análisis Matemático I', instancia: 'Parcial 2', periodo: '2026-2', nota: 4, estado: 'Desaprobado' },
         { id_usuario: 3773, materia: 'Álgebra I- B', instancia: 'Parcial 1', periodo: '2026-2', nota: 7, estado: 'Aprobado' },
@@ -186,6 +205,11 @@
         { id_usuario_estudiante: 3770, nombre_acompanante: 'Gian Luca Distefano', tipo_acompanante: 'asesor_par', originada_por: 'estudiante', estado: 'cancelada', fecha_solicitud: '2026-09-20', fecha_realizada: '' },
         { id_usuario_estudiante: 2806, nombre_acompanante: 'Luca Zuanetti', tipo_acompanante: 'tutor', originada_por: 'tutor', estado: 'solicitada', fecha_solicitud: '2026-11-02', fecha_realizada: '' }
       ];
+      // Base Informes: conclusiones guardadas (en la vista previa se suman las que se guardan en este navegador)
+      var INFORMES_PRUEBA = [
+        { rid: 801, informe: 'criticidad', periodo: '2026-2', cohorte: 'todas', tramo: 'todos', titulo: 'Criticidad del período 2026-2', autor: 'Luca Zuanetti', created_at: '2026-11-10T18:20:00-03:00',
+          conclusiones: 'Dos estudiantes en riesgo alto. Santiago desaprobó los parciales de Análisis Matemático I: se le ofrece una entrevista con un asesor par antes del recuperatorio.' }
+      ];
       var ESTADOS_ENTREVISTA = { solicitada: 'Solicitada', programada: 'Programada', realizada: 'Realizada', no_asistio: 'No asistió', cancelada: 'Cancelada', rechazada: 'Rechazada' };
 
       var INFORMES = [
@@ -194,7 +218,8 @@
         { id: 'resultados', titulo: 'Resultados de la encuesta', icono: 'indicadores' },
         { id: 'primero', titulo: 'Notas de 1.er año', icono: 'reportes' },
         { id: 'entrevistas', titulo: 'Entrevistas y tutorías', icono: 'entrevistas' },
-        { id: 'avance', titulo: 'Avance curricular', icono: 'plan' }
+        { id: 'avance', titulo: 'Avance curricular', icono: 'plan' },
+        { id: 'trayectoria', titulo: 'Trayectoria y egreso', icono: 'estudiante' }
       ];
       // Bases que lee cada informe la primera vez que se elige (Períodos y Estudiantes se leen al abrir, para los filtros)
       var NECESITA = {
@@ -203,10 +228,16 @@
         resultados: ['respuestas', 'encuestas', 'materias'],
         primero: ['parciales', 'materiasPrimero', 'criticidad'],
         entrevistas: ['entrevistas', 'criticidad', 'respuestas'],
-        avance: ['respuestas', 'encuestas']
+        avance: ['respuestas', 'encuestas'],
+        trayectoria: ['respuestas', 'encuestas', 'parciales']
       };
       // Datos con los que se arman los informes: los de prueba o los leídos de Moodle (cargar)
       var PERIODOS = [], ESTUDIANTES = [], CRITICIDAD = [], RESPUESTAS = [], MATERIAS = {}, MATERIAS_PRIMERO = [], PARCIALES = [], ENTREVISTAS = [];
+      var PERIODOS_ABANDONO = null; // de la base Períodos; null = el valor por defecto de Tools (4)
+      var CONCLUSIONES = []; // base Informes: { rid, informe, periodo, cohorte, tramo, titulo, conclusiones, autor, created_at }
+      var borradores = {}; // texto de conclusiones sin guardar, por informe, período y filtros
+      var avisoInformes = ''; // error al leer la base Informes (el informe se dibuja igual)
+      var rolActual = ROL_INICIAL;
       var CRITICIDAD_DE = {}; // id_usuario → sus entradas de Criticidad
       var ENCUESTA_DE = {}; // rid de Respuestas → codigo_encuesta (de qué encuesta es cada entrada de Criticidad de fuente respuestas)
       var MOODLE = {}; // id_usuario → fecha (milisegundos) de su respuesta a la Encuesta Cuatrimestral en Moodle
@@ -233,6 +264,7 @@
         info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
         subir: '<path d="m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/>',
         bajar: '<path d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/>',
+        guardar: '<path d="M17 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>',
         ver: '<path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>'
       };
 
@@ -375,11 +407,19 @@
       }
 
       // TABLA CON ENCABEZADOS QUE ORDENAN: UN CLIC ORDENA DE MENOR A MAYOR Y OTRO, DE MAYOR A MENOR
+      // Con más de FILAS_VISIBLES filas, la tabla va en un recuadro de alto fijo con su propio desplazamiento y el encabezado fijo:
+      // así una tabla de cientos de estudiantes no aleja las conclusiones. El PDF la imprime entera (paraImprimir)
+      var FILAS_VISIBLES = 12;
+      var ALTO_TABLA_LARGA = 'max-height: 560px !important; overflow: auto !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important;';
+
       function tabla(encabezados, filas) {
         if (!filas.length) return '<p style="' + EST.ayuda + ' margin: 0 !important;">No hay datos para los filtros elegidos.</p>';
-        return '<div style="overflow-x: auto !important;"><table style="' + EST.tabla + '"><thead><tr>' +
+        var larga = filas.length > FILAS_VISIBLES;
+        var th = EST.th + (larga ? ' position: sticky !important; top: 0 !important; z-index: 1 !important;' : '');
+        return (larga ? '<p style="' + EST.ayuda + ' margin: 0 0 8px 0 !important;">' + filas.length + ' filas: la tabla se desplaza dentro del recuadro.</p>' : '') +
+          '<div style="' + (larga ? ALTO_TABLA_LARGA : 'overflow-x: auto !important;') + '"><table style="' + EST.tabla + '"><thead><tr>' +
           encabezados.map(function(h, i) {
-            return '<th style="' + EST.th + '" aria-sort="none"><button type="button" data-ordenar="' + i + '" title="Ordenar por ' + escapar(h).toLowerCase() + '" style="cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; padding: 0; font: inherit; color: inherit; text-align: left;">' +
+            return '<th style="' + th + '" aria-sort="none"><button type="button" data-ordenar="' + i + '" title="Ordenar por ' + escapar(h).toLowerCase() + '" style="cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; padding: 0; font: inherit; color: inherit; text-align: left;">' +
               escapar(h) + '<span data-flecha style="display: inline-flex; width: 14px; height: 14px;"></span></button></th>';
           }).join('') +
           '</tr></thead><tbody>' + filas.map(function(f) {
@@ -435,9 +475,87 @@
         return lista.map(function(b) {
           return '<div style="display: grid !important; grid-template-columns: minmax(120px, 34%) 1fr 48px !important; align-items: center !important; gap: 10px !important; margin-bottom: 6px !important; font-size: 13px !important;">' +
             '<span style="color: #0b0e14 !important;">' + escapar(b.etiqueta) + '</span>' +
-            '<span style="display: block !important; height: 10px !important; border-radius: 999px !important; background-color: #f5f6fa !important; overflow: hidden !important;">' +
-            '<span style="display: block !important; height: 10px !important; width: ' + Math.round(b.valor / max * 100) + '% !important; background-color: ' + (b.color || '#026bd4') + ' !important; border-radius: 999px !important;"></span></span>' +
+            '<span title="' + escapar(b.etiqueta + ': ' + b.valor + (sufijo || '')) + '" style="display: block !important; height: 14px !important; border-radius: 4px !important; background-color: #f5f6fa !important; overflow: hidden !important;">' +
+            '<span style="display: block !important; height: 14px !important; width: ' + Math.round(b.valor / max * 100) + '% !important; min-width: ' + (b.valor ? '4px' : '0') + ' !important; background-color: ' + (b.color || '#026bd4') + ' !important; border-radius: 4px !important;"></span></span>' +
             '<span style="text-align: right !important; color: #47536b !important;">' + b.valor + (sufijo || '') + '</span></div>';
+        }).join('');
+      }
+
+      // ---------------------------------------------------------
+      // GRÁFICOS SVG (SKILL dataviz: MARCAS FINAS, GRILLA SUAVE, LEYENDA Y ETIQUETAS DIRECTAS, VALOR AL PASAR EL MOUSE)
+      // ---------------------------------------------------------
+      // Paleta categórica en orden fijo, validada sobre blanco (los tres tonos claros van siempre con etiqueta y con la tabla)
+      var SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
+      var GRAF = { texto: '#0b0e14', secundario: '#47536b', grilla: '#ebeef4', eje: '#c2c9d6' };
+
+      // LEYENDA: MUESTRA DE COLOR + NOMBRE (NUNCA SOLO COLOR)
+      function leyenda(items) {
+        return '<div style="display: flex !important; flex-wrap: wrap !important; gap: 6px 16px !important; margin: 0 0 8px 0 !important; font-size: 12px !important; color: ' + GRAF.secundario + ' !important;">' +
+          items.map(function(it) {
+            return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important;">' +
+              '<span style="width: 12px !important; height: ' + (it.linea ? '3px' : '12px') + ' !important; border-radius: ' + (it.linea ? '2px' : '3px') + ' !important; background-color: ' + it.color + ' !important;"></span>' + escapar(it.nombre) + '</span>';
+          }).join('') + '</div>';
+      }
+
+      // LÍNEAS: series = [{ nombre, color, puntos: [{ x, y, texto }] }]; o = { xMin, xMax, etiquetaX(x), yMax, sufijo, tituloX, tituloY }
+      function graficoLineas(series, o) {
+        var W = 560, H = 250, m = { l: 46, r: series.length > 1 && series.length <= 4 ? 60 : 16, t: 12, b: 42 };
+        var xMin = o.xMin || 0, xMax = Math.max(o.xMax, xMin + 1), yMax = o.yMax || 100;
+        var px = function(x) { return m.l + (x - xMin) / (xMax - xMin) * (W - m.l - m.r); };
+        var py = function(y) { return m.t + (1 - y / yMax) * (H - m.t - m.b); };
+        var svg = '';
+        [0, 0.25, 0.5, 0.75, 1].forEach(function(f) {
+          var y = py(f * yMax);
+          svg += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y + '" y2="' + y + '" stroke="' + (f === 0 ? GRAF.eje : GRAF.grilla) + '" stroke-width="1"/>' +
+            '<text x="' + (m.l - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="12" fill="' + GRAF.secundario + '">' + Math.round(f * yMax) + (o.sufijo || '') + '</text>';
+        });
+        var paso = Math.max(1, Math.ceil((xMax - xMin) / 12));
+        for (var x = xMin; x <= xMax; x += paso) {
+          svg += '<text x="' + px(x) + '" y="' + (H - m.b + 16) + '" text-anchor="middle" font-size="12" fill="' + GRAF.secundario + '">' + escapar(o.etiquetaX ? o.etiquetaX(x) : x) + '</text>';
+        }
+        if (o.tituloX) svg += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="12" fill="' + GRAF.secundario + '">' + escapar(o.tituloX) + '</text>';
+        series.forEach(function(s) {
+          var pts = s.puntos.filter(function(p) { return p.y !== null && p.y !== undefined; });
+          if (pts.length > 1) {
+            // Escalones (o.escalones): el valor sigue igual hasta el punto siguiente, como una curva de Kaplan-Meier
+            var coords = [];
+            pts.forEach(function(p, i) {
+              if (o.escalones && i > 0) coords.push(px(p.x) + ',' + py(pts[i - 1].y));
+              coords.push(px(p.x) + ',' + py(p.y));
+            });
+            svg += '<polyline fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' + coords.join(' ') + '"/>';
+          }
+          pts.forEach(function(p) {
+            // El círculo grande y transparente es el área para pasar el mouse; el chico, la marca con un anillo del color de fondo
+            svg += '<g><title>' + escapar(s.nombre + ' · ' + (p.texto || (o.etiquetaX ? o.etiquetaX(p.x) : p.x) + ': ' + decimal(redondear(p.y, 1)) + (o.sufijo || ''))) + '</title>' +
+              '<circle cx="' + px(p.x) + '" cy="' + py(p.y) + '" r="10" fill="transparent"/>' +
+              '<circle cx="' + px(p.x) + '" cy="' + py(p.y) + '" r="4" fill="' + s.color + '" stroke="#ffffff" stroke-width="2"/></g>';
+          });
+          // Etiqueta directa al final de la línea (hasta 4 series)
+          if (series.length > 1 && series.length <= 4 && pts.length) {
+            var u = pts[pts.length - 1];
+            svg += '<text x="' + (px(u.x) + 8) + '" y="' + (py(u.y) + 4) + '" font-size="12" fill="' + GRAF.texto + '">' + escapar(s.nombre) + '</text>';
+          }
+        });
+        return (series.length > 1 ? leyenda(series.map(function(s) { return { nombre: s.nombre, color: s.color, linea: true }; })) : '') +
+          '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="' + escapar(o.descripcion || '') + '" style="display: block !important; max-width: 100% !important; height: auto !important; overflow: visible !important;">' + svg + '</svg>';
+      }
+
+      // BARRAS APILADAS AL 100 %: filas = [{ etiqueta, valores: { clave: n } }]; categorias = [{ clave, nombre, color }]
+      function graficoApiladas(filas, categorias) {
+        return leyenda(categorias) + filas.map(function(f) {
+          var total = categorias.reduce(function(s, c) { return s + (f.valores[c.clave] || 0); }, 0);
+          var segmentos = categorias.filter(function(c) { return f.valores[c.clave]; }).map(function(c) {
+            var v = f.valores[c.clave], pct = total ? v / total * 100 : 0;
+            return '<span title="' + escapar(f.etiqueta + ' · ' + c.nombre + ': ' + v + ' (' + Math.round(pct) + ' %)') + '" style="display: block !important; width: ' + pct + '% !important; height: 16px !important; background-color: ' + c.color + ' !important; border-radius: 4px !important; min-width: 4px !important;"></span>';
+          }).join('');
+          // Los valores van en texto debajo de la barra (con el color del texto, no el de la serie)
+          var detalle = categorias.filter(function(c) { return f.valores[c.clave]; }).map(function(c) { return c.nombre + ': ' + f.valores[c.clave]; }).join(' · ');
+          return '<div style="display: grid !important; grid-template-columns: minmax(90px, 22%) 1fr 40px !important; align-items: center !important; gap: 2px 10px !important; margin-bottom: 10px !important; font-size: 13px !important;">' +
+            '<span style="color: ' + GRAF.texto + ' !important;">' + escapar(f.etiqueta) + '</span>' +
+            '<span style="display: flex !important; gap: 2px !important; background-color: #f5f6fa !important; border-radius: 4px !important;">' + (segmentos || '<span style="height: 16px !important;"></span>') + '</span>' +
+            '<span style="text-align: right !important; color: ' + GRAF.secundario + ' !important; font-variant-numeric: tabular-nums !important;">' + total + '</span>' +
+            '<span></span><span style="font-size: 11px !important; color: ' + GRAF.secundario + ' !important;">' + escapar(detalle || 'Sin estudiantes') + '</span><span></span></div>';
         }).join('');
       }
 
@@ -713,7 +831,7 @@
         var conDato = lista.filter(function(x) { return x.creditos !== null; });
         var resumen = [
           { titulo: 'Estudiantes con dato', valor: conDato.length, detalle: 'de ' + lista.length + ' de 2.º año en adelante' },
-          { titulo: 'Avance promedio', valor: conDato.length ? Math.round(promedio(conDato.map(function(x) { return x.creditos; })) / CREDITOS_PLAN * 100) + ' %' : '—', detalle: 'sobre 223 créditos' },
+          { titulo: 'Avance promedio', valor: conDato.length ? Math.round(promedio(conDato.map(function(x) { return x.creditos; })) / CREDITOS_PLAN * 100) + ' %' : '—', detalle: 'sobre 235,5 créditos' },
           { titulo: 'Bajo el 38,97 %', valor: conDato.filter(function(x) { return x.creditos / CREDITOS_PLAN < 0.3897; }).length, detalle: 'umbral de García Lambert' }
         ];
         var columnas = ['Estudiante', 'Cohorte', 'Créditos aprobados', 'Avance sobre el plan', 'Período del dato'];
@@ -722,7 +840,7 @@
         return kpis(resumen) +
           '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
           '<span style="color: #47536b !important;">' + icono('info', 18) + '</span><span>Provisorio: el avance se mide sobre el total del plan. La comparación con lo esperado según el tiempo desde el ingreso está en análisis.</span></div>' +
-          bloque('Avance promedio por cohorte', 'Créditos promedio sobre los 223 del plan. En rojo, las cohortes bajo el 38,97 %.',
+          bloque('Avance promedio por cohorte', 'Créditos promedio sobre los 235,5 del plan. En rojo, las cohortes bajo el 38,97 %.',
             barras(Object.keys(cohortes).sort().map(function(c) {
               var p = Math.round(promedio(cohortes[c]) / CREDITOS_PLAN * 100);
               return { etiqueta: 'Cohorte ' + c, valor: p, color: p < 38.97 ? SEMAFORO.rojo.punto : '#026bd4' };
@@ -730,6 +848,266 @@
           bloque('Por cohorte', '', tabla(columnasCoh, datosCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
           tarjeta('Por estudiante', 'Créditos de la última Encuesta Cuatrimestral respondida hasta el período elegido.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c === '' ? '—' : c); }); })),
             'bases Estudiantes y Respuestas (cuadro de créditos)');
+      }
+
+      // ---------------------------------------------------------
+      // INFORME 7: TRAYECTORIA Y EGRESO (TrayectoriaEstudiantes DE TOOLS)
+      // ---------------------------------------------------------
+      // Definiciones acordadas con el DII (docs/models/trayectoria/MODELO_ABANDONO_Y_EGRESO.md): ingresantes = estudiantes con información
+      // personal; abandono = N períodos cerrados seguidos sin notas ni Encuesta Cuatrimestral (N de la base Períodos); egreso = declarar
+      // los 235,5 créditos del plan. Se calcula hasta el período elegido
+      var ESTADOS_TRAYECTORIA = {
+        activo: { nombre: 'Activos', singular: 'Activo', color: SERIES[0], chip: { punto: '#026bd4', fondo: '#f0f7ff', borde: '#cce4ff', texto: '#0a4a8f' } },
+        egresado: { nombre: 'Egresados', singular: 'Egresado', color: SERIES[2], chip: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f' } },
+        abandono: { nombre: 'Abandonaron', singular: 'Abandono', color: SERIES[1], chip: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808' } }
+      };
+
+      function chipTrayectoria(estado) {
+        var s = ESTADOS_TRAYECTORIA[estado].chip;
+        return '<span style="display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 24px !important; padding: 0 8px !important; border-radius: 999px !important; border: 1px solid ' + s.borde + ' !important; background-color: ' + s.fondo + ' !important; color: ' + s.texto + ' !important; font-size: 12px !important; font-weight: 600 !important; white-space: nowrap !important;">' +
+          '<span style="width: 8px !important; height: 8px !important; border-radius: 50% !important; background-color: ' + s.punto + ' !important;"></span>' + escapar(ESTADOS_TRAYECTORIA[estado].singular) + '</span>';
+      }
+
+      // CUATRIMESTRE DESDE EL INGRESO: k = 0 ES EL DE INGRESO ("1.º")
+      function cuatrimestreDesde(k) { return (k + 1) + '.º'; }
+
+      function informeTrayectoria() {
+        var periodos = PERIODOS.map(function(p) { return p.periodo; }).filter(function(p) { return p <= estado.periodo; });
+        var filtrados = estudiantesFiltrados();
+        var ids = filtrados.map(function(e) { return e.id_usuario; });
+        var actividad = PARCIALES.filter(function(p) { return ids.indexOf(p.id_usuario) !== -1 && p.periodo; })
+          .map(function(p) { return { id: p.id_usuario, periodo: p.periodo }; })
+          .concat(RESPUESTAS.filter(function(r) { return ids.indexOf(r.id_usuario) !== -1; }).map(function(r) { return { id: r.id_usuario, periodo: r.periodo }; }));
+        var creditos = RESPUESTAS.filter(function(r) { return ids.indexOf(r.id_usuario) !== -1; }).map(function(r) {
+          return { id: r.id_usuario, periodo: r.periodo, creditos: numero((respuestaDe(r, VARIABLES.creditos) || [null])[0]) };
+        }).filter(function(c) { return c.creditos !== null; });
+        var r = Tools.TrayectoriaEstudiantes({ periodos: periodos, estudiantes: filtrados.map(function(e) { return { id: e.id_usuario, cohorte: cohorteDe(e) }; }),
+          actividad: actividad, creditos: creditos }, { periodosAbandono: PERIODOS_ABANDONO || undefined, creditosEgreso: CREDITOS_PLAN });
+        var N = r.opciones.periodosAbandono;
+        var cuenta = function(est) { return r.estudiantes.filter(function(x) { return x.estado === est; }).length; };
+        var total = r.estudiantes.length;
+        var conRetencion = r.cohortes.filter(function(c) { return c.retencion; });
+        var retenidos = conRetencion.reduce(function(s, c) { return s + c.retencion.siguen; }, 0);
+        var base = conRetencion.reduce(function(s, c) { return s + c.ingresantes; }, 0);
+        var resumen = [
+          { titulo: 'Ingresantes', valor: total, detalle: 'con información personal' },
+          { titulo: 'Activos', valor: cuenta('activo'), detalle: porcentaje(cuenta('activo'), total) },
+          { titulo: 'Abandonaron', valor: cuenta('abandono'), detalle: porcentaje(cuenta('abandono'), total) },
+          { titulo: 'Egresados', valor: cuenta('egresado'), detalle: porcentaje(cuenta('egresado'), total) },
+          { titulo: 'Retención de 1.er año', valor: base ? porcentaje(retenidos, base) : '—', detalle: base ? retenidos + ' de ' + base + ' ingresantes' : 'sin cohortes con un año de datos' },
+          { titulo: 'Permanencia terminal', valor: r.estudiantes.filter(function(x) { return x.terminal; }).length, detalle: '90 % de los créditos, sin egresar' }
+        ];
+        var nombre = {};
+        filtrados.forEach(function(e) { nombre[e.id_usuario] = e; });
+
+        // Aviso con las definiciones y los límites de los datos
+        var primero = r.opciones.periodos[0] || estado.periodo;
+        var parciales = r.cohortes.filter(function(c) { return c.parcial; }).map(function(c) { return c.cohorte; });
+        var definiciones = aviso('<b style="font-weight: 600 !important;">Cómo se calcula.</b> Ingresantes: estudiantes con información personal. ' +
+          '<b style="font-weight: 600 !important;">Abandono:</b> ' + N + (N === 1 ? ' período cerrado' : ' períodos cerrados seguidos') + ' sin notas de 1.er año ni Encuesta Cuatrimestral (se cambia en Configuración del Sistema); si vuelve a tener actividad, deja de contar. ' +
+          '<b style="font-weight: 600 !important;">Egreso:</b> declarar los ' + decimal(CREDITOS_PLAN) + ' créditos del plan en la Cuatrimestral. ' +
+          'Se observan los períodos del sistema desde ' + escapar(primero) + ' hasta ' + escapar(estado.periodo) + '; el período vigente no cuenta para el abandono.' +
+          (parciales.length ? ' Las cohortes ' + escapar(parciales.join(', ')) + ' ingresaron antes de ' + escapar(primero) + ': solo están quienes seguían cursando en ese momento, así que su permanencia sale más alta.' : ''));
+
+        // Gráfico 1: estado de cada cohorte
+        var estadoCohortes = graficoApiladas(r.cohortes.map(function(c) {
+          return { etiqueta: 'Cohorte ' + c.cohorte, valores: { activo: c.activos, egresado: c.egresados, abandono: c.abandonos } };
+        }), ['activo', 'egresado', 'abandono'].map(function(k) { return { clave: k, nombre: ESTADOS_TRAYECTORIA[k].nombre, color: ESTADOS_TRAYECTORIA[k].color }; }));
+
+        // Gráfico 2: permanencia por cohorte (desgranamiento), hasta las 8 cohortes más recientes
+        var recientes = r.cohortes.slice(-SERIES.length);
+        var maxK = 0;
+        var series = recientes.map(function(c, i) {
+          var puntos = c.permanencia.map(function(p) {
+            maxK = Math.max(maxK, p.k);
+            return { x: p.k, y: p.porcentaje, texto: cuatrimestreDesde(p.k) + ' cuatrimestre (' + p.periodo + '): ' + p.siguen + ' de ' + c.ingresantes + ' siguen (' + Math.round(p.porcentaje) + ' %)' };
+          });
+          return { nombre: c.cohorte, color: SERIES[i], puntos: puntos };
+        });
+        var permanencia = series.some(function(s) { return s.puntos.length; })
+          ? graficoLineas(series, { xMin: 0, xMax: Math.max(maxK, 1), yMax: 100, sufijo: ' %', etiquetaX: cuatrimestreDesde, tituloX: 'Cuatrimestre desde el ingreso', descripcion: 'Porcentaje de cada cohorte que sigue en la carrera por cuatrimestre desde el ingreso' })
+          : '<p style="' + EST.ayuda + ' margin: 0 !important;">No hay períodos para mostrar.</p>';
+
+        // Gráfico 3: supervivencia académica (Kaplan-Meier), solo donde hay estudiantes en riesgo
+        var sup = r.supervivencia.filter(function(s) { return s.enRiesgo > 0; });
+        var supervivencia = sup.length ? graficoLineas([{ nombre: 'Supervivencia', color: SERIES[0], puntos: sup.map(function(s) {
+          return { x: s.k, y: s.supervivencia, texto: cuatrimestreDesde(s.k) + ' cuatrimestre: ' + decimal(redondear(s.supervivencia, 1)) + ' % sigue · ' + s.enRiesgo + ' en riesgo, ' + s.abandonos + (s.abandonos === 1 ? ' abandono' : ' abandonos') };
+        }) }], { escalones: true, xMin: 0, xMax: Math.max(sup[sup.length - 1].k, 1), yMax: 100, sufijo: ' %', etiquetaX: cuatrimestreDesde, tituloX: 'Cuatrimestre desde el ingreso', descripcion: 'Probabilidad de seguir en la carrera por cuatrimestre desde el ingreso' })
+          : '<p style="' + EST.ayuda + ' margin: 0 !important;">Todavía no hay períodos cerrados para calcularla.</p>';
+        var filasRiesgo = sup.map(function(s) {
+          return [cuatrimestreDesde(s.k), s.enRiesgo, s.abandonos, s.riesgo === null ? '—' : decimal(redondear(s.riesgo, 1)) + ' %', decimal(redondear(s.supervivencia, 1)) + ' %'];
+        });
+
+        // Tabla por cohorte
+        var columnasCoh = ['Cohorte', 'Ingresantes', 'Activos', 'Abandonaron', 'Egresados', 'Tasa de egreso', 'Retención de 1.er año', 'Duración promedio', 'Permanencia terminal', 'Reincorporados'];
+        var filasCoh = r.cohortes.map(function(c) {
+          return [c.cohorte + (c.parcial ? ' (parcial)' : ''), c.ingresantes, c.activos, c.abandonos, c.egresados, c.tasaEgreso === null ? '—' : Math.round(c.tasaEgreso) + ' %',
+            c.retencion ? Math.round(c.retencion.porcentaje) + ' %' + (c.retencion.confirmada ? '' : ' (provisoria)') : '—',
+            c.duracionPromedio === null ? '—' : decimal(redondear(c.duracionPromedio / 2, 1)) + ' años', c.terminal, c.reincorporados];
+        });
+
+        // Detalle por estudiante (también el CSV)
+        var columnas = ['Estudiante', 'Cohorte', 'Estado', 'Desde', 'Períodos seguidos sin actividad', 'Créditos declarados', 'Cuatrimestres en la carrera', 'Permanencia terminal', 'Reincorporado'];
+        var lista = r.estudiantes.slice().sort(function(a, b) {
+          var orden = { abandono: 0, activo: 1, egresado: 2 };
+          return orden[a.estado] - orden[b.estado] || b.sinActividad - a.sinActividad;
+        });
+        var datos = lista.map(function(x) {
+          var e = nombre[x.id];
+          return [e ? nombreDe(e) : String(x.id), x.cohorte, ESTADOS_TRAYECTORIA[x.estado].singular, x.estado === 'abandono' ? x.abandono : x.estado === 'egresado' ? x.egreso : '',
+            x.sinActividad, x.creditos === null ? '' : x.creditos, x.cuatrimestres === null ? '' : x.cuatrimestres, x.terminal ? 'Sí' : 'No', x.reincorporado ? 'Sí' : 'No'];
+        });
+        ultimo = { titulo: 'Trayectoria y egreso ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        return kpis(resumen) + definiciones +
+          bloque('Estado de cada cohorte', 'Cuántos ingresantes de cada cohorte siguen activos, egresaron o abandonaron.', estadoCohortes) +
+          bloque('Permanencia por cohorte', 'Porcentaje de cada cohorte que sigue en la carrera (activo o egresado) en cada cuatrimestre desde el ingreso. La caída es el desgranamiento.', permanencia) +
+          bloque('Supervivencia académica', 'Probabilidad de seguir en la carrera en cada cuatrimestre desde el ingreso, con todas las cohortes juntas (Kaplan-Meier: cada estudiante cuenta mientras se lo observa).', supervivencia) +
+          bloque('Riesgo de abandono por cuatrimestre', 'De los estudiantes en riesgo en cada cuatrimestre desde el ingreso, cuántos abandonaron.',
+            tabla(['Cuatrimestre', 'En riesgo', 'Abandonos', 'Riesgo', 'Supervivencia'], filasRiesgo.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
+          bloque('Por cohorte', 'Tasa de egreso: egresados sobre ingresantes. Retención de 1.er año: siguen un año después del ingreso; es provisoria hasta que pasan ' + N + (N === 1 ? ' período cerrado' : ' períodos cerrados') + ' desde ahí. Duración: desde el ingreso hasta el egreso (5 años teóricos).',
+            tabla(columnasCoh, filasCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
+          tarjeta('Por estudiante', 'Primero los que abandonaron. Permanencia terminal: activo, con el 90 % de los créditos o más y más de 10 cuatrimestres desde el ingreso.',
+            tabla(columnas, datos.map(function(f, i) {
+              return f.map(function(c, j) { return j === 2 ? chipTrayectoria(lista[i].estado) : escapar(c === '' ? '—' : decimal(c)); });
+            })), 'bases Estudiantes, Respuestas (créditos) y CargaParcialesPrimero, con TrayectoriaEstudiantes de la Página Tools');
+      }
+
+      // ---------------------------------------------------------
+      // CONCLUSIONES DEL DOCENTE (BASE INFORMES): UNA POR INFORME, PERÍODO Y FILTROS. CADA GUARDADO ES UNA ENTRADA NUEVA
+      // ---------------------------------------------------------
+      // Van debajo del informe y también en el PDF. Las de rid mayor son las vigentes; las anteriores quedan como historial
+      function claveConclusiones() { return [estado.informe, estado.periodo, estado.cohorte, estado.tramo].join('|'); }
+
+      function conclusionesDe(clave) {
+        return CONCLUSIONES.filter(function(c) { return [c.informe, c.periodo, c.cohorte, c.tramo].join('|') === clave; })
+          .sort(function(a, b) { return b.rid - a.rid; });
+      }
+
+      // FECHA ISO → "13/11/2026 a las 15:42" (O EL TEXTO COMO VINO)
+      function fechaGuardado(iso) {
+        var d = new Date(iso);
+        return isFinite(d.getTime()) ? fechaHora(d) : String(iso || '');
+      }
+
+      // LO QUE ESTÁ EN EL CUADRO DE TEXTO (UN BORRADOR SIN GUARDAR) O, SI NO SE TOCÓ, LA ÚLTIMA VERSIÓN GUARDADA
+      function textoConclusiones() {
+        var clave = claveConclusiones();
+        if (clave in borradores) return borradores[clave];
+        var v = conclusionesDe(clave)[0];
+        return v ? v.conclusiones : '';
+      }
+
+      function htmlConclusiones() {
+        var versiones = conclusionesDe(claveConclusiones());
+        var ultima = versiones[0];
+        var sinBase = enMoodle && !DATAID_INFORMES;
+        var estadoGuardado = ultima
+          ? 'Guardadas por ' + escapar(ultima.autor || 'el equipo') + ' el ' + escapar(fechaGuardado(ultima.created_at)) + '.'
+          : 'Todavía no hay conclusiones guardadas para este informe con estos filtros.';
+        var historial = versiones.length > 1 ? '<details style="margin-top: 12px !important; font-size: 13px !important;"><summary style="cursor: pointer; color: #47536b;">Versiones anteriores (' + (versiones.length - 1) + ')</summary>' +
+          versiones.slice(1).map(function(v) {
+            return '<div style="border-top: 1px solid rgba(194, 201, 214, 0.4) !important; padding: 8px 0 !important;">' +
+              '<div style="font-size: 12px !important; color: #47536b !important; margin-bottom: 4px !important;">' + escapar(v.autor || 'El equipo') + ' · ' + escapar(fechaGuardado(v.created_at)) + '</div>' +
+              '<div style="white-space: pre-wrap !important;">' + escapar(v.conclusiones) + '</div></div>';
+          }).join('') + '</details>' : '';
+        var cuerpo = (sinBase ? aviso('<b style="font-weight: 600 !important;">Todavía no se pueden guardar:</b> la base Informes no está creada en el campus. Lo que se escriba acá sale igual en el PDF.', 'error') : '') +
+          (avisoInformes ? aviso('<b style="font-weight: 600 !important;">No se pudieron leer las conclusiones guardadas.</b> ' + escapar(avisoInformes), 'error') : '') +
+          '<label for="campo-conclusiones-reportes" style="' + EST.label + '">Conclusiones del informe ' + escapar(ultimo ? ultimo.titulo : '') + ' (' + escapar(textoFiltros()) + ')</label>' +
+          '<textarea id="campo-conclusiones-reportes" rows="6" style="' + EST.input + ' height: auto !important; min-height: 120px !important; padding: 10px !important; line-height: 1.5 !important; resize: vertical !important;" placeholder="Qué muestran los datos, qué decisiones se toman y con qué estudiantes seguir.">' + escapar(textoConclusiones()) + '</textarea>' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-top: 8px !important;">' +
+          '<span id="estado-conclusiones-reportes" style="font-size: 12px !important; color: #47536b !important;" aria-live="polite">' + estadoGuardado + '</span>' +
+          '<button id="btn-guardar-conclusiones" type="button" style="' + EST.boton + ' height: 40px; padding: 0 16px; border-color: #333c4d; background-image: linear-gradient(to bottom, #333c4d, #0b0e14); color: #ffffff;"' + (sinBase ? ' disabled' : '') + '>' + icono('guardar', 18) + '<span>Guardar conclusiones</span></button></div>' +
+          historial;
+        cuerpo += '<div style="margin-top: 12px !important;"><button id="btn-volver-arriba-reportes" type="button" style="cursor: pointer; border: 0; background: transparent; padding: 0; font-family: inherit; font-size: 13px; font-weight: 500; color: #026bd4; display: inline-flex; align-items: center; gap: 4px;">' + icono('subir', 16) + 'Volver al inicio del informe</button></div>';
+        return '<div id="conclusiones-reportes" style="scroll-margin-top: 16px !important;">' +
+          tarjeta('Conclusiones', 'Se guardan para este informe, este período y estos filtros, y salen en el PDF. Cada guardado queda en el historial.', cuerpo) + '</div>';
+      }
+
+      function guardarConclusiones() {
+        var texto = document.getElementById('campo-conclusiones-reportes').value.trim();
+        var estadoEl = document.getElementById('estado-conclusiones-reportes');
+        var boton = document.getElementById('btn-guardar-conclusiones');
+        if (!texto) { estadoEl.textContent = 'Conclusiones: escribir el texto antes de guardar.'; estadoEl.style.setProperty('color', '#910808', 'important'); return; }
+        var ultima = conclusionesDe(claveConclusiones())[0];
+        if (ultima && ultima.conclusiones === texto) { estadoEl.textContent = 'No hay cambios: es el texto que ya está guardado.'; return; }
+        var registro = { informe: estado.informe, periodo: estado.periodo, cohorte: estado.cohorte, tramo: estado.tramo, titulo: ultimo ? ultimo.titulo : '', conclusiones: texto, created_at: ahoraIso() };
+        boton.disabled = true;
+        boton.lastChild.textContent = 'Guardando…';
+        var guardado = enMoodle ? conLimite(agregarEntradaMoodle(DATAID_INFORMES, CAMPOS_INFORME, registro), ESPERA_BASE, 'La base Informes')
+          : new Promise(function(r) { setTimeout(function() { r(null); }, 300); }).then(function() {
+            var agregados = leerAlmacenInformes();
+            var rid = CONCLUSIONES.concat(agregados).reduce(function(m, c) { return Math.max(m, Number(c.rid) || 0); }, 900) + 1;
+            escribirAlmacenInformes(agregados.concat([Object.assign({ rid: rid, autor: 'Vista previa (' + rolActual + ')' }, registro)]));
+            return rid;
+          });
+        guardado.then(function(rid) {
+          CONCLUSIONES.push(Object.assign({ rid: Number(rid) || 0, autor: enMoodle ? 'usted' : 'Vista previa (' + rolActual + ')' }, registro));
+          delete borradores[claveConclusiones()];
+          dibujar();
+          var el = document.getElementById('estado-conclusiones-reportes');
+          if (el) el.textContent = 'Conclusiones guardadas' + (rid ? ' (rid ' + rid + ')' : '') + '.';
+        }, function(e) {
+          boton.disabled = false;
+          boton.lastChild.textContent = 'Guardar conclusiones';
+          estadoEl.textContent = 'No se guardaron: ' + (e && e.message ? e.message : e) + ' El texto sigue en el cuadro para volver a intentarlo.';
+          estadoEl.style.setProperty('color', '#910808', 'important');
+        });
+      }
+
+      // AGREGAR UNA ENTRADA (rid=0) → PROMESA DEL rid NUEVO. Los campos se ubican por su etiqueta en el formulario de alta
+      // (como en la Página Configuración del Sistema)
+      function agregarEntradaMoodle(dataid, campos, registro) {
+        return fetch(M.cfg.wwwroot + '/mod/data/edit.php?d=' + dataid, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var form = Array.prototype.filter.call(doc.querySelectorAll('form'), function(f) { return f.querySelector('[name^="field_"]'); })[0];
+            if (!form) throw new Error('No se encontró el formulario de alta de la base (d=' + dataid + ').');
+            var porCampo = {};
+            form.querySelectorAll('label[for]').forEach(function(l) {
+              var ctrl = form.querySelector('#' + CSS.escape(l.getAttribute('for')));
+              var etiqueta = l.textContent.replace(/\s+/g, ' ').trim().toLowerCase().replace(/\s*campo obligatorio$/, '');
+              if (ctrl && /^field_/.test(ctrl.name)) porCampo[etiqueta] = ctrl.name;
+            });
+            var fd = new FormData(form);
+            fd.set('d', String(dataid));
+            fd.set('rid', '0');
+            campos.forEach(function(k) {
+              if (!porCampo[k]) throw new Error('Falta el campo "' + k + '" en la base (d=' + dataid + ').');
+              fd.set(porCampo[k], registro[k] === null || registro[k] === undefined ? '' : String(registro[k]));
+            });
+            fd.delete('saveandadd');
+            fd.set('saveandview', 'Guardar');
+            return fetch(M.cfg.wwwroot + '/mod/data/edit.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Moodle respondió ' + r.status + '.');
+            var m = (r.url || '').match(/[?&]rid=(\d+)/);
+            if (m) return Number(m[1]);
+            return r.text().then(function(html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var errores = Array.prototype.map.call(doc.querySelectorAll('#region-main .alert-danger, #region-main .error'), function(e) { return e.textContent.trim(); }).filter(Boolean);
+              throw new Error(errores.length ? errores.join(' ') : 'Moodle no confirmó la entrada nueva.');
+            });
+          });
+      }
+
+      function dosDigitos(n) { return String(n).padStart(2, '0'); }
+
+      // 2026-11-17T15:42:00-03:00 (HORA LOCAL CON ZONA)
+      function ahoraIso() {
+        var d = new Date(), z = -d.getTimezoneOffset();
+        return d.getFullYear() + '-' + dosDigitos(d.getMonth() + 1) + '-' + dosDigitos(d.getDate()) + 'T' + dosDigitos(d.getHours()) + ':' + dosDigitos(d.getMinutes()) + ':' + dosDigitos(d.getSeconds()) +
+          (z >= 0 ? '+' : '-') + dosDigitos(Math.floor(Math.abs(z) / 60)) + ':' + dosDigitos(Math.abs(z) % 60);
+      }
+
+      // VISTA PREVIA: LAS CONCLUSIONES GUARDADAS EN ESTE NAVEGADOR (localStorage)
+      function leerAlmacenInformes() {
+        try { var v = JSON.parse(window.localStorage.getItem(CLAVE_PREVIEW_INFORMES) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+      }
+
+      function escribirAlmacenInformes(lista) {
+        try { window.localStorage.setItem(CLAVE_PREVIEW_INFORMES, JSON.stringify(lista)); } catch (e) { /* sin almacenamiento: se pierde al recargar */ }
       }
 
       // ---------------------------------------------------------
@@ -764,7 +1142,30 @@
         setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
       }
 
+      // CONCLUSIONES EN EL PDF: LO QUE ESTÁ EN EL CUADRO (GUARDADO O NO), CON EL AUTOR SI ES LA VERSIÓN GUARDADA
+      function conclusionesPdf() {
+        var texto = textoConclusiones().trim();
+        if (!texto) return '';
+        var v = conclusionesDe(claveConclusiones())[0];
+        var firma = v && v.conclusiones.trim() === texto ? escapar((v.autor || 'El equipo') + ' · ' + fechaGuardado(v.created_at)) : 'Borrador sin guardar';
+        return '<div class="bloque" style="border: 1px solid #dadee7; border-radius: 6px; padding: 10px; margin-bottom: 12px;">' +
+          '<div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Conclusiones<\/div>' +
+          '<div style="white-space: pre-wrap; line-height: 1.5;">' + escapar(texto) + '<\/div>' +
+          '<div style="color: #47536b; font-size: 11px; margin-top: 6px;">' + firma + '<\/div><\/div>';
+      }
+
       // VENTANA CON SOLO EL INFORME, LISTA PARA "GUARDAR COMO PDF": ENCABEZADO, RESUMEN, GRÁFICOS, TABLAS DE RESUMEN Y DETALLE
+      // HTML DE PANTALLA LISTO PARA IMPRIMIR: SIN BARRA DE DESPLAZAMIENTO NI ANCHOS MÍNIMOS (EN EL PAPEL LO QUE NO ENTRA SE CORTA)
+      // Y CON EL TEXTO DE LOS ENCABEZADOS EN VARIAS LÍNEAS. Los estilos son inline con !important: se reemplazan en el texto
+      function paraImprimir(html) {
+        return html.split(ALTO_TABLA_LARGA).join('overflow: visible !important;')
+          .replace(/overflow-x: auto !important;/g, 'overflow: visible !important;')
+          .replace(/position: sticky !important; top: 0 !important; z-index: 1 !important;/g, '')
+          .replace(/white-space: nowrap !important;/g, 'white-space: normal !important;')
+          .replace(/min-width: \d+px !important;/g, '')
+          .replace(/padding: 8px 12px !important;/g, 'padding: 4px 6px !important;');
+      }
+
       function imprimir() {
         if (!ultimo) return;
         var w = window.open('', '_blank');
@@ -772,18 +1173,21 @@
         var celda = 'border: 1px solid #dadee7; padding: 4px 6px; text-align: left; vertical-align: top;';
         // Los gráficos usan colores de fondo: print-color-adjust hace que se impriman
         w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>' + escapar(ultimo.titulo) + '<\/title>' +
-          '<style>body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .bloque { break-inside: avoid; page-break-inside: avoid; } [data-flecha] { display: none !important; }<\/style><\/head>' +
+          '<style>@page { size: A4 landscape; margin: 12mm; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .bloque { break-inside: avoid; page-break-inside: avoid; } [data-flecha] { display: none !important; }' +
+          ' table { max-width: 100%; font-size: 11px !important; } th, td { hyphens: auto; overflow-wrap: break-word; } thead { display: table-header-group; } tr { break-inside: avoid; }<\/style><\/head>' +
           '<body style="font-family: Inter, Segoe UI, Arial, sans-serif; color: #0b0e14; margin: 24px; font-size: 12px;">' +
           '<div style="font-size: 11px; color: #47536b; text-transform: uppercase; letter-spacing: 0.5px;">Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP<\/div>' +
           '<h1 style="font-size: 20px; margin: 4px 0;">' + escapar(ultimo.titulo) + '<\/h1>' +
           '<div style="color: #47536b; margin-bottom: 12px;">' + escapar(textoFiltros()) + ' · Generado el ' + escapar(fechaHora(ultimo.generado)) + '<\/div>' +
           '<table style="border-collapse: collapse; margin-bottom: 16px;"><tr>' + ultimo.resumen.map(function(k) {
             return '<td style="' + celda + '"><div style="color: #47536b;">' + escapar(k.titulo) + '<\/div><b style="font-size: 16px;">' + escapar(decimal(k.valor)) + '<\/b>' + (k.detalle ? ' <span style="color: #47536b;">' + escapar(k.detalle) + '<\/span>' : '') + '<\/td>';
-          }).join('') + '<\/tr><\/table>' +
+          }).join('') + '<\/tr><\/table>' + conclusionesPdf() +
           '<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px;">' + (ultimo.bloques || []).map(function(b) {
-            return '<div class="bloque" style="border: 1px solid #dadee7; border-radius: 6px; padding: 10px; margin-bottom: 12px;">' +
+            // Las tablas ocupan el ancho completo (en media columna no entran); los gráficos van de a dos
+            var tieneTabla = /<table/.test(b.html);
+            return '<div class="bloque" style="border: 1px solid #dadee7; border-radius: 6px; padding: 10px; margin-bottom: 12px;' + (tieneTabla ? ' grid-column: 1 / -1;' : '') + '">' +
               '<div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">' + escapar(b.titulo) + '<\/div>' +
-              (b.ayuda ? '<div style="color: #47536b; font-size: 11px; margin-bottom: 8px;">' + b.ayuda + '<\/div>' : '') + b.html + '<\/div>';
+              (b.ayuda ? '<div style="color: #47536b; font-size: 11px; margin-bottom: 8px;">' + b.ayuda + '<\/div>' : '') + paraImprimir(b.html) + '<\/div>';
           }).join('') + '<\/div>' +
           '<h2 style="font-size: 14px; margin: 8px 0;">Detalle<\/h2>' +
           '<table style="border-collapse: collapse; width: 100%;"><thead><tr>' + ultimo.columnas.map(function(c) { return '<th style="' + celda + ' background: #f5f6fa;">' + escapar(c) + '<\/th>'; }).join('') + '<\/tr><\/thead><tbody>' +
@@ -840,7 +1244,7 @@
       }
 
       function dibujar() {
-        var informes = { criticidad: informeCriticidad, respuesta: informeRespuesta, resultados: informeResultados, primero: informePrimero, entrevistas: informeEntrevistas, avance: informeAvance };
+        var informes = { criticidad: informeCriticidad, respuesta: informeRespuesta, resultados: informeResultados, primero: informePrimero, entrevistas: informeEntrevistas, avance: informeAvance, trayectoria: informeTrayectoria };
         bloques = [];
         var cuerpo = informes[estado.informe]();
         ultimo.bloques = bloques;
@@ -850,12 +1254,13 @@
           '<div><div style="font-size: 18px !important; font-weight: 600 !important;">' + escapar(ultimo.titulo) + '</div>' +
           '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(textoFiltros()) + '</div>' +
           '<div style="font-size: 12px !important; color: #47536b !important;">Generado el ' + escapar(fechaHora(ultimo.generado)) + '</div></div>' +
-          '<div style="display: flex !important; gap: 8px !important;">' +
+          '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">' +
           '<button id="btn-csv-reportes" style="' + EST.boton + '">' + icono('descargar', 18) + 'Descargar CSV</button>' +
-          '<button id="btn-pdf-reportes" style="' + EST.boton + '">' + icono('imprimir', 18) + 'Imprimir o guardar en PDF</button></div></div>';
+          '<button id="btn-pdf-reportes" style="' + EST.boton + '">' + icono('imprimir', 18) + 'Imprimir o guardar en PDF</button>' +
+          '<button id="btn-ir-conclusiones" style="' + EST.boton + '">' + icono('bajar', 18) + (conclusionesDe(claveConclusiones()).length ? 'Ver las conclusiones' : 'Ir a las conclusiones') + '</button></div></div>';
         document.getElementById('contenido-reportes').innerHTML = acciones +
           (faltantes.length ? aviso('<b style="font-weight: 600 !important;">Lectura incompleta:</b> ' + escapar(faltantes.map(function(n) { return FUENTES[n].nombre; }).join(', ')) + '. El informe puede no incluir todas las entradas.', 'error') : '') +
-          cuerpo;
+          cuerpo + htmlConclusiones();
       }
 
       // ---------------------------------------------------------
@@ -866,6 +1271,7 @@
       }
 
       function aplicarRol(rol) {
+        rolActual = rol;
         document.getElementById('badge-rol-reportes').innerHTML =
           '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
           icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
@@ -901,8 +1307,22 @@
         if (inf) { estado.informe = inf.getAttribute('data-informe'); return renderizar(); }
         if (t.closest('#btn-csv-reportes')) return exportarCsv();
         if (t.closest('#btn-pdf-reportes')) return imprimir();
+        if (t.closest('#btn-guardar-conclusiones')) return guardarConclusiones();
+        if (t.closest('#btn-ir-conclusiones')) {
+          document.getElementById('conclusiones-reportes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return document.getElementById('campo-conclusiones-reportes').focus({ preventScroll: true });
+        }
+        if (t.closest('#btn-volver-arriba-reportes')) {
+          document.getElementById('reportes-gestion').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return document.getElementById('btn-ir-conclusiones').focus({ preventScroll: true });
+        }
         var orden = t.closest('[data-ordenar]');
         if (orden) return ordenarTabla(orden);
+      });
+
+      // EL BORRADOR DE CONCLUSIONES SE CONSERVA AL CAMBIAR DE INFORME O DE FILTROS (HASTA RECARGAR LA PÁGINA)
+      document.addEventListener('input', function(e) {
+        if (e.target.id === 'campo-conclusiones-reportes') borradores[claveConclusiones()] = e.target.value;
       });
 
       document.addEventListener('change', function(e) {
@@ -988,6 +1408,12 @@
               .sort(function(a, x) { return a.periodo < x.periodo ? -1 : 1; })
               .map(function(p) { return { periodo: String(p.periodo), fecha_inicio: p.fecha_inicio || '', fecha_limite_encuesta: p.fecha_limite_encuesta || '' }; });
             if (!PERIODOS.length) PERIODOS = [{ periodo: '2026-2', fecha_inicio: '', fecha_limite_encuesta: '' }];
+            // Períodos sin actividad para el abandono: el de la última entrada que lo define, como PeriodoVigente de Tools
+            PERIODOS_ABANDONO = null;
+            lista.slice().sort(function(a, x) { return (Number(a.rid) || 0) - (Number(x.rid) || 0); }).forEach(function(p) {
+              var n = Number(String(p.periodos_abandono || '').trim());
+              if (String(p.periodos_abandono || '').trim() !== '' && Math.floor(n) === n && n >= 1 && n <= 20) PERIODOS_ABANDONO = n;
+            });
           }
         },
         estudiantes: {
@@ -1096,6 +1522,22 @@
               .forEach(function(m) { MATERIAS[m.codigo] = m.nombre; });
           }
         },
+        // Conclusiones del docente. Si la base no existe o no se puede leer, el informe se dibuja igual (sin las guardadas)
+        informes: {
+          nombre: 'Informes',
+          obtener: function() {
+            avisoInformes = '';
+            if (!enMoodle) return Promise.resolve(INFORMES_PRUEBA.concat(leerAlmacenInformes()));
+            if (!DATAID_INFORMES) return Promise.resolve([]);
+            return leerBase('Informes', { dataid: DATAID_INFORMES }).catch(function(err) { avisoInformes = err && err.message ? err.message : String(err); return []; });
+          },
+          guardar: function(lista) {
+            CONCLUSIONES = lista.filter(function(c) { return c.informe && String(c.conclusiones || '').trim(); }).map(function(c) {
+              return { rid: Number(c.rid) || 0, informe: String(c.informe).trim(), periodo: String(c.periodo).trim(), cohorte: String(c.cohorte || 'todas').trim(),
+                tramo: String(c.tramo || 'todos').trim(), titulo: c.titulo || '', conclusiones: String(c.conclusiones), autor: c.autor || '', created_at: c.created_at || '' };
+            });
+          }
+        },
         entrevistas: {
           nombre: 'Entrevistas', prueba: ENTREVISTAS_PRUEBA, leer: function() { return leerBase('Entrevistas', { dataid: DATAID_ENTREVISTAS }); },
           guardar: function(lista) {
@@ -1147,7 +1589,7 @@
       document.getElementById('contenido-reportes').innerHTML = aviso('Leyendo las bases de Zhakyz…');
       conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(t) {
         Tools = t;
-        return cargar(['periodos', 'estudiantes']);
+        return cargar(['periodos', 'estudiantes', 'informes']);
       }).then(function() {
         estado.periodo = PERIODOS[PERIODOS.length - 1].periodo;
         renderizar();
