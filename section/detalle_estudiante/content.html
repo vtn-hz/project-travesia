@@ -1359,9 +1359,9 @@
           '<div style="color: #47536b !important; margin-bottom: 16px !important;"><b style="font-weight: 600 !important; color: #0b0e14 !important;">' + escapar(est.nombre) + '</b>' + (fecha ? ' · respondida el ' + fecha : '') + (r.version ? ' · versión ' + escapar(r.version) : '') + '</div>' +
           (pares.length
             ? '<dl style="margin: 0 !important; padding: 0 !important;">' + pares.map(function(x) {
-                return '<div style="padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
-                  '<dt style="font-size: 13px !important; color: #47536b !important; margin: 0 0 2px 0 !important; font-weight: 400 !important;">' + escapar(x.pregunta) + '</dt>' +
-                  '<dd style="margin: 0 !important; font-weight: 500 !important; color: #0b0e14 !important; overflow-wrap: anywhere !important;">' + (x.html !== undefined ? x.html : escapar(x.respuesta)) + '</dd></div>';
+                return '<div style="padding: 14px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
+                  '<dt style="font-size: 16px !important; line-height: 1.4 !important; color: #0b0e14 !important; margin: 0 0 6px 0 !important; font-weight: 600 !important;">' + escapar(x.pregunta) + '</dt>' +
+                  '<dd style="margin: 0 !important; font-weight: 400 !important; color: #0b0e14 !important; overflow-wrap: anywhere !important;">' + (x.html !== undefined ? x.html : escapar(x.respuesta)) + '</dd></div>';
               }).join('') + '</dl>'
             : '<div style="color: #47536b !important;">' + ((datos.encuestas || []).length ? 'Este envío no tiene respuestas guardadas.' : 'No se pudo leer la base Encuestas: faltan los textos de las preguntas.') + '</div>');
         $('modal-respuestas-detalle').style.setProperty('display', 'flex', 'important');
