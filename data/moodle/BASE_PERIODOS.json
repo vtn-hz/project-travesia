@@ -34,16 +34,16 @@
       "descripcion": "Hasta cuándo se espera la Encuesta Cuatrimestral del período (AAAA-MM-DD). Vacía mientras el equipo no la defina: se define o se cambia después desde la Página Configuración del Sistema, que agrega una entrada del mismo período con la fecha nueva. Mi Trayectoria la muestra y el cierre avisa si se hace antes. No cierra la encuesta: el estudiante puede responder hasta que se cierre el período"
     },
     {
-      "nombre": "periodos_abandono",
-      "tipo": "text",
-      "requerido": false,
-      "descripcion": "Períodos cerrados seguidos sin actividad (sin notas de 1.er año ni Encuesta Cuatrimestral) para considerar que un estudiante abandonó (entero de 1 a 20). Vale el de la última entrada que lo tiene; vacío en todas, 4. Lo cambia el equipo desde la Página Configuración del Sistema (una entrada nueva del período vigente con las mismas fechas), y cada entrada nueva repite el valor vigente. Agregado en local el 2026-11-17 (acordado con el DII: 4)"
-    },
-    {
       "nombre": "created_at",
       "tipo": "text",
       "requerido": true,
       "descripcion": "Fecha y hora de la entrada (ISO 8601 con zona)"
+    },
+    {
+      "nombre": "periodos_abandono",
+      "tipo": "text",
+      "requerido": false,
+      "descripcion": "Períodos cerrados seguidos sin actividad (sin notas de 1.er año ni Encuesta Cuatrimestral) para considerar que un estudiante abandonó (entero de 1 a 20). Vale el de la última entrada que lo tiene; vacío en todas, 4. Lo cambia el equipo desde la Página Configuración del Sistema (una entrada nueva del período vigente con las mismas fechas), y cada entrada nueva repite el valor vigente. Acordado con el DII el 2026-11-17 (4). Agregado al final de la base el 2026-11-18, porque Moodle no reordena campos"
     }
   ],
   "primera_entrada": {

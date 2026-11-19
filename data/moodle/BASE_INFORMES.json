@@ -3,8 +3,8 @@
   "nombre": "Informes",
   "descripcion": "Conclusiones que escriben los docentes sobre cada informe de Reportes: una entrada por guardado. Solo se agregan entradas: las vigentes de un informe, un período y unos filtros son las de rid mayor, y las anteriores quedan como historial. La escribe y la lee la Página Reportes.",
   "subseccion": "Database",
-  "origen": "Pedido del DII en la reunión del 2026-11-17: los informes tienen que poder llevar conclusiones del profesor. Definida en local el 2026-11-17, sin crear en Moodle.",
-  "estado": "local",
+  "origen": "Pedido del DII en la reunión del 2026-11-17: los informes tienen que poder llevar conclusiones del profesor. Definida el 2026-11-17. Creada en Moodle el 2026-11-18 (cmid 60917, d=252), oculta, con su plantilla de lista. En Moodle los 7 campos quedaron no obligatorios: la Página los completa siempre. El área de texto solo acepta formato HTML: la Página manda las conclusiones escapadas y con <br>.",
+  "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "No: solo escribe el equipo.",
     "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva, así queda el historial.",

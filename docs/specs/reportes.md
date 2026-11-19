@@ -6,7 +6,7 @@
 - **Acceso:** botón "Generar reporte" de la tarjeta "Reportes" del [menú inicial](../../section/menu_inicial/content.html). Hoy solo en la vista previa local (`paginas.reportes` vale `null`)
 - **Roles:** ADM, GES y TUT. Todos ven los mismos informes
 - **Requerimientos:** Visualización y Reportes (informes de gestión con resumen y estadísticas) y Generación de estadísticas (exportar en CSV y PDF)
-- **Estado:** desarrollada en local, **sin publicar**
+- **Estado:** **publicada** el 2026-11-18 como Página oculta "Reportes" (cmid 60918) en la subsección Hub, con la base Informes (cmid 60917, d=252)
 - **Última actualización:** 2026-11-17 (informe **Trayectoria y egreso**, **conclusiones** del docente, gráficos SVG y avance sobre 235,5 créditos; pedidos del DII en la reunión del 2026-11-17)
 
 ---

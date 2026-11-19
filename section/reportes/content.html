@@ -1,4 +1,5 @@
-<!-- SECCIÓN: REPORTES (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "REPORTES" DEL HUB · SIN PUBLICAR -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Reportes" (cmid 60918) · 2026-11-18 -->
+<!-- SECCIÓN: REPORTES (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "REPORTES" DEL HUB -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- DATOS: en Moodle, las bases de Zhakyz leídas con LeerBase (Página Tools, versión 7 o más nueva): al abrir, Períodos y Estudiantes;
      cada informe lee las demás la primera vez que se elige (Criticidad, Respuestas, Encuestas, CargaParcialesPrimero, CargaMateriasPrimero,
@@ -86,7 +87,7 @@
       var DATAID_MATERIAS = 152; // @config bases.materias.dataid
       var DATAID_ENTREVISTAS = 202; // @config bases.entrevistas.dataid
       var CMID_CUATRIMESTRAL = 59712; // @config encuestas.cuatrimestral.cmid
-      var DATAID_INFORMES = null; // @config bases.informes.dataid
+      var DATAID_INFORMES = 252; // @config bases.informes.dataid
       // Campos de la base Informes (conclusiones del docente), en el formulario de alta se ubican por su etiqueta
       var CAMPOS_INFORME = ['informe', 'periodo', 'cohorte', 'tramo', 'titulo', 'conclusiones', 'created_at'];
       var CLAVE_PREVIEW_INFORMES = 'zk-preview-informes'; // conclusiones guardadas en la vista previa local
@@ -96,6 +97,9 @@
       // CargaParcialesPrimero usa la plantilla del equipo (sin data-campo): filas y nombre de cada celda, en orden
       var FILAS_PARCIALES = 'tr[data-tipo="entrada_parcial"]';
       var COLUMNAS_PARCIALES = ['DNI', 'Estudiante', 'Materia', 'Instancia', 'Periodo', 'Nota', 'Estado', 'Recupera_a'];
+      // CargaMateriasPrimero también (como la lee CriticidadNotas de Tools): sin filas ni columnas, LeerBase no encuentra ninguna entrada
+      var FILAS_MATERIAS_PRIMERO = 'tr[data-tipo="entrada_materia"]';
+      var COLUMNAS_MATERIAS_PRIMERO = ['Materia', 'esCritica', 'Umbral'];
       // Esperas máximas: una base que no responde no deja la página cargando para siempre
       var ESPERA_TOOLS = 20000;
       var ESPERA_BASE = 60000;
@@ -1033,7 +1037,10 @@
         var registro = { informe: estado.informe, periodo: estado.periodo, cohorte: estado.cohorte, tramo: estado.tramo, titulo: ultimo ? ultimo.titulo : '', conclusiones: texto, created_at: ahoraIso() };
         boton.disabled = true;
         boton.lastChild.textContent = 'Guardando…';
-        var guardado = enMoodle ? conLimite(agregarEntradaMoodle(DATAID_INFORMES, CAMPOS_INFORME, registro), ESPERA_BASE, 'La base Informes')
+        // El campo conclusiones es un área de texto de Moodle, que solo acepta formato HTML: se manda escapado y con <br> en cada salto
+        // de línea (LeerBase los vuelve a convertir en saltos al leer)
+        var paraMoodle = Object.assign({}, registro, { conclusiones: escapar(texto).replace(/\r?\n/g, '<br>') });
+        var guardado = enMoodle ? conLimite(agregarEntradaMoodle(DATAID_INFORMES, CAMPOS_INFORME, paraMoodle), ESPERA_BASE, 'La base Informes')
           : new Promise(function(r) { setTimeout(function() { r(null); }, 300); }).then(function() {
             var agregados = leerAlmacenInformes();
             var rid = CONCLUSIONES.concat(agregados).reduce(function(m, c) { return Math.max(m, Number(c.rid) || 0); }, 900) + 1;
@@ -1504,7 +1511,7 @@
         materiasPrimero: {
           nombre: 'CargaMateriasPrimero',
           prueba: MATERIAS_PRIMERO_PRUEBA.map(function(m) { return { Materia: m.materia, esCritica: m.critica ? 'Sí' : 'No', Umbral: m.umbral === null ? '' : String(m.umbral) }; }),
-          leer: function() { return leerBase('CargaMateriasPrimero', { dataid: DATAID_MATERIAS_PRIMERO }); },
+          leer: function() { return leerBase('CargaMateriasPrimero', { dataid: DATAID_MATERIAS_PRIMERO, filas: FILAS_MATERIAS_PRIMERO, columnas: COLUMNAS_MATERIAS_PRIMERO }); },
           guardar: function(lista) {
             MATERIAS_PRIMERO = vigentes(lista, function(m) { return Tools.NormalizarMateria(m.Materia); }).map(function(m) {
               var umbral = numero(m.Umbral);
