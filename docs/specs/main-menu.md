@@ -31,7 +31,7 @@ Pantalla de entrada del sistema Travesía. Hub de navegación que adapta su cont
 │         │ Personal │ │Entrevista│ │ Reporte  │        │
 │         └──────────┘ └──────────┘ └──────────┘        │
 │                                                        │
-│  [GES]  Importar Datos · Sección Encuestas ·           │
+│  [GES]  Sección Encuestas ·                            │
 │  [TUT]  Dashboard Docente · Dashboard Entrevistas      │
 │  [PAR]  Dashboard Entrevistas                          │
 │  [ADM]  Todo + Sección Encuestas (editar/crear)        │
@@ -88,10 +88,6 @@ Mostrado de forma prominente para el alumno. Criterios (Req 4):
 - Editar Encuesta Inicial
 - Editar Encuesta Cuatrimestral
 - (Generación de encuestas: en desarrollo)
-
-### Importar Datos (GES)
-- Subir CSV: `{dni, codigo_materia, tipo_examen, nota, fecha}`
-- Subir CSV: `{dni, codigo_materia, estado_cursada, fecha}`
 
 ## Fecha simulada
 
