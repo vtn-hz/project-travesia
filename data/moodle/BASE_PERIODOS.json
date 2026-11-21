@@ -4,9 +4,18 @@
   "descripcion": "Períodos lectivos del sistema: una entrada por período abierto. Solo se agregan entradas: el período vigente es la de rid mayor (la última que se cargó). La escribe la Página Configuración del Sistema al cerrar un período, y la leen todas las vistas con PeriodoVigente() de la Página Tools. Volver atrás es agregar otra vez el período anterior.",
   "subseccion": "Database",
   "origen": "ADR-009 (2026-11-02). Reemplaza la base 2 del modelo simplificado con los campos que usa el cierre de período. Creada en Moodle el 2026-11-03 (cmid 60292, d=207) con crear_base.js; plantilla de lista con subir_plantillas.js; configurada desde los ajustes de la actividad. En Moodle los 4 campos quedaron no obligatorios. Primera entrada: rid 20287.",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 1,
+    "manageapproved": 0,
+    "requiredentriestoview": 0,
+    "solo_lectura": { "desde": "2026-01-01", "hasta": "2030-12-31" }
+  },
   "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: las que carga el equipo (rol Profesor) quedan aprobadas solas y las leen todos los navegadores; la que cargara un estudiante la vería solo él, así que solo cambiaría sus propias vistas.",
+    "Solo lectura desde / hasta": "Del 2026-01-01 al 2030-12-31 desde el 2026-11-21 (ocultamiento por rol, capa 1): el estudiante no puede agregar un período. La Página Configuración del Sistema la usa el staff, que no tiene el límite.",
     "Permitir la edición de entradas aprobadas": "No: un cambio es una entrada nueva.",
     "Número máximo de entradas": "0 (sin límite).",
     "Permitir comentarios": "No.",

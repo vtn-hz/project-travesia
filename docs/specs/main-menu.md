@@ -16,6 +16,14 @@ Pantalla de entrada del sistema Travesía. Hub de navegación que adapta su cont
 
 ## Roles y visibilidad
 
+> **Rol en Moodle (2026-11-21, local):** el Hub ya no arranca fijo en ADM. Toma el rol que detecta el resumen de Zhakyz (grupo `Zhakyz_*`, "Cambiar rol a…" o rol del curso) y que publica en `<html data-zk-rol>` y en el evento `zk-rol`. Mientras se detecta no muestra tarjetas. Ver [ocultamiento por rol](ocultamiento-por-rol.md#102-hub).
+>
+> **Selector "Cambiar rol" (publicado el 2026-11-21):** arriba a la derecha, en lugar del chip del rol y de la barra oscura de vista previa. Ver [ocultamiento por rol §10.3](ocultamiento-por-rol.md#103-selector-cambiar-rol).
+>
+> **Aviso de datos de prueba y "Resumen del período" ocultos (2026-11-21, local):** `MOSTRAR_AVISO_PRUEBA = false` y `MOSTRAR_RESUMEN_PERIODO = false`. Los indicadores del resumen y la etiqueta "Cierre 2026-2" estaban escritos en el código (`RESUMEN`), no se calculaban. Ninguno de los dos hace consultas, así que ocultarlos no cambia la performance.
+>
+> **Rol GES retirado (2026-11-21):** el Hub ya no menciona al gestor (rol, saludo, chips y botón de vista previa). Plan de Estudios y Correlativas y el indicador "Sin encuesta" quedan solo para ADM.
+
 ```
 ┌────────────────────────────────────────────────────────┐
 │                     MAIN MENU                          │

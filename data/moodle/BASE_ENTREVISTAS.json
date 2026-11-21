@@ -4,6 +4,14 @@
   "descripcion": "Ciclo completo de cada entrevista: involucrados (estudiante y acompañante), solicitud, fechas propuestas y contraofertas, programación, resultado y acciones acordadas (base 12 del modelo simplificado, en su versión reducida). Es la única base de la página Entrevistas y Tutorías: no hay base de asignaciones (Acompañamientos se eliminó el 2026-11-01). Editable: la página cambia el estado de la misma entrada.",
   "subseccion": "Database",
   "origen": "Creada el 2026-11-01; campos recreados el mismo día para guardar los involucrados. Diferencias con el modelo simplificado: guarda copia de los datos del estudiante y del acompañante (en lugar de rid_acompanamiento), agrega 'propuestas_json' (contraofertas del Req 11) y quita 'rid_alerta'. El acompañante es el usuario de la sesión que pidió la entrevista. Todos los TUT/PAR ven todas las entrevistas, para no entrevistar dos veces al mismo estudiante. La plantilla de lista expone cada campo como data-* en un elemento .zk-registro, más data-rid.",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 1,
+    "manageapproved": 1,
+    "requiredentriestoview": 0,
+    "solo_lectura": null
+  },
   "campos": [
     { "nombre": "dni", "tipo": "text", "descripcion": "DNI del estudiante: clave del estudiante en todo el modelo. No puede tener dos entrevistas activas a la vez" },
     { "nombre": "id_usuario_estudiante", "tipo": "number", "descripcion": "Cuenta del campus del estudiante (opcional). Se usa para abrir su detalle" },

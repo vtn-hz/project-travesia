@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Mi Trayectoria" (cmid 60264) · 2026-11-14 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Mi Trayectoria" (cmid 60264) · 2026-11-21 -->
 <!-- SECCIÓN: VISTA DEL ESTUDIANTE · MI TRAVESÍA (ROL EST) · SCRUM-24 -->
 <!-- QUÉ ES: la pantalla de entrada del estudiante, con el diseño del detalle del estudiante (perfil a la izquierda). Hasta que el estudiante carga su información personal (entrada en la base Estudiantes), todas las opciones están deshabilitadas y un aviso lo indica. Con la entrada, habilita Parciales de primer año y Entrevistas y Tutorías en los dos tramos, y la Encuesta Cuatrimestral desde 2.º año. La Encuesta Inicial se retiró (SCRUM-27, ADR-008). La información personal se carga y se edita en otra Página: section/informacion_personal. Spec: docs/specs/vista-estudiante.md -->
 <!-- DATOS: solo lectura. Lee la entrada propia de la base Estudiantes (data/moodle/BASE_ESTUDIANTES.json, todavía sin crear: bases.estudiantes.dataid vale null) y las respuestas propias de la base Respuestas (d=166) para el estado de las encuestas. Antes de cargar la información personal, el perfil muestra los datos de la cuenta de Moodle; después, los de la base -->
@@ -17,13 +17,25 @@
   </div>
 
   <!-- ENCABEZADO -->
-  <div style="margin-bottom: 18px !important;">
-    <div
-      style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
-      Proyecto Travesía · SBIRE</div>
-    <h3
-      style="margin: 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
-      Mi Trayectoria</h3>
+  <div
+    style="display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; flex-wrap: wrap !important; margin-bottom: 18px !important;">
+    <div>
+      <div
+        style="font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; color: #47536b !important; margin-bottom: 4px !important;">
+        Proyecto Travesía · SBIRE</div>
+      <h3
+        style="margin: 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
+        Mi Trayectoria</h3>
+    </div>
+    <!-- SELECTOR DE ROL (ARRIBA A LA DERECHA): LO DIBUJA crearSelectorRol -->
+    <div id="selector-rol-estudiante" style="display: none;"></div>
+  </div>
+
+  <!-- AVISO: ROL SIN ACCESO A MI TRAYECTORIA (TUT O PAR, ELEGIDO CON "CAMBIAR ROL") -->
+  <div id="aviso-rol-estudiante"
+    style="display: none; align-items: flex-start !important; gap: 10px !important; margin: 0 0 16px 0 !important; padding: 10px 14px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; color: #0b0e14 !important; font-size: 14px !important; line-height: 1.5 !important;">
+    <span data-icono="info" style="color: #47536b !important; padding-top: 1px !important;"></span>
+    <span id="txt-aviso-rol-estudiante"></span>
   </div>
 
   <!-- AVISO: DATOS DE PRUEBA -->
@@ -125,6 +137,8 @@
       // ---------------------------------------------------------
       var ICONOS = {
         alerta: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>', // warning
+        persona: '<path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/>', // person_outline
+        expandir: '<path d="M7 10l5 5 5-5z"/>', // arrow_drop_down
         info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>', // info
         ok: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>', // check_circle
         error: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>', // error
@@ -679,9 +693,164 @@
         if (btnAccion) return ejecutar(btnAccion.getAttribute('data-accion'));
       });
 
+      // SELECTOR DE ROL: INICIO (bloque idéntico en section/menu_inicial y section/vista_estudiante)
+      // ---------------------------------------------------------
+      // SELECTOR "CAMBIAR ROL" (ARRIBA A LA DERECHA)
+      // ---------------------------------------------------------
+      // Muestra la sección como la ve otro rol. ES SOLO VISUAL: no cambia permisos de Moodle (docs/specs/ocultamiento-por-rol.md).
+      // En Moodle lo resuelve el resumen de Zhakyz: recibe el pedido con el evento "zk-rol-cambiar", lo acepta solo del staff,
+      // guarda el rol elegido en este navegador y avisa a toda la página con "zk-rol" (la lista de la sección, el Hub y Mi
+      // Trayectoria cambian juntos). Un estudiante no ve el selector. En local no hay resumen: el rol elegido queda en
+      // localStorage (CLAVE_ROL_FORZADO) y lo comparten el Hub y Mi Trayectoria.
+      // El Hub y Mi Trayectoria pueden estar en la misma página del curso: todo se busca dentro del contenedor de cada uno.
+      var ROLES_SELECTOR = [
+        { rol: 'ADM', nombre: 'Administrador' },
+        { rol: 'TUT', nombre: 'Tutor / Entrevistador' },
+        { rol: 'PAR', nombre: 'Asesor par' },
+        { rol: 'EST', nombre: 'Estudiante' }
+      ];
+      var CLAVE_ROL_FORZADO = 'zk-rol-forzado';
+      var SELECTOR_LOCAL = window.location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+      var selectorRol = { contenedor: null, alCambiar: null, rol: null, real: null, forzado: false };
+
+      function nombreRolSelector(rol) {
+        for (var i = 0; i < ROLES_SELECTOR.length; i++) if (ROLES_SELECTOR[i].rol === rol) return ROLES_SELECTOR[i].nombre;
+        return rol;
+      }
+
+      // ROL ELEGIDO EN LOCAL (null si no se eligió ninguno)
+      function rolForzadoLocal() {
+        try {
+          var g = JSON.parse(window.localStorage.getItem(CLAVE_ROL_FORZADO) || 'null');
+          return g && g.usuario === '' && g.rol ? g.rol : null;
+        } catch (e) { return null; }
+      }
+      function guardarRolForzadoLocal(rol) {
+        try { window.localStorage.setItem(CLAVE_ROL_FORZADO, JSON.stringify({ usuario: '', rol: rol })); } catch (e) { /* sin almacenamiento */ }
+      }
+
+      // EN MOODLE SOLO LO USA EL STAFF (EL RESUMEN DE ZHAKYZ MARCA <html data-zk-staff="1">)
+      function puedeCambiarRol() {
+        return SELECTOR_LOCAL || document.documentElement.getAttribute('data-zk-staff') === '1';
+      }
+
+      function opcionSelectorRol(r) {
+        var activa = r.rol === selectorRol.rol;
+        return '<button type="button" role="menuitemradio" aria-checked="' + activa + '" data-elegir-rol="' + r.rol + '"' +
+          ' style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; width: 100% !important; padding: 8px 12px !important; border: 0 !important; border-radius: 6px !important; background-color: ' + (activa ? '#f5f6fa' : 'transparent') + ' !important; color: #0b0e14 !important; font-family: inherit !important; font-size: 14px !important; font-weight: ' + (activa ? '600' : '400') + ' !important; text-align: left !important; cursor: pointer;">' +
+          '<span>' + r.nombre + '</span>' + chipRol(r.rol) + '</button>';
+      }
+
+      // DIBUJAR EL BOTÓN Y EL MENÚ CON EL ESTADO ACTUAL
+      function pintarSelectorRol() {
+        var c = selectorRol.contenedor;
+        if (!c) return;
+        var visible = puedeCambiarRol() && !!selectorRol.rol && selectorRol.rol !== 'PEND';
+        c.style.setProperty('display', visible ? 'block' : 'none', 'important');
+        if (!visible) return;
+        c.querySelector('[data-selector-boton]').innerHTML =
+          '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
+          icono('persona', 16) + '</span>' +
+          '<span>' + nombreRolSelector(selectorRol.rol) + '</span>' + chipRol(selectorRol.rol) +
+          '<span style="color: #47536b !important; font-size: 12px !important; font-weight: 400 !important; padding-left: 4px !important; border-left: 1px solid #dadee7 !important;">Cambiar rol</span>' +
+          '<span style="color: #47536b !important;">' + icono('expandir', 18) + '</span>';
+        var volver = selectorRol.forzado && !SELECTOR_LOCAL && selectorRol.real
+          ? '<div style="height: 1px !important; background-color: #dadee7 !important; margin: 4px 0 !important;"></div>' +
+            '<button type="button" data-elegir-rol="' + selectorRol.real + '" style="display: block !important; width: 100% !important; padding: 8px 12px !important; border: 0 !important; border-radius: 6px !important; background-color: transparent !important; color: #026bd4 !important; font-family: inherit !important; font-size: 14px !important; font-weight: 500 !important; text-align: left !important; cursor: pointer;">Volver al rol propio (' + nombreRolSelector(selectorRol.real) + ')</button>'
+          : '';
+        c.querySelector('[data-selector-menu]').innerHTML =
+          '<div style="padding: 4px 12px 8px 12px !important; font-size: 12px !important; color: #47536b !important; line-height: 1.4 !important;">Ver la sección como otro rol. Solo cambia lo que se muestra.</div>' +
+          ROLES_SELECTOR.map(opcionSelectorRol).join('') + volver;
+      }
+
+      function abrirMenuRol(abrir) {
+        var c = selectorRol.contenedor;
+        if (!c) return;
+        var menu = c.querySelector('[data-selector-menu]');
+        menu.style.setProperty('display', abrir ? 'block' : 'none', 'important');
+        c.querySelector('[data-selector-boton]').setAttribute('aria-expanded', abrir ? 'true' : 'false');
+      }
+
+      // CREAR EL SELECTOR EN UN CONTENEDOR. alCambiar(rol): lo que hace la página con el rol nuevo
+      function crearSelectorRol(idContenedor, alCambiar) {
+        var c = document.getElementById(idContenedor);
+        if (!c) return;
+        selectorRol.contenedor = c;
+        selectorRol.alCambiar = alCambiar;
+        c.style.setProperty('position', 'relative', 'important');
+        c.innerHTML =
+          '<button type="button" data-selector-boton aria-haspopup="menu" aria-expanded="false" title="Ver la sección como otro rol"' +
+          ' style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 10px 4px 6px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important; cursor: pointer;"></button>' +
+          '<div data-selector-menu role="menu" style="display: none; position: absolute !important; top: calc(100% + 6px) !important; right: 0 !important; z-index: 1000 !important; min-width: 260px !important; padding: 8px 4px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(11, 14, 20, 0.12) !important;"></div>';
+        c.addEventListener('click', function(e) {
+          var opcion = e.target.closest('[data-elegir-rol]');
+          if (opcion) { abrirMenuRol(false); return elegirRol(opcion.getAttribute('data-elegir-rol')); }
+          if (e.target.closest('[data-selector-boton]')) {
+            abrirMenuRol(c.querySelector('[data-selector-menu]').style.getPropertyValue('display') === 'none');
+          }
+        });
+        document.addEventListener('click', function(e) { if (!c.contains(e.target)) abrirMenuRol(false); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') abrirMenuRol(false); });
+        // En Moodle, el resumen de Zhakyz avisa cada cambio de rol (también el de la detección)
+        window.addEventListener('zk-rol', function(e) {
+          if (!e.detail || !e.detail.rol) return;
+          actualizarSelectorRol(e.detail.rol, !!e.detail.forzado, e.detail.real || null);
+          if (selectorRol.alCambiar) selectorRol.alCambiar(e.detail.rol);
+        });
+      }
+
+      function actualizarSelectorRol(rol, forzado, real) {
+        selectorRol.rol = rol;
+        selectorRol.forzado = forzado;
+        if (real) selectorRol.real = real;
+        pintarSelectorRol();
+      }
+
+      // ELEGIR UN ROL: EN LOCAL SE APLICA ACÁ; EN MOODLE SE LE PIDE AL RESUMEN DE ZHAKYZ
+      function elegirRol(rol) {
+        if (SELECTOR_LOCAL) {
+          guardarRolForzadoLocal(rol);
+          actualizarSelectorRol(rol, true, null);
+          if (selectorRol.alCambiar) selectorRol.alCambiar(rol);
+          return;
+        }
+        try { window.dispatchEvent(new CustomEvent('zk-rol-cambiar', { detail: { rol: rol } })); } catch (e) { /* navegador sin CustomEvent */ }
+      }
+
+      // ROL CON EL QUE ARRANCA LA PÁGINA: en Moodle, el que ya publicó el resumen; en local, el elegido o porDefecto
+      function rolInicialSelector(porDefecto) {
+        if (SELECTOR_LOCAL) return rolForzadoLocal() || porDefecto;
+        return document.documentElement.getAttribute('data-zk-rol') || 'PEND';
+      }
+      function iniciarSelectorRol(rol) {
+        var html = document.documentElement;
+        actualizarSelectorRol(rol, !SELECTOR_LOCAL && html.getAttribute('data-zk-rol-forzado') === '1', html.getAttribute('data-zk-rol-real'));
+      }
+      // SELECTOR DE ROL: FIN
+
+      // ROLES QUE TIENEN ESTA PANTALLA (ocultamiento por rol, §10). Con otro rol elegido en "Cambiar rol" se muestra un aviso.
+      // En Moodle, a TUT y PAR la subsección Vista Estudiante ni siquiera se les lista
+      var ROLES_CON_MI_TRAYECTORIA = ['ADM', 'EST', 'PEND'];
+      var URL_HUB_LOCAL = '../menu_inicial/content.html';
+      function aplicarRolVista(rol) {
+        var tiene = ROLES_CON_MI_TRAYECTORIA.indexOf(rol) !== -1;
+        mostrar($('contenido-estudiante'), tiene);
+        if (!tiene) {
+          $('txt-aviso-rol-estudiante').innerHTML = 'El rol ' + nombreRolSelector(rol) + ' no tiene acceso a Mi Trayectoria. Su pantalla es el ' +
+            (EN_MOODLE ? 'Menú del Equipo de Seguimiento, en la subsección Hub.' : '<a href="' + URL_HUB_LOCAL + '" style="color: #026bd4 !important; font-weight: 500 !important;">Menú del Equipo de Seguimiento</a>.');
+        }
+        mostrar($('aviso-rol-estudiante'), !tiene);
+      }
+
       // ---------------------------------------------------------
       // INICIO
       // ---------------------------------------------------------
+      // Selector "Cambiar rol": en local arranca en el rol elegido (o EST); en Moodle, en el que publicó el resumen de Zhakyz
+      crearSelectorRol('selector-rol-estudiante', aplicarRolVista);
+      var rolInicialVista = rolInicialSelector('EST');
+      iniciarSelectorRol(rolInicialVista);
+      aplicarRolVista(rolInicialVista);
+
       // Íconos declarados en el HTML con data-icono
       var huecos = document.querySelectorAll('#vista-estudiante [data-icono]');
       for (var h = 0; h < huecos.length; h++) huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);

@@ -4,8 +4,17 @@
   "descripcion": "Definición de cada versión de las Encuestas de Moodle inicial y cuatrimestral: sus ítems, opciones y la criticidad de cada opción. Solo se agregan entradas: cambiar una pregunta, un salto de página o un puntaje es cargar una versión nueva. La vigente es la de mayor version para el mismo codigo_encuesta.",
   "subseccion": "Database",
   "origen": "ADR-007. Creada en Moodle el 2026-11-01 (cmid 60190, d=198) con crear_base.js, con sus plantillas. Configuración por defecto de Moodle (sin aprobación ni comentarios). Sus entradas (rid 20148 y 20149) son data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json.",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 0,
+    "manageapproved": 1,
+    "requiredentriestoview": 0,
+    "solo_lectura": { "desde": "2026-01-01", "hasta": "2030-12-31" }
+  },
   "configuracion": {
     "Requiere aprobación": "No: la leen los navegadores de todos los estudiantes que responden las encuestas.",
+    "Solo lectura desde / hasta": "Del 2026-01-01 al 2030-12-31 desde el 2026-11-21 (ocultamiento por rol, capa 1): el estudiante la sigue leyendo, pero no puede agregar una versión (que cambiaría las preguntas y los puntajes para todos). El staff, con mod/data:manageentries, escribe igual.",
     "Permitir la edición de entradas aprobadas": "Sí (valor por defecto de Moodle, no se cambió): sin aprobación todas las entradas quedan aprobadas. No se editan: una versión nueva es una entrada nueva.",
     "Permitir comentarios": "No.",
     "Quién escribe": "Solo el equipo (ADM)."

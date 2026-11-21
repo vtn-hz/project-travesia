@@ -4,6 +4,14 @@
   "descripcion": "Materias de 1.er año con su marca de crítica y el umbral de nota que usa el listado de criticidad.",
   "subseccion": "Database",
   "origen": "Creada directamente en Moodle por el equipo. Importada al repo el 2026-10-18 leyendo su estructura y sus plantillas (sin leer entradas). El 2026-11-02 se movió de la subsección Hub a Database y se renombró (antes Carga_Materias_Primero), sin cambiar el cmid ni el dataid.",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 0,
+    "manageapproved": 1,
+    "requiredentriestoview": 0,
+    "solo_lectura": { "desde": "2026-01-01", "hasta": "2030-12-31" }
+  },
   "plantillas": "data/moodle/plantillas/carga_materias_primero/",
   "campos": [
     { "nombre": "Materia", "tipo": "text", "requerido": true, "descripcion": "" },
