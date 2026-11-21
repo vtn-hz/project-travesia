@@ -880,12 +880,12 @@
       }
 
       // ---------------------------------------------------------
-      // AGENDA DEL ACOMPAÑANTE: 2 HORAS ENTRE ENTREVISTAS DEL MISMO DÍA
+      // AGENDA DEL ACOMPAÑANTE: 30 MINUTOS ENTRE ENTREVISTAS DEL MISMO DÍA
       // ---------------------------------------------------------
       // Cuando el tutor o asesor par propone una fecha (solicitud nueva, contraoferta o reprogramación), en el mismo día
       // debe quedar a MINUTOS_ENTRE_ENTREVISTAS o más de sus otras entrevistas activas: las programadas (fecha acordada)
-      // y las solicitadas cuya fecha vigente propuso él. Si no, el campo se marca en naranja y no se puede enviar.
-      var MINUTOS_ENTRE_ENTREVISTAS = 120;
+      // y las solicitadas cuya fecha vigente propuso él. Si no, el campo se marca en naranja con un aviso, pero se puede enviar igual.
+      var MINUTOS_ENTRE_ENTREVISTAS = 30;
 
       // HORARIOS QUE YA TIENE OCUPADOS UN ACOMPAÑANTE (SIN LA ENTREVISTA QUE SE ESTÁ CAMBIANDO)
       function horariosOcupados(acompanante, excluirRid) {
@@ -899,7 +899,7 @@
         }).filter(Boolean);
       }
 
-      // PRIMERA ENTREVISTA DEL MISMO DÍA A MENOS DE 2 HORAS DE LA FECHA ELEGIDA (O null)
+      // PRIMERA ENTREVISTA DEL MISMO DÍA A MENOS DE 30 MINUTOS DE LA FECHA ELEGIDA (O null)
       function choqueDeHorario(acompanante, fecha, excluirRid) {
         if (!acompanante || !fecha || fecha.length < 16) return null;
         var t = aFecha(fecha).getTime();
@@ -908,10 +908,18 @@
         }).sort(function(a, b) { return a.fecha < b.fecha ? -1 : 1; })[0] || null;
       }
 
+      // DURACIÓN LEGIBLE: 30 -> '30 minutos', 60 -> '1 hora', 120 -> '2 horas', 90 -> '90 minutos'
+      function textoDuracion(minutos) {
+        if (minutos % 60) return minutos + ' minutos';
+        return (minutos / 60) + (minutos === 60 ? ' hora' : ' horas');
+      }
+
+      // Solo informa: el tutor o asesor par puede enviar igual la fecha elegida
       function textoChoque(o) {
-        return 'El ' + fechaLarga(o.fecha) + ' ya hay una entrevista con ' + escapar(o.ent.nombreEstudiante || 'DNI ' + o.ent.dni) +
-          ' (' + (o.tipo === 'programada' ? 'programada' : 'fecha propuesta') + '). En el mismo día debe haber al menos ' +
-          (MINUTOS_ENTRE_ENTREVISTAS / 60) + ' horas de diferencia entre entrevistas: elegir otro horario.';
+        return '<b style="font-weight: 600 !important;">Aviso:</b> ese día ya tenés otra entrevista a las ' + o.fecha.slice(11, 16) +
+          ' con ' + escapar(o.ent.nombreEstudiante || 'DNI ' + o.ent.dni) +
+          ' (' + (o.tipo === 'programada' ? 'programada' : 'fecha propuesta') + '), a menos de ' +
+          textoDuracion(MINUTOS_ENTRE_ENTREVISTAS) + ' de este horario. Tenelo en cuenta antes de enviar.';
       }
 
       // QUÉ AGENDA SE CONTROLA EN CADA FORMULARIO: la del tutor o asesor par que propone (el estudiante no tiene)
@@ -923,7 +931,7 @@
         return null;
       }
 
-      // MARCAR EL CAMPO DE FECHA EN NARANJA (Y MOSTRAR EL AVISO) SI CHOCA CON OTRA ENTREVISTA. Devuelve el choque o null
+      // MARCAR EL CAMPO DE FECHA EN NARANJA (Y MOSTRAR EL AVISO) SI CHOCA CON OTRA ENTREVISTA. No impide enviar. Devuelve el choque o null
       function revisarHorario(idCampo) {
         var campo = document.getElementById(idCampo);
         var aviso = document.getElementById(idCampo.replace('campo-fecha-', 'txt-horario-'));
@@ -932,7 +940,6 @@
         var choque = agenda ? choqueDeHorario(agenda.acompanante, campo.value, agenda.excluir) : null;
         campo.style.setProperty('border-color', choque ? '#c2940a' : 'rgba(194, 201, 214, 0.4)', 'important');
         campo.style.setProperty('background-color', choque ? '#fffbf0' : '#fcfcfc', 'important');
-        campo.setAttribute('aria-invalid', choque ? 'true' : 'false');
         aviso.innerHTML = choque ? '<span style="color: #c2940a !important; padding-top: 1px !important;">' + icono('alerta', 18) + '</span><span>' + textoChoque(choque) + '</span>' : '';
         mostrar(aviso, !!choque);
         return choque;
@@ -940,7 +947,7 @@
 
       // AVISO NARANJA DEBAJO DEL CAMPO DE FECHA (VACÍO HASTA QUE HAYA UN CHOQUE)
       function avisoHorario(id) {
-        return '<div id="' + id + '" role="alert" style="display: none; gap: 8px !important; align-items: flex-start !important; margin-top: 6px !important; padding: 8px 12px !important; border-radius: 8px !important; background-color: #fffbf0 !important; border: 1px solid #fce49c !important; color: #7a5d06 !important; font-size: 13px !important;"></div>';
+        return '<div id="' + id + '" role="status" style="display: none; gap: 8px !important; align-items: flex-start !important; margin-top: 6px !important; padding: 8px 12px !important; border-radius: 8px !important; background-color: #fffbf0 !important; border: 1px solid #fce49c !important; color: #7a5d06 !important; font-size: 13px !important;"></div>';
       }
 
       // PARTE DE LA ENTREVISTA DEL USUARIO DE LA SESIÓN (COMO EN propuestas[].por)
@@ -1277,8 +1284,6 @@
         var mensaje = document.getElementById('campo-mensaje-contraoferta').value.trim();
         if (!fecha) return mostrarError('txt-error-modal', 'Elegir la nueva fecha y hora.');
         if (fecha <= ahora()) return mostrarError('txt-error-modal', 'La fecha debe ser posterior a hoy.');
-        // El tutor o asesor par no puede proponer a menos de 2 horas de otra entrevista suya del mismo día
-        if (revisarHorario('campo-fecha-contraoferta')) return document.getElementById('campo-fecha-contraoferta').focus();
         // La fecha nueva queda como propuesta de quien reprograma: la otra parte es la que la acepta
         responderFecha('proponer', fecha, mensaje);
       }
@@ -1614,8 +1619,6 @@
         var motivo = document.getElementById('campo-motivo-solicitud').value.trim();
         if (!fecha || !motivo) return mostrarError('txt-error-solicitud', 'Completar la fecha propuesta y el motivo.');
         if (fecha <= ahora()) return mostrarError('txt-error-solicitud', 'La fecha debe ser posterior a hoy.');
-        // El tutor o asesor par no puede proponer a menos de 2 horas de otra entrevista suya del mismo día
-        if (revisarHorario('campo-fecha-solicitud')) return document.getElementById('campo-fecha-solicitud').focus();
 
         var esEstudiante = rolActual === 'EST';
         var btn = document.querySelector('#modal-solicitar-entrevista [data-accion="enviar-solicitud"]');
@@ -1916,7 +1919,7 @@
       document.addEventListener('input', function(e) {
         var t = e.target;
         if (t.id === 'filtro-busqueda-entrevistas') return renderizarTabla();
-        // Fecha elegida en la solicitud o la contraoferta: naranja si queda a menos de 2 horas de otra entrevista del día
+        // Fecha elegida en la solicitud o la contraoferta: aviso naranja si queda a menos de 30 minutos de otra entrevista del día
         if (t.id === 'campo-fecha-solicitud' || t.id === 'campo-fecha-contraoferta') return revisarHorario(t.id);
         if (t.hasAttribute && t.hasAttribute('data-borrador')) {
           accionesBorrador[parseInt(t.getAttribute('data-borrador'), 10)][t.getAttribute('data-campo')] = t.value;
