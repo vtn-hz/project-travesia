@@ -4,6 +4,14 @@
   "descripcion": "Información personal de cada estudiante: una entrada por estudiante, que él mismo carga y edita en la Página Información personal (section/informacion_personal, SCRUM-24). Es la foto vigente, no un historial: editarla modifica la misma entrada y no genera entradas en Respuestas ni en Criticidad. La primera vez el formulario se precarga con la cuenta de Moodle; desde que se guarda, el sistema usa los datos de esta base. Sin entrada, Mi Trayectoria (section/vista_estudiante) deshabilita todas las secciones. Para el equipo es la lista de estudiantes (tramo, cohorte y envíos pendientes). Desde el ADR-011 guarda además el estado actual de criticidad del estudiante (la última entrada automática de cada fuente), que lee el Tablero de Criticidad en lugar de toda la base Criticidad.",
   "subseccion": "Database",
   "origen": "Propuesta del 2026-11-02 (docs/specs/vista-estudiante.md → Base Estudiantes). Reemplaza la base 4 del modelo simplificado con los datos que usa la vista. Creada en Moodle el 2026-11-02 (cmid 60262, d=206).",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 1,
+    "manageapproved": 1,
+    "requiredentriestoview": 0,
+    "solo_lectura": null
+  },
   "estado": "publicada",
   "configuracion": {
     "Requiere aprobación": "Sí, y no aprobar entradas: con la aprobación, cada estudiante ve y edita solo la suya. El equipo (rol Profesor) ve y edita todas.",

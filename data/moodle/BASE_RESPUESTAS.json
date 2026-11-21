@@ -4,6 +4,14 @@
   "descripcion": "Historial de las respuestas de los estudiantes a las Encuestas de Moodle inicial y cuatrimestral. Solo se agregan entradas: cada envío es una entrada nueva (una versión) y las anteriores se conservan. La vigente es la de created_at más reciente para el mismo id_usuario, codigo_encuesta y periodo. Moodle guarda solo la última respuesta; esta base guarda todas. Solo guarda lo que respondió el estudiante: los textos están en la base Encuestas y la criticidad, en la base Criticidad.",
   "subseccion": "Database",
   "origen": "PROPUESTA (2026-10-17, actualizada el 2026-10-24 con el ADR-006 y el 2026-11-01 con el ADR-007). Creada en Moodle el 2026-10-25 (cmid 59940, d=166) con crear_base.js, con los campos anteriores al ADR-007 (encuesta, version_encuesta, json_pregunta_respuesta y puntaje_criticidad). El 2026-11-01 se borraron sus 4 entradas con el formato anterior (respaldadas fuera del repo: tienen DNI reales) y se aplicaron los campos de abajo (ADR-007) con recrear_campos.js. La escribe el script de copia (section/copia_encuestas), que va en las páginas de las Encuestas Inicial (cmid 59710) y Cuatrimestral (cmid 59712).",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 1,
+    "manageapproved": 0,
+    "requiredentriestoview": 0,
+    "solo_lectura": null
+  },
   "configuracion": {
     "descripcion": "crear_base.js no la aplica: se configuró el 2026-10-25 con un POST al formulario de ajustes de la base.",
     "Requiere aprobación": "Sí, y no aprobar entradas. Así cada estudiante ve solo las suyas y los docentes ven todas.",

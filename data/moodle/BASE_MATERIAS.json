@@ -4,6 +4,14 @@
   "descripcion": "El plan de estudios: una entrada por materia de cada plan, con las materias que desbloquea. Nada se edita ni se borra: un cambio es una entrada nueva con el mismo plan + codigo, y la más reciente es la vigente.",
   "subseccion": "Database",
   "origen": "Creada en Moodle el 2026-10-19 con crear_base.js (cmid 59717, d=152), sin entradas. Reemplaza a Carga_Materias_Primero (d=118). Se carga desde la sección plan_estudios con un CSV.",
+  "ajustes_moodle": {
+    "_doc": "Ajustes de acceso que aplica .skills/publicar-seccion/ajustar_bases.js (capa 1 del ocultamiento por rol, docs/specs/ocultamiento-por-rol.md). El repo es la fuente: se cambian acá y después se aplican.",
+    "visible": 1,
+    "approval": 0,
+    "manageapproved": 1,
+    "requiredentriestoview": 0,
+    "solo_lectura": { "desde": "2026-01-01", "hasta": "2030-12-31" }
+  },
   "plantillas": "data/moodle/plantillas/materias/ (cargadas en Moodle el 2026-10-19, con el estilo de Carga_Parciales_Primero). La plantilla de lista marca cada entrada con .zk-registro y data-rid, y cada campo con una celda data-campo, que es lo que lee la sección plan_estudios.",
   "campos": [
     {
