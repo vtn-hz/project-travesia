@@ -1,7 +1,7 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-17 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-21 -->
 <!-- IMAGEN: assets/LOGO_ZHAKYZ_ANIMADO.gif, subida como zhakyz_logo.gif al área de archivos del resumen -->
 <!-- URL PÚBLICA: https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif -->
-<!-- ÚLTIMA PUBLICACIÓN: 2026-11-17 -->
+<!-- ÚLTIMA PUBLICACIÓN: 2026-11-21 -->
 <!-- SIN FILTROS DE MOODLE: <nolink> evita que "Sistema" y "Estudiantes" se conviertan en links a actividades de otros equipos -->
 <nolink>
 <p style="text-align: center;"><img class="img-fluid" style="display: block; margin-left: auto; margin-right: auto;" src="https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif" alt="Logo de Zhakyz &amp; Asociados" width="800" height="450"></p>
@@ -49,6 +49,285 @@
     if (zhakyz && window.MutationObserver) {
       new MutationObserver(quitarLinksDeTitulos).observe(zhakyz, { childList: true, subtree: true });
     }
+  })();
+</script>
+<!-- SCRIPT: OCULTAMIENTO VISUAL POR ROL (CAPA 2 DE docs/specs/ocultamiento-por-rol.md) -->
+<!-- Cada rol ve en la lista de Zhakyz solo las actividades de VISIBLE_PARA. ES SOLO VISUAL: quien tiene el link entra igual; -->
+<!-- lo que protege los datos es el ojo y los ajustes de las bases (capas 1 y 0). En modo edición no se oculta nada. -->
+<!-- Además detecta el rol una sola vez y lo publica en la página (<html data-zk-rol="…"> y el evento "zk-rol"): el Hub y Mi Trayectoria lo usan. -->
+<!-- El selector "Cambiar rol" del Hub y de Mi Trayectoria le pide otro rol con el evento "zk-rol-cambiar" (solo el staff; solo visual). -->
+<script>
+  (function() {
+    // ---------------------------------------------------------
+    // CONFIGURACIÓN
+    // ---------------------------------------------------------
+    var SECCION_ZHAKYZ = 15647; // @config seccion.id
+    var CURSO = 1732; // @config curso
+    // Marca de staff: Moodle manda las actividades ocultas solo a quien puede verlas, así que el Tablero (oculto) llega al
+    // HTML del staff y no al de un estudiante. Con eso el CSS reconoce al estudiante sin esperar ningún fetch
+    var CMID_TABLERO = 60287; // @config paginas.tablero
+    var CMID_HUB = 59511; // @config paginas.hub
+    var CMID_DETALLE = 60288; // @config paginas.detalle
+    var CMID_LISTADO_PRIMERO = 59523; // @config paginas.listado_criticidad_primero
+    var CMID_DASHBOARD_PRIMERO = 60035; // @config paginas.dashboard_estudiantes_primero
+    var CMID_ENTREVISTAS = 60198; // @config paginas.entrevistas
+    var CMID_INDICADORES = 60283; // @config paginas.indicadores_cohorte
+    var CMID_PLAN = 59718; // @config paginas.plan_estudios
+    var CMID_CONFIGURACION = 60294; // @config paginas.configuracion
+    var CMID_REPORTES = 60918; // @config paginas.reportes
+    var CMID_MI_TRAYECTORIA = 60264; // @config paginas.vista_estudiante
+    var CMID_SUB_DATABASE = 59497; // @config subsecciones.Database.cmid
+    var CMID_SUB_UTILS = 59931; // @config subsecciones.Utils.cmid
+
+    // QUÉ ROL VE CADA ACTIVIDAD EN LA LISTA (matriz del §10 de la spec). Una actividad que no está acá la ven todos.
+    // subseccion: true oculta la subsección entera (título y actividades). La de Vista Estudiante se reconoce por
+    // Mi Trayectoria, porque su nombre tiene un espacio y no entra en una línea @config
+    var VISIBLE_PARA = [
+      { cmid: CMID_HUB, roles: ['ADM', 'TUT', 'PAR'] },
+      { cmid: CMID_TABLERO, roles: ['ADM', 'TUT'] },
+      // PAR ve el detalle de un estudiante (lo abre desde Entrevistas y Tutorías), pero no el Tablero con todos
+      { cmid: CMID_DETALLE, roles: ['ADM', 'TUT', 'PAR'] },
+      { cmid: CMID_INDICADORES, roles: ['ADM', 'TUT'] },
+      { cmid: CMID_REPORTES, roles: ['ADM', 'TUT'] },
+      { cmid: CMID_LISTADO_PRIMERO, roles: ['ADM'] },
+      { cmid: CMID_DASHBOARD_PRIMERO, roles: ['ADM'] },
+      { cmid: CMID_CONFIGURACION, roles: ['ADM'] },
+      { cmid: CMID_ENTREVISTAS, roles: ['ADM', 'TUT', 'PAR', 'EST'] },
+      // Plan de Estudios tiene la carga por CSV del plan: no la ven PAR ni EST (la base Materias además es de solo lectura para ellos)
+      { cmid: CMID_PLAN, roles: ['ADM', 'TUT'] },
+      { cmid: CMID_MI_TRAYECTORIA, roles: ['ADM', 'EST'], subseccion: true },
+      { cmid: CMID_SUB_DATABASE, roles: ['ADM'], subseccion: true, esSubseccion: true },
+      { cmid: CMID_SUB_UTILS, roles: ['ADM'], subseccion: true, esSubseccion: true }
+    ];
+    var ROLES_STAFF = ['ADM', 'TUT', 'PAR'];
+
+    // DETECCIÓN DEL ROL: la misma regla que la Página Entrevistas y Tutorías (detectarRol). Si cambia allá, cambiarla acá.
+    // Grupo de Moodle → rol, en orden de prioridad: si alguien está en más de uno, vale el primero
+    var GRUPOS_ROL = [
+      { grupo: 'Zhakyz_Tutor', rol: 'TUT' },
+      { grupo: 'Zhakyz_AsesorPar', rol: 'PAR' },
+      { grupo: 'Zhakyz_Estudiante', rol: 'EST' }
+    ];
+    // Rol del curso → rol, en orden de prioridad (igual que en Entrevistas). nombres: cómo lo muestra el perfil (sin tildes ni
+    // mayúsculas); roleid: el id estándar de Moodle, por si el campus le cambió el nombre
+    var ROLES_CURSO = [
+      { rol: 'ADM', roleid: '3', nombres: ['profesor', 'teacher', 'editing teacher', 'docente'] },
+      { rol: 'TUT', roleid: '4', nombres: ['profesor sin permiso de edicion', 'profesor sin permisos de edicion', 'non-editing teacher', 'profesor no editor'] },
+      { rol: 'EST', roleid: '5', nombres: ['estudiante', 'student', 'alumno'] }
+    ];
+    // Staff al que no se le pudo detectar el rol: la vista de staff con menos permisos
+    var ROL_STAFF_SIN_DETECTAR = 'PAR';
+    // El rol detectado se guarda en este navegador, por usuario, así la lista se arma sin esperar en la próxima visita
+    var CLAVE_ROL = 'zk-rol';
+    var VIGENCIA_ROL_MS = 12 * 60 * 60 * 1000;
+
+    // ---------------------------------------------------------
+    // CSS POR ROL
+    // ---------------------------------------------------------
+    var ZONA = ' li.section[data-id="' + SECCION_ZHAKYZ + '"] ';
+    var MARCA = ':has(li.activity#module-' + CMID_TABLERO + ')';
+    function selectoresDe(v) {
+      if (v.esSubseccion) return ['li.activity.modtype_subsection#module-' + v.cmid];
+      if (v.subseccion) return ['li.activity.modtype_subsection:has(#module-' + v.cmid + ')'];
+      return ['li.activity#module-' + v.cmid, '[data-for="cmitem"][data-id="' + v.cmid + '"]'];
+    }
+    // prefijo: la condición sobre <html> y <body>; ocultas: las entradas de VISIBLE_PARA que ese caso no ve
+    function regla(prefijo, ocultas) {
+      if (!ocultas.length) return '';
+      return ocultas.map(function(v) {
+        return selectoresDe(v).map(function(s) { return prefijo + ZONA + s; }).join(', ');
+      }).join(', ') + ' { display: none !important; }';
+    }
+    function noVe(rol) { return VISIBLE_PARA.filter(function(v) { return v.roles.indexOf(rol) === -1; }); }
+    if (!document.getElementById('zhakyz-roles-style')) {
+      var css = [
+        // Estudiante (sin la marca de staff): CSS puro, no depende del script ni de ningún fetch
+        regla('body:not(.editing):not(' + MARCA + ')', noVe('EST')),
+        // Staff con el rol todavía sin detectar: solo lo que ven todos los roles de staff
+        regla('html[data-zk-rol="PEND"] body:not(.editing)' + MARCA, VISIBLE_PARA.filter(function(v) {
+          return ROLES_STAFF.some(function(r) { return v.roles.indexOf(r) === -1; });
+        }))
+      ];
+      // Cada rol detectado (EST incluido: un profesor en el grupo Zhakyz_Estudiante ve la vista del estudiante)
+      ROLES_STAFF.concat('EST').forEach(function(rol) {
+        css.push(regla('html[data-zk-rol="' + rol + '"] body:not(.editing)' + MARCA, noVe(rol)));
+      });
+      var estilo = document.createElement('style');
+      estilo.id = 'zhakyz-roles-style';
+      estilo.innerHTML = css.join('\n');
+      document.head.appendChild(estilo);
+    }
+
+    // ---------------------------------------------------------
+    // ROL GUARDADO Y PUBLICACIÓN EN LA PÁGINA
+    // ---------------------------------------------------------
+    var usuario = window.M && M.cfg && M.cfg.userId ? String(M.cfg.userId) : '';
+    function rolGuardado() {
+      try {
+        var g = JSON.parse(window.localStorage.getItem(CLAVE_ROL) || 'null');
+        if (g && g.usuario === usuario && Date.now() - g.fecha < VIGENCIA_ROL_MS) return g.rol;
+      } catch (e) { /* sin almacenamiento: se detecta cada vez */ }
+      return null;
+    }
+    function guardarRol(rol) {
+      try { window.localStorage.setItem(CLAVE_ROL, JSON.stringify({ usuario: usuario, rol: rol, fecha: Date.now() })); } catch (e) { /* sin almacenamiento */ }
+    }
+    // ROL ELEGIDO CON "CAMBIAR ROL" (selector del Hub y de Mi Trayectoria). Solo visual, solo para el staff y por usuario:
+    // la lista de la sección, el Hub y Mi Trayectoria se muestran como para ese rol. Lo pide el evento "zk-rol-cambiar"
+    var CLAVE_ROL_FORZADO = 'zk-rol-forzado';
+    var ROLES_ELEGIBLES = ['ADM', 'TUT', 'PAR', 'EST'];
+    var estadoRol = { real: null, staff: false, estudiante: false };
+    function rolForzado() {
+      try {
+        var g = JSON.parse(window.localStorage.getItem(CLAVE_ROL_FORZADO) || 'null');
+        if (g && g.usuario === usuario && ROLES_ELEGIBLES.indexOf(g.rol) !== -1) return g.rol;
+      } catch (e) { /* sin almacenamiento */ }
+      return null;
+    }
+    function guardarRolForzado(rol) {
+      try {
+        if (rol) window.localStorage.setItem(CLAVE_ROL_FORZADO, JSON.stringify({ usuario: usuario, rol: rol }));
+        else window.localStorage.removeItem(CLAVE_ROL_FORZADO);
+      } catch (e) { /* sin almacenamiento */ }
+    }
+    // PUBLICAR EN <html>: data-zk-rol (el que se muestra), data-zk-rol-real (el detectado), data-zk-rol-forzado="1" (elegido
+    // con "Cambiar rol") y data-zk-staff="1" (puede usar el selector). Si algo cambió, avisa con el evento "zk-rol"
+    function publicar() {
+      var html = document.documentElement;
+      var forzado = estadoRol.estudiante ? null : rolForzado();
+      if (forzado && forzado === estadoRol.real) forzado = null;
+      var mostrado = forzado || estadoRol.real || 'PEND';
+      var atributos = { 'data-zk-rol': mostrado, 'data-zk-rol-real': estadoRol.real, 'data-zk-rol-forzado': forzado ? '1' : null, 'data-zk-staff': estadoRol.staff ? '1' : null };
+      var cambio = false;
+      Object.keys(atributos).forEach(function(a) {
+        if (html.getAttribute(a) === atributos[a]) return;
+        cambio = true;
+        if (atributos[a] === null) html.removeAttribute(a); else html.setAttribute(a, atributos[a]);
+      });
+      if (!cambio) return;
+      try { window.dispatchEvent(new CustomEvent('zk-rol', { detail: { rol: mostrado, real: estadoRol.real, forzado: !!forzado } })); } catch (e) { /* navegador sin CustomEvent */ }
+    }
+    // Ya existe si Moodle volvió a dibujar el resumen: no se detecta dos veces
+    if (document.documentElement.getAttribute('data-zk-rol')) return;
+    estadoRol.real = rolGuardado();
+    publicar();
+    // PEDIDO DEL SELECTOR "CAMBIAR ROL": solo del staff. Elegir el rol propio vuelve a la vista normal
+    window.addEventListener('zk-rol-cambiar', function(e) {
+      var rol = e && e.detail ? e.detail.rol : null;
+      if (!estadoRol.staff || ROLES_ELEGIBLES.indexOf(rol) === -1) return;
+      guardarRolForzado(rol === estadoRol.real ? null : rol);
+      publicar();
+    });
+
+    // ---------------------------------------------------------
+    // DETECCIÓN DEL ROL (COPIA DE LA REGLA DE ENTREVISTAS Y TUTORÍAS)
+    // ---------------------------------------------------------
+    function normalizar(s) {
+      return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    // GRUPOS DEL USUARIO EN EL CURSO, CON EL SERVICIO DE MOODLE (core_group_get_course_user_groups)
+    function gruposPorServicio() {
+      var url = M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + encodeURIComponent(M.cfg.sesskey) + '&info=core_group_get_course_user_groups';
+      var cuerpo = [{ index: 0, methodname: 'core_group_get_course_user_groups', args: { courseid: CURSO, userid: Number(M.cfg.userId) } }];
+      return fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (!res || !res[0] || res[0].error || !res[0].data) throw new Error('Servicio de grupos no disponible');
+          return res[0].data.groups.map(function(g) { return g.name; });
+        });
+    }
+    // PERFIL DEL USUARIO EN EL CURSO (UNA SOLA LECTURA: GRUPOS Y ROLES)
+    var perfil = null;
+    function leerPerfil() {
+      if (!perfil) {
+        perfil = fetch(M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(M.cfg.userId) + '&course=' + CURSO, { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) { return new DOMParser().parseFromString(html, 'text/html'); });
+      }
+      return perfil;
+    }
+    function gruposPorPerfil() {
+      return leerPerfil().then(function(doc) {
+        var partes = [];
+        var recorrido = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+        while (recorrido.nextNode()) partes.push(recorrido.currentNode.nodeValue);
+        var texto = ' ' + partes.join(' ').replace(/\s+/g, ' ') + ' ';
+        return GRUPOS_ROL.map(function(g) { return g.grupo; }).filter(function(nombre) {
+          return new RegExp('(^|[^A-Za-z0-9_])' + nombre + '($|[^A-Za-z0-9_])').test(texto);
+        });
+      });
+    }
+    function rolPorGrupo() {
+      return gruposPorServicio().catch(gruposPorPerfil).catch(function() { return []; }).then(function(grupos) {
+        var propios = grupos.map(normalizar);
+        for (var i = 0; i < GRUPOS_ROL.length; i++) {
+          if (propios.indexOf(normalizar(GRUPOS_ROL[i].grupo)) !== -1) return GRUPOS_ROL[i].rol;
+        }
+        return null;
+      });
+    }
+    // "CAMBIAR ROL A...": SE DEDUCE DE LO QUE PUEDE ABRIR CON EL ROL SIMULADO
+    function puedeAbrir(ruta, selector) {
+      return fetch(M.cfg.wwwroot + ruta, { credentials: 'same-origin' })
+        .then(function(r) { return r.ok ? r.text() : ''; })
+        .then(function(html) { return !!html && !!new DOMParser().parseFromString(html, 'text/html').querySelector(selector); })
+        .catch(function() { return false; });
+    }
+    function rolCambiado() {
+      if (!document.body.classList.contains('userswitchedrole')) return Promise.resolve(null);
+      return puedeAbrir('/group/index.php?id=' + CURSO, '#groups, select[name="groups[]"]').then(function(editaGrupos) {
+        if (editaGrupos) return 'ADM';
+        return puedeAbrir('/report/log/index.php?id=' + CURSO, 'input[name="chooselog"], select[name="date"]').then(function(veRegistros) {
+          return veRegistros ? 'TUT' : 'EST';
+        });
+      });
+    }
+    function rolPorRolDelCurso() {
+      return leerPerfil().then(function(doc) {
+        var propios = Array.prototype.map.call(doc.querySelectorAll('a[href*="roleid="]'), function(a) {
+          var m = a.getAttribute('href').match(/[?&]roleid=(\d+)/);
+          return { roleid: m ? m[1] : '', nombre: normalizar(a.textContent) };
+        });
+        for (var i = 0; i < ROLES_CURSO.length; i++) {
+          var r = ROLES_CURSO[i];
+          for (var j = 0; j < propios.length; j++) {
+            var conocido = ROLES_CURSO.some(function(x) { return x.nombres.indexOf(propios[j].nombre) !== -1; });
+            if (conocido ? r.nombres.indexOf(propios[j].nombre) !== -1 : propios[j].roleid === r.roleid) return r.rol;
+          }
+        }
+        return null;
+      });
+    }
+    function detectarRol() {
+      return rolPorGrupo()
+        .then(function(rol) { return rol || rolCambiado(); })
+        .then(function(rol) { return rol || rolPorRolDelCurso(); })
+        .then(function(rol) { return rol || ROL_STAFF_SIN_DETECTAR; })
+        .catch(function() { return ROL_STAFF_SIN_DETECTAR; });
+    }
+
+    // ---------------------------------------------------------
+    // INICIO: CUANDO YA ESTÁ LA LISTA DE ACTIVIDADES (EL RESUMEN SE DIBUJA ANTES)
+    // ---------------------------------------------------------
+    function iniciar() {
+      // Sin la marca de staff es un estudiante: el CSS ya lo resolvió y no hace falta consultar nada
+      if (!document.querySelector('li.activity#module-' + CMID_TABLERO)) {
+        estadoRol.estudiante = true;
+        estadoRol.real = 'EST';
+        return publicar();
+      }
+      estadoRol.staff = true;
+      if (!usuario) { estadoRol.real = ROL_STAFF_SIN_DETECTAR; return publicar(); }
+      // Con el rol guardado (o el elegido) el selector ya aparece; la detección lo confirma en segundo plano
+      publicar();
+      detectarRol().then(function(rol) {
+        guardarRol(rol);
+        estadoRol.real = rol;
+        publicar();
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+    else iniciar();
   })();
 </script>
 </nolink>

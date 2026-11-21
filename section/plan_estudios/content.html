@@ -1,5 +1,5 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Plan de Estudios" (cmid 59718) · 2026-11-01 -->
-<!-- SECCIÓN: PLAN DE ESTUDIOS Y CORRELATIVAS · CARGA POR CSV (ROLES ADM, GES) -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Plan de Estudios" (cmid 59718) · 2026-11-21 -->
+<!-- SECCIÓN: PLAN DE ESTUDIOS Y CORRELATIVAS · CARGA POR CSV (ROL ADM; LOS DEMÁS ROLES, SOLO CONSULTA) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="carga-plan"
@@ -17,7 +17,7 @@
       <h3
         style="margin: 0 0 4px 0 !important; color: #0b0e14 !important; font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important;">
         Plan de Estudios y Correlativas</h3>
-      <p
+      <p id="txt-descripcion-plan"
         style="margin: 0 !important; color: #47536b !important; font-size: 14px !important; line-height: 1.5 !important;">
         Carga de planes de estudio desde un archivo CSV. Antes de guardar, se valida cada fila y se indican los errores a corregir.</p>
     </div>
@@ -110,8 +110,12 @@
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en GES.
-      var ROL_INICIAL = 'GES';
+      // En local arranca en ADM (se cambia con la barra de vista previa). En Moodle, el rol sale de rolEnMoodle().
+      // Solo ROLES_CON_CARGA ve la carga por CSV; los demás ven las materias vigentes, como consulta. Es solo visual: que nadie
+      // más pueda guardar lo garantiza Moodle (la base Materias es de solo lectura para quien no es profesor, ocultamiento por rol)
+      var ROL_INICIAL = 'ADM';
+      var ROLES_CON_CARGA = ['ADM'];
+      var CMID_PAGINA_PLAN = 59718; // @config paginas.plan_estudios
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       // Base Materias de la sección Zhakyz (null hasta que se cree). Definición: data/moodle/BASE_MATERIAS.json
@@ -122,8 +126,12 @@
 
       var ROLES = {
         ADM: { nombre: 'Administrador' },
-        GES: { nombre: 'Gestor Dpto. Industrial' }
+        TUT: { nombre: 'Tutor / Entrevistador' },
+        PAR: { nombre: 'Asesor par' },
+        EST: { nombre: 'Estudiante' }
       };
+      var DESCRIPCION_CARGA = 'Carga de planes de estudio desde un archivo CSV. Antes de guardar, se valida cada fila y se indican los errores a corregir.';
+      var DESCRIPCION_CONSULTA = 'Materias vigentes de cada plan, con sus correlativas. Solo consulta.';
 
       var PLANES = ['2024', '2003'];
       var DURACIONES = ['cuatrimestral', 'anual'];
@@ -585,6 +593,7 @@
 
       // CARGA TODAS LAS FILAS, UNA POR UNA, MOSTRANDO EL AVANCE
       function cargarPlan() {
+        if (!puedeCargar()) return;
         var entradas = estado.revision.filas.map(entradaDe);
         estado.guardando = true; estado.guardadas = 0; estado.resultado = null;
         renderizarResultado();
@@ -926,7 +935,29 @@
       // ---------------------------------------------------------
       // ROL Y VISTA PREVIA LOCAL
       // ---------------------------------------------------------
+      // ROL EN MOODLE. Esta Página no tiene el resumen de Zhakyz, pero el resumen guarda en este navegador el rol elegido con
+      // "Cambiar rol" (zk-rol-forzado) y el detectado al entrar a la sección (zk-rol, 12 h), por usuario. Sin ninguno de los dos:
+      // ADM si puede editar esta actividad (rol Profesor); si no, TUT (solo consulta)
+      function rolEnMoodle() {
+        var usuario = window.M && M.cfg && M.cfg.userId ? String(M.cfg.userId) : '';
+        var leer = function(clave) { try { return JSON.parse(window.localStorage.getItem(clave) || 'null'); } catch (e) { return null; } };
+        var forzado = leer('zk-rol-forzado');
+        if (forzado && forzado.usuario === usuario && ROLES[forzado.rol]) return forzado.rol;
+        var guardado = leer('zk-rol');
+        if (guardado && guardado.usuario === usuario && ROLES[guardado.rol] && Date.now() - guardado.fecha < 12 * 60 * 60 * 1000) return guardado.rol;
+        return document.querySelector('a[href*="course/modedit.php?update=' + CMID_PAGINA_PLAN + '"]') ? 'ADM' : 'TUT';
+      }
+      function puedeCargar() { return ROLES_CON_CARGA.indexOf(rolActual) !== -1; }
+      var rolActual = ROL_INICIAL;
+
       function aplicarRol(rol) {
+        rolActual = rol;
+        var carga = puedeCargar();
+        ['bloque-formato-plan', 'bloque-archivo-plan', 'resultado-plan'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (carga) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important');
+        });
+        document.getElementById('txt-descripcion-plan').textContent = carga ? DESCRIPCION_CARGA : DESCRIPCION_CONSULTA;
         document.getElementById('badge-rol-plan').innerHTML =
           '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
           icono('estudiante', 16) + '</span>' + ROLES[rol].nombre + chipRol(rol);
@@ -971,7 +1002,7 @@
       });
 
       document.addEventListener('change', function(e) {
-        if (e.target.id === 'campo-archivo-plan') leerArchivo(e.target.files[0]);
+        if (e.target.id === 'campo-archivo-plan' && puedeCargar()) leerArchivo(e.target.files[0]);
       });
 
       // La zona de archivo se activa también con el teclado
@@ -1013,7 +1044,7 @@
         huecos[h].innerHTML = icono(huecos[h].getAttribute('data-icono'), 20);
       }
       if (ES_VISTA_LOCAL) crearBarraPreview();
-      aplicarRol(ROL_INICIAL);
+      aplicarRol(ES_VISTA_LOCAL || !window.M ? ROL_INICIAL : rolEnMoodle());
       renderizarEjemplo();
       renderizarFormato();
       renderizarResultado();
