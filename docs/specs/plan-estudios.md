@@ -9,6 +9,8 @@
 
 ---
 
+> **Roles (publicado el 2026-11-21):** se quitó el rol GES, que ya no existe. Solo **ADM** ve la carga por CSV; TUT, PAR y EST ven las materias vigentes como consulta. En Moodle, la Página toma el rol que guarda el resumen de Zhakyz en el navegador (el elegido con "Cambiar rol" y, si no, el detectado); sin ninguno, ADM si el usuario puede editar la actividad. Es solo visual: guardar en Materias lo impide Moodle para quien no es profesor (capa 1, [ocultamiento por rol](ocultamiento-por-rol.md#101-lista-de-la-sección-resumen-de-zhakyz)).
+
 ## Propósito
 
 Cargar uno o varios planes de estudio desde un CSV. La página explica el formato, revisa el archivo completo antes de guardar y dice qué corregir fila por fila.

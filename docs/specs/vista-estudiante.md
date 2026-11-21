@@ -12,6 +12,8 @@
 
 ---
 
+> **Selector "Cambiar rol" (publicado el 2026-11-21):** arriba a la derecha de Mi Trayectoria, para el staff (solo visual). Con TUT o PAR elegido, oculta el contenido y muestra un aviso. Ver [ocultamiento por rol §10.3](ocultamiento-por-rol.md#103-selector-cambiar-rol).
+
 ## Decisiones
 
 | Tema | Decisión | Por qué |

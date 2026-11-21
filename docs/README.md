@@ -52,7 +52,8 @@ docs/
 │   ├── entrevistas.md
 │   ├── indicadores-cohorte.md
 │   ├── configuracion.md
-│   └── reportes.md
+│   ├── reportes.md
+│   └── ocultamiento-por-rol.md ← Qué ve y qué usa cada rol: ojo, permisos de las bases (capa 1) y ocultamiento visual
 └── changelog.md           ← Log cronológico de todas las decisiones
 ```
 

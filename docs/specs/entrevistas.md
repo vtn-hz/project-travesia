@@ -18,7 +18,7 @@
 
 "Asignados" sale de la base **Acompañamientos** (11): cada entrada une un estudiante con su tutor o su asesor par. En la vista previa local, TUT es Valentino Hernández Pascual y PAR es Nahuel Spikerman. En Moodle será el usuario de la sesión (`M.cfg.userId`, a verificar en el campus) junto con la detección de roles por grupo.
 
-"Ver detalle del estudiante" solo aparece para ADM y TUT, porque el [detalle](detalle-estudiante.md) no incluye a PAR.
+"Ver detalle del estudiante" aparece para ADM, TUT y, desde el 2026-11-21 (publicado), PAR ([ocultamiento por rol](ocultamiento-por-rol.md#101-lista-de-la-sección-resumen-de-zhakyz)). El estudiante no lo ve.
 
 ### Detección del rol en Moodle
 

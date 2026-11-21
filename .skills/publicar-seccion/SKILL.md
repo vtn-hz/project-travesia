@@ -133,6 +133,20 @@ Mover (`mover_actividades.js --subseccion "<nombre>" --cmids <id,id>`) y renombr
 
 Antes de mover, revisar que la subsección de destino tenga la misma visibilidad para los estudiantes: una actividad hereda la de su subsección, y las bases donde escriben los estudiantes dejan de funcionar si quedan ocultas. Después, actualizar `moodle.config.json` (`subseccion`), el `nombre` del JSON de la base, `RULES.md` y `DEPLOY.md`.
 
+## Ajustes de acceso de las bases (`ajustar_bases.js`)
+
+Aplica en Moodle el bloque `ajustes_moodle` de cada `data/moodle/BASE_*.json`: visibilidad, "Aprobación requerida", "Permitir la edición de entradas aprobadas", "Entradas requeridas para ver" y "Solo lectura desde / hasta". Es la capa 1 del ocultamiento por rol ([spec](../../docs/specs/ocultamiento-por-rol.md)): **antes de cambiar un ajuste, leer en la spec qué pantalla del estudiante depende de esa base.**
+
+```bash
+MOODLE_USUARIO='…' MOODLE_CLAVE='…' NODE_PATH=$(npm root -g) \
+  node .skills/publicar-seccion/ajustar_bases.js [--claves criticidad,entrevistas] [--confirmar]
+```
+
+- Sin `--confirmar` solo muestra la diferencia entre el repo y Moodle. Sin `--claves`, revisa todas las bases que tienen `ajustes_moodle` (sirve para detectar cambios hechos a mano en Moodle).
+- Verifica que el cmid esté en Zhakyz, que el formulario sea de una base del curso y que el nombre coincida con la definición. Cambia solo los controles pedidos, desmarca la notificación y vuelve a leer lo guardado.
+- La guardia de red deja pasar solo el `POST` a `course/modedit.php` de la base en curso.
+- Para revertir, se cambia el valor en el JSON y se vuelve a aplicar. Ningún ajuste toca las entradas.
+
 ## Qué NO hace
 
 - No borra ni oculta actividades.
