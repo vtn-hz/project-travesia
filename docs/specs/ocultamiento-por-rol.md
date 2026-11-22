@@ -240,7 +240,7 @@ El script `OCULTAMIENTO VISUAL POR ROL` de [`section/resumen_zhakyz/content.html
 
 | Actividad | cmid | ADM | TUT | PAR | EST |
 |---|---|---|---|---|---|
-| Área de texto Hub | 59511 | V | V | V | · (además, oculta con el ojo) |
+| Área de texto Hub | 59511 | V | V | · | · (además, oculta con el ojo) |
 | Tablero de Criticidad | 60287 | V | V | · | · |
 | Detalle del estudiante | 60288 | V | V | V | · |
 | Indicadores de Cohorte, Reportes | 60283, 60918 | V | V | · | · |
@@ -256,7 +256,7 @@ El script `OCULTAMIENTO VISUAL POR ROL` de [`section/resumen_zhakyz/content.html
 Decisiones de la matriz que el equipo puede cambiar en `VISIBLE_PARA`:
 - **PAR ve el Detalle del estudiante, pero no el Tablero** (2026-11-21): abre el detalle de sus estudiantes desde Entrevistas y Tutorías ("Ver detalle del estudiante", habilitado para PAR ese día), sin la lista de todos.
 - **PAR y EST no ven Plan de Estudios** (2026-11-21): la Página tiene la carga por CSV del plan, que escribe en la base Materias, y en Moodle arranca en el rol de carga. Que no puedan modificarlo lo garantiza la capa 1: Materias es de solo lectura para quien no tiene `mod/data:manageentries` (un estudiante, o un PAR con rol Estudiante). Un PAR con rol Profesor sí podría cargar si abre la Página por URL: ocultarla es solo visual. Desde el 2026-11-21 (publicado), la Página Plan de Estudios muestra la carga por CSV solo a ADM: con otro rol (detectado o elegido con "Cambiar rol") se ve como consulta ([plan-estudios.md](plan-estudios.md)).
-- **PAR ve la Vista Estudiante** (2026-11-22): el asesor par es un alumno avanzado y tiene su propia Mi Trayectoria (encuesta, información personal y notas). Hasta ese día solo la veían ADM y EST.
+- **PAR ve la Vista Estudiante y no el Hub** (2026-11-22): el asesor par es un alumno avanzado. Tiene su propia Mi Trayectoria (encuesta, información personal y notas) y desde ahí entra a Entrevistas y Tutorías. Hasta ese día veía el Hub y no la Vista Estudiante.
 - **Database la ve solo ADM** desde que se retiró GES (2026-11-21).
 - **Utils solo la ve ADM**: Tools y Widgets se cargan por `fetch` desde las páginas, así que ocultarlas de la lista no cambia nada para los demás.
 - La matriz coincide con los `roles` de las tarjetas del Hub (§10.2).
@@ -292,6 +292,8 @@ El rol queda publicado en la página: `<html data-zk-rol="ADM|TUT|PAR|EST|PEND">
 | Indicadores "Riesgo alto" y "Riesgo medio" | V | V | · |
 | Indicador "Sin encuesta" | V | · | · |
 
+Desde el 2026-11-22 el asesor par no tiene el Hub (ve Mi Trayectoria): la columna PAR queda como antecedente, y su tarjeta de Entrevistas y el indicador "Tus entrevistas" se quitaron.
+
 Desde el 2026-11-21 el Hub no menciona al gestor: se quitaron el rol "Gestor Dpto. Industrial", su saludo, el chip GES de las tarjetas y los indicadores, y su botón en la barra de vista previa. La tarjeta Plan de Estudios y Correlativas y el indicador "Sin encuesta" quedaron solo para ADM.
 
 ### 10.3 Selector "Cambiar rol"
@@ -306,8 +308,8 @@ Arriba a la derecha del **Hub** y de **Mi Trayectoria** hay un botón con el rol
 | **Local** | No hay resumen: el rol elegido queda en `localStorage` (`zk-rol-forzado`, usuario vacío) y lo comparten los dos archivos. Reemplaza a la barra oscura de roles del Hub; la barra de casos de prueba de Mi Trayectoria sigue |
 
 - **Un estudiante no ve el selector:** no tiene la marca de staff, y el resumen ignora sus pedidos.
-- Como el Hub se oculta para EST y Mi Trayectoria para TUT, siempre queda un selector a la vista para volver: con EST, el de Mi Trayectoria; con TUT, el del Hub; con PAR, los dos.
-- **Avisos:** el Hub con el rol Estudiante muestra "El rol Estudiante no tiene acceso a este menú. Su pantalla es Mi Trayectoria."; Mi Trayectoria con TUT muestra "El rol … no tiene acceso a Mi Trayectoria. Su pantalla es el Menú del Equipo de Seguimiento.". En local, con un link a la otra pantalla.
+- Como el Hub se oculta para PAR y EST, y Mi Trayectoria para TUT, siempre queda un selector a la vista para volver: con PAR o EST, el de Mi Trayectoria; con TUT, el del Hub.
+- **Avisos:** el Hub con el rol Asesor par o Estudiante muestra "El rol … no tiene acceso a este menú. Su pantalla es Mi Trayectoria."; Mi Trayectoria con TUT muestra "El rol … no tiene acceso a Mi Trayectoria. Su pantalla es el Menú del Equipo de Seguimiento.". En local, con un link a la otra pantalla.
 - **Cada rol elige solo el suyo o uno con menos permisos** (desde el 2026-11-22): ADM puede ver como ADM, TUT, PAR o EST; TUT como TUT, PAR o EST; PAR como PAR o EST. El menú lista solo esos roles, y el resumen de Zhakyz, que es el que decide, ignora cualquier otro pedido y un rol elegido que el rol real no puede usar. Hasta ese día cualquier rol de staff podía elegir ADM, y un profesor sin permiso de edición del grupo `Zhakyz_Tutor` veía la vista de administrador.
 - Las otras Páginas (Entrevistas y Tutorías, el Tablero, etc.) todavía no leen el rol elegido: usan su propia detección.
 - **Código:** el bloque `SELECTOR DE ROL: INICIO … FIN` es idéntico en `section/menu_inicial` y `section/vista_estudiante` (RULES.md, "Código copiado"). Los dos pueden estar en la misma página del curso, así que el selector busca todo dentro de su contenedor (`selector-rol-menu` y `selector-rol-estudiante`).

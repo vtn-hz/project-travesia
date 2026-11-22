@@ -83,7 +83,8 @@
     // subseccion: true oculta la subsección entera (título y actividades). La de Vista Estudiante se reconoce por
     // Mi Trayectoria, porque su nombre tiene un espacio y no entra en una línea @config
     var VISIBLE_PARA = [
-      { cmid: CMID_HUB, roles: ['ADM', 'TUT', 'PAR'] },
+      // El asesor par no tiene el Hub: entra a Entrevistas y Tutorías desde Mi Trayectoria (2026-11-22)
+      { cmid: CMID_HUB, roles: ['ADM', 'TUT'] },
       { cmid: CMID_TABLERO, roles: ['ADM', 'TUT'] },
       // PAR ve el detalle de un estudiante (lo abre desde Entrevistas y Tutorías), pero no el Tablero con todos
       { cmid: CMID_DETALLE, roles: ['ADM', 'TUT', 'PAR'] },

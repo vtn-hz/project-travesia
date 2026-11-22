@@ -167,16 +167,15 @@
       var MOSTRAR_RESUMEN_PERIODO = false;
       var DESTINOS = ES_VISTA_LOCAL ? DESTINOS_LOCAL : DESTINOS_MOODLE;
 
+      // Roles que tienen este menú. El asesor par no (2026-11-22): es un alumno avanzado y entra a Entrevistas y Tutorías desde Mi Trayectoria
       var ROLES = {
         ADM: { nombre: 'Administrador' },
-        TUT: { nombre: 'Tutor / Entrevistador' },
-        PAR: { nombre: 'Asesor Par' }
+        TUT: { nombre: 'Tutor / Entrevistador' }
       };
 
       var SALUDOS = {
         ADM: 'Tenés acceso a todos los módulos y a la configuración del sistema.',
-        TUT: 'Revisá a quién contactar y gestioná tus entrevistas.',
-        PAR: 'Gestioná las entrevistas con los estudiantes que acompañás.'
+        TUT: 'Revisá a quién contactar y gestioná tus entrevistas.'
       };
 
       // ---------------------------------------------------------
@@ -239,8 +238,7 @@
         { id: 'riesgo-alto', titulo: 'Riesgo alto', valor: 2, detalle: 'estudiantes', estado: 'alto', roles: ['ADM', 'TUT'] },
         { id: 'riesgo-medio', titulo: 'Riesgo medio', valor: 1, detalle: 'estudiante', estado: 'medio', roles: ['ADM', 'TUT'] },
         { id: 'sin-encuesta', titulo: 'Sin encuesta', valor: 1, detalle: 'no respondió la del período', icono: 'encuestas', roles: ['ADM'] },
-        { id: 'entrevistas', titulo: 'Entrevistas pendientes', valor: 2, detalle: 'a coordinar', icono: 'entrevistas', roles: ['ADM', 'TUT'] },
-        { id: 'mis-entrevistas', titulo: 'Tus entrevistas', valor: 1, detalle: 'pendiente', icono: 'entrevistas', roles: ['PAR'] }
+        { id: 'entrevistas', titulo: 'Entrevistas pendientes', valor: 2, detalle: 'a coordinar', icono: 'entrevistas', roles: ['ADM', 'TUT'] }
       ];
 
       var ESTADO_SISTEMA = [
@@ -256,7 +254,7 @@
       // ---------------------------------------------------------
       var TARJETAS = [
         { id: 'tablero-criticidad', grupo: 'seguimiento', icono: 'tablero', titulo: 'Tablero de Criticidad', texto: 'Estado calculado y asignado de cada estudiante, y a quién contactar.', cta: 'Ver estudiantes', roles: ['ADM', 'TUT'] },
-        { id: 'entrevistas', grupo: 'seguimiento', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', roles: ['ADM', 'TUT', 'PAR'] },
+        { id: 'entrevistas', grupo: 'seguimiento', icono: 'entrevistas', titulo: 'Entrevistas y Tutorías', texto: 'Solicitudes recibidas, aceptar o contraofertar fecha, pedir entrevista y registrar el resultado.', cta: 'Abrir agenda', roles: ['ADM', 'TUT'] },
         { id: 'indicadores', grupo: 'seguimiento', icono: 'indicadores', titulo: 'Indicadores de Cohorte', texto: 'Avance curricular, índice de ritmo, materias críticas y cómo se calcula la criticidad de cada estudiante.', cta: 'Ver indicadores', roles: ['ADM', 'TUT'] },
         { id: 'reportes', grupo: 'seguimiento', icono: 'reportes', titulo: 'Reportes', texto: 'Informes de gestión con resumen y estadísticas, y exportación a CSV.', cta: 'Generar reporte', roles: ['ADM', 'TUT'] },
         { id: 'notas-primero', grupo: 'gestion', icono: 'lista', titulo: 'Notas de 1.er año', texto: 'Notas de parciales que cargan los estudiantes de 1.er año, con búsqueda y exportación.', cta: 'Ver notas', roles: ['ADM', 'TUT'] },
@@ -349,7 +347,7 @@
         }
       }
 
-      // APLICAR LA VISTA DE UN ROL. Un rol que no es del Hub (PEND mientras se detecta, o EST) oculta todas las tarjetas
+      // APLICAR LA VISTA DE UN ROL. Un rol que no es del Hub (PEND mientras se detecta, PAR o EST) oculta todas las tarjetas
       function aplicarRol(rol) {
         var aviso = document.getElementById('aviso-rol-menu');
         // El aviso arranca oculto (display: none): mostrar() devolvería ese valor, así que se cambia directo
@@ -359,9 +357,9 @@
           for (var k = 0; k < todos.length; k++) mostrar(todos[k], false);
           ['seguimiento', 'gestion'].forEach(function(g) { mostrar(document.getElementById('grupo-' + g), false); });
           document.getElementById('txt-saludo-equipo').textContent = '';
-          // EST (elegido con "Cambiar rol"): su pantalla es Mi Trayectoria. En Moodle este menú ni siquiera se lista
-          if (rol === 'EST') {
-            document.getElementById('txt-aviso-rol-menu').innerHTML = 'El rol Estudiante no tiene acceso a este menú. Su pantalla es ' +
+          // PAR o EST (elegidos con "Cambiar rol"): su pantalla es Mi Trayectoria. En Moodle este menú ni siquiera se les lista
+          if (rol === 'EST' || rol === 'PAR') {
+            document.getElementById('txt-aviso-rol-menu').innerHTML = 'El rol ' + (rol === 'PAR' ? 'Asesor par' : 'Estudiante') + ' no tiene acceso a este menú. Su pantalla es ' +
               (ES_VISTA_LOCAL ? '<a href="' + URL_MI_TRAYECTORIA_LOCAL + '" style="color: #026bd4 !important; font-weight: 500 !important;">Mi Trayectoria</a>.' : 'Mi Trayectoria, en la subsección Vista Estudiante.');
             avisoVisible(true);
           } else {
