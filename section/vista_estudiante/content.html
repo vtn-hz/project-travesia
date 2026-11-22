@@ -865,8 +865,8 @@
       // SELECTOR DE ROL: FIN
 
       // ROLES QUE TIENEN ESTA PANTALLA (ocultamiento por rol, §10). Con otro rol elegido en "Cambiar rol" se muestra un aviso.
-      // En Moodle, a TUT y PAR la subsección Vista Estudiante ni siquiera se les lista
-      var ROLES_CON_MI_TRAYECTORIA = ['ADM', 'EST', 'PEND'];
+      // En Moodle, a TUT la subsección Vista Estudiante ni siquiera se le lista. El asesor par es un alumno avanzado: la tiene (2026-11-22)
+      var ROLES_CON_MI_TRAYECTORIA = ['ADM', 'PAR', 'EST', 'PEND'];
       var URL_HUB_LOCAL = '../menu_inicial/content.html';
       function aplicarRolVista(rol) {
         var tiene = ROLES_CON_MI_TRAYECTORIA.indexOf(rol) !== -1;

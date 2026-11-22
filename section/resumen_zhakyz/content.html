@@ -95,7 +95,8 @@
       { cmid: CMID_ENTREVISTAS, roles: ['ADM', 'TUT', 'PAR', 'EST'] },
       // Plan de Estudios tiene la carga por CSV del plan: no la ven PAR ni EST (la base Materias además es de solo lectura para ellos)
       { cmid: CMID_PLAN, roles: ['ADM', 'TUT'] },
-      { cmid: CMID_MI_TRAYECTORIA, roles: ['ADM', 'EST'], subseccion: true },
+      // El asesor par es un alumno avanzado: también tiene su Mi Trayectoria (2026-11-22)
+      { cmid: CMID_MI_TRAYECTORIA, roles: ['ADM', 'PAR', 'EST'], subseccion: true },
       { cmid: CMID_SUB_DATABASE, roles: ['ADM'], subseccion: true, esSubseccion: true },
       { cmid: CMID_SUB_UTILS, roles: ['ADM'], subseccion: true, esSubseccion: true }
     ];
