@@ -448,6 +448,15 @@
       var SELECTOR_LOCAL = window.location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var selectorRol = { contenedor: null, alCambiar: null, rol: null, real: null, forzado: false };
 
+      // ROLES QUE SE PUEDEN ELEGIR: el propio o uno con menos permisos (la misma regla que el resumen de Zhakyz, que es el que decide).
+      // En local, todos (la vista previa prueba cada rol)
+      var ELEGIBLES_POR_ROL = { ADM: ['ADM', 'TUT', 'PAR', 'EST'], TUT: ['TUT', 'PAR', 'EST'], PAR: ['PAR', 'EST'] };
+      function rolesElegibles() {
+        if (SELECTOR_LOCAL) return ROLES_SELECTOR;
+        var permitidos = ELEGIBLES_POR_ROL[selectorRol.real] || [];
+        return ROLES_SELECTOR.filter(function(r) { return permitidos.indexOf(r.rol) !== -1; });
+      }
+
       function nombreRolSelector(rol) {
         for (var i = 0; i < ROLES_SELECTOR.length; i++) if (ROLES_SELECTOR[i].rol === rol) return ROLES_SELECTOR[i].nombre;
         return rol;
@@ -505,7 +514,7 @@
           : '';
         c.querySelector('[data-selector-menu]').innerHTML =
           '<div style="padding: 4px 12px 8px 12px !important; font-size: 12px !important; color: #47536b !important; line-height: 1.4 !important;">Ver la sección como otro rol. Solo cambia lo que se muestra.</div>' +
-          ROLES_SELECTOR.map(opcionSelectorRol).join('') + volver;
+          rolesElegibles().map(opcionSelectorRol).join('') + volver;
       }
 
       function abrirMenuRol(abrir) {

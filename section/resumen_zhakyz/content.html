@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-21 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → campo "Resumen" · 2026-11-22 -->
 <!-- IMAGEN: assets/LOGO_ZHAKYZ_ANIMADO.gif, subida como zhakyz_logo.gif al área de archivos del resumen -->
 <!-- URL PÚBLICA: https://ingenieria.campus.mdp.edu.ar/pluginfile.php/77555/course/section/15647/zhakyz_logo.gif -->
 <!-- ÚLTIMA PUBLICACIÓN: 2026-11-21 -->
@@ -175,12 +175,15 @@
     // ROL ELEGIDO CON "CAMBIAR ROL" (selector del Hub y de Mi Trayectoria). Solo visual, solo para el staff y por usuario:
     // la lista de la sección, el Hub y Mi Trayectoria se muestran como para ese rol. Lo pide el evento "zk-rol-cambiar"
     var CLAVE_ROL_FORZADO = 'zk-rol-forzado';
-    var ROLES_ELEGIBLES = ['ADM', 'TUT', 'PAR', 'EST'];
+    // Cada rol puede ver la sección como él mismo o como un rol con menos permisos, nunca como uno con más (2026-11-22: un
+    // tutor se ponía la vista de administrador). Mientras el rol real no se detectó, no vale ningún rol elegido
+    var ELEGIBLES_POR_ROL = { ADM: ['ADM', 'TUT', 'PAR', 'EST'], TUT: ['TUT', 'PAR', 'EST'], PAR: ['PAR', 'EST'] };
     var estadoRol = { real: null, staff: false, estudiante: false };
+    function elegible(rol) { return (ELEGIBLES_POR_ROL[estadoRol.real] || []).indexOf(rol) !== -1; }
     function rolForzado() {
       try {
         var g = JSON.parse(window.localStorage.getItem(CLAVE_ROL_FORZADO) || 'null');
-        if (g && g.usuario === usuario && ROLES_ELEGIBLES.indexOf(g.rol) !== -1) return g.rol;
+        if (g && g.usuario === usuario && elegible(g.rol)) return g.rol;
       } catch (e) { /* sin almacenamiento */ }
       return null;
     }
@@ -214,7 +217,7 @@
     // PEDIDO DEL SELECTOR "CAMBIAR ROL": solo del staff. Elegir el rol propio vuelve a la vista normal
     window.addEventListener('zk-rol-cambiar', function(e) {
       var rol = e && e.detail ? e.detail.rol : null;
-      if (!estadoRol.staff || ROLES_ELEGIBLES.indexOf(rol) === -1) return;
+      if (!estadoRol.staff || !elegible(rol)) return;
       guardarRolForzado(rol === estadoRol.real ? null : rol);
       publicar();
     });
