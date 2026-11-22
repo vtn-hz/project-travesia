@@ -458,7 +458,8 @@
       // ASESOR PAR CON ROL DE ESTUDIANTE EN MOODLE: el sistema lo ve como estudiante (no recibe la marca de staff), así que el enlace
       // abriría el manual del estudiante. Si está en el grupo Zhakyz_AsesorPar, abre el del asesor par. Solo cambia el manual: lo que ve
       // y lo que puede hacer siguen siendo los del estudiante. Se consulta una vez, en su perfil del curso (campo Grupo: el servicio de
-      // grupos de Moodle está deshabilitado en el campus), y se guarda 12 h
+      // grupos de Moodle está deshabilitado en el campus). Solo se guarda (12 h) cuando está en el grupo: si no, se consulta en cada
+      // visita, así a quien agregan al grupo después le cambia el manual en la próxima
       var CURSO_SELECTOR = 1732; // @config curso
       var GRUPO_ASESOR_PAR = 'Zhakyz_AsesorPar';
       var CLAVE_ASESOR_PAR = 'zk-asesor-par';
@@ -471,7 +472,7 @@
         var usuario = String(M.cfg.userId);
         try {
           var g = JSON.parse(window.localStorage.getItem(CLAVE_ASESOR_PAR) || 'null');
-          if (g && g.usuario === usuario && Date.now() - g.fecha < 12 * 60 * 60 * 1000) { asesorParEstudiante = !!g.es; return pintarSelectorRol(); }
+          if (g && g.usuario === usuario && g.es && Date.now() - g.fecha < 12 * 60 * 60 * 1000) { asesorParEstudiante = true; return pintarSelectorRol(); }
         } catch (e) { /* sin almacenamiento: se consulta */ }
         fetch(M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(usuario) + '&course=' + CURSO_SELECTOR, { credentials: 'same-origin' })
           .then(function(r) { return r.ok ? r.text() : ''; })
@@ -481,7 +482,10 @@
             var titulo = Array.prototype.filter.call(doc.querySelectorAll('dt'), function(dt) { return /^grupos?$/i.test(dt.textContent.trim()); })[0];
             var grupos = titulo && titulo.nextElementSibling ? titulo.nextElementSibling.textContent.split(',').map(function(x) { return x.trim(); }) : [];
             asesorParEstudiante = grupos.indexOf(GRUPO_ASESOR_PAR) !== -1;
-            try { window.localStorage.setItem(CLAVE_ASESOR_PAR, JSON.stringify({ usuario: usuario, es: asesorParEstudiante, fecha: Date.now() })); } catch (e) { /* sin almacenamiento */ }
+            try {
+              if (asesorParEstudiante) window.localStorage.setItem(CLAVE_ASESOR_PAR, JSON.stringify({ usuario: usuario, es: true, fecha: Date.now() }));
+              else window.localStorage.removeItem(CLAVE_ASESOR_PAR);
+            } catch (e) { /* sin almacenamiento */ }
             pintarSelectorRol();
           })
           .catch(function() { /* sin grupos: queda el manual del estudiante */ });
