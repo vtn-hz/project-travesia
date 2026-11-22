@@ -16,7 +16,7 @@
 
 | Izquierda | Derecha |
 |---|---|
-| **Perfil del estudiante:** foto del campus (o iniciales), nombre, año de la carrera, cohorte y estado vigente; id de usuario, DNI, correo, ingreso, paso a 2.º año y fecha de la información personal (base Estudiantes). En el campus se suman los datos del perfil del curso | **Resumen** ([ADR-010](../decisions/010-criticidad-por-fuente.md)): una tarjeta por fuente, **Parciales** y **Encuesta** (la Cuatrimestral; índice, semáforo y fecha del período; la del año de la carrera dice "estado calculado"; en 1.er año la Cuatrimestral dice "Se responde desde 2.º año"), y el estado asignado, con el botón **Asignar estado** (TUT y ADM) |
+| **Perfil del estudiante:** foto del campus (o iniciales), nombre, año de la carrera, cohorte y estado vigente; id de usuario, DNI, correo, ingreso, paso a 2.º año y fecha de la información personal (base Estudiantes). En el campus se suman roles, grupo y último acceso al curso del perfil del curso | **Resumen** ([ADR-010](../decisions/010-criticidad-por-fuente.md)): una tarjeta por fuente, **Parciales** y **Encuesta** (la Cuatrimestral; índice, semáforo y fecha del período; la del año de la carrera dice "estado calculado"; en 1.er año la Cuatrimestral dice "Se responde desde 2.º año"), y el estado asignado, con el botón **Asignar estado** (TUT y ADM) |
 | | **Evolución de la criticidad:** gráfico con dos series |
 | | **Trayectoria:** la cronología, con filtros por tipo |
 | | **Historial de cambios de estado:** calculados y asignados |
@@ -28,7 +28,7 @@ En celular las columnas se apilan y el gráfico se dibuja al ancho de la pantall
 Verificado en el campus (con un integrante del equipo):
 
 - **Foto:** `M.cfg.wwwroot + '/user/pix.php/<id>/f1.jpg'` devuelve la imagen de perfil. Moodle aplica los permisos de quien mira. Si no hay foto o falla, se muestran las iniciales.
-- **Datos:** `user/view.php?id=<id>&course=1732`. El nombre está en `.page-context-header .page-header-headings h2` y los campos en `li.contentnode` (`dt` y `dd`): correo, país, zona horaria, roles, grupo, último acceso al curso. Se muestran solo los que Moodle deja ver a quien consulta.
+- **Datos:** `user/view.php?id=<id>&course=1732`. El nombre está en `.page-context-header .page-header-headings h2` y los campos en `li.contentnode` (`dt` y `dd`). Se muestran solo correo, roles, grupo y último acceso al curso (si Moodle los deja ver a quien consulta); el resto (país, ciudad, zona horaria, primer acceso, último acceso al sitio…) se omite.
 - En local se usan las iniciales y datos ficticios. El repo es público, así que no se guardan correos.
 
 ## Decisiones del 2026-11-03

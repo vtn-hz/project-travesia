@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Detalle del estudiante" (cmid 60288) · 2026-11-20 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Detalle del estudiante" (cmid 60288) · 2026-11-22 -->
 <!-- SECCIÓN: DETALLE DEL ESTUDIANTE (ROLES ADM, GES, TUT) · SE ABRE DESDE EL TABLERO DE CRITICIDAD CON #usuario=<id> -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- DATOS: bases Estudiantes, Criticidad, Respuestas, CargaParcialesPrimero y Entrevistas. Mismo calculado que el tablero (docs/specs/detalle-estudiante.md) -->
@@ -650,7 +650,7 @@
         return M.cfg.wwwroot + '/user/pix.php/' + encodeURIComponent(id) + '/f1.jpg';
       }
 
-      // DATOS DEL PERFIL DEL CURSO: LISTA dt/dd (ROLES, GRUPO, ÚLTIMO ACCESO…)
+      // DATOS DEL PERFIL DEL CURSO: LISTA dt/dd (CORREO, ROLES, GRUPO Y ÚLTIMO ACCESO AL CURSO)
       function leerPerfilMoodle(id) {
         var url = M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(id) + '&course=' + CURSO;
         return fetch(url, { credentials: 'same-origin' })
@@ -661,9 +661,10 @@
             doc.querySelectorAll('li.contentnode').forEach(function(li) {
               var dt = li.querySelector('dt');
               var dd = li.querySelector('dd');
-              // Se omiten el código QR de la app de Moodle, la zona horaria y la lista de cursos: no sirven al seguimiento.
+              // Solo los campos que sirven al seguimiento: correo, roles, grupos y último acceso al curso.
+              // El resto (país, ciudad, primer acceso, último acceso al sitio, código QR, zona horaria, cursos…) se omite.
               // Moodle agrega al correo "(Oculto a todo el mundo excepto…)": se quita (con [(] y no con barra y paréntesis, que activa el filtro TeX)
-              if (dt && dd && !/c[oó]digo qr|zona horaria|perfiles de curso/i.test(dt.textContent)) {
+              if (dt && dd && /^\s*(direcci[oó]n de correo|roles|grupos?|[uú]ltimo acceso al curso)/i.test(dt.textContent)) {
                 campos.push({ etiqueta: dt.textContent.trim(), valor: dd.textContent.replace(/\s+/g, ' ').replace(/\s*[(]Oculto a todo el mundo[^)]*[)]/gi, '').trim() });
               }
             });
