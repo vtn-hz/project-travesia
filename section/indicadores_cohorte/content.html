@@ -1,7 +1,7 @@
 <!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Indicadores de Cohorte" (cmid 60283) · 2026-11-22 -->
 <!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM Y TUT) · SE ABRE DESDE LA TARJETA "INDICADORES DE COHORTE" DEL HUB -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
-<!-- FUENTES: docs/context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md, requerimientos v1.1, base Encuestas (versiones vigentes, leída el 2026-11-01),
+<!-- FUENTES: docs/context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md, requerimientos v1.1, base Encuestas (Cuatrimestral v4, con los textos de Moodle al 2026-11-22),
      CargaMateriasPrimero, Tools (cortes del semáforo), docs/models, ADR-007 y ADR-010. Lo que queda fuera: docs/models/INDICADORES_NO_IMPLEMENTADOS.md -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="indicadores-cohorte"
@@ -85,22 +85,22 @@
         cuatrimestral: {
           titulo: 'Encuesta Cuatrimestral', version: 4, puntajeMaximo: 70, porPeriodo: true,
           preguntas: [
-            { variable: 'progreso_proyecto_final', pregunta: '¿En qué estado se encuentra el Proyecto Final de Grado (PFG)?', max: 10,
-              opciones: [['No aplica por el nivel', 0], ['No iniciado', 10], ['Tema propuesto sin avance', 7], ['En desarrollo activo', 3], ['Finalizado, pendiente de defensa', 0]] },
-            { variable: 'trabaja', pregunta: '¿Trabaja actualmente?', max: 5, opciones: [['Si', 5], ['No', 0]] },
-            { variable: 'inicio_laboral', pregunta: '¿En qué momento de la carrera comenzó su actividad laboral? (solo si trabaja)', max: 10,
-              opciones: [['Antes de ingresar', 10], ['En 1.º año', 10], ['En 2.º año', 10], ['En 3.º año', 7], ['En 4.º año', 7], ['En 5.º año', 4], ['Solo adeudando el trabajo final', 4]] },
-            { variable: 'materias_cuatrimestre', pregunta: '¿Qué materias cursó el cuatrimestre anterior? (con primera vez y dificultad de cada una)', max: 35, regla: 'cursada', activa: true },
-            { variable: 'avance_percibido', pregunta: '¿Cómo define su situación actual de avance en el cursado?', max: 10,
-              opciones: [['Al día', 0], ['Demorado', 5], ['Muy demorado', 10]] }
+            { variable: 'progreso_proyecto_final', corta: 'Proyecto Final', pregunta: '¿En qué estado se encuentra tu Proyecto Final de Grado (PFG)?', max: 10,
+              opciones: [['No aplico por nivel', 0], ['No iniciado', 10], ['Tema propuesto sin avance', 7], ['En desarrollo activo', 3], ['Finalizado pendiente de defensa', 0]] },
+            { variable: 'trabaja', corta: 'Trabaja', pregunta: '¿Trabaja actualmente?', max: 5, opciones: [['Si', 5], ['No', 0]] },
+            { variable: 'inicio_laboral', corta: 'Inicio laboral', pregunta: '¿En qué momento de la carrera comenzaste tu actividad laboral? (solo si trabaja)', max: 10,
+              opciones: [['Comencé antes de ingresar a la carrera', 10], ['Comencé en 1.º año', 10], ['Comencé en 2.º año', 10], ['Comencé en 3.º año', 7], ['Comencé en 4.º año', 7], ['Comencé en 5.º año', 4], ['Comencé solo adeudando trabajo final', 4]] },
+            { variable: 'materias_cuatrimestre', corta: 'Materias cursadas', pregunta: '¿Qué materias cursaste el anterior cuatrimestre? (en cada una, si fue la primera vez y qué tan difícil resultó)', max: 35, regla: 'cursada', activa: true },
+            { variable: 'avance_percibido', corta: 'Avance percibido', pregunta: 'Considerando el año en que ingresaste a la carrera, ¿cómo defines tu situación actual de avance en el cursado?', max: 10,
+              opciones: [['Al día (aprobé las materias que corresponden a mi año)', 0], ['Demorado (aprobé la mitad o más de las materias que corresponden a mi año)', 5], ['Muy demorado (aprobé menos de la mitad de las materias que corresponden a mi año)', 10]] }
           ]
         }
       };
 
       // REGLA "cursada" DE LA CUATRIMESTRAL (base Encuestas → regla de materias_cuatrimestre)
-      var CURSADA = { cantidad: [35, 10, 5], recursada: [8, 7], dificultadMax: 10 };
+      var CURSADA = { cantidad: [35, 10, 5], recursada: [8, 7], dificultadMax: 10, sinInactividad: [4, 5] }; // sinInactividad: opciones del PFG (En desarrollo activo, Finalizado)
 
-      // MATERIAS CRÍTICAS DE 1.ER AÑO (CargaMateriasPrimero, leída el 2026-11-01)
+      // MATERIAS CRÍTICAS DE 1.ER AÑO (CargaMateriasPrimero, comprobada en el campus el 2026-11-22)
       var MATERIAS_PRIMERO = [
         { nombre: 'Análisis Matemático I', critica: true, umbral: 4.5 },
         { nombre: 'Álgebra I- B', critica: true, umbral: 6 },
@@ -471,7 +471,7 @@
           grilla(150, campo('Materias cursadas', numero('cantidad', 4, 'min="0" max="10"')) +
             campo('De ellas, recursadas', numero('recursadas', 1, 'min="0" max="10"')) +
             campo('Dificultad promedio (1 a 5)', numero('dificultad', 3, 'min="1" max="5" step="0.5"')));
-        return tarjeta('Probar un caso', 'Elija respuestas para ver cuántos puntos suman y qué color resulta. No se guarda nada.',
+        return tarjeta('Probar un caso', 'Elegir respuestas para ver cuántos puntos suman y qué color resulta. No se guarda nada.',
           grilla(220, selects) + cursada + '<div id="resultado-calc-encuesta"></div>');
       }
 
@@ -486,14 +486,13 @@
           if (p.variable === 'trabaja') trabaja = o[0] === 'Si';
           if (p.variable === 'inicio_laboral' && trabaja === false) return detalle.push(['Inicio laboral', 'no aplica (no trabaja)', 0]);
           total += o[1];
-          detalle.push([p.pregunta.split('?')[0].replace('¿', '') , o[0], o[1]]);
+          detalle.push([p.corta, o[0], o[1]]);
         });
         if (encuestaActual === 'cuatrimestral') {
           var n = Math.max(0, Number(valor('cantidad')) || 0);
           var rec = Math.min(n, Math.max(0, Number(valor('recursadas')) || 0));
           var dif = Math.min(5, Math.max(1, Number(valor('dificultad')) || 1));
-          var pfg = ENCUESTAS.cuatrimestral.preguntas.filter(function(p) { return p.variable === 'progreso_proyecto_final'; })[0].opciones[Number(valor('progreso_proyecto_final'))][0];
-          var exceptuado = pfg === 'En desarrollo activo' || pfg === 'Finalizado, pendiente de defensa';
+          var exceptuado = CURSADA.sinInactividad.indexOf(Number(valor('progreso_proyecto_final')) + 1) !== -1;
           var pCant = n === 0 ? (exceptuado ? 0 : CURSADA.cantidad[0]) : (CURSADA.cantidad[n] || 0);
           var pRec = n === 0 ? 0 : (rec >= 1 ? CURSADA.recursada[0] : 0) + (rec >= 2 ? CURSADA.recursada[1] : 0);
           var pDif = n === 0 ? 0 : redondear((dif - 1) * 2.5, 1);
@@ -552,7 +551,7 @@
 
       function calculadoraNotas() {
         var opciones = MATERIAS_PRIMERO.map(function(m, i) { return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' + escapar(m.nombre) + '</option>'; }).join('');
-        return tarjeta('Probar una materia', 'Cargue las notas de una materia como figuran en CargaParcialesPrimero para ver su ICm. No se guarda nada.',
+        return tarjeta('Probar una materia', 'Cargar las notas de una materia como figuran en CargaParcialesPrimero para ver su ICm. No se guarda nada.',
           '<div style="max-width: 320px !important; margin-bottom: 12px !important;"><label style="' + EST.label + '">Materia</label><select data-calc-notas="materia" style="' + EST.input + ' width: 100% !important;">' + opciones + '</select></div>' +
           filaInstancia('p1', 'Parcial 1', '7', 'Aprobado', false) +
           filaInstancia('p2', 'Parcial 2', '8', 'Aprobado', false) +

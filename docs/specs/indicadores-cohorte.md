@@ -60,9 +60,9 @@ Por ahora los valores están **copiados en el código** y hay que actualizarlos 
 
 | Dato | Sale de | Leído el |
 |---|---|---|
-| Preguntas, opciones, puntos y reglas | Base Encuestas, versiones vigentes (Inicial 2 y Cuatrimestral 3) | 2026-11-01 |
-| Materias críticas y umbrales | CargaMateriasPrimero | 2026-11-01 |
-| Cortes del semáforo y pesos del ICm y el ICG | Página Tools v5 y modelo de las notas de 1.er año | 2026-11-02 |
+| Preguntas, opciones, puntos y reglas | Base Encuestas, Cuatrimestral v4 (la vigente), con los textos de la encuesta de Moodle | 2026-11-22 |
+| Materias críticas y umbrales | CargaMateriasPrimero | 2026-11-22 |
+| Cortes del semáforo y pesos del ICm y el ICG | Página Tools (v12) y modelo de las notas de 1.er año | 2026-11-22 |
 
 Para publicarla, conviene leerlos en vivo: la base Encuestas y CargaMateriasPrimero con `LeerBase`, y los cortes desde Tools, que hoy no exporta `CORTES_SEMAFORO` (haría falta publicar una versión nueva de Tools).
 
