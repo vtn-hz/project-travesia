@@ -733,6 +733,38 @@
         return ROLES_SELECTOR.filter(function(r) { return permitidos.indexOf(r.rol) !== -1; });
       }
 
+      // ASESOR PAR CON ROL DE ESTUDIANTE EN MOODLE: el sistema lo ve como estudiante (no recibe la marca de staff), así que el enlace
+      // abriría el manual del estudiante. Si está en el grupo Zhakyz_AsesorPar, abre el del asesor par. Solo cambia el manual: lo que ve
+      // y lo que puede hacer siguen siendo los del estudiante. Se consulta una vez, en su perfil del curso (campo Grupo: el servicio de
+      // grupos de Moodle está deshabilitado en el campus), y se guarda 12 h
+      var CURSO_SELECTOR = 1732; // @config curso
+      var GRUPO_ASESOR_PAR = 'Zhakyz_AsesorPar';
+      var CLAVE_ASESOR_PAR = 'zk-asesor-par';
+      var asesorParEstudiante = false;
+      function rolDelManual() {
+        return selectorRol.rol === 'EST' && asesorParEstudiante && !puedeCambiarRol() ? 'PAR' : selectorRol.rol;
+      }
+      function detectarAsesorParEstudiante() {
+        if (SELECTOR_LOCAL || !window.M || !M.cfg || !M.cfg.userId || puedeCambiarRol()) return;
+        var usuario = String(M.cfg.userId);
+        try {
+          var g = JSON.parse(window.localStorage.getItem(CLAVE_ASESOR_PAR) || 'null');
+          if (g && g.usuario === usuario && Date.now() - g.fecha < 12 * 60 * 60 * 1000) { asesorParEstudiante = !!g.es; return pintarSelectorRol(); }
+        } catch (e) { /* sin almacenamiento: se consulta */ }
+        fetch(M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(usuario) + '&course=' + CURSO_SELECTOR, { credentials: 'same-origin' })
+          .then(function(r) { return r.ok ? r.text() : ''; })
+          .then(function(html) {
+            if (!html) return;
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var titulo = Array.prototype.filter.call(doc.querySelectorAll('dt'), function(dt) { return /^grupos?$/i.test(dt.textContent.trim()); })[0];
+            var grupos = titulo && titulo.nextElementSibling ? titulo.nextElementSibling.textContent.split(',').map(function(x) { return x.trim(); }) : [];
+            asesorParEstudiante = grupos.indexOf(GRUPO_ASESOR_PAR) !== -1;
+            try { window.localStorage.setItem(CLAVE_ASESOR_PAR, JSON.stringify({ usuario: usuario, es: asesorParEstudiante, fecha: Date.now() })); } catch (e) { /* sin almacenamiento */ }
+            pintarSelectorRol();
+          })
+          .catch(function() { /* sin grupos: queda el manual del estudiante */ });
+      }
+
       function nombreRolSelector(rol) {
         for (var i = 0; i < ROLES_SELECTOR.length; i++) if (ROLES_SELECTOR[i].rol === rol) return ROLES_SELECTOR[i].nombre;
         return rol;
@@ -767,13 +799,13 @@
         if (!c) return;
         var conRol = !!selectorRol.rol && selectorRol.rol !== 'PEND';
         var conSelector = conRol && puedeCambiarRol();
-        var manual = conRol ? MANUALES[selectorRol.rol] : '';
+        var manual = conRol ? MANUALES[rolDelManual()] : '';
         c.style.setProperty('display', conSelector || manual ? 'flex' : 'none', 'important');
         var enlace = c.querySelector('[data-manual-rol]');
         enlace.style.setProperty('display', manual ? 'inline-flex' : 'none', 'important');
         if (manual) {
           enlace.href = manual;
-          enlace.title = 'Manual de usuario: ' + nombreRolSelector(selectorRol.rol) + ' (PDF, se abre en otra pestaña)';
+          enlace.title = 'Manual de usuario: ' + nombreRolSelector(rolDelManual()) + ' (PDF, se abre en otra pestaña)';
         }
         var boton = c.querySelector('[data-selector-boton]');
         boton.style.setProperty('display', conSelector ? 'flex' : 'none', 'important');
@@ -860,6 +892,7 @@
       }
       function iniciarSelectorRol(rol) {
         var html = document.documentElement;
+        detectarAsesorParEstudiante();
         actualizarSelectorRol(rol, !SELECTOR_LOCAL && html.getAttribute('data-zk-rol-forzado') === '1', html.getAttribute('data-zk-rol-real'));
       }
       // SELECTOR DE ROL: FIN
