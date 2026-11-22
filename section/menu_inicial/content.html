@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-11-21 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Área de texto y medios "Hub" (cmid 59511) · 2026-11-22 -->
 <!-- SECCIÓN: MENÚ DEL EQUIPO DE SEGUIMIENTO (ROLES ADM, TUT, PAR) -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- CONTENEDOR PRINCIPAL -->
@@ -433,13 +433,17 @@
         { rol: 'PAR', nombre: 'Asesor par' },
         { rol: 'EST', nombre: 'Estudiante' }
       ];
-      // MANUAL DE USUARIO DE CADA ROL (PDF EN DRIVE): el enlace "Manual de usuario" va al lado del selector y abre el del rol
+      // MANUAL DE USUARIO DE CADA ROL (ID DEL PDF EN DRIVE): el enlace "Manual de usuario" va al lado del selector y abre el del rol
       // que se está mostrando. Lo ve también el estudiante, que no tiene selector
-      var MANUAL_ADM = 'https://drive.google.com/file/d/1cTOq09bVmqscRzUf5jctXNHFZk5mfqW6/view'; // @config manuales.ADM
-      var MANUAL_TUT = 'https://drive.google.com/file/d/135qPde6AXpzAHd5f_on9Z-Zp1c4kCyKM/view'; // @config manuales.TUT
-      var MANUAL_PAR = 'https://drive.google.com/file/d/1wyJvWy0qAVXz-ppgJsDM56hN7vwV-x4w/view'; // @config manuales.PAR
-      var MANUAL_EST = 'https://drive.google.com/file/d/1ICNz4El8-xifz0sUWvaA2iCi6n1ciQ14/view'; // @config manuales.EST
-      var MANUALES = { ADM: MANUAL_ADM, TUT: MANUAL_TUT, PAR: MANUAL_PAR, EST: MANUAL_EST };
+      var MANUAL_ADM = '1cTOq09bVmqscRzUf5jctXNHFZk5mfqW6'; // @config manuales.ADM
+      var MANUAL_TUT = '135qPde6AXpzAHd5f_on9Z-Zp1c4kCyKM'; // @config manuales.TUT
+      var MANUAL_PAR = '1wyJvWy0qAVXz-ppgJsDM56hN7vwV-x4w'; // @config manuales.PAR
+      var MANUAL_EST = '1ICNz4El8-xifz0sUWvaA2iCi6n1ciQ14'; // @config manuales.EST
+      // Solo el id del archivo: el filtro "Convertir URLs en enlaces" de Moodle convierte una dirección completa escrita en el script en un
+      // <a> y rompe el JavaScript. Por eso la dirección se arma en partes
+      var URL_DRIVE = 'https:' + '/' + '/drive.google.com/file/d/';
+      function urlManual(id) { return id ? URL_DRIVE + id + '/view' : ''; }
+      var MANUALES = { ADM: urlManual(MANUAL_ADM), TUT: urlManual(MANUAL_TUT), PAR: urlManual(MANUAL_PAR), EST: urlManual(MANUAL_EST) };
       var CLAVE_ROL_FORZADO = 'zk-rol-forzado';
       var SELECTOR_LOCAL = window.location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var selectorRol = { contenedor: null, alCambiar: null, rol: null, real: null, forzado: false };
