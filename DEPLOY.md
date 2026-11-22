@@ -114,6 +114,13 @@ Los ids de cada base (cmid y d) están en [`moodle.config.json`](moodle.config.j
 9. **Trayectoria, abandono y egreso (2026-11-17; publicado el 2026-11-18):** definiciones acordadas con el DII ([modelo](docs/models/trayectoria/MODELO_ABANDONO_Y_EGRESO.md)): ingresantes = información personal; abandono = 4 períodos cerrados seguidos sin notas ni Cuatrimestral (configurable); egreso = 235,5 créditos. Para publicar, cada paso con confirmación y en este orden: (1) agregar el campo `periodos_abandono` a Períodos (d=207) y subir sus plantillas; (2) crear la base Informes con `crear_base.js`, ocultarla para los estudiantes, subir su plantilla y sincronizar `bases.informes`; (3) Tools v9; (4) Configuración del Sistema; (5) Indicadores de Cohorte; (6) Reportes, cuando se decida publicarla (hoy sigue solo en local). Hasta (1), Configuración v9 no puede guardar en Períodos porque busca el campo nuevo. **Hecho el 2026-11-18:** los 6 pasos (Tools y Configuración ya los había publicado el equipo con el ADR-011).
 5. **Modelo de entrevistas** (una sola base Entrevistas con copias de los involucrados y `propuestas_json` para las contraofertas). El usuario de la sesión (`M.cfg.userId`) ya se verificó en el campus.
 
+10. **Cuatrimestral v5, para el cierre de 2026-2 (preparada el 2026-11-22, sin publicar):** el avance percibido pasa a valer 0, 20 y 40 y el máximo a 100 ([modelo](docs/models/criticidad/MODELO_CRITICIDAD_ENCUESTAS.md#cuatrimestral-v5-el-avance-pesa-más-preparada-el-2026-11-22-sin-cargar)). No cambia el código: Tools toma la versión de mayor número para los envíos nuevos y la de cada envío para los viejos. Se hace todo el mismo día, al abrir el período siguiente, y en este orden:
+   1. En la Encuesta Cuatrimestral de Moodle (cmid 59712), cambiar el texto de las tres opciones del ítem 8271 por el de la v5 (solo el texto: las respuestas se guardan por número de opción).
+   2. Cargar la cuatrimestral v5 de [`DEFINICIONES_ENCUESTAS.json`](data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json) en la base Encuestas (d=198), con `json_preguntas` como texto JSON y `created_at` del momento, y anotar el rid acá y en el `origen` del archivo.
+   3. En Indicadores de Cohorte (`ENCUESTAS.cuatrimestral`): `version: 5`, `puntajeMaximo: 100` y, en `avance_percibido`, `max: 40` y opciones Al día 0 · Demorado 20 · Muy demorado 40. Sacar de la spec el punto abierto del texto del avance percibido y republicar la Página (60283).
+   4. Probar un envío y comprobar en Criticidad que el índice sale sobre 100.
+   Los envíos de 2026-2 conservan su índice de la v4: no se recalculan.
+
 ## Cómo se publica
 
 Siempre con la skill [`publicar-seccion`](.skills/publicar-seccion/SKILL.md):

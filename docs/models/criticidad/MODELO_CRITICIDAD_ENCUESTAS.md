@@ -11,6 +11,46 @@
   - El índice se calcula al enviar y no se recalcula después. Si cambian los valores, las entradas viejas conservan el suyo.
   - **El estudiante no lo ve en la encuesta,** pero puede ver sus propias entradas de Criticidad (ADR-007).
 
+## Cuatrimestral v5: el avance pesa más (preparada el 2026-11-22, sin cargar)
+
+Pedido del equipo: que estar al día sea lo que más pese en el índice. Se descartó medirlo con los créditos aprobados (un estudiante puede sumar créditos con Inglés, electivas u optativas, que no lo ponen al día), así que la regla `avance_curricular` sigue desactivada y el peso pasa al **avance percibido**. No cambia el código de Tools: solo los puntos de la base Encuestas ([`DEFINICIONES_ENCUESTAS.json`](../../../data/moodle/encuestas/DEFINICIONES_ENCUESTAS.json), cuatrimestral v5).
+
+| Pregunta | v4 (vigente) | v5 |
+|---|---:|---:|
+| Avance percibido: al día · demorado · muy demorado | 0 · 5 · 10 | **0 · 20 · 40** |
+| Cursada del cuatrimestre anterior | 35 | 35 |
+| Momento de inicio laboral | 10 | 10 |
+| Estado del Proyecto Final | 10 | 10 |
+| Trabaja | 5 | 5 |
+| Créditos aprobados (`avance_curricular`) | 0 (desactivada) | 0 (desactivada) |
+| **Máximo** | **70** | **100** |
+
+Con el máximo en 100, los puntos son el índice. Lo que asegura:
+
+- **El avance es lo que más pesa** (40, más que la cursada).
+- **Quien se declara al día no llega a rojo** por la encuesta: suma como mucho 60. Sí puede quedar en rojo por la omisión o por un estado asignado.
+- **Quien se declara muy demorado no queda en verde:** arranca en 40.
+
+**Texto de las opciones** (ítem 8271; antes *Demorado* y *Muy demorado* decían lo mismo):
+
+- Al día (aprobé las materias que corresponden a mi año)
+- Demorado (aprobé la mitad o más de las materias que corresponden a mi año)
+- Muy demorado (aprobé menos de la mitad de las materias que corresponden a mi año)
+
+**Casos** (calculados con `CriticidadEncuesta` de Tools sobre la v4 y la v5):
+
+| Caso | v4 | v5 |
+|---|---|---|
+| Al día, recursa las 2 materias que cursa, dificultad 5 | 43 amarillo | 30 verde |
+| Al día, solo le falta el PFG (no iniciado), trabaja, no cursa | 77 rojo | 54 amarillo |
+| Muy demorado, cursa 3 materias, no trabaja, dificultad 3 | 21 verde | 45 amarillo |
+| Muy demorado, no trabaja, no cursó nada | 64 amarillo | 75 rojo |
+| Muy demorado, trabaja desde 1.º, 1 materia recursada, dificultad 4 | 72 rojo | 81 rojo |
+
+El equipo aceptó que el estudiante al día que no cursa o recursa todo quede en verde o amarillo, y no en rojo.
+
+**Cuándo vale:** se carga en la base Encuestas al abrir el período siguiente, junto con el texto nuevo en la encuesta de Moodle. Los envíos con la v4 conservan su índice (no se recalculan), así que cargarla a mitad de un período mezclaría dos escalas en el Tablero.
+
 ## Cómo se arma
 
 - **Cada encuesta reparte 100 puntos entre sus preguntas.** La peor respuesta de cada pregunta suma el máximo de esa pregunta, y la suma de todos los máximos es 100.
@@ -172,4 +212,4 @@ Las preguntas de las tablas de arriba son las de las Encuestas de Moodle, con el
 - **Período de cálculo:** T depende de cuándo se abre la encuesta cuatrimestral. Está pendiente la *ventana del período* (ver los [pendientes de la copia](../../specs/copia-encuestas.md#pendientes)).
 - **PFG:** un estudiante de los primeros años que elige *No iniciado* en lugar de *No aplica* suma 10. Conviene mostrar la pregunta solo con el 70 % de los créditos aprobados (156 de 223), como propone el ICE.
 - **Inicial y 1.er año:** desde Mi Trayectoria ([SCRUM-24](../../specs/vista-estudiante.md), local) la Encuesta Inicial se habilita desde 2.º año, así que la criticidad de 1.er año sale solo de las notas de parciales. La situación laboral de la Inicial (sus 30 puntos) y las dos opciones de inicio laboral ("antes de ingresar" y "en 1.er año") se pensaron para ingresantes: revisarlas con el equipo para quienes la responden desde 2.º año.
-- **Avance percibido:** las opciones *Demorado* y *Muy demorado* tienen el mismo umbral (50 %) en la Encuesta de Moodle. Hay que corregir el texto para que los puntos signifiquen algo distinto.
+- **Avance percibido:** las opciones *Demorado* y *Muy demorado* tienen el mismo umbral (50 %) en la Encuesta de Moodle. **Resuelto en la v5** (ver arriba): el texto nuevo se carga con ella.
