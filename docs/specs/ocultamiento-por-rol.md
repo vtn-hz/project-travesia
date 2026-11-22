@@ -248,7 +248,7 @@ El script `OCULTAMIENTO VISUAL POR ROL` de [`section/resumen_zhakyz/content.html
 | Configuración del Sistema | 60294 | V | · | · | · |
 | Entrevistas y Tutorías | 60198 | V | V | V | V |
 | Plan de Estudios (con la carga por CSV del plan) | 59718 | V | V | · | · |
-| Subsección Vista Estudiante (Mi Trayectoria, Información personal, Carga de notas) | 60263 | V | · | · | V |
+| Subsección Vista Estudiante (Mi Trayectoria, Información personal, Carga de notas) | 60263 | V | · | V | V |
 | Subsección Database (las 11 bases) | 59497 | V | · | · | · |
 | Subsección Utils (Tools, Widgets) | 59931 | V | · | · | · |
 | Encuesta Cuatrimestral | 59712 | · | · | · | · (se entra desde Mi Trayectoria; `PAGINAS_SIN_LISTAR`, sin cambios) |
@@ -256,6 +256,7 @@ El script `OCULTAMIENTO VISUAL POR ROL` de [`section/resumen_zhakyz/content.html
 Decisiones de la matriz que el equipo puede cambiar en `VISIBLE_PARA`:
 - **PAR ve el Detalle del estudiante, pero no el Tablero** (2026-11-21): abre el detalle de sus estudiantes desde Entrevistas y Tutorías ("Ver detalle del estudiante", habilitado para PAR ese día), sin la lista de todos.
 - **PAR y EST no ven Plan de Estudios** (2026-11-21): la Página tiene la carga por CSV del plan, que escribe en la base Materias, y en Moodle arranca en el rol de carga. Que no puedan modificarlo lo garantiza la capa 1: Materias es de solo lectura para quien no tiene `mod/data:manageentries` (un estudiante, o un PAR con rol Estudiante). Un PAR con rol Profesor sí podría cargar si abre la Página por URL: ocultarla es solo visual. Desde el 2026-11-21 (publicado), la Página Plan de Estudios muestra la carga por CSV solo a ADM: con otro rol (detectado o elegido con "Cambiar rol") se ve como consulta ([plan-estudios.md](plan-estudios.md)).
+- **PAR ve la Vista Estudiante** (2026-11-22): el asesor par es un alumno avanzado y tiene su propia Mi Trayectoria (encuesta, información personal y notas). Hasta ese día solo la veían ADM y EST.
 - **Database la ve solo ADM** desde que se retiró GES (2026-11-21).
 - **Utils solo la ve ADM**: Tools y Widgets se cargan por `fetch` desde las páginas, así que ocultarlas de la lista no cambia nada para los demás.
 - La matriz coincide con los `roles` de las tarjetas del Hub (§10.2).
@@ -305,9 +306,9 @@ Arriba a la derecha del **Hub** y de **Mi Trayectoria** hay un botón con el rol
 | **Local** | No hay resumen: el rol elegido queda en `localStorage` (`zk-rol-forzado`, usuario vacío) y lo comparten los dos archivos. Reemplaza a la barra oscura de roles del Hub; la barra de casos de prueba de Mi Trayectoria sigue |
 
 - **Un estudiante no ve el selector:** no tiene la marca de staff, y el resumen ignora sus pedidos.
-- Como el Hub se oculta para EST y Mi Trayectoria para TUT y PAR, siempre queda un selector a la vista para volver: con EST, el de Mi Trayectoria; con TUT o PAR, el del Hub.
-- **Avisos:** el Hub con el rol Estudiante muestra "El rol Estudiante no tiene acceso a este menú. Su pantalla es Mi Trayectoria."; Mi Trayectoria con TUT o PAR muestra "El rol … no tiene acceso a Mi Trayectoria. Su pantalla es el Menú del Equipo de Seguimiento.". En local, con un link a la otra pantalla.
-- Cualquier rol de staff puede elegir cualquier rol, también ADM: es solo visual, y las Páginas ocultas igual las puede abrir cualquier profesor.
+- Como el Hub se oculta para EST y Mi Trayectoria para TUT, siempre queda un selector a la vista para volver: con EST, el de Mi Trayectoria; con TUT, el del Hub; con PAR, los dos.
+- **Avisos:** el Hub con el rol Estudiante muestra "El rol Estudiante no tiene acceso a este menú. Su pantalla es Mi Trayectoria."; Mi Trayectoria con TUT muestra "El rol … no tiene acceso a Mi Trayectoria. Su pantalla es el Menú del Equipo de Seguimiento.". En local, con un link a la otra pantalla.
+- **Cada rol elige solo el suyo o uno con menos permisos** (desde el 2026-11-22): ADM puede ver como ADM, TUT, PAR o EST; TUT como TUT, PAR o EST; PAR como PAR o EST. El menú lista solo esos roles, y el resumen de Zhakyz, que es el que decide, ignora cualquier otro pedido y un rol elegido que el rol real no puede usar. Hasta ese día cualquier rol de staff podía elegir ADM, y un profesor sin permiso de edición del grupo `Zhakyz_Tutor` veía la vista de administrador.
 - Las otras Páginas (Entrevistas y Tutorías, el Tablero, etc.) todavía no leen el rol elegido: usan su propia detección.
 - **Código:** el bloque `SELECTOR DE ROL: INICIO … FIN` es idéntico en `section/menu_inicial` y `section/vista_estudiante` (RULES.md, "Código copiado"). Los dos pueden estar en la misma página del curso, así que el selector busca todo dentro de su contenedor (`selector-rol-menu` y `selector-rol-estudiante`).
 
