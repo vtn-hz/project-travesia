@@ -433,6 +433,13 @@
         { rol: 'PAR', nombre: 'Asesor par' },
         { rol: 'EST', nombre: 'Estudiante' }
       ];
+      // MANUAL DE USUARIO DE CADA ROL (PDF EN DRIVE): el enlace "Manual de usuario" va al lado del selector y abre el del rol
+      // que se está mostrando. Lo ve también el estudiante, que no tiene selector
+      var MANUAL_ADM = 'https://drive.google.com/file/d/1cTOq09bVmqscRzUf5jctXNHFZk5mfqW6/view'; // @config manuales.ADM
+      var MANUAL_TUT = 'https://drive.google.com/file/d/135qPde6AXpzAHd5f_on9Z-Zp1c4kCyKM/view'; // @config manuales.TUT
+      var MANUAL_PAR = 'https://drive.google.com/file/d/1wyJvWy0qAVXz-ppgJsDM56hN7vwV-x4w/view'; // @config manuales.PAR
+      var MANUAL_EST = 'https://drive.google.com/file/d/1ICNz4El8-xifz0sUWvaA2iCi6n1ciQ14/view'; // @config manuales.EST
+      var MANUALES = { ADM: MANUAL_ADM, TUT: MANUAL_TUT, PAR: MANUAL_PAR, EST: MANUAL_EST };
       var CLAVE_ROL_FORZADO = 'zk-rol-forzado';
       var SELECTOR_LOCAL = window.location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var selectorRol = { contenedor: null, alCambiar: null, rol: null, real: null, forzado: false };
@@ -469,10 +476,20 @@
       function pintarSelectorRol() {
         var c = selectorRol.contenedor;
         if (!c) return;
-        var visible = puedeCambiarRol() && !!selectorRol.rol && selectorRol.rol !== 'PEND';
-        c.style.setProperty('display', visible ? 'block' : 'none', 'important');
-        if (!visible) return;
-        c.querySelector('[data-selector-boton]').innerHTML =
+        var conRol = !!selectorRol.rol && selectorRol.rol !== 'PEND';
+        var conSelector = conRol && puedeCambiarRol();
+        var manual = conRol ? MANUALES[selectorRol.rol] : '';
+        c.style.setProperty('display', conSelector || manual ? 'flex' : 'none', 'important');
+        var enlace = c.querySelector('[data-manual-rol]');
+        enlace.style.setProperty('display', manual ? 'inline-flex' : 'none', 'important');
+        if (manual) {
+          enlace.href = manual;
+          enlace.title = 'Manual de usuario: ' + nombreRolSelector(selectorRol.rol) + ' (PDF, se abre en otra pestaña)';
+        }
+        var boton = c.querySelector('[data-selector-boton]');
+        boton.style.setProperty('display', conSelector ? 'flex' : 'none', 'important');
+        if (!conSelector) return;
+        boton.innerHTML =
           '<span style="width: 24px !important; height: 24px !important; border-radius: 50% !important; background-color: #f5f6fa !important; color: #47536b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important;">' +
           icono('persona', 16) + '</span>' +
           '<span>' + nombreRolSelector(selectorRol.rol) + '</span>' + chipRol(selectorRol.rol) +
@@ -502,7 +519,13 @@
         selectorRol.contenedor = c;
         selectorRol.alCambiar = alCambiar;
         c.style.setProperty('position', 'relative', 'important');
+        c.style.setProperty('align-items', 'center', 'important');
+        c.style.setProperty('gap', '8px', 'important');
+        c.style.setProperty('flex-wrap', 'wrap', 'important');
         c.innerHTML =
+          '<a data-manual-rol href="#" target="_blank" rel="noopener"' +
+          ' style="display: none; align-items: center !important; gap: 6px !important; padding: 4px 12px 4px 8px !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; background-color: #ffffff !important; color: #026bd4 !important; font-size: 13px !important; font-weight: 500 !important; text-decoration: none !important; line-height: 1.5 !important;">' +
+          icono('info', 16) + '<span>Manual de usuario</span></a>' +
           '<button type="button" data-selector-boton aria-haspopup="menu" aria-expanded="false" title="Ver la sección como otro rol"' +
           ' style="display: flex !important; align-items: center !important; gap: 8px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 999px !important; padding: 4px 10px 4px 6px !important; font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important; color: #0b0e14 !important; cursor: pointer;"></button>' +
           '<div data-selector-menu role="menu" style="display: none; position: absolute !important; top: calc(100% + 6px) !important; right: 0 !important; z-index: 1000 !important; min-width: 260px !important; padding: 8px 4px !important; background-color: #ffffff !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(11, 14, 20, 0.12) !important;"></div>';
