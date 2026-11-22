@@ -458,8 +458,8 @@
       // ASESOR PAR CON ROL DE ESTUDIANTE EN MOODLE: el sistema lo ve como estudiante (no recibe la marca de staff), así que el enlace
       // abriría el manual del estudiante. Si está en el grupo Zhakyz_AsesorPar, abre el del asesor par. Solo cambia el manual: lo que ve
       // y lo que puede hacer siguen siendo los del estudiante. Se consulta una vez, en su perfil del curso (campo Grupo: el servicio de
-      // grupos de Moodle está deshabilitado en el campus). Solo se guarda (12 h) cuando está en el grupo: si no, se consulta en cada
-      // visita, así a quien agregan al grupo después le cambia el manual en la próxima
+      // grupos de Moodle está deshabilitado en el campus), en cada visita: lo guardado de la anterior solo sirve para mostrar el manual
+      // al instante, y la consulta lo corrige (a quien sacan del grupo o agregan después le cambia el manual en la misma visita)
       var CURSO_SELECTOR = 1732; // @config curso
       var GRUPO_ASESOR_PAR = 'Zhakyz_AsesorPar';
       var CLAVE_ASESOR_PAR = 'zk-asesor-par';
@@ -472,7 +472,7 @@
         var usuario = String(M.cfg.userId);
         try {
           var g = JSON.parse(window.localStorage.getItem(CLAVE_ASESOR_PAR) || 'null');
-          if (g && g.usuario === usuario && g.es && Date.now() - g.fecha < 12 * 60 * 60 * 1000) { asesorParEstudiante = true; return pintarSelectorRol(); }
+          if (g && g.usuario === usuario && g.es) asesorParEstudiante = true;
         } catch (e) { /* sin almacenamiento: se consulta */ }
         fetch(M.cfg.wwwroot + '/user/view.php?id=' + encodeURIComponent(usuario) + '&course=' + CURSO_SELECTOR, { credentials: 'same-origin' })
           .then(function(r) { return r.ok ? r.text() : ''; })
