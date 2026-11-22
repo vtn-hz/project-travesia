@@ -719,7 +719,7 @@
                     <![CDATA[]]>
                </ITEMLABEL>
                <PRESENTATION>
-                    <![CDATA[r>>>>>Al día (cursando las materias del año que me corresponde)|Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)|Muy Demorado (retraso mayor al 50% de porcentaje esperado de materias aprobadas hasta ese año)]]>
+                    <![CDATA[r>>>>>Al día (aprobé las materias que corresponden a mi año)|Demorado (aprobé la mitad o más de las materias que corresponden a mi año)|Muy demorado (aprobé menos de la mitad de las materias que corresponden a mi año)]]>
                </PRESENTATION>
                <OPTIONS>
                     <![CDATA[h]]>
