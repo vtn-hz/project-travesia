@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 12;
+      var VERSION = 13;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1152,10 +1152,11 @@
         'form.feedback_form .fitem.feedback-item-multichoice fieldset > div { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 8px !important; width: 100% !important; }' +
         'form.feedback_form .fitem.feedback-item-multichoice.multichoice-horizontal fieldset > div { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important; }' +
         'form.feedback_form .fitem.feedback-item-multichoice fieldset > div > .w-100 { display: none !important; }' +
-        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label { display: flex !important; align-items: center !important; gap: 10px !important; width: 100% !important; margin: 0 !important; padding: 10px 12px !important; box-sizing: border-box !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #fcfcfc !important; cursor: pointer !important; font-size: 14px !important; color: #0b0e14 !important; transition: border-color 0.15s, background-color 0.15s; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label { display: block !important; position: relative !important; width: 100% !important; margin: 0 !important; padding: 10px 12px 10px 38px !important; box-sizing: border-box !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #fcfcfc !important; cursor: pointer !important; font-size: 14px !important; color: #0b0e14 !important; transition: border-color 0.15s, background-color 0.15s; }' +
         'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label:hover { border-color: #94a0b8 !important; background-color: #f5f6fa !important; }' +
         'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label:has(input:checked) { border-color: #0b0e14 !important; background-color: #f5f6fa !important; font-weight: 500 !important; }' +
-        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label input { margin: 0 !important; flex: 0 0 auto !important; accent-color: #0b0e14; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label input { position: absolute !important; left: 12px !important; top: 50% !important; transform: translateY(-50%) !important; margin: 0 !important; accent-color: #0b0e14; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label a { color: inherit !important; text-decoration: none !important; pointer-events: none !important; }' +
         'form.feedback_form .fitem.feedback-item-numeric input.form-control { max-width: 200px !important; height: 40px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; font-size: 14px !important; }';
 
       function aplicarEstiloEncuesta() {
