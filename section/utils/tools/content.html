@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Tools" (cmid 59941) · 2026-11-18 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Tools" (cmid 59941) · 2026-11-22 -->
 <!-- ÍTEM: UTILS · TOOLS (BIBLIOTECA DE HERRAMIENTAS SIN INTERFAZ) -->
 <!-- VA EN: subsección "Utils" de Zhakyz, después de "Widgets" → Página "Tools" (cmid en moodle.config.json → paginas.utils_tools) -->
 <!-- QUÉ ES: la biblioteca de herramientas, como script muerto (<script type="text/plain">): el navegador no la ejecuta. Las vistas la leen y la ejecutan con el cargador de tools (section/utils/cargador_tools/content.html) -->
@@ -28,7 +28,7 @@
       // ---------------------------------------------------------
       // Herramientas sin interfaz propia que las vistas cargan con el cargador de tools. Es la única variable global de la biblioteca.
       // Si la página ya tiene esta versión (o una más nueva), no se vuelve a definir.
-      var VERSION = 11;
+      var VERSION = 12;
       if (window.ZhakyzTools && window.ZhakyzTools.version >= VERSION) return;
 
       // =========================================================
@@ -1139,6 +1139,34 @@
       }
 
       // ---------------------------------------------------------
+      // ESTILO DE LAS PREGUNTAS DE MOODLE DE LA ENCUESTA (OPCIÓN MÚLTIPLE Y NUMÉRICA), COMO TARJETAS IGUALES A LOS WIDGETS
+      // ---------------------------------------------------------
+      // Moodle dibuja esas preguntas con su formulario por defecto; los widgets (cuadro de créditos y selector de materias) ya tienen el
+      // diseño de Zhakyz. Se agrega una sola vez por página, en la encuesta y en su vista previa. Solo cambia cómo se ven (skill diseno-ui)
+      var ESTILO_ENCUESTA =
+        'form.feedback_form .fitem.feedback-item-multichoice, form.feedback_form .fitem.feedback-item-numeric { display: block !important; max-width: 850px !important; margin: 0 auto 16px auto !important; padding: 16px !important; box-sizing: border-box !important; background-color: #ffffff !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 8px !important; font-family: Inter, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice > div, form.feedback_form .fitem.feedback-item-numeric > div { width: 100% !important; max-width: 100% !important; flex: none !important; padding: 0 !important; margin: 0 !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice .col-form-label p, form.feedback_form .fitem.feedback-item-numeric .col-form-label label { display: block !important; margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4 !important; color: #0b0e14 !important; }' +
+        'form.feedback_form .fitem .col-form-label .fa-circle-exclamation { font-size: 10px !important; vertical-align: middle !important; }' +
+        'form.feedback_form .fitem.feedback-item-numeric .boundaries { font-weight: 400 !important; font-size: 13px !important; color: #47536b !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice fieldset > div { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 8px !important; width: 100% !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice.multichoice-horizontal fieldset > div { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice fieldset > div > .w-100 { display: none !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label { display: flex !important; align-items: center !important; gap: 10px !important; width: 100% !important; margin: 0 !important; padding: 10px 12px !important; box-sizing: border-box !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; background-color: #fcfcfc !important; cursor: pointer !important; font-size: 14px !important; color: #0b0e14 !important; transition: border-color 0.15s, background-color 0.15s; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label:hover { border-color: #94a0b8 !important; background-color: #f5f6fa !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label:has(input:checked) { border-color: #0b0e14 !important; background-color: #f5f6fa !important; font-weight: 500 !important; }' +
+        'form.feedback_form .fitem.feedback-item-multichoice label.form-check-label input { margin: 0 !important; flex: 0 0 auto !important; accent-color: #0b0e14; }' +
+        'form.feedback_form .fitem.feedback-item-numeric input.form-control { max-width: 200px !important; height: 40px !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; font-size: 14px !important; }';
+
+      function aplicarEstiloEncuesta() {
+        if (document.getElementById('zhakyz-estilo-encuesta')) return;
+        var el = document.createElement('style');
+        el.id = 'zhakyz-estilo-encuesta';
+        el.textContent = ESTILO_ENCUESTA;
+        document.head.appendChild(el);
+      }
+
+      // ---------------------------------------------------------
       // INICIO DE LA INSTANCIA (CUANDO TERMINA DE CARGAR LA PÁGINA: EL ÍTEM PUEDE ESTAR ANTES QUE OTRAS PREGUNTAS)
       // ---------------------------------------------------------
       function iniciar() {
@@ -1146,23 +1174,21 @@
           adaptador = adaptadorLocal();
           crearSimulador();
         } else if (window.M && /\/mod\/feedback\/(edit|print)\.php/.test(window.location.pathname)) {
-          // Editar preguntas o vista previa: aviso para el equipo, con el control de la estructura de páginas.
-          // Ahí se ven todas las páginas juntas: el aviso lo muestra solo el primer ítem (la primera instancia)
+          // Editar preguntas o vista previa: sin aviso, para que se vea como la ve el estudiante (el ítem no se edita desde Moodle: ver
+          // section/copia_encuestas). En la vista previa se aplica el estilo y se controla la estructura de páginas (Editar preguntas dibuja
+          // los ítems sin los fitem de la encuesta): solo si cambió, una alerta para el equipo. Todas las páginas se ven juntas: la alerta la
+          // muestra solo el primer ítem (la primera instancia)
           var enc = ENCUESTAS[M.cfg.contextInstanceId];
-          var base = 'Ítem con script: copia cada envío de esta encuesta a la base Respuestas y agrega su entrada a Criticidad. No editarlo desde Moodle: el editor borra el script al guardar. Se cambia en el repo (section/utils/tools, herramienta CopiaRespuestas). ';
-          if (!enc) { avisar(base + 'Esta encuesta no está en la lista del script.', 'info'); return; }
-          // Editar preguntas dibuja los ítems sin los fitem de la encuesta: la estructura solo se puede leer en la vista previa
+          if (!enc || !/\/print\.php/.test(window.location.pathname)) return;
+          aplicarEstiloEncuesta();
           var enPantalla = estructuraEnPantalla();
           definicionVigente(enc.clave).then(function(def) {
-            var igual = JSON.stringify(enPantalla) === JSON.stringify(def.paginas);
-            avisar(base + 'Versión vigente en la base Encuestas: ' + def.version + '. ' + (!enPantalla.length ? 'La estructura de páginas se controla en la vista previa.'
-              : igual ? 'La estructura de páginas coincide con la versión vigente.'
-              : 'La estructura de páginas cambió (en pantalla: ' + JSON.stringify(enPantalla) + '; en la versión ' + def.version + ': ' + JSON.stringify(def.paginas) + '). Cargar una versión nueva en la base Encuestas.'),
-              igual || !enPantalla.length ? 'info' : 'alerta');
-          }, function(e) {
-            avisar(base + 'No se pudo leer la versión vigente: ' + (e && e.message ? e.message : e), 'alerta');
-          });
+            if (!enPantalla.length || JSON.stringify(enPantalla) === JSON.stringify(def.paginas)) return;
+            avisar('La estructura de páginas de la encuesta cambió (en pantalla: ' + JSON.stringify(enPantalla) + '; en la versión ' + def.version +
+              ' de la base Encuestas: ' + JSON.stringify(def.paginas) + '). Cargar una versión nueva en la base Encuestas.', 'alerta');
+          }, function() { /* sin la versión vigente no se controla la estructura */ });
         } else if (window.M && DATAID_RESPUESTAS && formularioEncuesta(document)) {
+          if (ENCUESTAS[Number((formularioEncuesta(document).querySelector('input[name="id"]') || {}).value)]) aplicarEstiloEncuesta();
           adaptador = adaptadorMoodle();
           // La versión vigente se pide al abrir la encuesta: el envío final con "Página siguiente" se decide sin esperar
           var abierta = ENCUESTAS[Number((formularioEncuesta(document).querySelector('input[name="id"]') || {}).value)];
