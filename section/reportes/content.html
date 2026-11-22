@@ -1,5 +1,5 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Reportes" (cmid 60918) · 2026-11-18 -->
-<!-- SECCIÓN: REPORTES (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "REPORTES" DEL HUB -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Reportes" (cmid 60918) · 2026-11-22 -->
+<!-- SECCIÓN: REPORTES (ROLES ADM Y TUT) · SE ABRE DESDE LA TARJETA "REPORTES" DEL HUB -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- DATOS: en Moodle, las bases de Zhakyz leídas con LeerBase (Página Tools, versión 7 o más nueva): al abrir, Períodos y Estudiantes;
      cada informe lee las demás la primera vez que se elige (Criticidad, Respuestas, Encuestas, CargaParcialesPrimero, CargaMateriasPrimero,
@@ -63,15 +63,26 @@
       // ---------------------------------------------------------
       // CONFIGURACIÓN
       // ---------------------------------------------------------
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM. Los tres roles ven los mismos informes
-      var ROL_INICIAL = 'ADM';
+      // Los dos roles ven los mismos informes. En Moodle, el rol es el que detectó el resumen de Zhakyz (section/resumen_zhakyz) y guardó
+      // en este navegador ("zk-rol"); en la vista previa local arranca en ADM
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var ROLES = {
         ADM: { nombre: 'Administrador' },
-        GES: { nombre: 'Gestor Dpto. Industrial' },
         TUT: { nombre: 'Tutor / Entrevistador' }
       };
+      var NOMBRES_ROL = { ADM: 'Administrador', TUT: 'Tutor / Entrevistador', PAR: 'Asesor par' };
+      var CLAVE_ROL_ZHAKYZ = 'zk-rol';
+      // ROL DE LA SESIÓN GUARDADO POR EL RESUMEN DE ZHAKYZ: { usuario, rol, fecha }. null si no hay (no pasó por el curso en este navegador)
+      function rolGuardadoZhakyz() {
+        try {
+          var g = JSON.parse(window.localStorage.getItem(CLAVE_ROL_ZHAKYZ) || 'null');
+          var yo = window.M && M.cfg && M.cfg.userId ? String(M.cfg.userId) : '';
+          if (g && yo && String(g.usuario) === yo && NOMBRES_ROL[g.rol]) return g.rol;
+        } catch (e) { /* sin almacenamiento */ }
+        return null;
+      }
+      var ROL_INICIAL = (!ES_VISTA_LOCAL && ROLES[rolGuardadoZhakyz()]) ? rolGuardadoZhakyz() : 'ADM';
       var CORTES = { amarillo: 40, rojo: 70 };
       // Créditos del Plan 2024: 52 materias (223, incluido el Proyecto de Ingeniería Industrial IV, que es el PFG) más la PPS (12,5).
       // Quien declara todos en la Encuesta Cuatrimestral terminó la carrera (TrayectoriaEstudiantes de Tools)
@@ -220,6 +231,7 @@
         { id: 'criticidad', titulo: 'Criticidad del período', icono: 'tablero' },
         { id: 'respuesta', titulo: 'Respuesta a la encuesta', icono: 'encuestas' },
         { id: 'resultados', titulo: 'Resultados de la encuesta', icono: 'indicadores' },
+        { id: 'cuellos', titulo: 'Cuellos de botella', icono: 'alerta' },
         { id: 'primero', titulo: 'Notas de 1.er año', icono: 'reportes' },
         { id: 'entrevistas', titulo: 'Entrevistas y tutorías', icono: 'entrevistas' },
         { id: 'avance', titulo: 'Avance curricular', icono: 'plan' },
@@ -230,12 +242,14 @@
         criticidad: ['criticidad', 'respuestas'],
         respuesta: ['respuestas', 'criticidad', 'moodle'],
         resultados: ['respuestas', 'encuestas', 'materias'],
+        cuellos: ['respuestas', 'encuestas', 'materias'],
         primero: ['parciales', 'materiasPrimero', 'criticidad'],
-        entrevistas: ['entrevistas', 'criticidad', 'respuestas'],
+        entrevistas: ['entrevistas'],
         avance: ['respuestas', 'encuestas'],
         trayectoria: ['respuestas', 'encuestas', 'parciales']
       };
       // Datos con los que se arman los informes: los de prueba o los leídos de Moodle (cargar)
+      var PLAN = {}; // Plan 2024: código → { nombre, cuatrimestre, tipo, desbloquea: [códigos] } (base Materias)
       var PERIODOS = [], ESTUDIANTES = [], CRITICIDAD = [], RESPUESTAS = [], MATERIAS = {}, MATERIAS_PRIMERO = [], PARCIALES = [], ENTREVISTAS = [];
       var PERIODOS_ABANDONO = null; // de la base Períodos; null = el valor por defecto de Tools (4)
       var CONCLUSIONES = []; // base Informes: { rid, informe, periodo, cohorte, tramo, titulo, conclusiones, autor, created_at }
@@ -297,10 +311,12 @@
 
       var SEMAFORO = {
         rojo: { punto: '#c20a0a', fondo: '#fff0f0', borde: '#fdcece', texto: '#910808', nombre: 'Riesgo alto' },
-        amarillo: { punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', nombre: 'Riesgo moderado' },
+        amarillo: { punto: '#c2940a', barra: '#f0b400', fondo: '#fffbf0', borde: '#fce49c', texto: '#7a5d06', nombre: 'Riesgo moderado' },
         verde: { punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', texto: '#1f7a1f', nombre: 'Riesgo bajo' },
         neutro: { punto: '#94a0b8', fondo: '#ebeef4', borde: '#dadee7', texto: '#566481', nombre: 'Sin calcular' }
       };
+      // COLOR DE LAS BARRAS DE LOS GRÁFICOS: el del punto, salvo el amarillo, más claro (el del punto es el de los chips, oscuro para el contraste)
+      function colorBarra(nivel) { return SEMAFORO[nivel].barra || SEMAFORO[nivel].punto; }
 
       // ---------------------------------------------------------
       // UTILIDADES
@@ -596,10 +612,10 @@
         ultimo = { titulo: 'Criticidad del período ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
         return kpis(resumen) +
           bloque('Estudiantes por nivel de riesgo', 'Estado vigente de cada estudiante.',
-            barras(['rojo', 'amarillo', 'verde', 'neutro'].map(function(n) { return { etiqueta: SEMAFORO[n].nombre, valor: cuenta('vigente', n), color: SEMAFORO[n].punto }; }))) +
-          bloque('Por año de la carrera', 'Estado vigente: el asignado por un tutor si existe; si no, el calculado.',
+            barras(['rojo', 'amarillo', 'verde', 'neutro'].map(function(n) { return { etiqueta: SEMAFORO[n].nombre, valor: cuenta('vigente', n), color: colorBarra(n) }; }))) +
+          bloque('Por año de la carrera', 'Estado vigente: el asignado o, si no hay, el calculado.',
             tabla(['Año de la carrera', 'Estudiantes', 'Alto', 'Moderado', 'Bajo', 'Sin calcular'], tramos)) +
-          tarjeta('Detalle por estudiante', 'Ordenado por índice calculado, de mayor a menor.', tabla(columnas, datos.map(function(f, i) {
+          tarjeta('Detalle por estudiante', 'De mayor a menor índice.', tabla(columnas, datos.map(function(f, i) {
             var x = lista[i];
             return [escapar(f[0]), escapar(f[1]), escapar(f[2]), escapar(f[3]), chip(x.nivelCalc), escapar(f[5]), x.asig ? chip(x.asig.semaforo) : '—', escapar(f[7]), chip(x.vigente)];
           })), 'bases Estudiantes y Criticidad, con la misma regla que el Tablero de Criticidad');
@@ -655,9 +671,9 @@
         var nivelSit = { 'Respondió': 'verde', 'Solo en Moodle': 'verde', 'Sin responder': 'amarillo', 'Omisión registrada': 'rojo', 'Pasó a 2.º año en el período': 'neutro' };
         return kpis(resumen) +
           (avisoMoodle ? aviso('<b style="font-weight: 600 !important;">No se pudieron leer las respuestas en Moodle.</b> ' + escapar(avisoMoodle) + ' Se cuentan solo las de la base Respuestas.', 'error') : '') +
-          bloque('Tasa de respuesta por cohorte', 'La Encuesta Cuatrimestral se habilita desde 2.º año. La omisión la registra el cierre del período en la Configuración del Sistema.',
+          bloque('Tasa de respuesta por cohorte', 'Desde 2.º año.',
             barras(Object.keys(cohortes).sort().map(function(c) { return { etiqueta: 'Cohorte ' + c, valor: Math.round(cohortes[c].resp / cohortes[c].total * 100) }; }), ' %')) +
-          tarjeta('Detalle por estudiante', '«Solo en Moodle»: respondió la encuesta pero la copia no llegó a la base Respuestas; cuenta como respondida, como en el cierre del período. Moodle guarda solo la última respuesta de cada estudiante, con su fecha.',
+          tarjeta('Detalle por estudiante', '«Solo en Moodle»: respondió, pero la copia no llegó a la base Respuestas.',
             tabla(columnas, datos.map(function(f) {
               return [escapar(f[0]), escapar(f[1]), chip(nivelSit[f[2]], f[2]), escapar(f[3] || '—'), escapar(f[4])];
             })), 'bases Estudiantes, Respuestas, Criticidad (omisiones) y Períodos, y las respuestas de la Encuesta Cuatrimestral en Moodle');
@@ -667,12 +683,7 @@
       // INFORME 3: RESULTADOS DE LA ENCUESTA CUATRIMESTRAL
       // ---------------------------------------------------------
       function informeResultados() {
-        var ids = estudiantesFiltrados().map(function(e) { return e.id_usuario; });
-        // Último envío de cada estudiante en el período
-        var envios = {};
-        RESPUESTAS.filter(function(r) { return r.periodo === estado.periodo && ids.indexOf(r.id_usuario) !== -1; })
-          .forEach(function(r) { if (!envios[r.id_usuario] || envios[r.id_usuario].created_at < r.created_at) envios[r.id_usuario] = r; });
-        envios = Object.keys(envios).map(function(k) { return envios[k]; });
+        var envios = enviosDelPeriodo();
         // Opciones y textos de la versión vigente de la base Encuestas; cada envío se lee con la definición de su versión.
         // El texto se corta antes del paréntesis (la aclaración larga queda en la pregunta)
         var distribucion = function(variable, soloConValor) {
@@ -688,15 +699,7 @@
           var p = preguntaDe(DEFINICIONES.vigente, variable);
           return p ? 'Pregunta: «' + escapar(p.pregunta) + '»' : '';
         };
-        var materias = {};
-        envios.forEach(function(r) {
-          (respuestaDe(r, VARIABLES.materias) || []).forEach(function(m) {
-            var x = materias[m.materia] = materias[m.materia] || { cursan: 0, recursan: 0, dificultad: [] };
-            x.cursan++;
-            if (m.primera_vez === false) x.recursan++;
-            if (typeof m.dificultad === 'number') x.dificultad.push(m.dificultad);
-          });
-        });
+        var materias = materiasDeclaradas(envios);
         var columnas = ['Materia', 'Código', 'La cursaron', 'La recursan', '% de recursado', 'Dificultad promedio (1 a 5)'];
         var datos = Object.keys(materias).map(function(cod) {
           var x = materias[cod];
@@ -709,7 +712,7 @@
         var resumen = [
           { titulo: 'Envíos considerados', valor: envios.length, detalle: 'el último de cada estudiante' },
           { titulo: 'Trabajan', valor: trabajan, detalle: porcentaje(trabajan, envios.length) },
-          { titulo: 'Materias declaradas', valor: Object.keys(materias).length }
+          { titulo: 'Materias cursadas', valor: Object.keys(materias).length, detalle: 'distintas, el cuatrimestre anterior' }
         ];
         ultimo = { titulo: 'Resultados de la Encuesta Cuatrimestral ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
         return kpis(resumen) +
@@ -719,8 +722,92 @@
           bloque('Situación laboral', pregunta(VARIABLES.trabaja), distribucion(VARIABLES.trabaja)) +
           bloque('Momento de inicio laboral', 'Solo quienes trabajan. ' + pregunta(VARIABLES.inicio), distribucion(VARIABLES.inicio, true)) +
           '</div>' +
-          tarjeta('Materias cursadas el cuatrimestre anterior', 'Ordenadas por dificultad promedio; un clic en una columna las ordena por esa columna. Sirve para detectar materias críticas por recursado y dificultad declarada.',
+          tarjeta('Materias cursadas el cuatrimestre anterior', 'De la más difícil a la menos difícil.',
             tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); })), 'bases Respuestas (Encuesta Cuatrimestral), Encuestas y Materias');
+      }
+
+      // ÚLTIMO ENVÍO DE LA CUATRIMESTRAL DE CADA ESTUDIANTE FILTRADO EN EL PERÍODO
+      function enviosDelPeriodo() {
+        var ids = estudiantesFiltrados().map(function(e) { return e.id_usuario; });
+        var envios = {};
+        RESPUESTAS.filter(function(r) { return r.periodo === estado.periodo && ids.indexOf(r.id_usuario) !== -1; })
+          .forEach(function(r) { if (!envios[r.id_usuario] || envios[r.id_usuario].created_at < r.created_at) envios[r.id_usuario] = r; });
+        return Object.keys(envios).map(function(k) { return envios[k]; });
+      }
+
+      // MATERIAS DEL SELECTOR DE LA CUATRIMESTRAL: código → { cursan, recursan, dificultad: [1 a 5] }
+      function materiasDeclaradas(envios) {
+        var materias = {};
+        envios.forEach(function(r) {
+          (respuestaDe(r, VARIABLES.materias) || []).forEach(function(m) {
+            var x = materias[m.materia] = materias[m.materia] || { cursan: 0, recursan: 0, dificultad: [] };
+            x.cursan++;
+            if (m.primera_vez === false) x.recursan++;
+            if (typeof m.dificultad === 'number') x.dificultad.push(m.dificultad);
+          });
+        });
+        return materias;
+      }
+
+      // ---------------------------------------------------------
+      // INFORME: CUELLOS DE BOTELLA (CORRELATIVAS, RECURSADO Y DIFICULTAD POR MATERIA)
+      // ---------------------------------------------------------
+      // Criticidad por correlativas (docs/models/trayectoria/MODELO_CRITICIDAD_POR_CORRELATIVAS.md), con las obligatorias del Plan 2024:
+      // S(m) = suma, sobre las materias que m traba (directa o indirectamente, sin repetir), de 2 si son del cuatrimestre C o de uno
+      // anterior y 1 ÷ distancia si son posteriores. m es crítica si S(m) ≥ 1. Se usa C = 1, el recorrido completo (sección 7.2 del modelo)
+      var CUATRIMESTRE_CORRELATIVAS = 1;
+
+      function criticidadCorrelativas(C) {
+        var r = {};
+        Object.keys(PLAN).filter(function(k) { return PLAN[k].tipo === 'obligatoria' && PLAN[k].cuatrimestre; }).forEach(function(m) {
+          var traba = {}, pila = PLAN[m].desbloquea.slice();
+          while (pila.length) {
+            var d = pila.pop();
+            if (traba[d] || !PLAN[d] || PLAN[d].tipo !== 'obligatoria') continue;
+            traba[d] = true;
+            pila = pila.concat(PLAN[d].desbloquea);
+          }
+          var puntaje = Object.keys(traba).reduce(function(t, d) { var dist = PLAN[d].cuatrimestre - C; return t + (dist <= 0 ? 2 : 1 / dist); }, 0);
+          r[m] = { traba: Object.keys(traba).length, puntaje: puntaje, critica: puntaje >= 1 };
+        });
+        return r;
+      }
+
+      function informeCuellos() {
+        var corr = criticidadCorrelativas(CUATRIMESTRE_CORRELATIVAS);
+        var materias = materiasDeclaradas(enviosDelPeriodo());
+        var codigos = Object.keys(corr);
+        var criticas = codigos.filter(function(c) { return corr[c].critica; });
+        var recursado = function(c) { var x = materias[c]; return x && x.cursan ? Math.round(x.recursan / x.cursan * 100) : null; };
+        var dificultad = function(c) { var x = materias[c]; return x && x.dificultad.length ? redondear(promedio(x.dificultad), 1) : null; };
+        var criticasRecursadas = criticas.filter(function(c) { return materias[c] && materias[c].recursan > 0; });
+        var resumen = [
+          { titulo: 'Materias obligatorias', valor: codigos.length, detalle: 'Plan 2024, sin Inglés ni electivas' },
+          { titulo: 'Críticas por correlativas', valor: criticas.length, detalle: 'traban a otras con un puntaje de 1 o más' },
+          { titulo: 'Críticas con recursado', valor: criticasRecursadas.length, detalle: 'alguien la recursa en el período' }
+        ];
+        var columnas = ['Materia', 'Código', 'Cuatrimestre', 'Materias que traba', 'Puntaje por correlativas', 'Crítica por correlativas', 'La cursaron', '% de recursado', 'Dificultad promedio (1 a 5)'];
+        var datos = codigos.sort(function(a, b) { return corr[b].puntaje - corr[a].puntaje || PLAN[a].cuatrimestre - PLAN[b].cuatrimestre; }).map(function(c) {
+          var x = materias[c];
+          return [PLAN[c].nombre, c, PLAN[c].cuatrimestre, corr[c].traba, redondear(corr[c].puntaje, 2), corr[c].critica ? 'Sí' : 'No',
+            x ? x.cursan : 0, recursado(c) === null ? '' : recursado(c) + ' %', dificultad(c) === null ? '' : dificultad(c)];
+        });
+        ultimo = { titulo: 'Cuellos de botella ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        var colCritica = columnas.indexOf('Crítica por correlativas');
+        var conCursada = criticas.filter(function(c) { return recursado(c) !== null; })
+          .sort(function(a, b) { return recursado(b) - recursado(a) || corr[b].puntaje - corr[a].puntaje; });
+        if (!codigos.length) {
+          return aviso('<b style="font-weight: 600 !important;">No hay correlativas para calcular.</b> La base Materias no tiene las materias obligatorias del Plan 2024 con su cuatrimestre y las materias que desbloquean.', 'error');
+        }
+        return kpis(resumen) +
+          bloque('Recursado en las materias críticas', 'Las cursadas en el período, de la más recursada a la menos.',
+            conCursada.length ? barras(conCursada.map(function(c) {
+              return { etiqueta: PLAN[c].nombre, valor: recursado(c), color: recursado(c) > 0 ? SEMAFORO.rojo.punto : '#026bd4' };
+            }), ' %') : '<p style="' + EST.ayuda + ' margin: 0 !important;">Nadie declaró haber cursado una materia crítica en el período.</p>') +
+          tarjeta('Por materia', 'Crítica con un puntaje de 1 o más: cuantas más materias traba y más cercanas, más alto.',
+            tabla(columnas, datos.map(function(f) {
+              return f.map(function(c, i) { return i === colCritica ? chip(c === 'Sí' ? 'rojo' : 'neutro', c === 'Sí' ? 'Crítica' : 'No crítica') : escapar(decimal(c === '' ? '—' : c)); });
+            })), 'bases Materias (correlativas del Plan 2024), Respuestas (Encuesta Cuatrimestral) y Encuestas');
       }
 
       // ---------------------------------------------------------
@@ -757,11 +844,11 @@
         ];
         ultimo = { titulo: 'Notas de 1.er año ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
         return kpis(resumen) +
-          bloque('Distribución del ICG', 'Índice de las notas de cada estudiante (última entrada del período).',
+          bloque('Distribución del ICG', 'Última entrada del período de cada estudiante.',
             barras(['verde', 'amarillo', 'rojo', 'neutro'].map(function(n) {
-              return { etiqueta: SEMAFORO[n].nombre, valor: icg.filter(function(x) { return semaforoDe(x) === n; }).length, color: SEMAFORO[n].punto };
+              return { etiqueta: SEMAFORO[n].nombre, valor: icg.filter(function(x) { return semaforoDe(x) === n; }).length, color: colorBarra(n) };
             }))) +
-          tarjeta('Por materia', 'Una instancia es ausente si su estado es «Ausente» o no tiene nota, y aprobada si su estado es «Aprobado». Las materias críticas y sus umbrales son los de CargaMateriasPrimero; los nombres se comparan sin mayúsculas, espacios ni guiones.',
+          tarjeta('Por materia', 'Materias críticas y umbrales de CargaMateriasPrimero.',
             tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); })), 'bases CargaParcialesPrimero, CargaMateriasPrimero y Criticidad');
       }
 
@@ -778,16 +865,11 @@
         var lista = ENTREVISTAS.filter(function(x) { return ids.indexOf(x.id_usuario_estudiante) !== -1 && enPeriodo(x.fecha_solicitud); });
         var dias = lista.filter(function(x) { return x.estado === 'realizada' && x.fecha_realizada; })
           .map(function(x) { return (new Date(x.fecha_realizada) - new Date(x.fecha_solicitud)) / 86400000; });
-        // Estudiantes en riesgo alto (vigente) sin entrevista realizada o en curso en el período
-        var rojosSin = estudiantesFiltrados().filter(function(e) {
-          return criticidadDe(e).vigente === 'rojo' && !lista.some(function(x) { return x.id_usuario_estudiante === e.id_usuario && ['solicitada', 'programada', 'realizada'].indexOf(x.estado) !== -1; });
-        });
         var resumen = [
           { titulo: 'Entrevistas del período', valor: lista.length },
           { titulo: 'Realizadas', valor: lista.filter(function(x) { return x.estado === 'realizada'; }).length },
           { titulo: 'Pendientes', valor: lista.filter(function(x) { return x.estado === 'solicitada' || x.estado === 'programada'; }).length },
-          { titulo: 'Días hasta realizarla', valor: dias.length ? redondear(promedio(dias), 1) : '—', detalle: 'promedio' },
-          { titulo: 'Riesgo alto sin entrevista', valor: rojosSin.length }
+          { titulo: 'Días hasta realizarla', valor: dias.length ? redondear(promedio(dias), 1) : '—', detalle: 'promedio' }
         ];
         var porAcompanante = {};
         lista.forEach(function(x) {
@@ -802,56 +884,97 @@
         });
         ultimo = { titulo: 'Entrevistas y tutorías ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
         return kpis(resumen) +
-          (rojosSin.length ? '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: #fff0f0 !important; border: 1px solid #fdcece !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important;">' +
-            '<span style="color: #c20a0a !important; padding-top: 1px !important;">' + icono('alerta', 20) + '</span><span><b style="font-weight: 600 !important;">Riesgo alto sin entrevista:</b> ' +
-            rojosSin.map(function(e) { return escapar(nombreDe(e)); }).join(' · ') + '.</span></div>' : '') +
           bloque('Por estado', '', barras(Object.keys(ESTADOS_ENTREVISTA).map(function(k) {
             return { etiqueta: ESTADOS_ENTREVISTA[k], valor: lista.filter(function(x) { return x.estado === k; }).length };
           }).filter(function(b) { return b.valor > 0; }))) +
           bloque('Por acompañante', '', tabla(['Acompañante', 'Entrevistas', 'Realizadas'], Object.keys(porAcompanante).map(function(k) {
             return [escapar(k), String(porAcompanante[k].total), String(porAcompanante[k].realizadas)];
           }))) +
-          tarjeta('Detalle', 'Entrevistas solicitadas durante el período.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c || '—'); }); })),
-            'bases Entrevistas, Estudiantes y Criticidad');
+          tarjeta('Detalle', 'Pedidas en el período.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c || '—'); }); })),
+            'bases Entrevistas y Estudiantes');
       }
 
       // ---------------------------------------------------------
-      // INFORME 6: AVANCE CURRICULAR (PROVISORIO)
+      // INFORME 6: AVANCE CURRICULAR (SOBRE EL PLAN Y SOBRE LO ESPERADO SEGÚN EL INGRESO)
       // ---------------------------------------------------------
+      // Créditos esperados del Plan 2024 al cerrar cada cuatrimestre desde el ingreso (las anuales cuentan al terminar). Son los de
+      // la regla avance_curricular de Tools (desactivada) y de Indicadores de Cohorte; el último pasa de 223 a 235,5 porque el plan
+      // suma la PPS desde el 2026-11-17. Con t cuatrimestres cerrados desde el ingreso se espera ESPERADOS_2024[mín(t, 10)]
+      var ESPERADOS_2024 = [0, 14, 34, 57, 81, 104, 131, 152, 176, 193, 235.5];
+      // Situación según el avance sobre lo esperado (créditos ÷ esperados)
+      var SITUACION_AVANCE = [
+        { id: 'al_dia', nombre: 'Al día', desde: 1, nivel: 'verde' },
+        { id: 'demorado', nombre: 'Demorado', desde: 0.5, nivel: 'amarillo' },
+        { id: 'muy_demorado', nombre: 'Muy demorado', desde: -Infinity, nivel: 'rojo' }
+      ];
+      // Umbral de García Lambert et al. (2014): bajo el 38,97 % del plan al 6.º cuatrimestre el riesgo es crítico
+      var UMBRAL_GARCIA_LAMBERT = 0.3897, CUATRIMESTRE_GARCIA_LAMBERT = 6;
+      // Promedio de una cohorte: que todos estén al día es casi imposible, así que se pinta verde desde el 85 % (pedido del equipo, 2026-11-22);
+      // amarillo del 50 % al 84 % y rojo debajo del 50 %. Cada estudiante sigue con SITUACION_AVANCE (al día = 100 %)
+      var CORTES_COHORTE_AVANCE = { verde: 85, amarillo: 50 };
+      function nivelCohorteAvance(p) { return p >= CORTES_COHORTE_AVANCE.verde ? 'verde' : p >= CORTES_COHORTE_AVANCE.amarillo ? 'amarillo' : 'rojo'; }
+
+      // 2026-2 → 4053: DOS POR AÑO, ASÍ LA RESTA DA LOS CUATRIMESTRES ENTRE DOS PERÍODOS
+      function indicePeriodoAvance(p) { var x = String(p || '').split('-'); return Number(x[0]) * 2 + Number(x[1]) - 1; }
+
       function informeAvance() {
         var lista = estudiantesFiltrados().filter(function(e) { return e.es_primer_anio !== 'si'; }).map(function(e) {
           var envio = RESPUESTAS.filter(function(r) { return r.id_usuario === e.id_usuario && r.periodo <= estado.periodo; })
             .sort(function(a, b) { return a.created_at < b.created_at ? -1 : 1; }).pop();
           var cred = envio ? numero((respuestaDe(envio, VARIABLES.creditos) || [null])[0]) : null;
-          return { e: e, creditos: cred, periodo: envio ? envio.periodo : '' };
-        });
-        var cohortes = {};
-        lista.forEach(function(x) { if (x.creditos === null) return; var c = cohorteDe(x.e); (cohortes[c] = cohortes[c] || []).push(x.creditos); });
-        var columnasCoh = ['Cohorte', 'Estudiantes con dato', 'Créditos promedio', 'Mínimo', 'Máximo', 'Avance promedio sobre el plan'];
-        var datosCoh = Object.keys(cohortes).sort().map(function(c) {
-          var v = cohortes[c];
-          return [c, v.length, redondear(promedio(v), 1), Math.min.apply(null, v), Math.max.apply(null, v), Math.round(promedio(v) / CREDITOS_PLAN * 100) + ' %'];
+          // Cuatrimestres cerrados desde el ingreso hasta el del envío (la encuesta pregunta los créditos de ese momento)
+          var t = envio ? indicePeriodoAvance(envio.periodo) - indicePeriodoAvance(cohorteDe(e)) : null;
+          var esperados = t !== null && t > 0 ? ESPERADOS_2024[Math.min(t, ESPERADOS_2024.length - 1)] : null;
+          var ritmo = cred !== null && esperados ? cred / esperados : null;
+          var situacion = ritmo === null ? null : SITUACION_AVANCE.filter(function(x) { return ritmo >= x.desde; })[0];
+          return { e: e, creditos: cred, periodo: envio ? envio.periodo : '', t: t, esperados: esperados, ritmo: ritmo, situacion: situacion };
         });
         var conDato = lista.filter(function(x) { return x.creditos !== null; });
+        var conRitmo = conDato.filter(function(x) { return x.ritmo !== null; });
+        var conT6 = conDato.filter(function(x) { return x.t !== null && x.t >= CUATRIMESTRE_GARCIA_LAMBERT; });
+        var bajoUmbral = conT6.filter(function(x) { return x.creditos / CREDITOS_PLAN < UMBRAL_GARCIA_LAMBERT; });
+        var pct = function(v) { return Math.round(v * 100); };
+        var porSituacion = function(id) { return conRitmo.filter(function(x) { return x.situacion.id === id; }).length; };
+
+        var cohortes = {};
+        conDato.forEach(function(x) { var c = cohorteDe(x.e); (cohortes[c] = cohortes[c] || []).push(x); });
+        var columnasCoh = ['Cohorte', 'Estudiantes con dato', 'Créditos promedio', 'Avance sobre lo esperado', 'Avance sobre el plan'];
+        var ritmoCoh = {};
+        var datosCoh = Object.keys(cohortes).sort().map(function(c) {
+          var v = cohortes[c], r = v.filter(function(x) { return x.ritmo !== null; });
+          var credProm = promedio(v.map(function(x) { return x.creditos; }));
+          ritmoCoh[c] = r.length ? pct(promedio(r.map(function(x) { return x.ritmo; }))) : null;
+          return [c, v.length, redondear(credProm, 1), ritmoCoh[c] === null ? '' : ritmoCoh[c] + ' %', pct(credProm / CREDITOS_PLAN) + ' %'];
+        });
         var resumen = [
           { titulo: 'Estudiantes con dato', valor: conDato.length, detalle: 'de ' + lista.length + ' de 2.º año en adelante' },
-          { titulo: 'Avance promedio', valor: conDato.length ? Math.round(promedio(conDato.map(function(x) { return x.creditos; })) / CREDITOS_PLAN * 100) + ' %' : '—', detalle: 'sobre 235,5 créditos' },
-          { titulo: 'Bajo el 38,97 %', valor: conDato.filter(function(x) { return x.creditos / CREDITOS_PLAN < 0.3897; }).length, detalle: 'umbral de García Lambert' }
+          { titulo: 'Avance sobre lo esperado', valor: conRitmo.length ? pct(promedio(conRitmo.map(function(x) { return x.ritmo; }))) + ' %' : '—', detalle: 'promedio, según el tiempo desde el ingreso' },
+          { titulo: 'Al día', valor: porSituacion('al_dia'), detalle: porcentaje(porSituacion('al_dia'), conRitmo.length) + ' de los que tienen esperados' },
+          { titulo: 'Bajo el 38,97 % del plan', valor: bajoUmbral.length, detalle: 'de ' + conT6.length + ' con 6 cuatrimestres o más' }
         ];
-        var columnas = ['Estudiante', 'Cohorte', 'Créditos aprobados', 'Avance sobre el plan', 'Período del dato'];
-        var datos = lista.map(function(x) { return [nombreDe(x.e), cohorteDe(x.e), x.creditos === null ? '' : x.creditos, x.creditos === null ? '' : Math.round(x.creditos / CREDITOS_PLAN * 100) + ' %', x.periodo]; });
+        var columnas = ['Estudiante', 'Cohorte', 'Período del dato', 'Cuatrimestres desde el ingreso', 'Créditos aprobados', 'Créditos esperados', 'Avance sobre lo esperado', 'Situación', 'Avance sobre el plan'];
+        var datos = lista.map(function(x) {
+          return [nombreDe(x.e), cohorteDe(x.e), x.periodo, x.t === null ? '' : x.t, x.creditos === null ? '' : x.creditos, x.esperados === null ? '' : x.esperados,
+            x.ritmo === null ? '' : pct(x.ritmo) + ' %', x.situacion ? x.situacion.nombre : '', x.creditos === null ? '' : pct(x.creditos / CREDITOS_PLAN) + ' %'];
+        });
         ultimo = { titulo: 'Avance curricular ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
+        var colSituacion = columnas.indexOf('Situación');
+        var nivelDe = function(nombre) { return SITUACION_AVANCE.filter(function(s) { return s.nombre === nombre; })[0].nivel; };
         return kpis(resumen) +
-          '<div style="display: flex !important; gap: 10px !important; align-items: flex-start !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 16px !important; font-size: 13px !important;">' +
-          '<span style="color: #47536b !important;">' + icono('info', 18) + '</span><span>Provisorio: el avance se mide sobre el total del plan. La comparación con lo esperado según el tiempo desde el ingreso está en análisis.</span></div>' +
-          bloque('Avance promedio por cohorte', 'Créditos promedio sobre los 235,5 del plan. En rojo, las cohortes bajo el 38,97 %.',
-            barras(Object.keys(cohortes).sort().map(function(c) {
-              var p = Math.round(promedio(cohortes[c]) / CREDITOS_PLAN * 100);
-              return { etiqueta: 'Cohorte ' + c, valor: p, color: p < 38.97 ? SEMAFORO.rojo.punto : '#026bd4' };
+          '<div style="display: grid !important; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important; gap: 0 16px !important;">' +
+          bloque('Avance sobre lo esperado por cohorte', 'Promedio y cantidad de estudiantes. Verde desde 85 %, rojo bajo 50 %.',
+            barras(Object.keys(ritmoCoh).sort().filter(function(c) { return ritmoCoh[c] !== null; }).map(function(c) {
+              return { etiqueta: 'Cohorte ' + c + ' · ' + cohortes[c].length, valor: ritmoCoh[c], color: colorBarra(nivelCohorteAvance(ritmoCoh[c])) };
             }), ' %')) +
-          bloque('Por cohorte', '', tabla(columnasCoh, datosCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
-          tarjeta('Por estudiante', 'Créditos de la última Encuesta Cuatrimestral respondida hasta el período elegido.', tabla(columnas, datos.map(function(f) { return f.map(function(c) { return escapar(c === '' ? '—' : c); }); })),
-            'bases Estudiantes y Respuestas (cuadro de créditos)');
+          bloque('Situación de cada estudiante', 'Al día: 100 % · Demorado: 50 % a 99 % · Muy demorado: menos del 50 %.',
+            barras(SITUACION_AVANCE.map(function(s) { return { etiqueta: s.nombre, valor: porSituacion(s.id), color: colorBarra(s.nivel) }; }))) +
+          '</div>' +
+          bloque('Por cohorte', 'Esperados por cuatrimestre: 14, 34, 57, 81, 104, 131, 152, 176, 193 y 235,5.',
+            tabla(columnasCoh, datosCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c === '' ? '—' : c)); }); }))) +
+          tarjeta('Por estudiante', 'Última Encuesta Cuatrimestral hasta el período elegido.',
+            tabla(columnas, datos.map(function(f) {
+              return f.map(function(c, i) { return i === colSituacion && c ? chip(nivelDe(c), c) : escapar(decimal(c === '' ? '—' : c)); });
+            })), 'bases Estudiantes y Respuestas (cuadro de créditos)');
       }
 
       // ---------------------------------------------------------
@@ -907,11 +1030,9 @@
         // Aviso con las definiciones y los límites de los datos
         var primero = r.opciones.periodos[0] || estado.periodo;
         var parciales = r.cohortes.filter(function(c) { return c.parcial; }).map(function(c) { return c.cohorte; });
-        var definiciones = aviso('<b style="font-weight: 600 !important;">Cómo se calcula.</b> Ingresantes: estudiantes con información personal. ' +
-          '<b style="font-weight: 600 !important;">Abandono:</b> ' + N + (N === 1 ? ' período cerrado' : ' períodos cerrados seguidos') + ' sin notas de 1.er año ni Encuesta Cuatrimestral (se cambia en Configuración del Sistema); si vuelve a tener actividad, deja de contar. ' +
-          '<b style="font-weight: 600 !important;">Egreso:</b> declarar los ' + decimal(CREDITOS_PLAN) + ' créditos del plan en la Cuatrimestral. ' +
-          'Se observan los períodos del sistema desde ' + escapar(primero) + ' hasta ' + escapar(estado.periodo) + '; el período vigente no cuenta para el abandono.' +
-          (parciales.length ? ' Las cohortes ' + escapar(parciales.join(', ')) + ' ingresaron antes de ' + escapar(primero) + ': solo están quienes seguían cursando en ese momento, así que su permanencia sale más alta.' : ''));
+        var definiciones = aviso('<b style="font-weight: 600 !important;">Abandono:</b> ' + N + (N === 1 ? ' período cerrado' : ' períodos cerrados seguidos') + ' sin actividad. ' +
+          '<b style="font-weight: 600 !important;">Egreso:</b> ' + decimal(CREDITOS_PLAN) + ' créditos declarados. Períodos ' + escapar(primero) + ' a ' + escapar(estado.periodo) + '.' +
+          (parciales.length ? ' Cohortes parciales (entraron antes de ' + escapar(primero) + '): ' + escapar(parciales.join(', ')) + '.' : ''));
 
         // Gráfico 1: estado de cada cohorte
         var estadoCohortes = graficoApiladas(r.cohortes.map(function(c) {
@@ -946,7 +1067,7 @@
         var columnasCoh = ['Cohorte', 'Ingresantes', 'Activos', 'Abandonaron', 'Egresados', 'Tasa de egreso', 'Retención de 1.er año', 'Duración promedio', 'Permanencia terminal', 'Reincorporados'];
         var filasCoh = r.cohortes.map(function(c) {
           return [c.cohorte + (c.parcial ? ' (parcial)' : ''), c.ingresantes, c.activos, c.abandonos, c.egresados, c.tasaEgreso === null ? '—' : Math.round(c.tasaEgreso) + ' %',
-            c.retencion ? Math.round(c.retencion.porcentaje) + ' %' + (c.retencion.confirmada ? '' : ' (provisoria)') : '—',
+            c.retencion ? Math.round(c.retencion.porcentaje) + ' %' + (c.retencion.confirmada ? '' : ' (sin confirmar)') : '—',
             c.duracionPromedio === null ? '—' : decimal(redondear(c.duracionPromedio / 2, 1)) + ' años', c.terminal, c.reincorporados];
         });
 
@@ -963,14 +1084,14 @@
         });
         ultimo = { titulo: 'Trayectoria y egreso ' + estado.periodo, resumen: resumen, columnas: columnas, filas: datos };
         return kpis(resumen) + definiciones +
-          bloque('Estado de cada cohorte', 'Cuántos ingresantes de cada cohorte siguen activos, egresaron o abandonaron.', estadoCohortes) +
-          bloque('Permanencia por cohorte', 'Porcentaje de cada cohorte que sigue en la carrera (activo o egresado) en cada cuatrimestre desde el ingreso. La caída es el desgranamiento.', permanencia) +
-          bloque('Supervivencia académica', 'Probabilidad de seguir en la carrera en cada cuatrimestre desde el ingreso, con todas las cohortes juntas (Kaplan-Meier: cada estudiante cuenta mientras se lo observa).', supervivencia) +
-          bloque('Riesgo de abandono por cuatrimestre', 'De los estudiantes en riesgo en cada cuatrimestre desde el ingreso, cuántos abandonaron.',
+          bloque('Estado de cada cohorte', 'Activos, egresados y abandonos.', estadoCohortes) +
+          bloque('Permanencia por cohorte', 'Porcentaje que sigue en cada cuatrimestre desde el ingreso.', permanencia) +
+          bloque('Supervivencia académica', 'Probabilidad de seguir, todas las cohortes juntas (Kaplan-Meier).', supervivencia) +
+          bloque('Riesgo de abandono por cuatrimestre', 'Abandonos sobre estudiantes en riesgo.',
             tabla(['Cuatrimestre', 'En riesgo', 'Abandonos', 'Riesgo', 'Supervivencia'], filasRiesgo.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
-          bloque('Por cohorte', 'Tasa de egreso: egresados sobre ingresantes. Retención de 1.er año: siguen un año después del ingreso; es provisoria hasta que pasan ' + N + (N === 1 ? ' período cerrado' : ' períodos cerrados') + ' desde ahí. Duración: desde el ingreso hasta el egreso (5 años teóricos).',
+          bloque('Por cohorte', 'Retención sin confirmar: todavía puede bajar.',
             tabla(columnasCoh, filasCoh.map(function(f) { return f.map(function(c) { return escapar(decimal(c)); }); }))) +
-          tarjeta('Por estudiante', 'Primero los que abandonaron. Permanencia terminal: activo, con el 90 % de los créditos o más y más de 10 cuatrimestres desde el ingreso.',
+          tarjeta('Por estudiante', 'Primero los que abandonaron.',
             tabla(columnas, datos.map(function(f, i) {
               return f.map(function(c, j) { return j === 2 ? chipTrayectoria(lista[i].estado) : escapar(c === '' ? '—' : decimal(c)); });
             })), 'bases Estudiantes, Respuestas (créditos) y CargaParcialesPrimero, con TrayectoriaEstudiantes de la Página Tools');
@@ -1024,7 +1145,7 @@
           historial;
         cuerpo += '<div style="margin-top: 12px !important;"><button id="btn-volver-arriba-reportes" type="button" style="cursor: pointer; border: 0; background: transparent; padding: 0; font-family: inherit; font-size: 13px; font-weight: 500; color: #026bd4; display: inline-flex; align-items: center; gap: 4px;">' + icono('subir', 16) + 'Volver al inicio del informe</button></div>';
         return '<div id="conclusiones-reportes" style="scroll-margin-top: 16px !important;">' +
-          tarjeta('Conclusiones', 'Se guardan para este informe, este período y estos filtros, y salen en el PDF. Cada guardado queda en el historial.', cuerpo) + '</div>';
+          tarjeta('Conclusiones', 'Para este informe y estos filtros. Salen en el PDF.', cuerpo) + '</div>';
       }
 
       function guardarConclusiones() {
@@ -1048,7 +1169,7 @@
             return rid;
           });
         guardado.then(function(rid) {
-          CONCLUSIONES.push(Object.assign({ rid: Number(rid) || 0, autor: enMoodle ? 'usted' : 'Vista previa (' + rolActual + ')' }, registro));
+          CONCLUSIONES.push(Object.assign({ rid: Number(rid) || 0, autor: enMoodle ? (usuarioSesion.nombre || 'El equipo') : 'Vista previa (' + rolActual + ')' }, registro));
           delete borradores[claveConclusiones()];
           dibujar();
           var el = document.getElementById('estado-conclusiones-reportes');
@@ -1185,7 +1306,7 @@
           '<body style="font-family: Inter, Segoe UI, Arial, sans-serif; color: #0b0e14; margin: 24px; font-size: 12px;">' +
           '<div style="font-size: 11px; color: #47536b; text-transform: uppercase; letter-spacing: 0.5px;">Proyecto Travesía · SBIRE · Dpto. de Ingeniería Industrial — FI-UNMdP<\/div>' +
           '<h1 style="font-size: 20px; margin: 4px 0;">' + escapar(ultimo.titulo) + '<\/h1>' +
-          '<div style="color: #47536b; margin-bottom: 12px;">' + escapar(textoFiltros()) + ' · Generado el ' + escapar(fechaHora(ultimo.generado)) + '<\/div>' +
+          '<div style="color: #47536b; margin-bottom: 12px;">' + escapar(textoFiltros()) + ' · Generado el ' + escapar(fechaHora(ultimo.generado)) + ' por ' + escapar(textoGeneradoPor()) + '<\/div>' +
           '<table style="border-collapse: collapse; margin-bottom: 16px;"><tr>' + ultimo.resumen.map(function(k) {
             return '<td style="' + celda + '"><div style="color: #47536b;">' + escapar(k.titulo) + '<\/div><b style="font-size: 16px;">' + escapar(decimal(k.valor)) + '<\/b>' + (k.detalle ? ' <span style="color: #47536b;">' + escapar(k.detalle) + '<\/span>' : '') + '<\/td>';
           }).join('') + '<\/tr><\/table>' + conclusionesPdf() +
@@ -1251,7 +1372,7 @@
       }
 
       function dibujar() {
-        var informes = { criticidad: informeCriticidad, respuesta: informeRespuesta, resultados: informeResultados, primero: informePrimero, entrevistas: informeEntrevistas, avance: informeAvance, trayectoria: informeTrayectoria };
+        var informes = { criticidad: informeCriticidad, respuesta: informeRespuesta, resultados: informeResultados, cuellos: informeCuellos, primero: informePrimero, entrevistas: informeEntrevistas, avance: informeAvance, trayectoria: informeTrayectoria };
         bloques = [];
         var cuerpo = informes[estado.informe]();
         ultimo.bloques = bloques;
@@ -1260,7 +1381,7 @@
         var acciones = '<div style="display: flex !important; flex-wrap: wrap !important; justify-content: space-between !important; align-items: center !important; gap: 8px !important; margin-bottom: 16px !important;">' +
           '<div><div style="font-size: 18px !important; font-weight: 600 !important;">' + escapar(ultimo.titulo) + '</div>' +
           '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(textoFiltros()) + '</div>' +
-          '<div style="font-size: 12px !important; color: #47536b !important;">Generado el ' + escapar(fechaHora(ultimo.generado)) + '</div></div>' +
+          '<div style="font-size: 12px !important; color: #47536b !important;">Generado el ' + escapar(fechaHora(ultimo.generado)) + ' por <span data-generado-por>' + escapar(textoGeneradoPor()) + '</span></div></div>' +
           '<div style="display: flex !important; flex-wrap: wrap !important; gap: 8px !important;">' +
           '<button id="btn-csv-reportes" style="' + EST.boton + '">' + icono('descargar', 18) + 'Descargar CSV</button>' +
           '<button id="btn-pdf-reportes" style="' + EST.boton + '">' + icono('imprimir', 18) + 'Imprimir o guardar en PDF</button>' +
@@ -1268,6 +1389,40 @@
         document.getElementById('contenido-reportes').innerHTML = acciones +
           (faltantes.length ? aviso('<b style="font-weight: 600 !important;">Lectura incompleta:</b> ' + escapar(faltantes.map(function(n) { return FUENTES[n].nombre; }).join(', ')) + '. El informe puede no incluir todas las entradas.', 'error') : '') +
           cuerpo + htmlConclusiones();
+      }
+
+      // ---------------------------------------------------------
+      // USUARIO DE LA SESIÓN: QUIÉN GENERA EL INFORME Y FIRMA LAS CONCLUSIONES
+      // ---------------------------------------------------------
+      // Nombre: el del pie de Moodle ("Usted se ha identificado como …", enlace al perfil) o el del menú de usuario; si no está en la
+      // página, el título del perfil (un pedido, una sola vez). Rol: el que guardó el resumen de Zhakyz. En local, la vista previa
+      var usuarioSesion = { nombre: '', rol: '' };
+      function nombreEnPagina() {
+        var candidatos = document.querySelectorAll('.logininfo a[href*="/user/profile.php"], .usermenu .usertext');
+        for (var i = 0; i < candidatos.length; i++) {
+          var t = candidatos[i].textContent.replace(/\s+/g, ' ').trim();
+          if (t.indexOf(' ') > 0) return t;
+        }
+        return '';
+      }
+      function cargarUsuarioSesion() {
+        if (!enMoodle) return Promise.resolve();
+        usuarioSesion.rol = NOMBRES_ROL[rolGuardadoZhakyz()] || '';
+        usuarioSesion.nombre = nombreEnPagina();
+        if (usuarioSesion.nombre) return Promise.resolve();
+        return fetch(M.cfg.wwwroot + '/user/profile.php?id=' + encodeURIComponent(M.cfg.userId), { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(function(html) {
+            var h = new DOMParser().parseFromString(html, 'text/html').querySelector('.page-header-headings h1, #page-header h1, h1');
+            usuarioSesion.nombre = h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
+          })
+          .catch(function() { /* sin nombre: queda "el equipo" */ });
+      }
+      // "Nombre Apellido (Rol)"
+      function textoGeneradoPor() {
+        if (!enMoodle) return 'Vista previa (' + ROLES[rolActual].nombre + ')';
+        var nombre = usuarioSesion.nombre || 'el equipo de seguimiento';
+        return usuarioSesion.rol ? nombre + ' (' + usuarioSesion.rol + ')' : nombre;
       }
 
       // ---------------------------------------------------------
@@ -1399,6 +1554,23 @@
       }
 
       // LA ENTRADA DE rid MAYOR DE CADA CLAVE (LAS BASES SOLO AGREGAN: LA VIGENTE ES LA MÁS NUEVA)
+      // CSV CON ENCABEZADO → LISTA DE OBJETOS (comillas dobles para los valores con coma). Solo para la vista previa local
+      function leerCsv(texto) {
+        var filas = texto.replace(/^\uFEFF/, '').split(/\r?\n/).filter(function(l) { return l.trim(); }).map(function(l) {
+          var celdas = [], celda = '', entre = false;
+          for (var i = 0; i < l.length; i++) {
+            var ch = l[i];
+            if (ch === '"') { if (entre && l[i + 1] === '"') { celda += '"'; i++; } else entre = !entre; }
+            else if (ch === ',' && !entre) { celdas.push(celda); celda = ''; }
+            else celda += ch;
+          }
+          celdas.push(celda);
+          return celdas;
+        });
+        var enc = filas.shift() || [];
+        return filas.map(function(c) { var o = {}; enc.forEach(function(k, i) { o[k.trim()] = c[i] === undefined ? '' : c[i]; }); return o; });
+      }
+
       function vigentes(lista, clave) {
         var m = {};
         lista.forEach(function(e) { var k = clave(e); if (k && (!m[k] || (Number(e.rid) || 0) > (Number(m[k].rid) || 0))) m[k] = e; });
@@ -1523,10 +1695,26 @@
           nombre: 'Materias',
           prueba: Object.keys(MATERIAS_PRUEBA).map(function(k) { return { plan: '2024', codigo: k, nombre: MATERIAS_PRUEBA[k] }; }),
           leer: function() { return leerBase('Materias', { dataid: DATAID_MATERIAS }); },
+          // En local, el plan completo del repo (data/plan_estudios/PLANES_CARGA.csv, con un servidor); si no se puede leer, la lista
+          // corta de prueba, sin correlativas
+          obtener: function() {
+            if (enMoodle) return leerBase('Materias', { dataid: DATAID_MATERIAS });
+            var prueba = this.prueba;
+            return fetch(new URL('../../data/plan_estudios/PLANES_CARGA.csv', window.location.href).href)
+              .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+              .then(leerCsv)
+              .catch(function() { return prueba; });
+          },
+          // La entrada más nueva de cada código del Plan 2024, sin las dadas de baja
           guardar: function(lista) {
-            MATERIAS = {};
+            MATERIAS = {}; PLAN = {};
             vigentes(lista.filter(function(m) { return String(m.plan) === '2024'; }), function(m) { return m.codigo; })
-              .forEach(function(m) { MATERIAS[m.codigo] = m.nombre; });
+              .filter(function(m) { return String(m.estado || '').trim() !== 'baja'; })
+              .forEach(function(m) {
+                MATERIAS[m.codigo] = m.nombre;
+                PLAN[m.codigo] = { nombre: m.nombre, cuatrimestre: numero(m.cuatrimestre), tipo: String(m.tipo || '').trim(),
+                  desbloquea: String(m.desbloquea || '').split(',').map(function(x) { return x.trim().split(':')[0]; }).filter(Boolean) };
+              });
           }
         },
         // Conclusiones del docente. Si la base no existe o no se puede leer, el informe se dibuja igual (sin las guardadas)
@@ -1594,6 +1782,10 @@
       aplicarRol(ROL_INICIAL);
       if (enMoodle) document.getElementById('aviso-datos-prueba-reportes').style.setProperty('display', 'none', 'important');
       document.getElementById('contenido-reportes').innerHTML = aviso('Leyendo las bases de Zhakyz…');
+      cargarUsuarioSesion().then(function() {
+        var huecosAutor = document.querySelectorAll('#reportes-gestion [data-generado-por]');
+        for (var a = 0; a < huecosAutor.length; a++) huecosAutor[a].textContent = textoGeneradoPor();
+      });
       conLimite(cargarTools(), ESPERA_TOOLS, 'La Página Tools').then(function(t) {
         Tools = t;
         return cargar(['periodos', 'estudiantes', 'informes']);
