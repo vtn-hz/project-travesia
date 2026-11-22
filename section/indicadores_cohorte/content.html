@@ -85,7 +85,6 @@
         cuatrimestral: {
           titulo: 'Encuesta Cuatrimestral', version: 4, puntajeMaximo: 70, porPeriodo: true,
           preguntas: [
-            { variable: 'creditos_aprobados', pregunta: 'Los créditos obtenidos actualmente son:', max: 30, regla: 'avance_curricular', activa: false },
             { variable: 'progreso_proyecto_final', pregunta: '¿En qué estado se encuentra el Proyecto Final de Grado (PFG)?', max: 10,
               opciones: [['No aplica por el nivel', 0], ['No iniciado', 10], ['Tema propuesto sin avance', 7], ['En desarrollo activo', 3], ['Finalizado, pendiente de defensa', 0]] },
             { variable: 'trabaja', pregunta: '¿Trabaja actualmente?', max: 5, opciones: [['Si', 5], ['No', 0]] },
@@ -420,10 +419,7 @@
       // ---------------------------------------------------------
       function filaPregunta(p) {
         var detalle;
-        if (p.regla === 'avance_curricular') {
-          detalle = chip('neutro', 'Desactivada: no suma') +
-            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">Compara los créditos aprobados con los esperados según los cuatrimestres desde el ingreso. Está desactivada y no cuenta en el puntaje máximo: el avance se mira en el informe Avance curricular de Reportes.</div>';
-        } else if (p.regla === 'cursada') {
+        if (p.regla === 'cursada') {
           detalle = '<div style="font-size: 13px !important;">Cantidad cursada: ninguna ' + CURSADA.cantidad[0] + ' · 1 materia ' + CURSADA.cantidad[1] + ' · 2 materias ' + CURSADA.cantidad[2] + ' · 3 o más 0</div>' +
             '<div style="font-size: 13px !important;">Recursadas: 1.ª ' + CURSADA.recursada[0] + ' · 2.ª ' + CURSADA.recursada[1] + ' · siguientes 0</div>' +
             '<div style="font-size: 13px !important;">Dificultad: (promedio de 1 a 5 − 1) × 2,5, hasta ' + CURSADA.dificultadMax + '</div>' +
@@ -434,7 +430,7 @@
               escapar(o[0]) + '<b style="font-weight: 600 !important; color: ' + (o[1] > 0 ? '#910808' : '#47536b') + ' !important;">' + o[1] + '</b></span>';
           }).join('') + '</div>';
         }
-        var maximo = p.activa === false ? '<span style="color: #94a0b8 !important; text-decoration: line-through !important;">' + p.max + '</span>' : '<b style="font-weight: 600 !important;">' + p.max + '</b>';
+        var maximo = '<b style="font-weight: 600 !important;">' + p.max + '</b>';
         return [escapar(p.pregunta) + '<div style="font-size: 12px !important; color: #47536b !important; font-family: Consolas, Menlo, monospace !important;">' + escapar(p.variable) + '</div>', detalle, maximo];
       }
 
@@ -446,7 +442,7 @@
           '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; align-items: center !important; margin-top: 10px !important; font-size: 13px !important;">Puntaje máximo de esta versión ' + chipNeutro(String(e.puntajeMaximo)) + '</div>',
           'base Encuestas · ' + e.titulo + ', versión ' + e.version + ' (una respuesta por período)');
         var indice = tarjeta('Índice del envío',
-          'Se divide por el máximo de la versión para que el índice quede de 0 a 100 aunque haya preguntas desactivadas.',
+          'Se divide por el máximo de la versión para que el índice quede de 0 a 100.',
           '<code style="' + EST.formula + '">índice = puntos obtenidos ÷ ' + e.puntajeMaximo + ' × 100   (redondeado al entero)</code>');
         return puntos + indice + calculadoraEncuesta(e);
       }
@@ -496,7 +492,7 @@
           var n = Math.max(0, Number(valor('cantidad')) || 0);
           var rec = Math.min(n, Math.max(0, Number(valor('recursadas')) || 0));
           var dif = Math.min(5, Math.max(1, Number(valor('dificultad')) || 1));
-          var pfg = ENCUESTAS.cuatrimestral.preguntas[1].opciones[Number(valor('progreso_proyecto_final'))][0];
+          var pfg = ENCUESTAS.cuatrimestral.preguntas.filter(function(p) { return p.variable === 'progreso_proyecto_final'; })[0].opciones[Number(valor('progreso_proyecto_final'))][0];
           var exceptuado = pfg === 'En desarrollo activo' || pfg === 'Finalizado, pendiente de defensa';
           var pCant = n === 0 ? (exceptuado ? 0 : CURSADA.cantidad[0]) : (CURSADA.cantidad[n] || 0);
           var pRec = n === 0 ? 0 : (rec >= 1 ? CURSADA.recursada[0] : 0) + (rec >= 2 ? CURSADA.recursada[1] : 0);
