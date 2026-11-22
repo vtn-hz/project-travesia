@@ -1,8 +1,8 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Indicadores de Cohorte" (cmid 60283) · 2026-11-18 -->
-<!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM, GES, TUT) · SE ABRE DESDE LA TARJETA "INDICADORES DE COHORTE" DEL HUB -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Indicadores de Cohorte" (cmid 60283) · 2026-11-22 -->
+<!-- SECCIÓN: INDICADORES DE COHORTE (ROLES ADM Y TUT) · SE ABRE DESDE LA TARJETA "INDICADORES DE COHORTE" DEL HUB -->
 <!-- DISEÑO: SKILL diseno-ui (PLANTILLA DASHBOARD DE MATERIAL UI) -->
 <!-- FUENTES: docs/context/research/INDICADORES_TRAYECTORIA_TERMINALIDAD.md, requerimientos v1.1, base Encuestas (versiones vigentes, leída el 2026-11-01),
-     CargaMateriasPrimero, Tools v5 (cortes del semáforo), docs/models y ADR-007. Lo que queda fuera: docs/models/INDICADORES_NO_IMPLEMENTADOS.md -->
+     CargaMateriasPrimero, Tools (cortes del semáforo), docs/models, ADR-007 y ADR-010. Lo que queda fuera: docs/models/INDICADORES_NO_IMPLEMENTADOS.md -->
 <!-- CONTENEDOR PRINCIPAL -->
 <div id="indicadores-cohorte"
   style="position: relative !important; background-color: #fcfcfc !important; border: 1px solid rgba(194, 201, 214, 0.4) !important; border-radius: 10px !important; padding: 24px !important; max-width: 850px !important; margin: 20px auto !important; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 14px !important; line-height: 1.5 !important; color: #0b0e14 !important; box-sizing: border-box !important; text-align: left !important;">
@@ -20,10 +20,10 @@
     </div>
   </div>
 
-  <!-- AVISO: VERSIÓN PROVISORIA -->
-  <div style="display: flex !important; align-items: flex-start !important; gap: 10px !important; background-color: #fdf1ce !important; border: 1px solid rgba(246, 206, 85, 0.5) !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
-    <span data-icono="alerta" style="color: #aa8109 !important; padding-top: 1px !important;"></span>
-    <span><b style="font-weight: 600 !important;">Versión provisoria.</b> Muestra las definiciones y los cálculos, sin valores por cohorte. Los puntos y umbrales son los vigentes en Moodle al 2026-11-01 y son provisorios. Es de solo lectura: un cambio de puntos se hace cargando una versión nueva en la base Encuestas.</span>
+  <!-- AVISO: QUÉ MUESTRA ESTA PÁGINA -->
+  <div style="display: flex !important; align-items: flex-start !important; gap: 10px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; color: #0b0e14 !important; border-radius: 10px !important; padding: 10px 14px !important; margin-bottom: 20px !important;">
+    <span data-icono="info" style="color: #47536b !important; padding-top: 1px !important;"></span>
+    <span>Muestra la definición, el cálculo y los datos de cada indicador. Los valores por cohorte y por estudiante se ven en <b style="font-weight: 600 !important;">Reportes</b>, en el informe que indica cada uno. Es de solo lectura: un cambio de puntos se hace cargando una versión nueva en la base Encuestas.</span>
   </div>
 
   <!-- PESTAÑAS -->
@@ -58,33 +58,32 @@
       // CONFIGURACIÓN
       // ---------------------------------------------------------
       // En Moodle, ENCUESTAS saldría de la base Encuestas (versión vigente de cada código) con LeerBase,
-      // y CORTES de Tools (hoy CORTES_SEMAFORO no se exporta: haría falta exponerlo en Tools v5)
-      // En Moodle el rol saldrá del grupo del usuario; acá arranca en ADM. Los tres roles ven lo mismo: la vista es de solo lectura
-      var ROL_INICIAL = 'ADM';
+      // y CORTES de Tools (hoy CORTES_SEMAFORO no se exporta: haría falta exponerlo en Tools)
+      // Los dos roles ven lo mismo: la vista es de solo lectura. En Moodle, el rol es el que detectó el resumen de Zhakyz y guardó en
+      // este navegador ("zk-rol", section/resumen_zhakyz); en la vista previa local arranca en ADM
       var ES_VISTA_LOCAL = window.location.protocol === 'file:' ||
         /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
       var ROLES = {
         ADM: { nombre: 'Administrador' },
-        GES: { nombre: 'Gestor Dpto. Industrial' },
         TUT: { nombre: 'Tutor / Entrevistador' }
       };
+      function rolGuardadoZhakyz() {
+        try {
+          var g = JSON.parse(window.localStorage.getItem('zk-rol') || 'null');
+          var yo = window.M && M.cfg && M.cfg.userId ? String(M.cfg.userId) : '';
+          if (g && yo && String(g.usuario) === yo && ROLES[g.rol]) return g.rol;
+        } catch (e) { /* sin almacenamiento */ }
+        return null;
+      }
+      var ROL_INICIAL = (!ES_VISTA_LOCAL && rolGuardadoZhakyz()) || 'ADM';
       var CORTES = { amarillo: 40, rojo: 70 };
       var PESOS_ICM = { FP: 0.35, FR: 0.35, FA: 0.15, FAC: 0.15 };
       var PESOS_ICG = { promedio: 0.6, maximo: 0.4 };
 
       // COPIA DE LA BASE ENCUESTAS (solo lo que puntúa o se usa en una regla)
       var ENCUESTAS = {
-        inicial: {
-          titulo: 'Encuesta Inicial', version: 2, puntajeMaximo: 30, porPeriodo: false,
-          preguntas: [
-            { variable: 'creditos_aprobados', pregunta: 'Los créditos obtenidos actualmente son:', max: 70, regla: 'avance_curricular', activa: false },
-            { variable: 'trabaja', pregunta: '¿Trabaja actualmente?', max: 10, opciones: [['Si', 10], ['No', 0]] },
-            { variable: 'inicio_laboral', pregunta: '¿En qué momento de la carrera comenzó su actividad laboral? (solo si trabaja)', max: 20,
-              opciones: [['Antes de ingresar a la carrera', 20], ['En 1.º año', 20]] }
-          ]
-        },
         cuatrimestral: {
-          titulo: 'Encuesta Cuatrimestral', version: 3, puntajeMaximo: 70, porPeriodo: true,
+          titulo: 'Encuesta Cuatrimestral', version: 4, puntajeMaximo: 70, porPeriodo: true,
           preguntas: [
             { variable: 'creditos_aprobados', pregunta: 'Los créditos obtenidos actualmente son:', max: 30, regla: 'avance_curricular', activa: false },
             { variable: 'progreso_proyecto_final', pregunta: '¿En qué estado se encuentra el Proyecto Final de Grado (PFG)?', max: 10,
@@ -110,8 +109,8 @@
         { nombre: 'Fundamentos de Química', critica: false, umbral: null }
       ];
 
-      // CRÉDITOS ESPERADOS DEL PLAN 2024 (propuesta en análisis, sin aplicar)
-      var CREDITOS_ESPERADOS = [14, 34, 57, 81, 104, 131, 152, 176, 193, 223];
+      // CRÉDITOS ESPERADOS DEL PLAN 2024 AL CERRAR CADA CUATRIMESTRE DESDE EL INGRESO (los mismos que ESPERADOS_2024 del informe Avance curricular)
+      var CREDITOS_ESPERADOS = [14, 34, 57, 81, 104, 131, 152, 176, 193, 235.5];
 
       // EJEMPLO DE ÍNDICE TOTAL: INTEGRANTE DE ZHAKYZ CON DATOS FICTICIOS
       var EJEMPLO_TOTAL = {
@@ -126,14 +125,11 @@
       // ---------------------------------------------------------
       // CATÁLOGO DE INDICADORES
       // ---------------------------------------------------------
-      // Estados: en_uso (se calcula en Moodle) · en_reportes (se calcula al abrir un informe de Reportes) · disponible (los datos ya existen,
-      // falta la vista) · analisis (definido, con una decisión abierta)
+      // Estados: en_uso (se calcula al cargar cada nota o encuesta y se ve en el Tablero de Criticidad) · en_reportes (se calcula al abrir el informe de Reportes de su campo informe)
       //          (los indicadores muy difíciles de implementar en Moodle quedan fuera: ver INDICADORES_DIFICILES_MOODLE.md)
       var ESTADOS = {
-        en_uso: { texto: 'En uso', punto: '#026bd4', fondo: '#f0f7ff', borde: '#cce4ff', color: '#0a4a8f' },
+        en_uso: { texto: 'En el Tablero', punto: '#026bd4', fondo: '#f0f7ff', borde: '#cce4ff', color: '#0a4a8f' },
         en_reportes: { texto: 'En Reportes', punto: '#6250d6', fondo: '#f4f2fd', borde: '#d9d3f7', color: '#3d2f99' },
-        disponible: { texto: 'Datos disponibles', punto: '#52bc52', fondo: '#f6fef6', borde: '#c5f7c5', color: '#1f7a1f' },
-        analisis: { texto: 'En análisis', punto: '#c2940a', fondo: '#fffbf0', borde: '#fce49c', color: '#7a5d06' },
       };
 
       var BLOQUES = [
@@ -145,62 +141,54 @@
 
       var INDICADORES = [
         // Seguimiento de trayectoria
-        { bloque: 'trayectoria', nombre: 'Avance curricular acumulado', estado: 'disponible',
+        { bloque: 'trayectoria', nombre: 'Avance curricular acumulado', estado: 'en_reportes', informe: 'Avance curricular',
           formula: 'avance = créditos aprobados ÷ 235,5 × 100   (Plan 2024: 52 materias y la PPS; por estudiante y promedio por cohorte)',
-          datos: 'Créditos y materias aprobadas del cuadro de créditos de las encuestas (base Respuestas). Mejor predictor individual: debajo del 38,97 % al 6.º cuatrimestre el riesgo es crítico.',
+          datos: 'Créditos aprobados del cuadro de créditos de la última Encuesta Cuatrimestral (base Respuestas). Mejor predictor individual: debajo del 38,97 % al 6.º cuatrimestre el riesgo es crítico; el informe lo cuenta solo para quienes llevan 6 cuatrimestres o más.',
           fuente: 'García Lambert et al. (2014)' },
-        { bloque: 'trayectoria', nombre: 'Índice de ritmo', estado: 'analisis',
-          formula: 'ritmo = avance real ÷ avance esperado según los cuatrimestres desde el ingreso\nal día · demorado · muy demorado (bandas a definir)',
-          datos: 'Mismos datos que el avance curricular, más el ingreso. Falta decidir si se mide en créditos o en materias y cómo se cuenta el tiempo. El estudiante también lo declara en la Cuatrimestral (avance percibido).',
+        { bloque: 'trayectoria', nombre: 'Índice de ritmo (avance sobre lo esperado)', estado: 'en_reportes', informe: 'Avance curricular',
+          formula: 'ritmo = créditos aprobados ÷ créditos esperados según los cuatrimestres cerrados desde el ingreso × 100\nesperados: 14, 34, 57, 81, 104, 131, 152, 176, 193 y 235,5 desde el 10.º\nal día ≥ 100 % · demorado de 50 % a 99 % · muy demorado < 50 %',
+          datos: 'Mismos datos que el avance curricular, más el ingreso (base Estudiantes). Se mide en créditos y el tiempo, en cuatrimestres desde el ingreso hasta el período de la encuesta. El estudiante también lo declara en la Cuatrimestral (avance percibido).',
           fuente: 'Chiecher y Moreno (2018)' },
-        { bloque: 'trayectoria', nombre: 'Ubicación en el plan', estado: 'analisis',
-          formula: 'T = cuatrimestres desde el ingreso · A = cuatrimestres completos de carga aprobada\ndiferencia = mín(T, 10) − A · pendientes anteriores y antigüedad de la deuda',
-          datos: 'Materias aprobadas por código (cuadro de créditos) e ingreso. Es un modelo del equipo, descriptivo, todavía sin aplicar.',
-          fuente: 'Modelo Ubicación y atraso (equipo)' },
         // Abandono y egreso (TrayectoriaEstudiantes de Tools, informe Trayectoria y egreso de Reportes)
-        { bloque: 'terminalidad', nombre: 'Retención de 1.er año', estado: 'en_reportes',
+        { bloque: 'terminalidad', nombre: 'Retención de 1.er año', estado: 'en_reportes', informe: 'Trayectoria y egreso',
           formula: 'retención = estudiantes de la cohorte que no abandonaron un año después del ingreso ÷ ingresantes de la cohorte × 100',
-          datos: 'Ingresantes de la base Estudiantes; actividad de cada período en CargaParcialesPrimero y Respuestas. Es provisoria hasta que pasan los períodos de abandono desde ese año.',
+          datos: 'Ingresantes de la base Estudiantes; actividad de cada período en CargaParcialesPrimero y Respuestas. Queda sin confirmar (todavía puede bajar) hasta que pasan los períodos de abandono desde ese año.',
           fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
-        { bloque: 'terminalidad', nombre: 'Desgranamiento (permanencia por cohorte)', estado: 'en_reportes',
+        { bloque: 'terminalidad', nombre: 'Desgranamiento (permanencia por cohorte)', estado: 'en_reportes', informe: 'Trayectoria y egreso',
           formula: 'permanencia(k) = estudiantes de la cohorte que siguen (activos o egresados) en el cuatrimestre k desde el ingreso ÷ ingresantes × 100',
           datos: 'Los mismos que la retención. Las cohortes que ingresaron antes del primer período del sistema solo cuentan a quienes seguían en ese momento.',
           fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
-        { bloque: 'terminalidad', nombre: 'Supervivencia académica', estado: 'en_reportes',
+        { bloque: 'terminalidad', nombre: 'Supervivencia académica', estado: 'en_reportes', informe: 'Trayectoria y egreso',
           formula: 'S(k) = Π (1 − abandonos en k ÷ en riesgo en k)   (Kaplan-Meier con entrada tardía; k = cuatrimestres desde el ingreso)\nriesgo de abandono en k = abandonos ÷ en riesgo',
           datos: 'Cada estudiante está en riesgo desde su primer período observado hasta que abandona (evento), egresa o termina el último período cerrado.',
           fuente: 'Requerimientos v1.1 · Kaplan y Meier (1958)' },
-        { bloque: 'terminalidad', nombre: 'Tasa de egreso y duración de la carrera', estado: 'en_reportes',
+        { bloque: 'terminalidad', nombre: 'Tasa de egreso y duración de la carrera', estado: 'en_reportes', informe: 'Trayectoria y egreso',
           formula: 'tasa de egreso = egresados de la cohorte ÷ ingresantes × 100 · duración = cuatrimestres desde el ingreso hasta el egreso (10 teóricos)',
           datos: 'Egreso: la primera Encuesta Cuatrimestral con 235,5 créditos declarados (la encuesta final es obligatoria para el título). Egreso y titulación son lo mismo: el PFG está dentro de los créditos.',
           fuente: 'Requerimientos v1.1 · definiciones del DII (2026-11-17)' },
-        { bloque: 'terminalidad', nombre: 'Permanencia terminal', estado: 'en_reportes',
+        { bloque: 'terminalidad', nombre: 'Permanencia terminal', estado: 'en_reportes', informe: 'Trayectoria y egreso',
           formula: 'activo, con el 90 % de los créditos o más (212 de 235,5) y más de 10 cuatrimestres desde el ingreso',
-          datos: 'Créditos declarados en la última Encuesta Cuatrimestral. El umbral del 90 % es provisorio.',
-          fuente: 'Requerimientos v1.1' },
-        { bloque: 'terminalidad', nombre: 'Tiempo en el Proyecto Final', estado: 'analisis',
-          formula: 'tiempo = cuatrimestres desde que declara el PFG en desarrollo hasta el egreso',
-          datos: 'Se puede aproximar con la pregunta del PFG de la Cuatrimestral; falta acordar desde qué respuesta se cuenta.',
+          datos: 'Créditos declarados en la última Encuesta Cuatrimestral.',
           fuente: 'Requerimientos v1.1' },
         // Cuellos de botella
-        { bloque: 'cuellos', nombre: 'Materias críticas por correlativas', estado: 'disponible',
+        { bloque: 'cuellos', nombre: 'Materias críticas por correlativas', estado: 'en_reportes', informe: 'Cuellos de botella',
           formula: 'S(m) = Σ w(d) sobre las materias d que traba m · w = 2 si d es del cuatrimestre actual o anterior; si no, 1 ÷ distancia\nm es crítica si S(m) ≥ 1',
-          datos: 'Plan 2024 y sus correlativas (base Materias, campo desbloquea). Es un modelo del equipo, todavía sin vista.',
+          datos: 'Plan 2024 y sus correlativas (base Materias, campo desbloquea), solo las obligatorias. Modelo del equipo; el informe lo calcula para el recorrido completo, desde el 1.er cuatrimestre: 14 de las 42 obligatorias son críticas.',
           fuente: 'Modelo Criticidad por correlativas (equipo), a partir de Paz (2022)' },
-        { bloque: 'cuellos', nombre: 'Dificultad y recursado por materia', estado: 'disponible',
+        { bloque: 'cuellos', nombre: 'Dificultad y recursado por materia', estado: 'en_reportes', informe: 'Cuellos de botella y Resultados de la encuesta',
           formula: '% de recursado = estudiantes que la recursan ÷ estudiantes que la cursaron × 100\ndificultad = promedio de 1 a 5 declarado',
           datos: 'Selector de materias de la Cuatrimestral (base Respuestas): cada materia cursada con primera vez y dificultad.',
           fuente: 'Malbernat et al. (2024/2025); García Lambert et al. (2014)' },
         // Criticidad individual
-        { bloque: 'criticidad', nombre: 'Índice de las encuestas', estado: 'en_uso', detalle: 'encuestas',
+        { bloque: 'criticidad', nombre: 'Índice de la Encuesta Cuatrimestral', estado: 'en_uso', detalle: 'encuestas',
           formula: 'índice = puntos obtenidos ÷ puntaje máximo de la versión × 100',
-          datos: 'Cada envío de la Encuesta Inicial o Cuatrimestral, con los puntos de la base Encuestas.', fuente: 'Modelo Puntaje de criticidad de las encuestas · ADR-007' },
+          datos: 'Cada envío de la Encuesta Cuatrimestral (desde 2.º año), con los puntos de la base Encuestas.', fuente: 'Modelo Puntaje de criticidad de las encuestas · ADR-007' },
         { bloque: 'criticidad', nombre: 'Índice de las notas de 1.er año (ICm e ICG)', estado: 'en_uso', detalle: 'notas',
           formula: 'ICm = (0,35 FP + 0,35 FR + 0,15 FA + 0,15 FAC) × 100 · ICG = 0,6 promedio + 0,4 máximo',
-          datos: 'Notas que carga cada estudiante en CargaParcialesPrimero y materias críticas de CargaMateriasPrimero.', fuente: 'Modelo Índice de las notas de 1.er año (provisorio)' },
-        { bloque: 'criticidad', nombre: 'Índice total y semáforo', estado: 'en_uso', detalle: 'total',
-          formula: 'índice total = promedio del último índice de notas y de encuestas del período\nverde < 40 ≤ amarillo < 70 ≤ rojo',
-          datos: 'Base Criticidad: una entrada por evento. El estado asignado por un tutor se muestra junto al calculado.', fuente: 'ADR-007' }
+          datos: 'Notas que carga cada estudiante en CargaParcialesPrimero y materias críticas de CargaMateriasPrimero.', fuente: 'Modelo Índice de las notas de 1.er año' },
+        { bloque: 'criticidad', nombre: 'Criticidad por fuente y semáforo', estado: 'en_uso', detalle: 'total',
+          formula: 'parciales y Encuesta Cuatrimestral por separado: la última entrada de cada una en el período\nestado calculado = la fuente del año de la carrera (parciales en 1.er año, Encuesta desde 2.º)\nverde < 40 ≤ amarillo < 70 ≤ rojo',
+          datos: 'Base Criticidad: una entrada por evento. El estado asignado por un tutor se muestra junto al calculado y, si existe, es el vigente.', fuente: 'ADR-007 · ADR-010' }
       ];
 
       var PESTANAS = [
@@ -208,14 +196,13 @@
         { id: 'trayectoria', titulo: 'Trayectoria', icono: 'indicadores' },
         { id: 'terminalidad', titulo: 'Abandono y egreso', icono: 'estudiantes' },
         { id: 'cuellos', titulo: 'Cuellos de botella', icono: 'plan' },
-        { id: 'criticidad', titulo: 'Criticidad individual', icono: 'estudiantes' },
-        { id: 'revision', titulo: 'En revisión', icono: 'alerta' }
+        { id: 'criticidad', titulo: 'Criticidad individual', icono: 'estudiantes' }
       ];
       var SUBVISTAS_CRITICIDAD = [
         { id: 'semaforo', titulo: 'Semáforo y registro' },
-        { id: 'encuestas', titulo: 'Encuestas (2.º año en adelante)' },
+        { id: 'encuestas', titulo: 'Encuesta Cuatrimestral' },
         { id: 'notas', titulo: 'Notas de 1.er año' },
-        { id: 'total', titulo: 'Índice total y estado asignado' }
+        { id: 'total', titulo: 'Por fuente y estado asignado' }
       ];
       var pestanaActual = 'resumen';
       var subCriticidad = 'semaforo';
@@ -365,6 +352,7 @@
           '<h4 style="' + EST.h4 + '">' + escapar(ind.nombre) + '</h4>' + chipEstado(ind.estado) + '</div>' +
           '<code style="' + EST.formula + '">' + escapar(ind.formula) + '</code>' +
           '<p style="' + EST.p + ' font-size: 13px !important;"><b style="font-weight: 600 !important;">Datos.</b> ' + escapar(ind.datos) + '</p>' +
+          (ind.informe ? '<p style="' + EST.p + ' font-size: 13px !important;"><b style="font-weight: 600 !important;">Dónde se ve.</b> Reportes, informe ' + escapar(ind.informe) + '.</p>' : '') +
           '<div style="' + EST.fuente + '">' + icono('info', 14) + '<span>' + escapar(ind.fuente) + '</span></div>' + verDetalle + '</div>';
       }
 
@@ -388,17 +376,15 @@
         var catalogo = BLOQUES.map(function(b) {
           return tarjeta(b.titulo, escapar(b.ayuda), tabla(['Indicador', 'Datos de entrada', 'Estado'], indicadoresDe(b.id).map(function(i) {
             return ['<button data-tab="' + b.id + '" style="cursor: pointer; border: 0; background: transparent; padding: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #026bd4; text-align: left;">' + escapar(i.nombre) + '</button>',
-              '<span style="font-size: 12px !important; color: #47536b !important;">' + escapar(i.datos.split('. ')[0]) + '.</span>', chipEstado(i.estado)];
+              '<span style="font-size: 12px !important; color: #47536b !important;">' + escapar(i.datos.split('. ')[0].replace(/\.$/, '')) + '.</span>', chipEstado(i.estado)];
           })));
         }).join('');
         var cohorte = tarjeta('Qué es una cohorte', 'Todos los indicadores de grupo se calculan por cohorte, nunca por año calendario: mezclar generaciones distorsiona los resultados entre 10 y 30 puntos.',
           '<p style="' + EST.p + '">Una cohorte es el par <b style="font-weight: 600 !important;">año y cuatrimestre de ingreso</b> (por ejemplo, 2026-1 para marzo y 2026-2 para agosto). Los tiempos se cuentan en cuatrimestres desde el ingreso.</p>',
           'Documento de indicadores de trayectoria y terminalidad · requerimiento de almacenamiento de cohorte');
         var leyenda = tarjeta('Estados', '', tabla(['Estado', 'Qué significa'], [
-          [chipEstado('en_uso'), 'Se calcula hoy en Moodle y se guarda en la base Criticidad.'],
-          [chipEstado('en_reportes'), 'Se calcula al abrir el informe Trayectoria y egreso de Reportes, con los datos de ese momento.'],
-          [chipEstado('disponible'), 'Los datos ya se guardan en Moodle; falta la vista que lo calcule.'],
-          [chipEstado('analisis'), 'Está definido, pero tiene una decisión abierta del equipo.'],
+          [chipEstado('en_uso'), 'Se calcula al cargar cada nota o encuesta, se guarda en la base Criticidad y se ve en el Tablero de Criticidad y en el Detalle del estudiante.'],
+          [chipEstado('en_reportes'), 'Se calcula al abrir en Reportes el informe que indica cada uno, con los datos de ese momento.'],
         ]));
         return totales + cohorte + catalogo + leyenda;
       }
@@ -408,9 +394,9 @@
       // ---------------------------------------------------------
       function vistaSemaforo() {
         var flujo ='<div style="display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-bottom: 16px !important;">' +
-          paso(1, 'Cada fuente da un índice', '<b>1.er año:</b> las notas de parciales que carga el estudiante (ICm por materia e ICG).<br><b>2.º año en adelante:</b> cada envío de la Encuesta Inicial o Cuatrimestral.') +
-          paso(2, 'Se combinan en el índice total', 'Promedio del último índice de cada grupo de fuentes (notas y encuestas) del estudiante en el período.') +
-          paso(3, 'El índice total define el color', 'Verde, amarillo o rojo según los cortes. Un tutor puede asignar un estado a mano: se muestra junto al calculado, sin reemplazarlo.') +
+          paso(1, 'Cada fuente da un índice', '<b>1.er año:</b> las notas de parciales que carga el estudiante (ICm por materia e ICG).<br><b>2.º año en adelante:</b> cada envío de la Encuesta Cuatrimestral.') +
+          paso(2, 'Cada fuente se muestra por separado', 'Parciales y Encuesta Cuatrimestral no se promedian: de cada una vale la última entrada del período. El estado calculado es la fuente del año de la carrera (parciales en 1.er año, Encuesta desde 2.º).') +
+          paso(3, 'El índice define el color', 'Verde, amarillo o rojo según los cortes. Un tutor puede asignar un estado a mano: se muestra junto al calculado y pasa a ser el vigente.') +
           '</div>';
         var cortes = tarjeta('Semáforo', 'Los mismos cortes valen para todas las fuentes, porque cada índice va de 0 a 100.',
           barraSemaforo(null) +
@@ -418,14 +404,13 @@
           chip('verde', '0 a ' + (CORTES.amarillo - 1) + ' · riesgo bajo') +
           chip('amarillo', CORTES.amarillo + ' a ' + (CORTES.rojo - 1) + ' · riesgo moderado') +
           chip('rojo', CORTES.rojo + ' a 100 · criticidad alta') + '</div>',
-          'Tools v5 (cortes del semáforo de la base Criticidad)');
+          'Página Tools (cortes del semáforo de la base Criticidad)');
         var guardado = tarjeta('Qué se guarda', 'Cada cálculo agrega una entrada a la base Criticidad y no se recalcula después: así se conserva la historia.',
           tabla(['Evento', 'Fuente', 'Quién lo dispara'], [
             ['Envío de una encuesta', chipNeutro('respuestas'), 'El estudiante, al enviar'],
             ['Alta o edición de una nota de 1.er año', chipNeutro('notas_1ro'), 'El estudiante, al guardar la nota'],
-            ['Cambio de umbral o de materia crítica', chipNeutro('materias'), 'El equipo (pendiente)'],
-            ['Encuesta del período sin responder', chipNeutro('omision'), 'El equipo (pendiente)'],
-            ['Estado asignado por un tutor', chipNeutro('manual'), 'Tutor o administrador (pendiente)']
+            ['Encuesta del período sin responder', chipNeutro('omision'), 'El equipo, al cerrar el período en la Configuración del Sistema'],
+            ['Estado asignado por un tutor', chipNeutro('manual'), 'Tutor o administrador, desde el Tablero de Criticidad']
           ]), 'ADR-007 · base Criticidad');
         return flujo + cortes + guardado;
       }
@@ -436,8 +421,8 @@
       function filaPregunta(p) {
         var detalle;
         if (p.regla === 'avance_curricular') {
-          detalle = chip('neutro', 'En análisis: no suma') +
-            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">Compara los créditos aprobados con los esperados según los cuatrimestres desde el ingreso. Está desactivado y no cuenta en el puntaje máximo.</div>';
+          detalle = chip('neutro', 'Desactivada: no suma') +
+            '<div style="font-size: 12px !important; color: #47536b !important; margin-top: 6px !important;">Compara los créditos aprobados con los esperados según los cuatrimestres desde el ingreso. Está desactivada y no cuenta en el puntaje máximo: el avance se mira en el informe Avance curricular de Reportes.</div>';
         } else if (p.regla === 'cursada') {
           detalle = '<div style="font-size: 13px !important;">Cantidad cursada: ninguna ' + CURSADA.cantidad[0] + ' · 1 materia ' + CURSADA.cantidad[1] + ' · 2 materias ' + CURSADA.cantidad[2] + ' · 3 o más 0</div>' +
             '<div style="font-size: 13px !important;">Recursadas: 1.ª ' + CURSADA.recursada[0] + ' · 2.ª ' + CURSADA.recursada[1] + ' · siguientes 0</div>' +
@@ -453,26 +438,17 @@
         return [escapar(p.pregunta) + '<div style="font-size: 12px !important; color: #47536b !important; font-family: Consolas, Menlo, monospace !important;">' + escapar(p.variable) + '</div>', detalle, maximo];
       }
 
-      function selectorEncuesta() {
-        return '<div style="display: inline-flex !important; gap: 4px !important; background-color: #f5f6fa !important; border: 1px solid #dadee7 !important; border-radius: 8px !important; padding: 3px !important; margin-bottom: 16px !important;">' +
-          Object.keys(ENCUESTAS).map(function(k) {
-            var activo = k === encuestaActual;
-            return '<button data-encuesta="' + k + '" style="cursor: pointer; border: 0; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 13px; font-weight: 500; background-color: ' + (activo ? '#ffffff' : 'transparent') + '; color: ' + (activo ? '#0b0e14' : '#47536b') + '; box-shadow: ' + (activo ? '0 1px 2px rgba(11,14,20,0.08)' : 'none') + ';">' +
-              ENCUESTAS[k].titulo + '</button>';
-          }).join('') + '</div>';
-      }
-
       function vistaEncuestas() {
         var e = ENCUESTAS[encuestaActual];
         var puntos = tarjeta('Puntos por pregunta',
-          'Cada opción suma los puntos indicados. La peor respuesta de cada pregunta suma su máximo. Año y cuatrimestre de ingreso no suman: se usan para el avance curricular.',
+          'Cada opción suma los puntos indicados. La peor respuesta de cada pregunta suma su máximo.',
           tabla(['Pregunta', 'Puntos por respuesta', 'Máximo'], e.preguntas.map(filaPregunta)) +
           '<div style="display: flex !important; justify-content: flex-end !important; gap: 8px !important; align-items: center !important; margin-top: 10px !important; font-size: 13px !important;">Puntaje máximo de esta versión ' + chipNeutro(String(e.puntajeMaximo)) + '</div>',
-          'base Encuestas · ' + e.titulo + ', versión vigente' + (e.porPeriodo ? ' (una por período)' : ' (una vez, actualizable)'));
+          'base Encuestas · ' + e.titulo + ', versión ' + e.version + ' (una respuesta por período)');
         var indice = tarjeta('Índice del envío',
           'Se divide por el máximo de la versión para que el índice quede de 0 a 100 aunque haya preguntas desactivadas.',
           '<code style="' + EST.formula + '">índice = puntos obtenidos ÷ ' + e.puntajeMaximo + ' × 100   (redondeado al entero)</code>');
-        return selectorEncuesta() + puntos + indice + calculadoraEncuesta(e);
+        return puntos + indice + calculadoraEncuesta(e);
       }
 
       // CALCULADORA DE UN CASO (CÁLCULO EN EL NAVEGADOR, NO GUARDA NADA)
@@ -549,7 +525,7 @@
             ['FAC · materia crítica', '1 si la materia es crítica y alguna nota está por debajo de su umbral', (PESOS_ICM.FAC * 100) + ' %']
           ]) +
           '<code style="' + EST.formula + '">ICm = (0,35 × FP + 0,35 × FR + 0,15 × FA + 0,15 × FAC) × 100   (máximo 100)</code>',
-          'MODELO_CRITICIDAD_NOTAS_PRIMERO · tool IndiceNotasPrimero (Tools v5)');
+          'MODELO_CRITICIDAD_NOTAS_PRIMERO · IndiceNotasPrimero de Tools');
         var icg = tarjeta('Índice del estudiante (ICG)',
           'Combina todas sus materias, dando peso extra a la peor para que una sola materia muy crítica no quede diluida.',
           '<code style="' + EST.formula + '">ICG = 0,6 × promedio de sus ICm + 0,4 × su ICm más alto   (redondeado al entero)</code>');
@@ -560,7 +536,7 @@
         return factores + icg + materias + calculadoraNotas();
       }
 
-      // CALCULADORA DE UNA MATERIA: MISMAS REGLAS QUE IndiceNotasPrimero (Tools v5)
+      // CALCULADORA DE UNA MATERIA: MISMAS REGLAS QUE IndiceNotasPrimero DE TOOLS
       // Ausente: estado "Ausente" o sin nota · Aprobada: estado "Aprobado" (no depende de la nota) · El recuperatorio reemplaza la instancia que indica
       var ESTADOS_NOTA = ['Aprobado', 'Desaprobado', 'Ausente'];
 
@@ -627,27 +603,29 @@
       }
 
       // ---------------------------------------------------------
-      // PESTAÑA: ÍNDICE TOTAL Y ESTADO ASIGNADO
+      // PESTAÑA: CRITICIDAD POR FUENTE Y ESTADO ASIGNADO (ADR-010)
       // ---------------------------------------------------------
       function vistaTotal() {
         var ultimo = {};
+        var nombreGrupo = { notas: 'Parciales', encuestas: 'Encuesta' };
+        // El estudiante del ejemplo es de 2.º año: su estado calculado es el de la Encuesta Cuatrimestral
         var filas = EJEMPLO_TOTAL.eventos.map(function(ev) {
           ultimo[ev.grupo] = ev.indice;
-          var grupos = Object.keys(ultimo);
-          var total = Math.round(grupos.reduce(function(a, g) { return a + ultimo[g]; }, 0) / grupos.length);
-          var calculo = grupos.map(function(g) { return g + ' ' + ultimo[g]; }).join(' + ');
+          var celda = function(g) {
+            return ultimo[g] === undefined ? '—' : ultimo[g] + ' ' + chip(semaforoDe(ultimo[g]), semaforoDe(ultimo[g]).charAt(0).toUpperCase() + semaforoDe(ultimo[g]).slice(1));
+          };
           return [ev.fecha, escapar(ev.fuente) + '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(ev.detalle) + '</div>', String(ev.indice),
-            total + '<div style="font-size: 12px !important; color: #47536b !important;">' + escapar(calculo) + (grupos.length > 1 ? ' ÷ ' + grupos.length : '') + '</div>', chip(semaforoDe(total), semaforoDe(total).charAt(0).toUpperCase() + semaforoDe(total).slice(1))];
+            celda('notas'), celda('encuestas'), ultimo.encuestas === undefined ? 'Sin calcular' : nombreGrupo.encuestas];
         });
-        var regla = tarjeta('Cómo se combina',
-          'Por cada grupo de fuentes se toma el último índice del período, y se promedian. Si el estudiante solo tiene notas, el total es el de las notas.',
-          '<code style="' + EST.formula + '">índice total = promedio(último índice de notas, último índice de encuestas)   en el período actual</code>' +
-          tabla(['Grupo', 'Fuentes que entran'], [
-            ['notas', chipNeutro('notas_1ro') + ' ' + chipNeutro('materias')],
-            ['encuestas', chipNeutro('respuestas') + ' ' + chipNeutro('omision')]
-          ]), 'ADR-007 · tool registrarCriticidad (Tools v5)');
-        var ejemplo = tarjeta('Ejemplo: ' + EJEMPLO_TOTAL.nombre + ' (datos ficticios)', 'Cada fila es una entrada de la base Criticidad, en orden.',
-          tabla(['Fecha', 'Evento', 'Índice', 'Índice total', 'Semáforo'], filas));
+        var regla = tarjeta('Cómo se muestra',
+          'Cada fuente se muestra por separado y no se promedian. De cada una vale la última entrada automática del período.',
+          '<code style="' + EST.formula + '">estado calculado = semáforo de la fuente del año de la carrera (parciales en 1.er año, Encuesta Cuatrimestral desde 2.º)\nestado vigente = el asignado por un tutor o, si no hay, el calculado</code>' +
+          tabla(['Fuente', 'Entradas que entran'], [
+            ['Parciales', chipNeutro('notas_1ro') + ' ' + chipNeutro('materias')],
+            ['Encuesta', chipNeutro('respuestas') + ' ' + chipNeutro('omision')]
+          ]), 'ADR-010 · CriticidadEstudiante de Tools');
+        var ejemplo = tarjeta('Ejemplo: ' + EJEMPLO_TOTAL.nombre + ', de 2.º año (datos ficticios)', 'Cada fila es una entrada de la base Criticidad, en orden. Desde 2.º año el estado calculado es el de la Encuesta; los parciales se ven aparte.',
+          tabla(['Fecha', 'Evento', 'Índice', 'Parciales', 'Encuesta', 'Estado calculado'], filas));
         var manual = tarjeta('Estado asignado por un tutor',
           'El tutor puede fijar un estado después de una entrevista o porque conoce la situación (Req 10).',
           '<ul style="margin: 0 !important; padding-left: 18px !important; font-size: 14px !important; line-height: 1.7 !important;">' +
@@ -655,27 +633,6 @@
           '<li>No reemplaza al calculado: el tablero muestra los dos, y las entradas automáticas se siguen guardando.</li>' +
           '<li>El motivo es obligatorio en las asignaciones.</li></ul>');
         return regla + ejemplo + manual;
-      }
-
-      // ---------------------------------------------------------
-      // PESTAÑA: EN REVISIÓN
-      // ---------------------------------------------------------
-      function vistaRevision() {
-        var items = [
-          ['Avance curricular desactivado', 'Compara créditos aprobados con esperados (14, 34, 57 … 223 según los cuatrimestres desde el ingreso). Está apagado mientras se decide si se mide en créditos o en materias y cómo se cuenta el tiempo. Mientras tanto el máximo es 30 en la Inicial y 70 en la Cuatrimestral.'],
-          ['Cortes distintos en otras vistas', 'El Dashboard de 1.er año corta en 40 y 65, y el Detalle del estudiante en 40 y 80. La base Criticidad usa 40 y 70.'],
-          ['Fórmula de 1.er año sin validar', 'Los pesos de ICm e ICG son una propuesta del equipo. El requerimiento propone otro criterio: aprobación menor al 20 % rojo; de 20 % a 60 % amarillo.'],
-          ['Texto del avance percibido', '«Demorado» y «Muy demorado» tienen el mismo umbral en la Encuesta Cuatrimestral (retraso mayor al 50 %).'],
-          ['Pregunta del PFG', 'Un estudiante de los primeros años que elige «No iniciado» suma 10. Se propone mostrarla solo con el 70 % de los créditos aprobados.'],
-          ['Tres criterios para 1.er año', 'El Dashboard usa ICm e ICG, el Listado de 1.er año usa alertas por umbral y el requerimiento usa el porcentaje de aprobación.']
-        ];
-        return tarjeta('Puntos abiertos', 'Afectan al resultado y están pendientes de decisión del equipo o del DII.',
-          items.map(function(it) {
-            return '<div style="display: flex !important; gap: 10px !important; padding: 10px 0 !important; border-top: 1px solid rgba(194, 201, 214, 0.4) !important;">' +
-              '<span style="color: #aa8109 !important; padding-top: 2px !important;">' + icono('alerta', 18) + '</span>' +
-              '<div><div style="font-weight: 600 !important;">' + escapar(it[0]) + '</div><div style="font-size: 13px !important; color: #47536b !important;">' + escapar(it[1]) + '</div></div></div>';
-          }).join('') +
-          '<p style="' + EST.ayuda + ' margin-top: 12px !important;">El Índice de Criticidad Estudiantil (ICE) queda como referencia del índice de las encuestas y no se calcula.</p>');
       }
 
       // ---------------------------------------------------------
@@ -710,8 +667,7 @@
           trayectoria: function() { return vistaBloque('trayectoria'); },
           terminalidad: function() { return vistaBloque('terminalidad'); },
           cuellos: function() { return vistaBloque('cuellos'); },
-          criticidad: vistaCriticidad,
-          revision: vistaRevision
+          criticidad: vistaCriticidad
         };
         document.getElementById('contenido-indicadores').innerHTML = vistas[pestanaActual]();
         if (pestanaActual === 'criticidad' && subCriticidad === 'encuestas') calcularEncuesta();
@@ -761,8 +717,6 @@
         if (tab) { pestanaActual = tab.getAttribute('data-tab'); return renderizar(); }
         var sub = t.closest('[data-sub]');
         if (sub) { pestanaActual = 'criticidad'; subCriticidad = sub.getAttribute('data-sub'); return renderizar(); }
-        var enc = t.closest('[data-encuesta]');
-        if (enc) { encuestaActual = enc.getAttribute('data-encuesta'); return renderizar(); }
       });
 
       document.addEventListener('input', function(e) {

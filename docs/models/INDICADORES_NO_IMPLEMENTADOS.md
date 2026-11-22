@@ -68,6 +68,12 @@ Indicadores del [documento de trayectoria y terminalidad](../context/research/IN
   - necesita seguir a cada estudiante durante años (limitación 2);
   - la pregunta del Proyecto Final de la Encuesta Cuatrimestral no tiene la opción "Aprobado", así que el intervalo nunca se cierra;
   - quien aprueba el Proyecto Final deja de responder (limitación 4).
+- **2026-11-22:** con el egreso por créditos el intervalo ya tenía final, pero el equipo decidió no implementarlo: faltaba acordar desde qué respuesta de la pregunta del PFG se cuenta el inicio. Se quitó de Indicadores de Cohorte.
+
+### Ubicación en el plan (modelo Ubicación y atraso)
+
+- **Qué pide:** el cuatrimestre equivalente por materias aprobadas, la diferencia con el recorrido nominal y las materias adeudadas de cuatrimestres anteriores ([modelo](trayectoria/MODELO_UBICACION_Y_ATRASO.md)).
+- **Por qué no se implementa (2026-11-22, decisión del equipo):** la diferencia con el recorrido nominal es el mismo dato que el avance sobre lo esperado del informe Avance curricular, medido en materias en lugar de créditos. Las materias adeudadas se podían calcular con el cuadro de créditos, pero el equipo prefirió no sumarlas. Se quitó de Indicadores de Cohorte.
 
 ### Inactividad del modelo de Ubicación y atraso
 
@@ -78,7 +84,7 @@ Indicadores del [documento de trayectoria y terminalidad](../context/research/IN
 
 | Bloque | Indicadores |
 |---|---|
-| Seguimiento de trayectoria | Avance curricular acumulado, índice de ritmo, ubicación en el plan (sin la inactividad) |
+| Seguimiento de trayectoria | Avance curricular acumulado e índice de ritmo (en el informe Avance curricular de Reportes) |
 | Cuellos de botella | Materias críticas por correlativas, dificultad y recursado por materia |
 | Criticidad individual | Índice de las encuestas, índice de las notas de 1.er año, índice total y semáforo |
 

@@ -46,6 +46,6 @@
 
 ## Pendientes
 
-- **Tiempo en el Proyecto Final:** se puede aproximar con la pregunta del PFG de la Cuatrimestral; falta acordar desde qué respuesta se cuenta.
+- **Tiempo en el Proyecto Final:** no se implementa (decisión del equipo, 2026-11-22); ver [Indicadores no implementados](../INDICADORES_NO_IMPLEMENTADOS.md).
 - **Umbral de la permanencia terminal** (90 % y 10 cuatrimestres): confirmar.
 - **Los egresados que no responden la encuesta final** no aparecen como egresados: después de N períodos figurarían como abandono. La encuesta final es obligatoria para el título, así que no debería pasar.
