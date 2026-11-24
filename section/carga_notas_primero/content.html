@@ -1,4 +1,4 @@
-<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Carga de notas de 1.er año" (cmid 60209) · 2026-11-17 -->
+<!-- PUBLICADO EN MOODLE: curso 1732 → sección "Zhakyz" (id 15647) → Página "Carga de notas de 1.er año" (cmid 60209) · 2026-11-23 -->
 <!-- SECCIÓN: CARGA DE NOTAS DE 1.ER AÑO (ROL EST) · SCRUM-22 -->
 <!-- QUÉ ES: cada estudiante carga y edita las notas de sus parciales de las materias de 1.er año del Plan 2024. Spec: docs/specs/carga-parciales-primero.md (opción B: página propia) -->
 <!-- DATOS: escribe en CargaParcialesPrimero (d=117) y lee las materias de la base Materias (d=152). Después de guardar, llama a CriticidadNotas({ rid }) de la Página Tools (necesita Tools v5) -->
@@ -94,11 +94,11 @@
       <label for="campo-nota-notas" style="flex: 0 1 110px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: #47536b !important;">
         Nota
         <!-- type="text": con type="number" el navegador descarta la coma ("1,0" llegaba como 10). Sin inputmode="decimal", que en teclados en español solo ofrece la coma -->
-        <input id="campo-nota-notas" name="nota" type="text" autocomplete="off" placeholder="Ej.: 4.5" data-zk-campo>
+        <input id="campo-nota-notas" name="nota" type="text" autocomplete="off" placeholder="Ej.: 72" data-zk-campo>
       </label>
     </div>
     <p id="ayuda-form-notas" style="margin: 10px 0 0 0 !important; font-size: 12px !important; color: #47536b !important;">
-      La nota se escribe con punto decimal (por ejemplo, 4.5). Un recuperatorio reemplaza la nota del parcial que recupera: si se recuperó más de un parcial, cargar un recuperatorio por cada uno. Con la condición Ausente, la nota no se completa.
+      La nota es un número entero de 0 a 100, sin puntos ni comas (por ejemplo, 72). Un recuperatorio reemplaza la nota del parcial que recupera: si se recuperó más de un parcial, cargar un recuperatorio por cada uno. Con la condición Ausente, la nota no se completa.
       El año y el cuatrimestre son los de la cursada en la que se rindió el parcial. Al recursar una materia, cargar las notas nuevas con el cuatrimestre de la nueva cursada: las de la cursada anterior se conservan.</p>
 
     <!-- ERRORES DEL FORMULARIO -->
@@ -321,6 +321,12 @@
       function etiquetaNota(n) {
         return n.recupera_a ? n.instancia + ' (del ' + n.recupera_a + ')' : n.instancia;
       }
+
+      // ESCALA DE LA NOTA: EL ESTUDIANTE LA ESCRIBE DE 0 A 100 (SOLO EN EL CAMPO); SE GUARDA, SE CALCULA Y SE MUESTRA DE 0 A 10.
+      // Al editar, el campo vuelve a mostrarla de 0 a 100.
+      // Se redondea para que la división no deje decimales de coma flotante (las notas viejas como 6.5 se ven como 65)
+      function notaInterna(texto) { return String(Math.round(Number(texto) * 10) / 100); }
+      function notaVisible(valor) { return String(Math.round(Number(valor) * 100) / 10); }
 
       // ESPERA UN TIEMPO (SOLO PARA SIMULAR MOODLE EN LOCAL)
       function esperar(ms, valor) { return new Promise(function(ok) { setTimeout(function() { ok(valor); }, ms); }); }
@@ -550,11 +556,10 @@
 
         var nota = NOTA_AUSENTE;
         if (condicion && condicion !== 'Ausente') {
-          // Punto como separador decimal y hasta dos decimales: "4.5" sí, "4,5" no
+          // Se escribe como entero de 0 a 100 ("72" sí; "72.5", "72,5" o "7.2" no) y se guarda de 0 a 10 como antes (7.2)
           if (notaTexto === '') errores.push('Nota: completar la nota (con la condición ' + condicion + ').');
-          else if (/^\d{1,2},\d+$/.test(notaTexto)) errores.push('Nota: "' + notaTexto + '" debe usar punto como separador decimal (por ejemplo, ' + notaTexto.replace(',', '.') + ').');
-          else if (!/^\d{1,2}(\.\d{1,2})?$/.test(notaTexto) || Number(notaTexto) > 10) errores.push('Nota: "' + notaTexto + '" debe ser un número de 0 a 10, con hasta dos decimales y punto como separador (por ejemplo, 4.5).');
-          else nota = String(Number(notaTexto));
+          else if (!/^\d{1,3}$/.test(notaTexto) || Number(notaTexto) > 100) errores.push('Nota: "' + notaTexto + '" debe ser un número entero de 0 a 100, sin puntos ni comas (por ejemplo, 72).');
+          else nota = notaInterna(notaTexto);
         }
 
         return {
@@ -735,7 +740,7 @@
         $('campo-cuatrimestre-notas').value = periodo[1] || '';
         var condicion = nota ? CONDICIONES.filter(function(c) { return String(nota.estado).indexOf(c) !== -1; })[0] || '' : '';
         $('campo-condicion-notas').value = condicion;
-        $('campo-nota-notas').value = nota && condicion !== 'Ausente' ? nota.nota : '';
+        $('campo-nota-notas').value = nota && condicion !== 'Ausente' ? notaVisible(nota.nota) : '';
         actualizarCampoNota();
         mostrarErrores([]);
         renderizarTabla();
@@ -747,7 +752,7 @@
         var campo = $('campo-nota-notas');
         campo.disabled = ausente;
         if (ausente) campo.value = '';
-        campo.setAttribute('placeholder', ausente ? 'No corresponde' : 'Ej.: 4.5');
+        campo.setAttribute('placeholder', ausente ? 'No corresponde' : 'Ej.: 72');
       }
 
       // INSTANCIAS DE LA MATERIA ELEGIDA; valor: la que queda seleccionada (por defecto, la actual si sigue en la lista)

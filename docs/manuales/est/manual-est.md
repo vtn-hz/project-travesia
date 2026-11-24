@@ -76,12 +76,12 @@ En Mi Trayectoria, hacé clic en "Cargar parciales".
 
 ### 4.2 Cargar una nota
 
-Elegí la materia, la instancia (parcial o recuperatorio), el año y el cuatrimestre de la cursada y la condición. Escribí la nota con punto decimal (por ejemplo, 4.5) y hacé clic en "Guardar nota".
+Elegí la materia, la instancia (parcial o recuperatorio), el año y el cuatrimestre de la cursada y la condición. Escribí la nota como un número entero de 0 a 100, sin puntos ni comas (por ejemplo, 72) y hacé clic en "Guardar nota".
 
 1. Materia de 1.er año.
 2. Instancia: se habilita después de elegir la materia.
 3. Condición. Con "Ausente", la nota no se completa.
-4. Nota, con punto decimal.
+4. Nota, de 0 a 100.
 5. Guarda la nota.
 
 ### 4.3 Revisar o corregir las notas
